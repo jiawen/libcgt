@@ -67,4 +67,6 @@ Vector2i operator * ( const Vector2i& v, int c );
 Vector2f operator * ( float f, const Vector2i& v );
 Vector2f operator * ( const Vector2i& v, float f );
 
+Vector2i operator / ( const Vector2i& v, int c );
+
 #endif // VECTOR_2I_H

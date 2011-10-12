@@ -83,6 +83,7 @@ private:
 Vector4i operator + ( const Vector4i& v0, const Vector4i& v1 );
 Vector4i operator - ( const Vector4i& v0, const Vector4i& v1 );
 Vector4i operator * ( const Vector4i& v0, const Vector4i& v1 );
+Vector4i operator / ( const Vector4i& v0, const Vector4i& v1 );
 
 Vector4i operator - ( const Vector4i& v );
 Vector4i operator * ( int c, const Vector4i& v );
@@ -90,5 +91,7 @@ Vector4i operator * ( const Vector4i& v, int c );
 
 Vector4f operator * ( float f, const Vector4i& v );
 Vector4f operator * ( const Vector4i& v, float f );
+
+Vector4i operator / ( const Vector4i& v, int c );
 
 #endif // VECTOR_4I_H

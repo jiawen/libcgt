@@ -348,3 +348,8 @@ Vector4f operator * ( const Vector4i& v, float f )
 {
 	return Vector4f( f * v.x(), f * v.y(), f * v.z(), f * v.w() );
 }
+
+Vector4i operator / ( const Vector4i& v, int c )
+{
+	return Vector4i( v.x() / c, v.y() / c, v.z() / c, v.w() / c );
+}

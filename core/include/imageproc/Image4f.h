@@ -5,11 +5,12 @@
 #include <QString>
 #include <QVector>
 
-#include "common/Reference.h"
-#include "vecmath/Vector2i.h"
-#include "vecmath/Vector2f.h"
-#include "vecmath/Vector4i.h"
-#include "vecmath/Vector4f.h"
+#include <common/Reference.h>
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector2f.h>
+#include <vecmath/Vector4i.h>
+#include <vecmath/Vector4f.h>
+#include <math/MersenneTwister.h>
 
 class Image4f
 {

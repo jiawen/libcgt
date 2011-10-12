@@ -250,3 +250,8 @@ Vector3f operator * ( const Vector3i& v, float f )
 {
 	return Vector3f( f * v.x(), f * v.y(), f * v.z() );
 }
+
+Vector3i operator / ( const Vector3i& v, int c )
+{
+	return Vector3i( v.x() / c, v.y() / c, v.z() / c );
+}
