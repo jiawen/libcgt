@@ -3,8 +3,9 @@
 
 #include "Arithmetic.h"
 #include "MathUtils.h"
-#include "Random.h"
 #include "Sampling.h"
 #include "SamplingPatternND.h"
+#include "UniformFloat.h"
+#include "UniformInt.h"
 
 #endif // LIBCGT_MATH_H
