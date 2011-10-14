@@ -10,7 +10,6 @@
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector4i.h>
 #include <vecmath/Vector4f.h>
-#include <math/MersenneTwister.h>
 
 class Image4f
 {
