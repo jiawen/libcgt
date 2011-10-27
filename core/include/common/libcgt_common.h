@@ -1,6 +1,7 @@
 #ifndef LIBCGT_COMMON_H
 #define LIBCGT_COMMON_H
 
+#include "Array2D.h"
 #include "ArrayUtils.h"
 #include "ArrayWithLength.h"
 #include "BasicTypes.h"
