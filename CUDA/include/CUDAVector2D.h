@@ -6,6 +6,8 @@
 
 #include <common/Array2D.h>
 
+#include "DeviceVector2D.h"
+
 // Basic 2D array interface around CUDA global memory
 // Wraps around cudaMallocPitch() (linear allocation with pitch)
 template< typename T >
@@ -57,6 +59,8 @@ public:
 	operator T* () const;
 
 	T* devicePtr() const;
+
+	DeviceVector2D< T > deviceVector() const;
 
 	// TODO: constructor from filename: just use load	
 
@@ -275,6 +279,12 @@ template< typename T >
 T* CUDAVector2D< T >::devicePtr() const
 {
 	return m_devicePtr;
+}
+
+template< typename T >
+DeviceVector2D< T > CUDAVector2D< T >::deviceVector() const
+{
+	return DeviceVector2D< T >( m_devicePtr, m_width, m_height, m_pitch );
 }
 
 template< typename T >

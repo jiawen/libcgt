@@ -42,7 +42,7 @@ public:
 
 	// converts a signed byte in [-127,127] to
 	// a [snorm] float in [-1,1]
-	static float MathUtils::signedByteToFloatNormalized( sbyte sb );
+	static float signedByteToFloatNormalized( sbyte sb );
 
 	// TODO: rename these linearRemap
 	static float rescaleFloatToFloat( float value,

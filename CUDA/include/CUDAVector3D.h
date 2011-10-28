@@ -6,6 +6,63 @@
 
 #include <common/Array3D.h>
 
+template< typename T >
+struct DeviceArray3D
+{
+	cudaPitchedPtr pitchedPointer;
+	int width;
+	int height;
+	int depth;
+	size_t slicePitch;
+
+	DeviceArray3D( cudaPitchedPtr _pitchedPointer, int _depth ) :
+
+		pitchedPointer( _pitchedPointer ),
+		width( _pitchedPointer.xsize ),
+		height( _pitchedPointer.ysize ),
+		depth( _depth ),
+		slicePitch( _pitchedPointer.pitch * _pitchedPointer.ysize )
+
+	{
+
+	}
+
+	__device__
+	T* getRowPointer( int y, int z )
+	{
+		// TODO: char --> ubyte
+		char* p = reinterpret_cast< char* >( pitchedPointer.ptr );
+	
+		size_t rowPitch = pitchedPointer.pitch;
+
+		// TODO: switch pointer arithmetic to array indexing?
+		char* pSlice = p + z * slicePitch;
+		return reinterpret_cast< T* >( pSlice + y * rowPitch );
+	}
+
+	__device__
+	T* getSlicePointer( int z )
+	{
+		// TODO: char --> ubyte
+		char* p = reinterpret_cast< char* >( pitchedPointer.ptr );
+
+		// TODO: switch pointer arithmetic to array indexing?
+		return reinterpret_cast< T* >( p + z * slicePitch );
+	}
+
+	__device__
+	T& operator () ( int x, int y, int z )
+	{
+		return getRowPointer( y, z )[ x ];
+	}
+
+	__device__
+	T& operator () ( int3 xyz )
+	{
+		return getRowPointer( xyz.y, xyz.z )[ xyz.x ];
+	}
+};
+
 // Basic 3D array interface around CUDA global memory
 // Wraps around cudaMalloc3D() (linear allocation with pitch)
 template< typename T >
@@ -51,7 +108,9 @@ public:
 	// implicit cast to pitched pointer?
 	operator cudaPitchedPtr() const;
 
-	cudaPitchedPtr pitchedPtr() const;
+	cudaPitchedPtr pitchedPointer() const;
+
+	DeviceArray3D< T > deviceArray() const;
 
 	// TODO: constructor from filename: just use load
 	void load( const char* filename );
@@ -273,9 +332,15 @@ CUDAVector3D< T >::operator cudaPitchedPtr() const
 }
 
 template< typename T >
-cudaPitchedPtr CUDAVector3D< T >::pitchedPtr() const
+cudaPitchedPtr CUDAVector3D< T >::pitchedPointer() const
 {
 	return m_pitchedPointer;
+}
+
+template< typename T >
+DeviceArray3D< T > CUDAVector3D< T >::deviceArray() const
+{
+	return DeviceArray3D< T >( m_pitchedPointer, m_width );
 }
 
 template< typename T >
