@@ -15,15 +15,10 @@ class Image4f
 {
 public:
 
-	// loads a 3-channel little-endian PFM from "filename" (magic = "PF")
-	// returns NULL if it loading was unsuccessful
-	static Reference< Image4f > loadPFM( QString filename );
-
-	// loads a 4-channel litltle-endian PFM from "filename" (magic = "PF4")
-	// returns NULL if it loading was unsuccessful
-	static Reference< Image4f > loadPFM4( QString filename );
-
 	Image4f(); // default constructor creates the null image
+
+	// Creates an Image4f from any format readable by QImage
+	// as well as little-endian PFM and "PFM4" (4-component PFM with header "PF4")
 	Image4f( QString filename );
 	
 	Image4f( int width, int height, const Vector4f& fill = Vector4f( 0, 0, 0, 0 ) );
@@ -49,25 +44,35 @@ public:
 	void setPixel( int x, int y, const Vector4i& pixel );
 	void setPixel( const Vector2i& xy, const Vector4i& pixel );
 	
-	Reference< Image4f > flipUD();
+	Image4f flipUD() const;
 
 	Vector4f bilinearSample( float x, float y ) const;
 	Vector4f bilinearSample( const Vector2f& xy ) const;
 
+	// Clamps this Image4f to [0,1]
+	// and returns a QImage in [0,255]
 	QImage toQImage();
-	bool savePNG( QString filename );
 
-	bool saveTXT( QString filename );
-
-	// writes out a standard 3-component floating point image with no alpha channel
-	// in little endian format
-	bool savePFM( QString filename );
-
-	// writes out a *non-standard* 4-component floating point image that contains the alpha channel
-	// in little endian format
-	bool savePFM4( QString filename );
+	// ---- I/O ----
+	bool load( QString filename );
+	
+	// Saves this image to depending on filename extension:
+	//   portable network graphics (PNG) (4-component, 8 bits per channel)
+	//   little-endian PFM (3-component PFM with header "PF", 32 bits per channel alpha is dropped)
+	//   *non-standard* little-endian PFM4 (4-component PFM with header "PF4", 32 bits per channel)
+	//   human-readable TXT
+	bool save( QString filename );	
 
 private:
+
+	bool loadQImage( QString filename );
+	bool loadPFM( QString filename );
+	bool loadPFM4( QString filename );
+
+	bool savePNG( QString filename );
+	bool savePFM( QString filename );
+	bool savePFM4( QString filename );
+	bool saveTXT( QString filename );
 
 	int m_width;
 	int m_height;

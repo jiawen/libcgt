@@ -55,7 +55,7 @@ public:
 	// this is a cast to superclass S
 	// enables inheritance to work, etc.
 	template< typename S >
-	operator Reference< S > () const;	
+	operator Reference< S > () const;
 
 private:
 

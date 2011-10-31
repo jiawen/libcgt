@@ -25,10 +25,11 @@ public:
 	ReferenceCountedArray< T > copy() const;
 	ReferenceCountedArray< T > copy( int start, int count ) const;
 
+	// Explicit cast to C array
 	T* data();
 	const T* constData() const;
 
-	// Cast to C array
+	// Implicit cast to C array
 	operator T* ();
 	operator const T* () const;
 

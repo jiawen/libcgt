@@ -13,158 +13,6 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-// static
-Reference< Image4f > Image4f::loadPFM( QString filename )
-{
-	QFile inputFile( filename );
-
-	// try to open the file in read only mode
-	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
-	{		
-		return NULL;
-	}
-
-	QTextStream inputTextStream( &inputFile );
-	inputTextStream.setCodec( "ISO-8859-1" );
-
-	// read header
-	QString qsType;
-	QString qsWidth;
-	QString qsHeight;
-	QString qsScale;	
-
-	int width;
-	int height;
-	float scale;
-
-	inputTextStream >> qsType;
-	if( qsType != "PF" )
-	{
-		inputFile.close();
-		return NULL;
-	}
-
-	inputTextStream >> qsWidth >> qsHeight >> qsScale;
-
-	width = qsWidth.toInt();
-	height = qsHeight.toInt();
-	scale = qsScale.toFloat();
-
-	if( width < 0 || height < 0 || scale >= 0 )
-	{
-		inputFile.close();
-		return NULL;
-	}
-
-	// close the text stream
-	inputTextStream.setDevice( NULL );
-	inputFile.close();
-
-	// now reopen it again in binary mode
-	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
-	{
-		return NULL;
-	}
-
-	int headerLength = qsType.length() + qsWidth.length() + qsHeight.length() + qsScale.length() + 4;	
-
-	QDataStream inputDataStream( &inputFile );
-	inputDataStream.skipRawData( headerLength );
-
-	Reference< Image4f > image = new Image4f( width, height );
-	float buffer[ 3 ];
-
-	for( int y = 0; y < height; ++y )
-	{
-		for( int x = 0; x < width; ++x )
-		{
-			int yy = height - y - 1;
-
-			inputDataStream.readRawData( reinterpret_cast< char* >( &( buffer[ 0 ] ) ), 3 * sizeof( float ) );
-			image->setPixel( x, yy, Vector4f( buffer ) );
-		}
-	}
-
-	inputFile.close();
-	return image;
-}
-
-// static
-Reference< Image4f > Image4f::loadPFM4( QString filename )
-{
-	QFile inputFile( filename );
-
-	// try to open the file in read only mode
-	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
-	{		
-		return NULL;
-	}
-
-	QTextStream inputTextStream( &inputFile );
-	inputTextStream.setCodec( "ISO-8859-1" );
-
-	// read header
-	QString qsType;
-	QString qsWidth;
-	QString qsHeight;
-	QString qsScale;	
-
-	int width;
-	int height;
-	float scale;
-
-	inputTextStream >> qsType;
-	if( qsType != "PF4" )
-	{
-		inputFile.close();
-		return NULL;
-	}
-
-	inputTextStream >> qsWidth >> qsHeight >> qsScale;
-
-	width = qsWidth.toInt();
-	height = qsHeight.toInt();
-	scale = qsScale.toFloat();
-
-	if( width < 0 || height < 0 || scale >= 0 )
-	{
-		inputFile.close();
-		return NULL;
-	}
-
-	// close the text stream
-	inputTextStream.setDevice( NULL );
-	inputFile.close();
-
-	// now reopen it again in binary mode
-	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
-	{
-		return NULL;
-	}
-
-	int headerLength = qsType.length() + qsWidth.length() + qsHeight.length() + qsScale.length() + 4;	
-
-	QDataStream inputDataStream( &inputFile );
-	inputDataStream.skipRawData( headerLength );
-
-	Reference< Image4f > image = new Image4f( width, height );
-	float buffer[ 4 ];
-
-	for( int y = 0; y < height; ++y )
-	{
-		for( int x = 0; x < width; ++x )
-		{
-			int yy = height - y - 1;
-
-			inputDataStream.readRawData( reinterpret_cast< char* >( &( buffer[ 0 ] ) ), 4 * sizeof( float ) );
-			image->setPixel( x, yy, Vector4f( buffer ) );
-		}
-	}
-
-	inputFile.close();
-	return image;
-}
-
 Image4f::Image4f() :
 
 m_width( 0 ),
@@ -182,31 +30,7 @@ m_height( 0 ),
 m_data( NULL )
 
 {
-	QImage q( filename );
-	if( !( q.isNull() ) )
-	{
-		m_width = q.width();
-		m_height = q.height();
-		m_data = QVector< float >( 4 * m_width * m_height );
-
-		for( int y = 0; y < m_height; ++y )
-		{
-			for( int x = 0; x < m_width; ++x )
-			{
-				QRgb p = q.pixel( x, m_height - y - 1 );
-				Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
-				Vector4f vf = ColorUtils::intToFloat( vi );
-				setPixel( x, y, vf );
-			}
-		}
-	}
-
-#if _DEBUG
-	else
-	{
-		printf( "Warning: unable to load image from file: %s\n", qPrintable( filename ) );
-	}
-#endif
+	load( filename );
 }
 
 Image4f::Image4f( int width, int height, const Vector4f& fill ) :
@@ -332,10 +156,10 @@ void Image4f::setPixel( const Vector2i& xy, const Vector4i& pixel )
 	setPixel( xy.x(), xy.y(), pixel );
 }
 
-Reference< Image4f > Image4f::flipUD()
+Image4f Image4f::flipUD() const
 {
-	// TODO: copy a row at a time
-	Reference< Image4f > output = new Image4f( m_width, m_height );
+	// TODO: do this per row
+	Image4f output( m_width, m_height );
 
 	for( int y = 0; y < m_height; ++y )
 	{
@@ -343,7 +167,7 @@ Reference< Image4f > Image4f::flipUD()
 		for( int x = 0; x < m_width; ++x )
 		{
 			Vector4f p = pixel( x, yy );
-			output->setPixel( x, y, p );
+			output.setPixel( x, y, p );
 		}
 	}
 
@@ -399,6 +223,220 @@ QImage Image4f::toQImage()
 	}
 
 	return q;
+}
+
+bool Image4f::load( QString filename )
+{
+	if( filename.endsWith( ".pfm", Qt::CaseInsensitive ) )
+	{
+		return loadPFM( filename );
+	}
+	else if( filename.endsWith( ".pfm4", Qt::CaseInsensitive ) )
+	{
+		return loadPFM4( filename );
+	}
+	else
+	{
+		return loadQImage( filename );
+	}	
+}
+
+bool Image4f::save( QString filename )
+{
+	if( filename.endsWith( ".pfm", Qt::CaseInsensitive ) )
+	{
+		return savePFM( filename );
+	}
+	else if( filename.endsWith( ".pfm4", Qt::CaseInsensitive ) )
+	{
+		return savePFM4( filename );
+	}
+	else if( filename.endsWith( ".txt", Qt::CaseInsensitive ) )
+	{
+		return saveTXT( filename );
+	}
+	else if( filename.endsWith( ".png", Qt::CaseInsensitive ) )
+	{
+		return savePNG( filename );
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Image4f::loadQImage( QString filename )
+{
+	QImage q( filename );
+	if( q.isNull() )
+	{
+		return false;	
+	}
+
+	m_width = q.width();
+	m_height = q.height();
+	m_data = QVector< float >( 4 * m_width * m_height );
+
+	for( int y = 0; y < m_height; ++y )
+	{
+		for( int x = 0; x < m_width; ++x )
+		{
+			QRgb p = q.pixel( x, m_height - y - 1 );
+			Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
+			Vector4f vf = ColorUtils::intToFloat( vi );
+			setPixel( x, y, vf );
+		}
+	}
+
+	return true;
+}
+
+// static
+bool Image4f::loadPFM( QString filename )
+{
+	QFile inputFile( filename );
+
+	// try to open the file in read only mode
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{		
+		return false;
+	}
+
+	QTextStream inputTextStream( &inputFile );
+	inputTextStream.setCodec( "ISO-8859-1" );
+
+	// read header
+	QString qsType;
+	QString qsWidth;
+	QString qsHeight;
+	QString qsScale;	
+
+	inputTextStream >> qsType;
+	if( qsType != "PF" )
+	{
+		inputFile.close();
+		return false;
+	}
+
+	inputTextStream >> qsWidth >> qsHeight >> qsScale;
+
+	int width = qsWidth.toInt();
+	int height = qsHeight.toInt();
+	float scale = qsScale.toFloat();
+
+	if( width < 0 || height < 0 || scale >= 0 )
+	{
+		inputFile.close();
+		return false;
+	}
+
+	// close the text stream
+	inputTextStream.setDevice( NULL );
+	inputFile.close();
+
+	// now reopen it again in binary mode
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{
+		return false;
+	}
+
+	int headerLength = qsType.length() + qsWidth.length() + qsHeight.length() + qsScale.length() + 4;	
+
+	QDataStream inputDataStream( &inputFile );
+	inputDataStream.skipRawData( headerLength );
+
+	QVector< float > data( 4 * width * height, 1.f );
+	int status;
+
+	for( int y = 0; y < height; ++y )
+	{
+		for( int x = 0; x < width; ++x )
+		{
+			int yy = height - y - 1;
+
+			char* bufferPointer = reinterpret_cast< char* >( &( data[ 4 * ( yy * width + x ) ] ) );
+			status = inputDataStream.readRawData( bufferPointer, 3 * sizeof( float ) );
+		}
+	}
+
+	inputFile.close();
+
+	m_width = width;
+	m_height = height;
+	m_data = data;
+	return true;
+}
+
+// static
+bool Image4f::loadPFM4( QString filename )
+{
+	QFile inputFile( filename );
+
+	// try to open the file in read only mode
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{		
+		return false;
+	}
+
+	QTextStream inputTextStream( &inputFile );
+	inputTextStream.setCodec( "ISO-8859-1" );
+
+	// read header
+	QString qsType;
+	QString qsWidth;
+	QString qsHeight;
+	QString qsScale;	
+
+	inputTextStream >> qsType;
+	if( qsType != "PF4" )
+	{
+		inputFile.close();
+		return false;
+	}
+
+	inputTextStream >> qsWidth >> qsHeight >> qsScale;
+
+	int width = qsWidth.toInt();
+	int height = qsHeight.toInt();
+	float scale = qsScale.toFloat();
+
+	if( width < 0 || height < 0 || scale >= 0 )
+	{
+		inputFile.close();
+		return false;
+	}
+
+	// close the text stream
+	inputTextStream.setDevice( NULL );
+	inputFile.close();
+
+	// now reopen it again in binary mode
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{
+		return false;
+	}
+
+	int headerLength = qsType.length() + qsWidth.length() + qsHeight.length() + qsScale.length() + 4;	
+
+	QDataStream inputDataStream( &inputFile );
+	inputDataStream.skipRawData( headerLength );
+
+	QVector< float > data( 4 * width * height );
+	int status;
+
+	for( int y = 0; y < height; ++y )
+	{
+		int yy = height - y - 1;
+
+		char* rowPointer = reinterpret_cast< char* >( &( data[ 4 * yy * width ] ) );
+		status = inputDataStream.readRawData( rowPointer, 4 * width * sizeof( float ) );
+	}
+
+	inputFile.close();
+	m_width = width;
+	m_height = height;
+	m_data = data;
+	return true;
 }
 
 bool Image4f::savePNG( QString filename )
