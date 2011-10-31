@@ -1,5 +1,5 @@
-#ifndef UL_BASIC_TYPES_H
-#define UL_BASIC_TYPES_H
+#ifndef BASIC_TYPES_H
+#define BASIC_TYPES_H
 
 #include <cstdio>
 
@@ -27,4 +27,4 @@ typedef long long			int64;
 typedef unsigned long long	uint64;
 #endif
 
-#endif
+#endif // BASIC_TYPES_H

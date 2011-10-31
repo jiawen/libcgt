@@ -31,7 +31,7 @@ public:
 		return m_arr;
 	}
 
-	int length()
+	int length() const
 	{
 		return m_iLength;
 	}
@@ -39,6 +39,11 @@ public:
 	operator T* ()
 	{
 		return m_arr;
+	}
+
+	T operator [] ( int k ) const
+	{
+		return m_arr[ k ];
 	}
 
 	void destroy()

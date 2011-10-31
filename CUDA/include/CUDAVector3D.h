@@ -15,11 +15,12 @@ struct DeviceArray3D
 	int depth;
 	size_t slicePitch;
 
-	DeviceArray3D( cudaPitchedPtr _pitchedPointer, int _depth ) :
+	__host__
+	DeviceArray3D( cudaPitchedPtr _pitchedPointer, int _width, int _height, int _depth ) :
 
 		pitchedPointer( _pitchedPointer ),
-		width( _pitchedPointer.xsize ),
-		height( _pitchedPointer.ysize ),
+		width( _width ),
+		height( _height ),
 		depth( _depth ),
 		slicePitch( _pitchedPointer.pitch * _pitchedPointer.ysize )
 
@@ -340,7 +341,7 @@ cudaPitchedPtr CUDAVector3D< T >::pitchedPointer() const
 template< typename T >
 DeviceArray3D< T > CUDAVector3D< T >::deviceArray() const
 {
-	return DeviceArray3D< T >( m_pitchedPointer, m_width );
+	return DeviceArray3D< T >( m_pitchedPointer, m_width, m_height, m_depth );
 }
 
 template< typename T >
