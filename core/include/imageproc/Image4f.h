@@ -44,10 +44,10 @@ public:
 	void setPixel( int x, int y, const Vector4i& pixel );
 	void setPixel( const Vector2i& xy, const Vector4i& pixel );
 	
-	Image4f flipUD() const;
-
 	Vector4f bilinearSample( float x, float y ) const;
 	Vector4f bilinearSample( const Vector2f& xy ) const;
+
+	Image4f flipUD() const;
 
 	// Clamps this Image4f to [0,1]
 	// and returns a QImage in [0,255]

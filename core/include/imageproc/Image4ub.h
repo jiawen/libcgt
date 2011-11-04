@@ -16,11 +16,16 @@ class Image4ub
 {
 public:
 
-	Image4ub(); // default constructor creates the null image
+	// default constructor creates the null image
+	Image4ub();
+
+	// Constructs an Image4ub from any format readable by QImage
+	// creates the null image if it's unreadable
 	Image4ub( QString filename );
 
 	Image4ub( int width, int height, const Vector4i& fill = Vector4i( 0, 0, 0, 0 ) );
 	Image4ub( const Vector2i& size, const Vector4i& fill = Vector4i( 0, 0, 0, 0 ) );
+
 	Image4ub( const Image4ub& copy );
 	Image4ub( Reference< Image4ub > copy );
 
@@ -40,10 +45,21 @@ public:
 
 	Vector4i bilinearSample( float x, float y ) const;
 
+	Image4ub flipUD() const;
+
 	QImage toQImage();
-	void savePNG( QString filename );
+
+	// ----- I/O -----
+	bool load( QString filename );
+
+	// Saves this image to depending on filename extension:
+	//   ".png": portable network graphics (PNG) (4-component, 8 bits per channel)
+	//   ".txt": human-readable TXT
+	bool save( QString filename );
 
 private:
+
+	bool saveTXT( QString filename );
 
 	int m_width;
 	int m_height;

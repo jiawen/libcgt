@@ -14,7 +14,6 @@
 // This has been (recently) extended to handle inherited classes (via
 // templated cast operator).  E.g., Reference<Base> b = new Sub();
 
-#include <QHash>
 #include "common/BasicTypes.h"
 
 template< typename T >
@@ -210,17 +209,6 @@ void Reference< T >::destroy()
 		delete m_refcount;
 		delete m_p;
 	}
-}
-
-/////////////////////////////////////////////////////////////////////////
-// Global
-//////////////////////////////////////////////////////////////////////////
-
-template< typename T >
-uint qHash( const Reference< T >& ref )
-{
-	const T* ptr = ref;
-	return qHash( ptr );
 }
 
 #endif // REFERENCE_H

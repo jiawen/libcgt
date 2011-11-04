@@ -211,7 +211,6 @@ char4 float4ToSignedByte4( float4 f )
 	);
 }
 
-// HACK: drops the last component
 __host__ __device__ __inline
 float3 signedByte4ToFloat3( char4 sb )
 {
@@ -222,6 +221,19 @@ float3 signedByte4ToFloat3( char4 sb )
 		rcp * sb.x,
 		rcp * sb.y,
 		rcp * sb.z
+	);
+}
+
+__host__ __device__ __inline
+float3 unsignedByte4ToFloat3( uchar4 b )
+{
+	const float rcp = 1.f / 255.f;
+
+	return make_float3
+	(
+		rcp * b.x,
+		rcp * b.y,
+		rcp * b.z
 	);
 }
 
@@ -321,6 +333,12 @@ int convertToSignedInt( ushort x )
 	r = ( y ^ m ) - m;
 
 	return r;
+}
+
+__host__ __device__ __inline
+float3 getXYZ( float4 f )
+{
+	return make_float3( f.x, f.y, f.z );
 }
 
 #endif // MATH_UTIL_H

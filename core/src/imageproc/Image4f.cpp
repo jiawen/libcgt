@@ -158,7 +158,7 @@ void Image4f::setPixel( const Vector2i& xy, const Vector4i& pixel )
 
 Image4f Image4f::flipUD() const
 {
-	// TODO: do this per row
+	// TODO: do memcpy per row
 	Image4f output( m_width, m_height );
 
 	for( int y = 0; y < m_height; ++y )

@@ -1,5 +1,8 @@
 #include "imageproc/Image4ub.h"
 
+#include <QFile>
+#include <QTextStream>
+
 #include <math/Arithmetic.h>
 #include <math/MathUtils.h>
 #include <color/ColorUtils.h>
@@ -27,23 +30,7 @@ m_height( 0 ),
 m_data( NULL )
 
 {
-	QImage q( filename );
-	if( !( q.isNull() ) )
-	{
-		m_width = q.width();
-		m_height = q.height();
-		m_data = QVector< quint8 >( 4 * m_width * m_height );
-
-		for( int y = 0; y < m_height; ++y )
-		{
-			for( int x = 0; x < m_width; ++x )
-			{
-				QRgb p = q.pixel( x, m_height - y - 1 );
-				Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
-				setPixel( x, y, vi );
-			}
-		}
-	}
+	load( filename );	
 }
 
 Image4ub::Image4ub( int width, int height, const Vector4i& fill ) :
@@ -190,6 +177,24 @@ Vector4i Image4ub::bilinearSample( float x, float y ) const
 	return ColorUtils::floatToInt( vf );
 }
 
+Image4ub Image4ub::flipUD() const
+{
+	// TODO: do memcpy per row
+	Image4ub output( m_width, m_height );
+
+	for( int y = 0; y < m_height; ++y )
+	{
+		int yy = m_height - y - 1;
+		for( int x = 0; x < m_width; ++x )
+		{
+			Vector4i p = pixel( x, yy );
+			output.setPixel( x, y, p );
+		}
+	}
+
+	return output;
+}
+
 QImage Image4ub::toQImage()
 {
 	QImage q( m_width, m_height, QImage::Format_ARGB32 );
@@ -207,7 +212,77 @@ QImage Image4ub::toQImage()
 	return q;
 }
 
-void Image4ub::savePNG( QString filename )
+bool Image4ub::load( QString filename )
 {
-	toQImage().save( filename, "PNG" );
+	QImage q( filename );
+	if( q.isNull() )
+	{
+		return false;
+	}
+
+	m_width = q.width();
+	m_height = q.height();
+	m_data = QVector< quint8 >( 4 * m_width * m_height );
+
+	for( int y = 0; y < m_height; ++y )
+	{
+		for( int x = 0; x < m_width; ++x )
+		{
+			QRgb p = q.pixel( x, m_height - y - 1 );
+			Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
+			setPixel( x, y, vi );
+		}
+	}
+	return true;
+}
+
+bool Image4ub::save( QString filename )
+{
+	if( filename.endsWith( ".txt", Qt::CaseInsensitive ) )
+	{
+		return saveTXT( filename );
+	}
+	else if( filename.endsWith( ".png", Qt::CaseInsensitive ) )
+	{
+		return toQImage().save( filename, "PNG" );
+	}
+}
+
+bool Image4ub::saveTXT( QString filename )
+{
+	QFile outputFile( filename );
+
+	// try to open the file in write only mode
+	if( !( outputFile.open( QIODevice::WriteOnly ) ) )
+	{
+		return false;
+	}
+
+	QTextStream outputTextStream( &outputFile );
+	outputTextStream.setCodec( "UTF-8" );
+
+	outputTextStream << "float4 image: width = " << m_width << ", height = " << m_height << "\n";
+	outputTextStream << "[index] (x,y_dx) ((x,y_gl)): r g b a\n";
+
+	int k = 0;
+	for( int y = 0; y < m_height; ++y )
+	{
+		int yy = m_height - y - 1;
+
+		for( int x = 0; x < m_width; ++x )
+		{
+			quint8 r = m_data[ 4 * k ];
+			quint8 g = m_data[ 4 * k + 1 ];
+			quint8 b = m_data[ 4 * k + 2 ];
+			quint8 a = m_data[ 4 * k + 3 ];
+
+			outputTextStream << "[" << k << "] (" << x << "," << y << ") ((" << x << "," << yy << ")): "
+				<< r << " " << g << " " << b << " " << a << "\n";
+
+			++k;
+		}
+	}
+
+	outputFile.close();
+	return true;
 }
