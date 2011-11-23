@@ -21,6 +21,9 @@ struct DeviceVector2D
 
 	__device__
 	T& operator () ( int2 xy );
+
+	__device__
+	T& operator () ( uint2 xy );
 };
 
 template< typename T >
@@ -53,6 +56,12 @@ T& DeviceVector2D< T >::operator () ( int x, int y )
 
 template< typename T >
 T& DeviceVector2D< T >::operator () ( int2 xy )
+{
+	return getRowPointer( xy.y )[ xy.x ];
+}
+
+template< typename T >
+T& DeviceVector2D< T >::operator () ( uint2 xy )
 {
 	return getRowPointer( xy.y )[ xy.x ];
 }

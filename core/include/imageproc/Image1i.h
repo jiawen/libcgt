@@ -38,9 +38,10 @@ public:
 
 	qint32 bilinearSample( float x, float y ) const;
 
-	// returns a 4-channel QImage
-	// with rgb = value and alpha = 255
+	// Returns a 4-component QImage
+	// with RGB clamped to [0,255] and alpha = 255
 	QImage toQImage();
+
 	void savePNG( QString filename );
 	bool saveTXT( QString filename );
 

@@ -44,9 +44,9 @@ Reference< Image4f > Patterns::createCheckerboard( int width, int height, int ch
 Reference< Image1f > Patterns::createRandom( int width, int height, const Random& random )
 {
 	Reference< Image1f > im = new Image1f( width, height );
-	FloatArray pixels = im->pixels();
+	float* pixels = im->pixels();
 
-	for( uint i = 0; i < pixels.length(); ++i )
+	for( int i = 0; i < width * height; ++i )
 	{
 		pixels[ i ] = random.nextFloat();
 	}

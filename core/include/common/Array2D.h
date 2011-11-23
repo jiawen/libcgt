@@ -26,6 +26,10 @@ public:
 	void fill( const T& val );
 	void resize( int width, int height );
 
+	// this <-- other
+	// this array is automatically resized if sizes are different
+	void copy( const Array2D& other );
+
 	T* getRowPointer( int y ) const;
 
 	operator T* () const;
@@ -154,14 +158,28 @@ void Array2D< T >::fill( const T& val )
 template< typename T >
 void Array2D< T >::resize( int width, int height )
 {
-	if( width * height != m_width * m_height )
+	// if either dimension is different...
+	if( m_width != width ||
+		m_height != height )
 	{
-		delete[] m_array;
-		m_array = new T[ width * height ];
+		// check if the total number of elements it the same
+		// if it is, don't bother
+		if( width * height != m_width * m_height )
+		{
+			delete[] m_array;
+			m_array = new T[ width * height ];
+		}
 	}
 
 	m_width = width;
 	m_height = height;
+}
+
+template< typename T >
+void Array2D< T >::copy( const Array2D& other )
+{
+	resize( other.m_width, other.m_height );
+	memcpy( m_array, other.m_array, m_width * m_height * sizeof( T ) );
 }
 
 template< typename T >

@@ -11,12 +11,38 @@ typedef signed char			sbyte;
 typedef unsigned char		ubyte;
 #endif
 
+#ifndef ushort
+typedef unsigned short		ushort;
+#endif
+
 #ifndef uint
 typedef unsigned int		uint;
 #endif
 
-#ifndef ushort
-typedef unsigned short		ushort;
+// int 8, 16, 32, 64
+
+#ifndef int8
+typedef signed char			int8;
+#endif
+
+#ifndef uint8
+typedef unsigned char		uint8;
+#endif
+
+#ifndef int16
+typedef short				int16;
+#endif
+
+#ifndef uint16
+typedef unsigned short		uint16;
+#endif
+
+#ifndef int32
+typedef int					int32;
+#endif
+
+#ifndef uint32
+typedef unsigned int		uint32;
 #endif
 
 #ifndef int64

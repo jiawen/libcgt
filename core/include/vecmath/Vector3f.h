@@ -76,9 +76,9 @@ public:
     {
         return Vector3f
         (
-        v0.y() * v1.z() - v0.z() * v1.y(),
-        v0.z() * v1.x() - v0.x() * v1.z(),
-        v0.x() * v1.y() - v0.y() * v1.x()
+			v0.y() * v1.z() - v0.z() * v1.y(),
+			v0.z() * v1.x() - v0.x() * v1.z(),
+			v0.x() * v1.y() - v0.y() * v1.x()
         );
     }
 
@@ -89,9 +89,10 @@ public:
 	// catmull-rom interpolation
 	static Vector3f cubicInterpolate( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2, const Vector3f& p3, float t );
 
-	inline Vector3f& operator+=( const Vector3f& );
-	inline Vector3f& operator-=( const Vector3f& );
-    inline Vector3f& operator*=( float );
+	inline Vector3f& operator += ( const Vector3f& v );
+	inline Vector3f& operator -= ( const Vector3f& v );
+    inline Vector3f& operator *= ( float f );
+	inline Vector3f& operator /= ( float f );
 
 private:
 
@@ -99,42 +100,53 @@ private:
 
 };
 
-inline Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f(v0[0] + v1[0], v0[1] + v1[1], v0[2] + v1[2]); }
-inline Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f(v0[0] - v1[0], v0[1] - v1[1], v0[2] - v1[2]); }
-inline Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f(v0[0] * v1[0], v0[1] * v1[1], v0[2] * v1[2]); }
+inline Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f( v0[0] + v1[0], v0[1] + v1[1], v0[2] + v1[2] ); }
+inline Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f( v0[0] - v1[0], v0[1] - v1[1], v0[2] - v1[2] ); }
+inline Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f( v0[0] * v1[0], v0[1] * v1[1], v0[2] * v1[2] ); }
 
 // component-wise division
 // TODO: do it for the other classes
-inline Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f(v0[0] / v1[0], v0[1] / v1[1], v0[2] / v1[2]); }
-inline Vector3f operator / ( const Vector3f& v, float f ) { return Vector3f(v[0] / f, v[1] / f, v[2] / f); }
+inline Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 ) { return Vector3f( v0[0] / v1[0], v0[1] / v1[1], v0[2] / v1[2] ); }
+inline Vector3f operator / ( const Vector3f& v, float f ) { return Vector3f( v[0] / f, v[1] / f, v[2] / f ); }
 
-inline Vector3f operator - ( const Vector3f& v ) { return Vector3f(-v[0], -v[1], -v[2]); }
-inline Vector3f operator * ( float f, const Vector3f& v ) { return Vector3f(v[0] * f, v[1] * f, v[2] * f); }
-inline Vector3f operator * ( const Vector3f& v, float f ) { return Vector3f(v[0] * f, v[1] * f, v[2] * f); }
+inline Vector3f operator - ( const Vector3f& v ) { return Vector3f( -v[0], -v[1], -v[2] ); }
+inline Vector3f operator * ( float f, const Vector3f& v ) { return Vector3f( v[0] * f, v[1] * f, v[2] * f ); }
+inline Vector3f operator * ( const Vector3f& v, float f ) { return Vector3f( v[0] * f, v[1] * f, v[2] * f ); }
 
-inline Vector3f& Vector3f::operator+=( const Vector3f& addend )
+inline Vector3f& Vector3f::operator += ( const Vector3f& v )
 {
-	m_elements[ 0 ] += addend.m_elements[ 0 ];
-	m_elements[ 1 ] += addend.m_elements[ 1 ];
-	m_elements[ 2 ] += addend.m_elements[ 2 ];
+	m_elements[ 0 ] += v.m_elements[ 0 ];
+	m_elements[ 1 ] += v.m_elements[ 1 ];
+	m_elements[ 2 ] += v.m_elements[ 2 ];
+
 	return *this;
 }
 
-inline Vector3f& Vector3f::operator-=( const Vector3f& addend )
+inline Vector3f& Vector3f::operator -= ( const Vector3f& v )
 {
-	m_elements[ 0 ] -= addend.m_elements[ 0 ];
-	m_elements[ 1 ] -= addend.m_elements[ 1 ];
-	m_elements[ 2 ] -= addend.m_elements[ 2 ];
+	m_elements[ 0 ] -= v.m_elements[ 0 ];
+	m_elements[ 1 ] -= v.m_elements[ 1 ];
+	m_elements[ 2 ] -= v.m_elements[ 2 ];
+
 	return *this;
 }
 
-inline Vector3f& Vector3f::operator*=( float s )
+inline Vector3f& Vector3f::operator *= ( float f )
 {
-	m_elements[ 0 ] *= s;
-	m_elements[ 1 ] *= s;
-	m_elements[ 2 ] *= s;
+	m_elements[ 0 ] *= f;
+	m_elements[ 1 ] *= f;
+	m_elements[ 2 ] *= f;
+
 	return *this;
 }
 
+inline Vector3f& Vector3f::operator /= ( float f )
+{
+	m_elements[ 0 ] /= f;
+	m_elements[ 1 ] /= f;
+	m_elements[ 2 ] /= f;
+
+	return *this;
+}
 
 #endif // VECTOR_3F_H

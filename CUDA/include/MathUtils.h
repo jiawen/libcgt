@@ -6,6 +6,15 @@
 #define MAX_UNSIGNED_SHORT ( 1 << 16 )
 #define SUB2IND( x, y, w ) ( ( y ) * ( w ) + ( x ) )
 
+template< typename T >
+__device__ __inline
+void swap( T& x, T& y )
+{
+	T tmp = x;
+	x = y;
+	y = tmp;
+}
+
 __host__ __device__ __inline
 bool isEven( int x )
 {	
@@ -195,7 +204,7 @@ float4 signedByte4ToFloat4( char4 sb )
 	);
 }
 
-// f is a flaot in [-1,1]
+// f is a float in [-1,1]
 // convert it to a signed byte in [-127,127]
 __host__ __device__ __inline
 char4 float4ToSignedByte4( float4 f )
@@ -208,6 +217,22 @@ char4 float4ToSignedByte4( float4 f )
 		static_cast< sbyte >( s * f.y ),
 		static_cast< sbyte >( s * f.z ),
 		static_cast< sbyte >( s * f.w )
+	);
+}
+
+// f is a float in [0,1]
+// convert it to a unsigned byte in [0,255]
+__host__ __device__ __inline
+uchar4 float4ToUnignedByte4( float4 f )
+{
+	const float s = 255.f;
+
+	return make_uchar4
+	(
+		static_cast< ubyte >( s * f.x ),
+		static_cast< ubyte >( s * f.y ),
+		static_cast< ubyte >( s * f.z ),
+		static_cast< ubyte >( s * f.w )
 	);
 }
 
@@ -224,6 +249,17 @@ float3 signedByte4ToFloat3( char4 sb )
 	);
 }
 
+// converts a byte in [0,255] to
+// a float in [0,1]
+__host__ __device__ __inline
+float unsignedByteToFloatNormalized( ubyte b )
+{
+	const float rcp = 1.f / 255.f;
+	return rcp * b;
+}
+
+// converts a byte in [0,255] to a float in [0,1],
+// dropping the last component
 __host__ __device__ __inline
 float3 unsignedByte4ToFloat3( uchar4 b )
 {
@@ -236,16 +272,6 @@ float3 unsignedByte4ToFloat3( uchar4 b )
 		rcp * b.z
 	);
 }
-
-#if 0
-// converts a byte in [0,255] to
-// a float in [0,1]
-__host__ __device__ __inline
-float unsignedByteToFloatNormalized( ubyte b )
-{
-	return b / 255.f;
-}
-#endif
 
 __host__ __device__ __inline
 bool isPowerOfTwo( int x )
@@ -333,12 +359,6 @@ int convertToSignedInt( ushort x )
 	r = ( y ^ m ) - m;
 
 	return r;
-}
-
-__host__ __device__ __inline
-float3 getXYZ( float4 f )
-{
-	return make_float3( f.x, f.y, f.z );
 }
 
 #endif // MATH_UTIL_H

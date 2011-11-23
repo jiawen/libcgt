@@ -7,6 +7,8 @@ class Vector3f;
 class Vector4i;
 class Vector4d;
 
+// TODO: experiment with SSE?
+// __declspec( align( 16 ) )
 class Vector4f
 {
 public:
@@ -90,19 +92,77 @@ public:
 	static float dot( const Vector4f& v0, const Vector4f& v1 );
 	static Vector4f lerp( const Vector4f& v0, const Vector4f& v1, float alpha );
 
+	inline Vector4f& operator += ( const Vector4f& v );
+	inline Vector4f& operator -= ( const Vector4f& v );
+    inline Vector4f& operator *= ( float f );
+	inline Vector4f& operator /= ( float f );
+
 private:
 
 	float m_elements[ 4 ];
 
 };
 
-Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 );
-Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 );
-Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 );
-Vector4f operator / ( const Vector4f& v0, const Vector4f& v1 );
+inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
+}
 
-Vector4f operator - ( const Vector4f& v );
-Vector4f operator * ( float f, const Vector4f& v );
-Vector4f operator * ( const Vector4f& v, float f );
+inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
+}
+
+inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z(), v0.w() * v1.w() );
+}
+
+inline Vector4f operator - ( const Vector4f& v ) { return Vector4f( -v[0], -v[1], -v[2] , -v[3] ); }
+inline Vector4f operator * ( float f, const Vector4f& v ) { return Vector4f( v[0] * f, v[1] * f, v[2] * f, v[3] * f ); }
+inline Vector4f operator * ( const Vector4f& v, float f ) { return Vector4f( v[0] * f, v[1] * f, v[2] * f, v[3] * f ); }
+
+inline Vector4f operator / ( const Vector4f& v0, const Vector4f& v1 ) { return Vector4f( v0[0] / v1[0], v0[1] / v1[1], v0[2] / v1[2], v0[3] / v1[3] ); }
+inline Vector4f operator / ( const Vector4f& v, float f ) { return Vector4f( v[0] / f, v[1] / f, v[2] / f, v[3] / f ); }
+
+inline Vector4f& Vector4f::operator += ( const Vector4f& v )
+{
+	m_elements[ 0 ] += v.m_elements[ 0 ];
+	m_elements[ 1 ] += v.m_elements[ 1 ];
+	m_elements[ 2 ] += v.m_elements[ 2 ];
+	m_elements[ 3 ] += v.m_elements[ 3 ];
+
+	return *this;
+}
+
+inline Vector4f& Vector4f::operator -= ( const Vector4f& v )
+{
+	m_elements[ 0 ] -= v.m_elements[ 0 ];
+	m_elements[ 1 ] -= v.m_elements[ 1 ];
+	m_elements[ 2 ] -= v.m_elements[ 2 ];
+	m_elements[ 3 ] -= v.m_elements[ 3 ];
+
+	return *this;
+}
+
+inline Vector4f& Vector4f::operator *= ( float f )
+{
+	m_elements[ 0 ] *= f;
+	m_elements[ 1 ] *= f;
+	m_elements[ 2 ] *= f;
+	m_elements[ 3 ] *= f;
+
+	return *this;
+}
+
+inline Vector4f& Vector4f::operator /= ( float f )
+{
+	m_elements[ 0 ] /= f;
+	m_elements[ 1 ] /= f;
+	m_elements[ 2 ] /= f;
+	m_elements[ 3 ] /= f;
+
+	return *this;
+}
 
 #endif // VECTOR_4F_H

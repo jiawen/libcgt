@@ -246,6 +246,7 @@ bool Image4ub::save( QString filename )
 	{
 		return toQImage().save( filename, "PNG" );
 	}
+	return false;
 }
 
 bool Image4ub::saveTXT( QString filename )
