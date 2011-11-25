@@ -43,10 +43,10 @@ Image4f::Image4f( int width, int height, const Vector4f& fill ) :
 	int nPixels = m_width * m_height;
 	for( int i = 0; i < nPixels; ++i )
 	{
-		m_data[ 4 * i ] = fill.x();
-		m_data[ 4 * i + 1 ] = fill.y();
-		m_data[ 4 * i + 2 ] = fill.z();
-		m_data[ 4 * i + 3 ] = fill.w();
+		m_data[ 4 * i ] = fill.x;
+		m_data[ 4 * i + 1 ] = fill.y;
+		m_data[ 4 * i + 2 ] = fill.z;
+		m_data[ 4 * i + 3 ] = fill.w;
 	}
 }
 
@@ -60,10 +60,10 @@ Image4f::Image4f( const Vector2i& size, const Vector4f& fill ) :
 	int nPixels = m_width * m_height;
 	for( int i = 0; i < nPixels; ++i )
 	{
-		m_data[ 4 * i ] = fill.x();
-		m_data[ 4 * i + 1 ] = fill.y();
-		m_data[ 4 * i + 2 ] = fill.z();
-		m_data[ 4 * i + 3 ] = fill.w();
+		m_data[ 4 * i ] = fill.x;
+		m_data[ 4 * i + 1 ] = fill.y;
+		m_data[ 4 * i + 2 ] = fill.z;
+		m_data[ 4 * i + 3 ] = fill.w;
 	}
 }
 

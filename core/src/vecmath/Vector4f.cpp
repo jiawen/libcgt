@@ -140,46 +140,6 @@ float& Vector4f::operator [] ( int i )
 	return m_elements[ i % 4 ];
 }
 
-float& Vector4f::x()
-{
-	return m_elements[ 0 ];
-}
-
-float& Vector4f::y()
-{
-	return m_elements[ 1 ];
-}
-
-float& Vector4f::z()
-{
-	return m_elements[ 2 ];
-}
-
-float& Vector4f::w()
-{
-	return m_elements[ 3 ];
-}
-
-float Vector4f::x() const
-{
-	return m_elements[0];
-}
-
-float Vector4f::y() const
-{
-	return m_elements[1];
-}
-
-float Vector4f::z() const
-{
-	return m_elements[2];
-}
-
-float Vector4f::w() const
-{
-	return m_elements[3];
-}
-
 Vector2f Vector4f::xy() const
 {
 	return Vector2f( m_elements[0], m_elements[1] );
@@ -338,7 +298,7 @@ void Vector4f::print() const
 // static
 float Vector4f::dot( const Vector4f& v0, const Vector4f& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y() + v0.z() * v1.z() + v0.w() * v1.w();
+	return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z + v0.w * v1.w;
 }
 
 // static

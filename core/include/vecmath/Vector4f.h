@@ -44,17 +44,7 @@ public:
 	// returns the ith element (mod 4)
 	const float& operator [] ( int i ) const;
 	float& operator [] ( int i );
-
-	float& x();
-	float& y();
-	float& z();
-	float& w();
-
-	float x() const;
-	float y() const;
-	float z() const;
-	float w() const;
-
+	
 	Vector2f xy() const;
 	Vector2f yz() const;
 	Vector2f zw() const;
@@ -98,10 +88,17 @@ public:
     inline Vector4f& operator *= ( float f );
 	inline Vector4f& operator /= ( float f );
 
-private:
-
-	float m_elements[ 4 ];
-
+	union
+	{
+		struct
+		{
+			float x;
+			float y;
+			float z;
+			float w;
+		};
+		float m_elements[ 4 ];
+	};
 };
 
 inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
@@ -132,7 +129,7 @@ inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
 
 inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z(), v0.w() * v1.w() );
+	return Vector4f( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
 }
 
 inline Vector4f operator - ( const Vector4f& v ) { return Vector4f( -v[0], -v[1], -v[2] , -v[3] ); }

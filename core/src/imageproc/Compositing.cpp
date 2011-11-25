@@ -25,8 +25,8 @@ Reference< Image4f > Compositing::compositeOver( Reference< Image4f > foreground
 			Vector4f f = foreground->pixel( x, y );
 			Vector4f b = background->pixel( x, y );
 
-			float fa = f.w();
-			float ba = b.w();
+			float fa = f.w;
+			float ba = b.w;
 
 			Vector3f compositeColor = fa * f.xyz() + ( 1.f - fa ) * ( b.xyz() );
 			float compositeAlpha = fa + ba * ( 1 - fa );
@@ -171,10 +171,10 @@ Vector4f Compositing::extractBackgroundColor( const Vector4f& composite, const V
 
 	Vector4f bRGBA;
 
-	float fa = foreground.w();
+	float fa = foreground.w;
 	if( fa < 1.f )
 	{
-		float ca = composite.w();
+		float ca = composite.w;
 
 		Vector3f bRGB = ( cRGB - fa * fRGB ) / ( 1.f - fa );
 		float ba = ( ca - fa ) / ( 1.f - fa );

@@ -99,10 +99,10 @@ Vector4f Matrix4f::getRow( int i ) const
 
 void Matrix4f::setRow( int i, const Vector4f& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 4 ] = v.y();
-	m_elements[ i + 8 ] = v.z();
-	m_elements[ i + 12 ] = v.w();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 4 ] = v.y;
+	m_elements[ i + 8 ] = v.z;
+	m_elements[ i + 12 ] = v.w;
 }
 
 Vector4f Matrix4f::getCol( int j ) const
@@ -122,10 +122,10 @@ void Matrix4f::setCol( int j, const Vector4f& v )
 {
 	int colStart = 4 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
-	m_elements[ colStart + 2 ] = v.z();
-	m_elements[ colStart + 3 ] = v.w();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
+	m_elements[ colStart + 2 ] = v.z;
+	m_elements[ colStart + 3 ] = v.w;
 }
 
 Matrix2f Matrix4f::getSubmatrix2x2( int i0, int j0 ) const

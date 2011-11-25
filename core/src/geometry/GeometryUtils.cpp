@@ -380,7 +380,7 @@ bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vec
 						  Vector3f& rIntersectionPoint )
 {
 	Vector3f planeNormal = crPlane.xyz();
-	float planeD = crPlane.w();
+	float planeD = crPlane.w;
 
 	float Vd = Vector3f::dot( planeNormal, crRayDirection );
 	
