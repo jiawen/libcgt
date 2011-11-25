@@ -21,14 +21,6 @@ public:
 	const int& operator [] ( int i ) const;
 	int& operator [] ( int i );
 
-	int& x();
-	int& y();
-	int& z();
-
-	int x() const;
-	int y() const;
-	int z() const;
-
 	Vector2i xy() const;
 	Vector2i xz() const;
 	Vector2i yz() const;
@@ -55,9 +47,16 @@ public:
 
 	static Vector3f lerp( const Vector3i& v0, const Vector3i& v1, float alpha );
 
-private:
-
-	int m_elements[ 3 ];
+	union
+	{
+		struct
+		{
+			int x;
+			int y;
+			int z;
+		};
+		int m_elements[ 3 ];
+	};
 
 };
 

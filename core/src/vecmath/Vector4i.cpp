@@ -64,18 +64,18 @@ Vector4i::Vector4i( const Vector2i& xy, const Vector2i& zw )
 
 Vector4i::Vector4i( const Vector3i& xyz, int w )
 {
-	m_elements[0] = xyz.x();
-	m_elements[1] = xyz.y();
-	m_elements[2] = xyz.z();
+	m_elements[0] = xyz.x;
+	m_elements[1] = xyz.y;
+	m_elements[2] = xyz.z;
 	m_elements[3] = w;
 }
 
 Vector4i::Vector4i( int x, const Vector3i& yzw )
 {
 	m_elements[0] = x;
-	m_elements[1] = yzw.x();
-	m_elements[2] = yzw.y();
-	m_elements[3] = yzw.z();
+	m_elements[1] = yzw.x;
+	m_elements[2] = yzw.y;
+	m_elements[3] = yzw.z;
 }
 
 Vector4i::Vector4i( const Vector4i& rv )

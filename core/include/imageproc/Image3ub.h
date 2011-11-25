@@ -19,8 +19,8 @@ public:
 	Image3ub(); // default constructor creates the null image
 	Image3ub( QString filename );
 
-	Image3ub( int width, int height, const Vector3i& fill = Vector3i( 0, 0, 0 ) );
-	Image3ub( const Vector2i& size, const Vector3i& fill = Vector3i( 0, 0, 0 ) );
+	Image3ub( int width, int height, const Vector3i& fillValue = Vector3i( 0, 0, 0 ) );
+	Image3ub( const Vector2i& size, const Vector3i& fillValue = Vector3i( 0, 0, 0 ) );
 	Image3ub( const Image3ub& copy );
 	Image3ub( Reference< Image3ub > copy );
 
@@ -40,6 +40,8 @@ public:
 	void setPixel( const Vector2i& xy, const Vector3i& pixel ); // values > 255 are saturated
 
 	Vector3i bilinearSample( int x, int y ) const;
+
+	void fill( const Vector3i& fill );
 
 	// returns a 4-channel QImage with alpha = 255
 	QImage toQImage();

@@ -67,36 +67,6 @@ int& Vector3i::operator [] ( int i )
 	return m_elements[ i % 3 ];
 }
 
-int& Vector3i::x()
-{
-	return m_elements[ 0 ];
-}
-
-int& Vector3i::y()
-{
-	return m_elements[ 1 ];
-}
-
-int& Vector3i::z()
-{
-	return m_elements[ 2 ];
-}
-
-int Vector3i::x() const
-{
-	return m_elements[0];
-}
-
-int Vector3i::y() const
-{
-	return m_elements[1];
-}
-
-int Vector3i::z() const
-{
-	return m_elements[2];
-}
-
 Vector2i Vector3i::xy() const
 {
 	return Vector2i( m_elements[0], m_elements[1] );
@@ -172,7 +142,7 @@ void Vector3i::print() const
 // static
 int Vector3i::dot( const Vector3i& v0, const Vector3i& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y() + v0.z() * v1.z();
+	return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z;
 }
 
 // static
@@ -180,9 +150,9 @@ Vector3i Vector3i::cross( const Vector3i& v0, const Vector3i& v1 )
 {
 	return Vector3i
 	(
-		v0.y() * v1.z() - v0.z() * v1.y(),
-		v0.z() * v1.x() - v0.x() * v1.z(),
-		v0.x() * v1.y() - v0.y() * v1.x()
+		v0.y * v1.z - v0.z * v1.y,
+		v0.z * v1.x - v0.x * v1.z,
+		v0.x * v1.y - v0.y * v1.x
 	);
 }
 
@@ -200,9 +170,9 @@ bool operator == ( const Vector3i& v0, const Vector3i& v1 )
 {
 	return
 	(
-		v0.x() == v1.x() &&
-		v0.y() == v1.y() &&
-		v0.z() == v1.z()
+		v0.x == v1.x &&
+		v0.y == v1.y &&
+		v0.z == v1.z
 	);
 }
 
@@ -213,45 +183,45 @@ bool operator != ( const Vector3i& v0, const Vector3i& v1 )
 
 Vector3i operator + ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return Vector3i( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z() );
+	return Vector3i( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z );
 }
 
 Vector3i operator - ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return Vector3i( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z() );
+	return Vector3i( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z );
 }
 
 Vector3i operator * ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return Vector3i( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z() );
+	return Vector3i( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z );
 }
 
 Vector3i operator - ( const Vector3i& v )
 {
-	return Vector3i( -v.x(), -v.y(), -v.z() );
+	return Vector3i( -v.x, -v.y, -v.z );
 }
 
 Vector3i operator * ( int c, const Vector3i& v )
 {
-	return Vector3i( c * v.x(), c * v.y(), c * v.z() );
+	return Vector3i( c * v.x, c * v.y, c * v.z );
 }
 
 Vector3i operator * ( const Vector3i& v, int c )
 {
-	return Vector3i( c * v.x(), c * v.y(), c * v.z() );
+	return Vector3i( c * v.x, c * v.y, c * v.z );
 }
 
 Vector3f operator * ( float f, const Vector3i& v )
 {
-	return Vector3f( f * v.x(), f * v.y(), f * v.z() );
+	return Vector3f( f * v.x, f * v.y, f * v.z );
 }
 
 Vector3f operator * ( const Vector3i& v, float f )
 {
-	return Vector3f( f * v.x(), f * v.y(), f * v.z() );
+	return Vector3f( f * v.x, f * v.y, f * v.z );
 }
 
 Vector3i operator / ( const Vector3i& v, int c )
 {
-	return Vector3i( v.x() / c, v.y() / c, v.z() / c );
+	return Vector3i( v.x / c, v.y / c, v.z / c );
 }

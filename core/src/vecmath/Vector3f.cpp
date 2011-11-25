@@ -46,9 +46,9 @@ Vector3f::Vector3f( const Vector3d& rv )
 
 Vector3f::Vector3f( const Vector3i& rv )
 {
-	m_elements[0] = static_cast< float >( rv.x() );
-	m_elements[1] = static_cast< float >( rv.y() );
-	m_elements[2] = static_cast< float >( rv.z() );
+	m_elements[0] = static_cast< float >( rv.x );
+	m_elements[1] = static_cast< float >( rv.y );
+	m_elements[2] = static_cast< float >( rv.z );
 }
 
 Vector3f& Vector3f::operator = ( const Vector3d& rv )
@@ -62,9 +62,9 @@ Vector3f& Vector3f::operator = ( const Vector3d& rv )
 
 Vector3f& Vector3f::operator = ( const Vector3i& rv )
 {
-	m_elements[ 0 ] = static_cast< float >( rv.x() );
-	m_elements[ 1 ] = static_cast< float >( rv.y() );
-	m_elements[ 2 ] = static_cast< float >( rv.z() );
+	m_elements[ 0 ] = static_cast< float >( rv.x );
+	m_elements[ 1 ] = static_cast< float >( rv.y );
+	m_elements[ 2 ] = static_cast< float >( rv.z );
 
 	return *this;
 }

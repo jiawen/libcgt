@@ -46,36 +46,24 @@ Image3ub::Image3ub( QString filename ) :
 	}
 }
 
-Image3ub::Image3ub( int width, int height, const Vector3i& fill ) :
+Image3ub::Image3ub( int width, int height, const Vector3i& fillValue ) :
 
 	m_width( width ),
 	m_height( height ),
 	m_data( 3 * m_width * m_height, 0 )
 
 {
-	int nPixels = m_width * m_height;
-	for( int i = 0; i < nPixels; i += 3 )
-	{
-		m_data[ i ] = ColorUtils::saturate( fill.x() );
-		m_data[ i + 1 ] = ColorUtils::saturate( fill.y() );
-		m_data[ i + 2 ] = ColorUtils::saturate( fill.z() );
-	}
+	fill( fillValue );
 }
 
-Image3ub::Image3ub( const Vector2i& size, const Vector3i& fill ) :
+Image3ub::Image3ub( const Vector2i& size, const Vector3i& fillValue ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
 	m_data( 3 * m_width * m_height, 0 )
 
 {
-	int nPixels = m_width * m_height;
-	for( int i = 0; i < nPixels; i += 3 )
-	{
-		m_data[ i ] = ColorUtils::saturate( fill.x() );
-		m_data[ i + 1 ] = ColorUtils::saturate( fill.y() );
-		m_data[ i + 2 ] = ColorUtils::saturate( fill.z() );
-	}
+	fill( fillValue );
 }
 
 Image3ub::Image3ub( const Image3ub& copy ) :
@@ -186,6 +174,17 @@ Vector3i Image3ub::bilinearSample( int x, int y ) const
 	return ColorUtils::floatToInt( vf );
 }
 
+void Image3ub::fill( const Vector3i& fill )
+{
+	int nPixels = m_width * m_height;
+	for( int i = 0; i < nPixels; i += 3 )
+	{
+		m_data[ i ] = ColorUtils::saturate( fill.x );
+		m_data[ i + 1 ] = ColorUtils::saturate( fill.y );
+		m_data[ i + 2 ] = ColorUtils::saturate( fill.z );
+	}
+}
+
 QImage Image3ub::toQImage()
 {
 	QImage q( m_width, m_height, QImage::Format_ARGB32 );
@@ -195,7 +194,7 @@ QImage Image3ub::toQImage()
 		for( int x = 0; x < m_width; ++x )
 		{
 			Vector3i pi = pixel( x, y );
-			QRgb rgba = qRgba( pi.x(), pi.y(), pi.z(), 255 );
+			QRgb rgba = qRgba( pi.x, pi.y, pi.z, 255 );
 			q.setPixel( x, m_height - y - 1, rgba );
 		}
 	}
