@@ -16,8 +16,7 @@
 Image4f::Image4f() :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 
@@ -26,8 +25,7 @@ Image4f::Image4f() :
 Image4f::Image4f( QString filename ) :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 	load( filename );
@@ -37,7 +35,7 @@ Image4f::Image4f( int width, int height, const Vector4f& fill ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_data( 4 * m_width * m_height, 0 )
+	m_data( 4 * m_width, m_height )
 
 {
 	int nPixels = m_width * m_height;
@@ -54,7 +52,7 @@ Image4f::Image4f( const Vector2i& size, const Vector4f& fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( 4 * m_width * m_height, 0 )
+	m_data( 4 * m_width, m_height )
 
 {
 	int nPixels = m_width * m_height;
@@ -109,12 +107,12 @@ Vector2i Image4f::size() const
 
 float* Image4f::pixels()
 {
-	return m_data.data();
+	return m_data.getRowPointer( 0 );
 }
 
 Vector4f* Image4f::pixelsVector4f()
 {
-	return reinterpret_cast< Vector4f* >( m_data.data() );
+	return reinterpret_cast< Vector4f* >( pixels() );
 }
 
 Vector4f Image4f::pixel( int x, int y ) const
@@ -304,7 +302,7 @@ bool Image4f::loadQImage( QString filename )
 
 	m_width = q.width();
 	m_height = q.height();
-	m_data = QVector< float >( 4 * m_width * m_height );
+	m_data.resize( 4 * m_width, m_height );
 
 	for( int y = 0; y < m_height; ++y )
 	{
@@ -373,7 +371,7 @@ bool Image4f::loadPFM( QString filename )
 	QDataStream inputDataStream( &inputFile );
 	inputDataStream.skipRawData( headerLength );
 
-	QVector< float > data( 4 * width * height, 1.f );
+	Array2D< float > data( 4 * width * height, 1.f );
 	int status;
 
 	for( int y = 0; y < height; ++y )
@@ -449,7 +447,7 @@ bool Image4f::loadPFM4( QString filename )
 	QDataStream inputDataStream( &inputFile );
 	inputDataStream.skipRawData( headerLength );
 
-	QVector< float > data( 4 * width * height );
+	Array2D< float > data( 4 * width, height );
 	int status;
 
 	for( int y = 0; y < height; ++y )

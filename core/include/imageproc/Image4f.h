@@ -6,6 +6,7 @@
 #include <QVector>
 
 #include <common/Reference.h>
+#include <common/Array2D.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector4i.h>
@@ -80,7 +81,7 @@ private:
 
 	int m_width;
 	int m_height;
-	QVector< float > m_data;
+	Array2D< float > m_data;
 
 };
 
