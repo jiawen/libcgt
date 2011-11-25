@@ -32,8 +32,8 @@ Vector4i::Vector4i( int x, int y, int z, int w )
 
 Vector4i::Vector4i( const Vector2i& xy, int z, int w )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 	m_elements[3] = w;
 }
@@ -41,8 +41,8 @@ Vector4i::Vector4i( const Vector2i& xy, int z, int w )
 Vector4i::Vector4i( int x, const Vector2i& yz, int w )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 	m_elements[3] = w;
 }
 
@@ -50,16 +50,16 @@ Vector4i::Vector4i( int x, int y, const Vector2i& zw )
 {
 	m_elements[0] = x;
 	m_elements[1] = y;
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4i::Vector4i( const Vector2i& xy, const Vector2i& zw )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4i::Vector4i( const Vector3i& xyz, int w )

@@ -15,9 +15,9 @@
 
 Image4ub::Image4ub() :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 
@@ -25,9 +25,9 @@ m_data( NULL )
 
 Image4ub::Image4ub( QString filename ) :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 	load( filename );	
@@ -35,9 +35,9 @@ m_data( NULL )
 
 Image4ub::Image4ub( int width, int height, const Vector4i& fill ) :
 
-m_width( width ),
-m_height( height ),
-m_data( 4 * m_width * m_height, 0 )
+	m_width( width ),
+	m_height( height ),
+	m_data( 4 * m_width * m_height, 0 )
 
 {
 	int nPixels = m_width * m_height;
@@ -52,9 +52,9 @@ m_data( 4 * m_width * m_height, 0 )
 
 Image4ub::Image4ub( const Vector2i& size, const Vector4i& fill ) :
 
-m_width( size.x() ),
-m_height( size.y() ),
-m_data( 4 * m_width * m_height, 0 )
+	m_width( size.x ),
+	m_height( size.y ),
+	m_data( 4 * m_width * m_height, 0 )
 
 {
 	int nPixels = m_width * m_height;
@@ -69,9 +69,9 @@ m_data( 4 * m_width * m_height, 0 )
 
 Image4ub::Image4ub( const Image4ub& copy ) :
 
-m_width( copy.m_width ),
-m_height( copy.m_height ),
-m_data( copy.m_data )
+	m_width( copy.m_width ),
+	m_height( copy.m_height ),
+	m_data( copy.m_data )
 
 {
 
@@ -79,9 +79,9 @@ m_data( copy.m_data )
 
 Image4ub::Image4ub( Reference< Image4ub > copy ) :
 
-m_width( copy->m_width ),
-m_height( copy->m_height ),
-m_data( copy->m_data )
+	m_width( copy->m_width ),
+	m_height( copy->m_height ),
+	m_data( copy->m_data )
 
 {
 
@@ -130,7 +130,7 @@ Vector4i Image4ub::pixel( int x, int y ) const
 
 Vector4i Image4ub::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image4ub::setPixel( int x, int y, const Vector4i& pixel )
@@ -145,7 +145,7 @@ void Image4ub::setPixel( int x, int y, const Vector4i& pixel )
 
 void Image4ub::setPixel( const Vector2i& xy, const Vector4i& pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 Vector4i Image4ub::bilinearSample( float x, float y ) const

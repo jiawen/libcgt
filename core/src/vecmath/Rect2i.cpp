@@ -53,15 +53,15 @@ Vector2i Rect2i::size() const
 
 int Rect2i::width() const
 {
-	return m_size.x();
+	return m_size.x;
 }
 
 int Rect2i::height() const
 {
-	return m_size.y();
+	return m_size.y;
 }
 
 int Rect2i::area() const
 {
-	return( m_size.x() * m_size.y() );
+	return( m_size.x * m_size.y );
 }

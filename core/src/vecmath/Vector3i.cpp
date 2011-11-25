@@ -27,16 +27,16 @@ Vector3i::Vector3i( int x, int y, int z )
 
 Vector3i::Vector3i( const Vector2i& xy, int z )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 }
 
 Vector3i::Vector3i( int x, const Vector2i& yz )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 }
 
 Vector3i::Vector3i( const Vector3i& rv )

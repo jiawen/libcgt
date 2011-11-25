@@ -10,9 +10,9 @@
 
 Image1ub::Image1ub() :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 
@@ -20,9 +20,9 @@ m_data( NULL )
 
 Image1ub::Image1ub( int width, int height, quint8 fill ) :
 
-m_width( width ),
-m_height( height ),
-m_data( width * height, fill )
+	m_width( width ),
+	m_height( height ),
+	m_data( width * height, fill )
 
 {
 
@@ -30,9 +30,9 @@ m_data( width * height, fill )
 
 Image1ub::Image1ub( const Vector2i& size, quint8 fill ) :
 
-m_width( size.x() ),
-m_height( size.y() ),
-m_data( m_width * m_height, fill )
+	m_width( size.x ),
+	m_height( size.y ),
+	m_data( m_width * m_height, fill )
 
 {
 
@@ -91,7 +91,7 @@ quint8 Image1ub::pixel( int x, int y ) const
 
 quint8 Image1ub::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image1ub::setPixel( int x, int y, quint8 pixel )
@@ -101,7 +101,7 @@ void Image1ub::setPixel( int x, int y, quint8 pixel )
 
 void Image1ub::setPixel( const Vector2i& xy, quint8 pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 quint8 Image1ub::bilinearSample( float x, float y ) const

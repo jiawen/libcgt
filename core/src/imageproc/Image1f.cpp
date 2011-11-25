@@ -46,8 +46,8 @@ Image1f::Image1f( int width, int height, float fill ) :
 
 Image1f::Image1f( const Vector2i& size, float fill ) :
 
-	m_width( size.x() ),
-	m_height( size.y() ),
+	m_width( size.x ),
+	m_height( size.y ),
 	m_data( m_width * m_height, fill )
 
 {
@@ -108,7 +108,7 @@ float Image1f::pixel( int x, int y ) const
 
 float Image1f::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image1f::setPixel( int x, int y, float pixel )
@@ -119,7 +119,7 @@ void Image1f::setPixel( int x, int y, float pixel )
 
 void Image1f::setPixel( const Vector2i& xy, float pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 void Image1f::setPixel( int x, int y, int pixel )
@@ -130,7 +130,7 @@ void Image1f::setPixel( int x, int y, int pixel )
 
 void Image1f::setPixel( const Vector2i& xy, int pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 Image1f Image1f::flipUD()

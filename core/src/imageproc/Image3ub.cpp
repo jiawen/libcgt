@@ -12,9 +12,9 @@
 
 Image3ub::Image3ub() :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 
@@ -22,9 +22,9 @@ m_data( NULL )
 
 Image3ub::Image3ub( QString filename ) :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 	QImage q( filename );
@@ -48,9 +48,9 @@ m_data( NULL )
 
 Image3ub::Image3ub( int width, int height, const Vector3i& fill ) :
 
-m_width( width ),
-m_height( height ),
-m_data( 3 * m_width * m_height, 0 )
+	m_width( width ),
+	m_height( height ),
+	m_data( 3 * m_width * m_height, 0 )
 
 {
 	int nPixels = m_width * m_height;
@@ -64,9 +64,9 @@ m_data( 3 * m_width * m_height, 0 )
 
 Image3ub::Image3ub( const Vector2i& size, const Vector3i& fill ) :
 
-m_width( size.x() ),
-m_height( size.y() ),
-m_data( 3 * m_width * m_height, 0 )
+	m_width( size.x ),
+	m_height( size.y ),
+	m_data( 3 * m_width * m_height, 0 )
 
 {
 	int nPixels = m_width * m_height;
@@ -80,9 +80,9 @@ m_data( 3 * m_width * m_height, 0 )
 
 Image3ub::Image3ub( const Image3ub& copy ) :
 
-m_width( copy.m_width ),
-m_height( copy.m_height ),
-m_data( copy.m_data )
+	m_width( copy.m_width ),
+	m_height( copy.m_height ),
+	m_data( copy.m_data )
 
 {
 
@@ -140,7 +140,7 @@ Vector3i Image3ub::pixel( int x, int y ) const
 
 Vector3i Image3ub::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image3ub::setPixel( int x, int y, const Vector3i& pixel )
@@ -154,7 +154,7 @@ void Image3ub::setPixel( int x, int y, const Vector3i& pixel )
 
 void Image3ub::setPixel( const Vector2i& xy, const Vector3i& pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 Vector3i Image3ub::bilinearSample( int x, int y ) const

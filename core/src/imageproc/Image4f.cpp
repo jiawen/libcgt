@@ -52,8 +52,8 @@ Image4f::Image4f( int width, int height, const Vector4f& fill ) :
 
 Image4f::Image4f( const Vector2i& size, const Vector4f& fill ) :
 
-	m_width( size.x() ),
-	m_height( size.y() ),
+	m_width( size.x ),
+	m_height( size.y ),
 	m_data( 4 * m_width * m_height, 0 )
 
 {
@@ -112,6 +112,11 @@ float* Image4f::pixels()
 	return m_data.data();
 }
 
+Vector4f* Image4f::pixelsVector4f()
+{
+	return reinterpret_cast< Vector4f* >( m_data.data() );
+}
+
 Vector4f Image4f::pixel( int x, int y ) const
 {
 	int index = 4 * ( y * m_width + x );
@@ -127,7 +132,7 @@ Vector4f Image4f::pixel( int x, int y ) const
 
 Vector4f Image4f::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image4f::setPixel( int x, int y, const Vector4f& pixel )
@@ -142,7 +147,7 @@ void Image4f::setPixel( int x, int y, const Vector4f& pixel )
 
 void Image4f::setPixel( const Vector2i& xy, const Vector4f& pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 void Image4f::setPixel( int x, int y, const Vector4i& pixel )
@@ -153,7 +158,31 @@ void Image4f::setPixel( int x, int y, const Vector4i& pixel )
 
 void Image4f::setPixel( const Vector2i& xy, const Vector4i& pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
+}
+
+Vector4f Image4f::operator () ( int x, int y ) const
+{
+	int index = 4 * ( y * m_width + x );
+	return Vector4f
+	(
+		m_data[ index ],
+		m_data[ index + 1 ],
+		m_data[ index + 2 ],
+		m_data[ index + 3 ]
+	);
+}
+
+Vector4f Image4f::operator () ( const Vector2i& xy ) const
+{
+	int index = 4 * ( xy.y * m_width + xy.x );
+	return Vector4f
+	(
+		m_data[ index ],
+		m_data[ index + 1 ],
+		m_data[ index + 2 ],
+		m_data[ index + 3 ]
+	);
 }
 
 Image4f Image4f::flipUD() const

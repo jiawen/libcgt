@@ -20,8 +20,8 @@ Vector2f::Vector2f( const Vector2d& rv )
 
 Vector2f::Vector2f( const Vector2i& rv )
 {
-    m_elements[ 0 ] = static_cast< float >( rv.x() );
-    m_elements[ 1 ] = static_cast< float >( rv.y() );
+    m_elements[ 0 ] = static_cast< float >( rv.x );
+    m_elements[ 1 ] = static_cast< float >( rv.y );
 }
 
 Vector2f& Vector2f::operator = ( const Vector2d& rv )
@@ -34,8 +34,8 @@ Vector2f& Vector2f::operator = ( const Vector2d& rv )
 
 Vector2f& Vector2f::operator = ( const Vector2i& rv )
 {
-    m_elements[ 0 ] = static_cast< float >( rv.x() );
-    m_elements[ 1 ] = static_cast< float >( rv.y() );
+    m_elements[ 0 ] = static_cast< float >( rv.x );
+    m_elements[ 1 ] = static_cast< float >( rv.y );
 
     return *this;
 }

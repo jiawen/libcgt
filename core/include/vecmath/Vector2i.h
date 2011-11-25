@@ -20,11 +20,6 @@ public:
 	const int& operator [] ( int i ) const;
 	int& operator [] ( int i );
 
-	int& x();
-	int& y();
-
-	int x() const;
-	int y() const;
 	Vector2i xy() const;
 	Vector2i yx() const;
 	Vector2i xx() const;
@@ -47,9 +42,20 @@ public:
 	// returns v0 * ( 1 - alpha ) * v1 * alpha
 	static Vector2f lerp( const Vector2i& v0, const Vector2i& v1, float alpha );
 
-private:
+	inline Vector2i& operator += ( const Vector2i& v );
+	inline Vector2i& operator -= ( const Vector2i& v );
+    inline Vector2i& operator *= ( int s );
+	inline Vector2i& operator /= ( int s );
 
-	int m_elements[2];
+	union
+	{
+		struct
+		{
+			int x;
+			int y;
+		};
+		int m_elements[2];
+	};
 
 };
 
@@ -68,5 +74,37 @@ Vector2f operator * ( float f, const Vector2i& v );
 Vector2f operator * ( const Vector2i& v, float f );
 
 Vector2i operator / ( const Vector2i& v, int c );
+
+inline Vector2i& Vector2i::operator += ( const Vector2i& v )
+{
+	m_elements[ 0 ] += v.m_elements[ 0 ];
+	m_elements[ 1 ] += v.m_elements[ 1 ];
+
+	return *this;
+}
+
+inline Vector2i& Vector2i::operator -= ( const Vector2i& v )
+{
+	m_elements[ 0 ] -= v.m_elements[ 0 ];
+	m_elements[ 1 ] -= v.m_elements[ 1 ];
+
+	return *this;
+}
+
+inline Vector2i& Vector2i::operator *= ( int s )
+{
+	m_elements[ 0 ] *= s;
+	m_elements[ 1 ] *= s;
+
+	return *this;
+}
+
+inline Vector2i& Vector2i::operator /= ( int s )
+{
+	m_elements[ 0 ] /= s;
+	m_elements[ 1 ] /= s;
+
+	return *this;
+}
 
 #endif // VECTOR_2I_H

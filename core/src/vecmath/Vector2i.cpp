@@ -49,26 +49,6 @@ int& Vector2i::operator [] ( int i )
 	return m_elements[ i % 2 ];
 }
 
-int& Vector2i::x()
-{
-	return m_elements[ 0 ];
-}
-
-int& Vector2i::y()
-{
-	return m_elements[ 1 ];
-}
-
-int Vector2i::x() const
-{
-	return m_elements[0];
-}
-
-int Vector2i::y() const
-{
-	return m_elements[1];
-}
-
 Vector2i Vector2i::xy() const
 {
 	return Vector2i( m_elements[0], m_elements[1] );
@@ -131,7 +111,7 @@ void Vector2i::print() const
 // static
 int Vector2i::dot( const Vector2i& v0, const Vector2i& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y();
+	return v0.x * v1.x + v0.y * v1.y;
 }
 
 //static
@@ -141,7 +121,7 @@ Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 	(
 		0,
 		0,
-		v0.x() * v1.y() - v0.y() * v1.x()
+		v0.x * v1.y - v0.y * v1.x
 	);
 }
 
@@ -159,57 +139,57 @@ bool operator == ( const Vector2i& v0, const Vector2i& v1 )
 {
 	return
 	(
-		v0.x() == v1.x() &&
-		v0.y() == v1.y()
+		v0.x == v1.x &&
+		v0.y == v1.y
 	);
 }
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x() + v1.x(), v0.y() + v1.y() );
+	return Vector2i( v0.x + v1.x, v0.y + v1.y );
 }
 
 Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x() - v1.x(), v0.y() - v1.y() );
+	return Vector2i( v0.x - v1.x, v0.y - v1.y );
 }
 
 Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x() * v1.x(), v0.y() * v1.y() );
+	return Vector2i( v0.x * v1.x, v0.y * v1.y );
 }
 
 Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x() / v1.x(), v0.y() / v1.y() );
+	return Vector2i( v0.x / v1.x, v0.y / v1.y );
 }
 
 Vector2i operator - ( const Vector2i& v )
 {
-	return Vector2i( -v.x(), -v.y() );
+	return Vector2i( -v.x, -v.y );
 }
 
 Vector2i operator * ( int c, const Vector2i& v )
 {
-	return Vector2i( c * v.x(), c * v.y() );
+	return Vector2i( c * v.x, c * v.y );
 }
 
 Vector2i operator * ( const Vector2i& v, int c )
 {
-	return Vector2i( c * v.x(), c * v.y() );
+	return Vector2i( c * v.x, c * v.y );
 }
 
 Vector2f operator * ( float f, const Vector2i& v )
 {
-	return Vector2f( f * v.x(), f * v.y() );
+	return Vector2f( f * v.x, f * v.y );
 }
 
 Vector2f operator * ( const Vector2i& v, float f )
 {
-	return Vector2f( f * v.x(), f * v.y() );
+	return Vector2f( f * v.x, f * v.y );
 }
 
 Vector2i operator / ( const Vector2i& v, int c )
 {
-	return Vector2i( v.x() / c, v.y() / c );
+	return Vector2i( v.x / c, v.y / c );
 }

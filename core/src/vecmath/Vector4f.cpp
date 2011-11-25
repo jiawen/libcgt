@@ -247,7 +247,15 @@ float Vector4f::abs() const
 
 float Vector4f::absSquared() const
 {
-	return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
+	const int mask = 0xffffffff;
+	//float dp;
+
+	__m128* m = ( __m128* )( m_elements );
+	__m128 res = _mm_dp_ps( *m, *m, 0xffffffff );
+
+	return res.m128_f32[0];
+
+	//return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
 }
 
 void Vector4f::normalize()

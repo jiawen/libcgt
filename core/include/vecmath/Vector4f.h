@@ -7,8 +7,9 @@ class Vector3f;
 class Vector4i;
 class Vector4d;
 
-// TODO: experiment with SSE?
-// __declspec( align( 16 ) )
+#include <smmintrin.h>
+
+__declspec( align( 16 ) )
 class Vector4f
 {
 public:
@@ -105,12 +106,28 @@ private:
 
 inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
+	Vector4f result;
+	__m128* m0 = ( __m128* )( &v0 );
+	__m128* m1 = ( __m128* )( &v1 );
+	__m128* r = ( __m128* )( &result );
+
+	*r = _mm_add_ps( *m0, *m1 );
+	return result;
+
+	//return Vector4f( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
 }
 
 inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
+	Vector4f result;
+	__m128* m0 = ( __m128* )( &v0 );
+	__m128* m1 = ( __m128* )( &v1 );
+	__m128* r = ( __m128* )( &result );
+
+	*r = _mm_sub_ps( *m0, *m1 );
+	return result;
+
+	//return Vector4f( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
 }
 
 inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )

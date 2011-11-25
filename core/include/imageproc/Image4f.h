@@ -34,6 +34,7 @@ public:
 	Vector2i size() const;
 
 	float* pixels();
+	Vector4f* pixelsVector4f();
 
 	Vector4f pixel( int x, int y ) const;
 	Vector4f pixel( const Vector2i& xy ) const;
@@ -43,7 +44,10 @@ public:
 	// pixel in [0,255]
 	void setPixel( int x, int y, const Vector4i& pixel );
 	void setPixel( const Vector2i& xy, const Vector4i& pixel );
-	
+
+	Vector4f operator () ( int x, int y ) const;
+	Vector4f operator () ( const Vector2i& xy ) const;
+
 	Vector4f bilinearSample( float x, float y ) const;
 	Vector4f bilinearSample( const Vector2f& xy ) const;
 

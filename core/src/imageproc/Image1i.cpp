@@ -13,9 +13,9 @@
 
 Image1i::Image1i() :
 
-m_width( 0 ),
-m_height( 0 ),
-m_data( NULL )
+	m_width( 0 ),
+	m_height( 0 ),
+	m_data( NULL )
 
 {
 
@@ -23,9 +23,9 @@ m_data( NULL )
 
 Image1i::Image1i( int width, int height, qint32 fill ) :
 
-m_width( width ),
-m_height( height ),
-m_data( width * height, fill )
+	m_width( width ),
+	m_height( height ),
+	m_data( width * height, fill )
 
 {
 
@@ -33,9 +33,9 @@ m_data( width * height, fill )
 
 Image1i::Image1i( const Vector2i& size, qint32 fill ) :
 
-m_width( size.x() ),
-m_height( size.y() ),
-m_data( m_width * m_height, fill )
+	m_width( size.x ),
+	m_height( size.y ),
+	m_data( m_width * m_height, fill )
 
 {
 
@@ -43,9 +43,9 @@ m_data( m_width * m_height, fill )
 
 Image1i::Image1i( const Image1i& copy ) :
 
-m_width( copy.m_width ),
-m_height( copy.m_height ),
-m_data( copy.m_data )
+	m_width( copy.m_width ),
+	m_height( copy.m_height ),
+	m_data( copy.m_data )
 
 {
 
@@ -53,9 +53,9 @@ m_data( copy.m_data )
 
 Image1i::Image1i( Reference< Image1i > copy ) :
 
-m_width( copy->m_width ),
-m_height( copy->m_height ),
-m_data( copy->m_data )
+	m_width( copy->m_width ),
+	m_height( copy->m_height ),
+	m_data( copy->m_data )
 
 {
 
@@ -94,7 +94,7 @@ qint32 Image1i::pixel( int x, int y ) const
 
 qint32 Image1i::pixel( const Vector2i& xy ) const
 {
-	return pixel( xy.x(), xy.y() );
+	return pixel( xy.x, xy.y );
 }
 
 void Image1i::setPixel( int x, int y, qint32 pixel )
@@ -104,7 +104,7 @@ void Image1i::setPixel( int x, int y, qint32 pixel )
 
 void Image1i::setPixel( const Vector2i& xy, qint32 pixel )
 {
-	setPixel( xy.x(), xy.y(), pixel );
+	setPixel( xy.x, xy.y, pixel );
 }
 
 Reference< Image1i > Image1i::flipUD()
