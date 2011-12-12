@@ -3,11 +3,6 @@
 
 #include "common/BasicTypes.h"
 
-#ifdef min
-#undef min
-#undef max
-#endif
-
 class MathUtils
 {
 public:
@@ -77,11 +72,13 @@ public:
 	static inline float oo_0( float x );
 	static inline double oo_0( double x );
 
+#if 0
 	template< typename T >
 	static inline T min( T a, T b ) { return a < b ? a : b; }
 
 	template< typename T >
 	static inline T max( T a, T b ) { return a < b ? b : a; }
+#endif
 
 private:
 
