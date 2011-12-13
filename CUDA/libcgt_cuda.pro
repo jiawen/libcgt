@@ -1,6 +1,8 @@
 TEMPLATE = lib
 CONFIG += qt thread debug_and_release staticlib
 
+DESTDIR = "../lib"
+
 INCLUDEPATH += $(CUDA_INC_PATH)
 INCLUDEPATH += $(NVSDKCOMPUTE_ROOT)/C/common/inc
 INCLUDEPATH += "./include"

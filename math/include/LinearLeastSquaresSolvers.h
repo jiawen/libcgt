@@ -23,7 +23,8 @@ public:
 	static bool QRFullRankInPlace( FloatMatrix& a, FloatMatrix& b );
 	
 	// Solve for Ax ~ b
-	// for a rank-deficient matrix A (minimum-norm solution)
+	// for a *potentially* rank-deficient matrix A
+	// (simultaneously find x that minimizes ||b-Ax||^2 and ||x||^2)
 	// rCond specifies a reciprocal condition number threshold such that
 	// singular values s[i] <= rCond * s[0] are considered zeroed out
 	// rCond = -1 --> defaults to machine precision

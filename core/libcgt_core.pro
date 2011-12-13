@@ -1,6 +1,8 @@
 TEMPLATE = lib
 CONFIG += qt thread debug_and_release staticlib
 
+DESTDIR = "../lib"
+
 CONFIG( debug, debug|release ) {
   TARGET = libcgt_cored
 } else {

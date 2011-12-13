@@ -1,8 +1,11 @@
 TEMPLATE = lib
 CONFIG += qt thread debug_and_release staticlib
 
+DESTDIR = "../lib"
+
 # libcgt_core
 INCLUDEPATH += "../core/include"
+LIBPATH += "../lib"
 
 # Qt
 INCLUDEPATH += $(QTDIR)/include/QtCore
@@ -29,13 +32,12 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 
 CONFIG( debug, debug|release ) {
   TARGET = libcgt_mathd
-  LIBS += "../core/debug/libcgt_cored.lib"
+  LIBS += libcgt_cored.lib
 } else {
   TARGET = libcgt_math
   DEFINES += _SECURE_SCL=0
-  LIBS += "../core/release/libcgt_core.lib"
+  LIBS += libcgt_core.lib
 }
-
 
 HEADERS += include/*.h
 SOURCES += src/*.cpp
