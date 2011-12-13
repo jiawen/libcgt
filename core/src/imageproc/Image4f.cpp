@@ -231,7 +231,7 @@ Vector4f Image4f::bilinearSample( float x, float y ) const
 
 Vector4f Image4f::bilinearSample( const Vector2f& xy ) const
 {
-	return bilinearSample( xy.x(), xy.y() );
+	return bilinearSample( xy.x, xy.y );
 }
 
 QImage Image4f::toQImage()

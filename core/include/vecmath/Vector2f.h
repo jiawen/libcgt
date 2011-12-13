@@ -18,12 +18,25 @@ public:
     Vector2f( float x, float y ) { m_elements[0] = x; m_elements[1] = y; }
 
 	// copy constructors
-    Vector2f( const Vector2f& rv ) { m_elements[0] = rv[0]; m_elements[1] = rv[1]; }
+    Vector2f( const Vector2f& rv )
+	{
+		x = rv.x;
+		y = rv.y;
+	}
+
 	Vector2f( const Vector2d& rv );
 	Vector2f( const Vector2i& rv );
 
 	// assignment operators
-	Vector2f& operator = ( const Vector2f& rv ) { m_elements[0] = rv[0]; m_elements[1] = rv[1]; return *this; }
+	Vector2f& operator = ( const Vector2f& rv )
+	{
+		if( this != &rv )
+		{
+			x = rv.x;
+			y = rv.y;
+		}
+		return *this;
+	}
 	Vector2f& operator = ( const Vector2d& rv );
 	Vector2f& operator = ( const Vector2i& rv );
 
@@ -32,12 +45,6 @@ public:
 	// returns the ith element (mod 2)
     const float& operator [] ( int i ) const { return m_elements[i]; }
 	float& operator [] ( int i ) { return m_elements[i]; }
-
-    float& x() { return m_elements[0]; }
-	float& y() { return m_elements[1]; }
-
-	float x() const { return m_elements[0]; }	
-	float y() const { return m_elements[1]; }
 
     Vector2f xy() const { return *this; }
 	Vector2f yx() const { return Vector2f(m_elements[1], m_elements[0]); }
@@ -73,13 +80,20 @@ public:
 
 private:
 
-	float m_elements[2];
-
+	union
+	{
+		struct
+		{
+			float x;
+			float y;
+		};
+		float m_elements[ 2 ];
+	};
 };
 
-inline Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x() + v1.x(), v0.y() + v1.y() ); }
-inline Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x() - v1.x(), v0.y() - v1.y() ); }
-inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x() * v1.x(), v0.y() * v1.y() ); }
+inline Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x + v1.x, v0.y + v1.y ); }
+inline Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x - v1.x, v0.y - v1.y ); }
+inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x * v1.x, v0.y * v1.y ); }
 
 inline Vector2f& Vector2f::operator+=( const Vector2f& addend )
 {
@@ -89,13 +103,13 @@ inline Vector2f& Vector2f::operator+=( const Vector2f& addend )
 }
 
 // component-wise division
-inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x() * v1.x(), v0.y() * v1.y() ); }
+inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x * v1.x, v0.y * v1.y ); }
 
-inline Vector2f operator - ( const Vector2f& v ) { return Vector2f(-v.x(), -v.y()); }
-inline Vector2f operator * ( float f, const Vector2f& v ) { return Vector2f(f * v.x(), f * v.y()); }
-inline Vector2f operator * ( const Vector2f& v, float f ) { return Vector2f(f * v.x(), f * v.y()); }
+inline Vector2f operator - ( const Vector2f& v ) { return Vector2f(-v.x, -v.y); }
+inline Vector2f operator * ( float f, const Vector2f& v ) { return Vector2f(f * v.x, f * v.y); }
+inline Vector2f operator * ( const Vector2f& v, float f ) { return Vector2f(f * v.x, f * v.y); }
 
-inline bool operator == ( const Vector2f& v0, const Vector2f& v1 ) { return( v0.x() == v1.x() && v0.y() == v1.y() ); }
+inline bool operator == ( const Vector2f& v0, const Vector2f& v1 ) { return( v0.x == v1.x && v0.y == v1.y ); }
 inline bool operator != ( const Vector2f& v0, const Vector2f& v1 ) { return !( v0 == v1 ); }
 
 #endif // VECTOR_2F_H

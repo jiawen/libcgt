@@ -59,7 +59,7 @@ Vector3f Vector2f::cross( const Vector2f& v0, const Vector2f& v1 )
 		(
 			0,
 			0,
-			v0.x() * v1.y() - v0.y() * v1.x()
+			v0.x * v1.y - v0.y * v1.x
 		);
 }
 

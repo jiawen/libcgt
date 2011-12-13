@@ -181,7 +181,7 @@ float Image1f::bilinearSample( float x, float y ) const
 
 float Image1f::bilinearSample( const Vector2f& xy ) const
 {
-	return bilinearSample( xy.x(), xy.y() );
+	return bilinearSample( xy.x, xy.y );
 }
 
 QImage Image1f::toQImage()

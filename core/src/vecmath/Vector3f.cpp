@@ -25,16 +25,16 @@ const Vector3f Vector3f::FORWARD = Vector3f( 0, 0, -1 );
 
 Vector3f::Vector3f( const Vector2f& xy, float z )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 }
 
 Vector3f::Vector3f( float x, const Vector2f& yz )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 }
 
 Vector3f::Vector3f( const Vector3d& rv )

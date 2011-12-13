@@ -9,9 +9,9 @@ LineIntersection::IntersectionResult LineIntersection::lineLineIntersection( con
 																			const Vector2f& q0, const Vector2f& q1,
 																			float* tp, float* tq )
 {
-	float denom = ( q1.y() - q0.y() ) * ( p1.x() - p0.x() ) - ( q1.x() - q0.x() ) * ( p1.y() - p0.y() );
-	float nume_a = ( q1.x() - q0.x() ) * ( p0.y() - q0.y() ) - ( q1.y() - q0.y() ) * ( p0.x() - q0.x() );
-	float nume_b = ( p1.x() - p0.x() ) * ( p0.y() - q0.y() ) - ( p1.y() - p0.y() ) * ( p0.x() - q0.x() );
+	float denom = ( q1.y - q0.y ) * ( p1.x - p0.x ) - ( q1.x - q0.x ) * ( p1.y - p0.y );
+	float nume_a = ( q1.x - q0.x ) * ( p0.y - q0.y ) - ( q1.y - q0.y ) * ( p0.x - q0.x );
+	float nume_b = ( p1.x - p0.x ) * ( p0.y - q0.y ) - ( p1.y - p0.y ) * ( p0.x - q0.x );
 
 	if( denom == 0.0f )
 	{
@@ -42,8 +42,8 @@ LineIntersection::IntersectionResult LineIntersection::segmentSegmentIntersectio
 		if( tp >= 0.0f && tp <= 1.0f && tq >= 0.0f && tq <= 1.0f )
 		{
 			// get the intersection point
-			( *intersectionPoint ).x() = p0.x() + tp * ( p1.x() - p0.x() );
-			( *intersectionPoint ).y() = p0.y() + tp * ( p1.y() - p0.y() );
+			intersectionPoint->x = p0.x + tp * ( p1.x - p0.x );
+			intersectionPoint->y = p0.y + tp * ( p1.y - p0.y );
 
 			return INTERESECTING;
 		}
@@ -70,8 +70,8 @@ LineIntersection::IntersectionResult LineIntersection::raySegmentIntersection( c
 	{
 		if( tq >= 0.f && tq <= 1.f && tp > 0.f )
 		{
-			( *intersectionPoint ).x() = q0.x() + tq * ( q1.x() - q0.x() );
-			( *intersectionPoint ).y() = q0.y() + tq * ( q1.y() - q0.y() );
+			intersectionPoint->x = q0.x + tq * ( q1.x - q0.x );
+			intersectionPoint->y = q0.y + tq * ( q1.y - q0.y );
 			return INTERESECTING;
 		}
 	}

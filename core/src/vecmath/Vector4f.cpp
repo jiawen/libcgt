@@ -43,8 +43,8 @@ Vector4f::Vector4f( float buffer[ 4 ] )
 
 Vector4f::Vector4f( const Vector2f& xy, float z, float w )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 	m_elements[3] = w;
 }
@@ -52,8 +52,8 @@ Vector4f::Vector4f( const Vector2f& xy, float z, float w )
 Vector4f::Vector4f( float x, const Vector2f& yz, float w )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 	m_elements[3] = w;
 }
 
@@ -61,16 +61,16 @@ Vector4f::Vector4f( float x, float y, const Vector2f& zw )
 {
 	m_elements[0] = x;
 	m_elements[1] = y;
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4f::Vector4f( const Vector2f& xy, const Vector2f& zw )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4f::Vector4f( const Vector3f& xyz, float w )

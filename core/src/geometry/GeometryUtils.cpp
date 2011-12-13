@@ -17,11 +17,11 @@ float GeometryUtils::EPSILON = 0.0001f;
 // static
 BoundingBox2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
-	float minX = min( min( v0.x(), v1.x() ), v2.x() );
-	float minY = min( min( v0.y(), v1.y() ), v2.y() );
+	float minX = min( min( v0.x, v1.x ), v2.x );
+	float minY = min( min( v0.y, v1.y ), v2.y );
 
-	float maxX = max( max( v0.x(), v1.x() ), v2.x() );
-	float maxY = max( max( v0.y(), v1.y() ), v2.y() );
+	float maxX = max( max( v0.x, v1.x ), v2.x );
+	float maxY = max( max( v0.y, v1.y ), v2.y );
 
 	return BoundingBox2f( minX, minY, maxX, maxY );
 }
@@ -36,10 +36,10 @@ Vector2f GeometryUtils::triangleCentroid( const Vector2f& v0, const Vector2f& v1
 QVector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
 	BoundingBox2f bbox = triangleBoundingBox( v0, v1, v2 );
-	int xStart = Arithmetic::floorToInt( bbox.minimum().x() );
-	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x() );
-	int yStart = Arithmetic::floorToInt( bbox.minimum().y() );
-	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y() );
+	int xStart = Arithmetic::floorToInt( bbox.minimum().x );
+	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x );
+	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
+	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
 
 	QVector< Vector2f > pointsInside;
 
@@ -71,11 +71,11 @@ float GeometryUtils::edgeTestConservative( const Vector2f& edgeNormal, const Vec
 	float tx = -0.5f;
 	float ty = -0.5f;
 
-	if( edgeNormal.x() >= 0 )
+	if( edgeNormal.x >= 0 )
 	{
 		tx = 0.5f;
 	}
-	if( edgeNormal.y() >= 0 )
+	if( edgeNormal.y >= 0 )
 	{
 		ty = 0.5f;
 	}
@@ -99,10 +99,10 @@ QVector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f&
 	Vector2f normal20 = edge20.normal();
 
 	BoundingBox2f bbox = triangleBoundingBox( v0, v1, v2 );
-	int xStart = Arithmetic::floorToInt( bbox.minimum().x() );
-	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x() );
-	int yStart = Arithmetic::floorToInt( bbox.minimum().y() );
-	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y() );
+	int xStart = Arithmetic::floorToInt( bbox.minimum().x );
+	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x );
+	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
+	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
 
 	QVector< Vector2f > pointsInside;
 
@@ -165,14 +165,14 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 
 	Matrix2f a
 	(
-		v0.x() - v2.x(), v1.x() - v2.x(),
-		v0.y() - v2.y(), v1.y() - v2.y()
+		v0.x - v2.x, v1.x - v2.x,
+		v0.y - v2.y, v1.y - v2.y
 	);
 
 	Vector2f b
 	(
-		p.x() - v2.x(),
-		p.y() - v2.y()
+		p.x - v2.x,
+		p.y - v2.y
 	);
 
 	bool bSingular;
@@ -180,7 +180,7 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 	assert( !bSingular );
 
 	Vector2f l0l1 = ai * b;
-	return Vector3f( l0l1, 1 - l0l1.x() - l0l1.y() );
+	return Vector3f( l0l1, 1 - l0l1.x - l0l1.y );
 }
 
 // static

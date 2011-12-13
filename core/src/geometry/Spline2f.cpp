@@ -44,8 +44,8 @@ int Spline2f::numControlPoints()
 // virtual
 void Spline2f::appendControlPoint( const Vector2f& p )
 {
-	m_xSpline.appendControlPoint( p.x() );
-	m_ySpline.appendControlPoint( p.y() );
+	m_xSpline.appendControlPoint( p.x );
+	m_ySpline.appendControlPoint( p.y );
 
 	m_bCacheIsDirty = true;
 }
@@ -75,8 +75,8 @@ int Spline2f::insertControlPoint( const Vector2f& p )
 
 	printf( "closest t = %f, controlPointIndex = %d\n", t, controlPointIndex );
 
-	m_xSpline.insertControlPoint( controlPointIndex, p.x() );
-	m_ySpline.insertControlPoint( controlPointIndex, p.y() );
+	m_xSpline.insertControlPoint( controlPointIndex, p.x );
+	m_ySpline.insertControlPoint( controlPointIndex, p.y );
 	
 	m_bCacheIsDirty = true;
 
@@ -91,8 +91,8 @@ Vector2f Spline2f::getControlPoint( int i )
 // virtual
 void Spline2f::setControlPoint( int i, const Vector2f& p )
 {
-	m_xSpline.setControlPoint( i, p.x() );
-	m_ySpline.setControlPoint( i, p.y() );
+	m_xSpline.setControlPoint( i, p.x );
+	m_ySpline.setControlPoint( i, p.y );
 
 	m_bCacheIsDirty = true;
 }

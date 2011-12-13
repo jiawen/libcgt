@@ -96,8 +96,8 @@ BoundingBox2f BoundingBox2f::merge( const BoundingBox2f& b0, const BoundingBox2f
 	Vector2f b1Min = b1.minimum();
 	Vector2f b1Max = b1.maximum();
 
-	Vector2f mergedMin( std::min( b0Min.x(), b1Min.x() ), std::min( b0Min.y(), b1Min.y() ) );
-	Vector2f mergedMax( std::max( b0Max.x(), b1Max.x() ), std::max( b0Max.y(), b1Max.y() ) );
+	Vector2f mergedMin( std::min( b0Min.x, b1Min.x ), std::min( b0Min.y, b1Min.y ) );
+	Vector2f mergedMax( std::max( b0Max.x, b1Max.x ), std::max( b0Max.y, b1Max.y ) );
 
 	return BoundingBox2f( mergedMin, mergedMax );
 }

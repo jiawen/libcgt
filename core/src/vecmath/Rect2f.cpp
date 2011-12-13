@@ -95,12 +95,12 @@ Vector2f Rect2f::bottomLeft() const
 
 Vector2f Rect2f::bottomRight() const
 {
-	return m_origin + Vector2f( m_size.x(), 0.f );
+	return m_origin + Vector2f( m_size.x, 0.f );
 }
 
 Vector2f Rect2f::topLeft() const
 {
-	return m_origin + Vector2f( 0.f, m_size.y() );
+	return m_origin + Vector2f( 0.f, m_size.y );
 }
 
 Vector2f Rect2f::topRight() const
@@ -110,26 +110,26 @@ Vector2f Rect2f::topRight() const
 
 float Rect2f::width() const
 {
-	return m_size.x();
+	return m_size.x;
 }
 
 float Rect2f::height() const
 {
-	return m_size.y();
+	return m_size.y;
 }
 
 float Rect2f::area() const
 {
-	return( m_size.x() * m_size.y() );
+	return( m_size.x * m_size.y );
 }
 
 bool Rect2f::contains( const Vector2f& point )
 {
 	return
 	(
-		( point.x() > m_origin.x() ) &&
-		( point.x() < ( m_origin.x() + m_size.x() ) ) &&
-		( point.y() > m_origin.y() ) &&
-		( point.y() < ( m_origin.y() + m_size.y() ) )
+		( point.x > m_origin.x ) &&
+		( point.x < ( m_origin.x + m_size.x ) ) &&
+		( point.y > m_origin.y ) &&
+		( point.y < ( m_origin.y + m_size.y ) )
 	);
 }

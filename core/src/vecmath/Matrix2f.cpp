@@ -71,8 +71,8 @@ Vector2f Matrix2f::getRow( int i ) const
 
 void Matrix2f::setRow( int i, const Vector2f& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 2 ] = v.y();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 2 ] = v.y;
 }
 
 Vector2f Matrix2f::getCol( int j ) const
@@ -90,8 +90,8 @@ void Matrix2f::setCol( int j, const Vector2f& v )
 {
 	int colStart = 2 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
 }
 
 float Matrix2f::determinant()
