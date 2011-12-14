@@ -14,7 +14,7 @@ public:
 	// pEnergy->numFunctions() >= pEnergy->numParameters()
 	GaussNewton( std::shared_ptr< Energy > pEnergy, float epsilon = 1e-6 );
 
-	FloatMatrix minimize( const FloatMatrix& guess );
+	FloatMatrix minimize( const FloatMatrix& guess, float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
 private:
 

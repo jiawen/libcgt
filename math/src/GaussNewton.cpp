@@ -17,7 +17,7 @@ GaussNewton::GaussNewton( std::shared_ptr< Energy > pEnergy, float epsilon ) :
 	Q_ASSERT_X( m >= n, "Gauss Newton", "Number of functions (m) must be greater than the number of parameters (n)." );
 }
 
-FloatMatrix GaussNewton::minimize( const FloatMatrix& guess )
+FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound, int* pNumIterations )
 {
 	FloatMatrix J( m_pEnergy->numFunctions(), m_pEnergy->numVariables() );
 	FloatMatrix prevBeta( guess );
@@ -25,7 +25,7 @@ FloatMatrix GaussNewton::minimize( const FloatMatrix& guess )
 	FloatMatrix delta( guess.numRows(), guess.numCols() );
 	FloatMatrix r( m_pEnergy->numFunctions(), 1 );
 
-	m_pEnergy->evaluate( currBeta, r );
+	m_pEnergy->evaluateResidual( currBeta, r );
 
 	float prevEnergy = FLT_MAX;
 	float currEnergy = FloatMatrix::dot( r, r );
@@ -50,12 +50,20 @@ FloatMatrix GaussNewton::minimize( const FloatMatrix& guess )
 		currBeta = prevBeta + delta;
 
 		// update energy
-		m_pEnergy->evaluate( currBeta, r );
+		m_pEnergy->evaluateResidual( currBeta, r );
 		currEnergy = FloatMatrix::dot( r, r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
 		++nIterations;
 	}
-		
-	//printf( "GN took %d iterations\n", nIterations );
+
+	if( pEnergyFound != nullptr )
+	{
+		*pEnergyFound = currEnergy;
+	}
+
+	if( pNumIterations != nullptr )
+	{
+		*pNumIterations = nIterations;
+	}
 	return currBeta;
 }

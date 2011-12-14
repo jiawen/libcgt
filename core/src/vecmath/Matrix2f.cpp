@@ -12,14 +12,16 @@ Matrix2f::Matrix2f()
 	memset( m_elements, 0, 4 * sizeof( float ) );
 }
 
-Matrix2f::Matrix2f( float m00, float m01,
-				   float m10, float m11 )
-{
-	m_elements[ 0 ] = m00;
-	m_elements[ 1 ] = m10;
+Matrix2f::Matrix2f( float _m00, float _m01,
+				   float _m10, float _m11 ) :
 
-	m_elements[ 2 ] = m01;
-	m_elements[ 3 ] = m11;
+	m00( _m00 ),
+	m01( _m01 ),
+	m10( _m10 ),
+	m11( _m11 )
+
+{
+
 }
 
 Matrix2f::Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns )

@@ -2,6 +2,7 @@
 #define VECTOR_2F_H
 
 #include <cmath>
+#include <QString>
 
 class Vector2d;
 class Vector2i;
@@ -68,6 +69,7 @@ public:
     operator const float* () const { return m_elements; } // automatic type conversion for GL
     operator float* () { return m_elements; } // automatic type conversion for Direct3D
 	void print() const;
+	QString toString() const;
 
     static float dot( const Vector2f& v0, const Vector2f& v1 ) { return v0[0] * v1[0] + v0[1] * v1[1]; }
 

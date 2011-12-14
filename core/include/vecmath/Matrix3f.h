@@ -72,7 +72,24 @@ public:
 
 private:
 
-	float m_elements[ 9 ];
+	union
+	{
+		struct
+		{
+			float m00;
+			float m10;
+			float m20;
+
+			float m01;
+			float m11;
+			float m21;
+
+			float m02;
+			float m12;
+			float m22;
+		};
+		float m_elements[ 9 ];
+	};
 
 };
 

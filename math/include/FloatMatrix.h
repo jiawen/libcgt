@@ -1,6 +1,7 @@
 #ifndef FLOAT_MATRIX_H
 #define FLOAT_MATRIX_H
 
+#include <QString>
 #include <QVector>
 
 #include "vecmath/Vector2i.h"
@@ -92,6 +93,7 @@ public:
 	*/
 
 	void print( const char* prefix = nullptr, const char* suffix = nullptr );
+	QString toString();
 
 private:
 

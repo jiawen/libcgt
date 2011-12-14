@@ -11,8 +11,8 @@ class Matrix2f
 public:
 
 	Matrix2f();
-	Matrix2f( float m00, float m01,
-		float m10, float m11 );
+	Matrix2f( float _m00, float _m01,
+		float _m10, float _m11 );
 
 	// setColumns = true ==> sets the columns of the matrix to be [v0 v1]
 	// otherwise, sets the rows
@@ -50,8 +50,17 @@ public:
 
 private:
 
-	float m_elements[ 4 ];
-
+	union
+	{
+		struct
+		{
+			float m00;
+			float m10;
+			float m01;
+			float m11;
+		};
+		float m_elements[ 4 ];
+	};
 };
 
 // Scalar-Matrix multiplication

@@ -428,6 +428,25 @@ void FloatMatrix::print( const char* prefix, const char* suffix )
 	}
 }
 
+QString FloatMatrix::toString()
+{
+	int M = numRows();
+	int N = numCols();
+
+	QString out;
+
+	for( int i = 0; i < M; ++i )
+	{
+		for( int j = 0; j < N; ++j )
+		{
+			float val = ( *this )( i, j );
+			out.append( QString( "%1" ).arg( val, 10, 'g', 4 ) );
+		}
+		out.append( "\n" );
+	}
+	return out;
+}
+
 FloatMatrix operator + ( const FloatMatrix& a, const FloatMatrix& b )
 {
 	FloatMatrix c;

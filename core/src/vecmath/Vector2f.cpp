@@ -52,6 +52,11 @@ void Vector2f::print() const
 		m_elements[0], m_elements[1] );
 }
 
+QString Vector2f::toString() const
+{
+	return QString( "%1%2" ).arg( x, 10, 'g', 4 ).arg( y, 10, 'g', 4 );
+}
+
 //static
 Vector3f Vector2f::cross( const Vector2f& v0, const Vector2f& v1 )
 {
