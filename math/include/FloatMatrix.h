@@ -2,7 +2,7 @@
 #define FLOAT_MATRIX_H
 
 #include <QString>
-#include <QVector>
+#include <vector>
 
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3f.h"
@@ -17,9 +17,11 @@ public:
 	FloatMatrix(); // makes a 0x0 matrix
 	FloatMatrix( int nRows, int nCols, float fillValue = 0.f );
 	FloatMatrix( const FloatMatrix& m );
+	FloatMatrix( FloatMatrix&& m ); // move constructor
 	FloatMatrix( FloatMatrix* m );
 	virtual ~FloatMatrix();
 	FloatMatrix& operator = ( const FloatMatrix& m );
+	FloatMatrix& operator = ( FloatMatrix&& m ); // move assignment operator
 
 	bool isNull() const; // a matrix is null if either nRows or nCols is 0
 
@@ -33,7 +35,8 @@ public:
 
 	void resize( int nRows, int nCols );
 
-	void reshape( int nRows, int nCols );
+	// returns false if nRows * nCols != numElements()
+	bool reshape( int nRows, int nCols );
 
 	// access at ( i, j )
 	float& operator () ( int i, int j );
@@ -99,7 +102,7 @@ private:
 
 	int m_nRows;
 	int m_nCols;
-	QVector< float > m_data;
+	std::vector< float > m_data;
 
 };
 

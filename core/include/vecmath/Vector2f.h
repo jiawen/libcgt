@@ -80,8 +80,6 @@ public:
 
 	inline Vector2f& operator+=( const Vector2f& );
 
-private:
-
 	union
 	{
 		struct

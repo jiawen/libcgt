@@ -14,21 +14,22 @@ GaussNewton::GaussNewton( std::shared_ptr< Energy > pEnergy, float epsilon ) :
 	int m = pEnergy->numFunctions();
 	int n = pEnergy->numVariables();
 
+	m_J.resize( m, n );
+	m_prevBeta.resize( n, 1 );
+	m_currBeta.resize( n, 1 );
+	m_delta.resize( n, 1 );
+	m_r.resize( m, 1 );
+
 	Q_ASSERT_X( m >= n, "Gauss Newton", "Number of functions (m) must be greater than the number of parameters (n)." );
 }
 
 FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound, int* pNumIterations )
 {
-	FloatMatrix J( m_pEnergy->numFunctions(), m_pEnergy->numVariables() );
-	FloatMatrix prevBeta( guess );
-	FloatMatrix currBeta( guess );
-	FloatMatrix delta( guess.numRows(), guess.numCols() );
-	FloatMatrix r( m_pEnergy->numFunctions(), 1 );
-
-	m_pEnergy->evaluateResidual( currBeta, r );
+	m_currBeta.copy( guess );
+	m_pEnergy->evaluateResidual( m_currBeta, m_r );
 
 	float prevEnergy = FLT_MAX;
-	float currEnergy = FloatMatrix::dot( r, r );
+	float currEnergy = FloatMatrix::dot( m_r, m_r );
 	float deltaEnergy = fabs( currEnergy - prevEnergy );
 	
 	// check for convergence
@@ -37,21 +38,20 @@ FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound
 	{
 		// not converged
 		prevEnergy = currEnergy;
-		prevBeta = currBeta;
+		m_prevBeta = m_currBeta;
 
 		// take a step:			
-		m_pEnergy->evaluateJacobian( currBeta, J );
-
+		m_pEnergy->evaluateJacobian( m_currBeta, m_J );
 		//J.print( "J = " );
 
-		// TODO: OPTIMIZE: -r?
-		LinearLeastSquaresSolvers::QRFullRank( J, -r, delta );
+		// solve for -delta
+		LinearLeastSquaresSolvers::QRFullRank( m_J, m_r, m_delta );
 		// TODO: OPTIMIZE: do it in place
-		currBeta = prevBeta + delta;
+		m_currBeta = m_prevBeta - m_delta;
 
 		// update energy
-		m_pEnergy->evaluateResidual( currBeta, r );
-		currEnergy = FloatMatrix::dot( r, r );
+		m_pEnergy->evaluateResidual( m_currBeta, m_r );
+		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
 		++nIterations;
 	}
@@ -65,5 +65,5 @@ FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound
 	{
 		*pNumIterations = nIterations;
 	}
-	return currBeta;
+	return m_currBeta;
 }

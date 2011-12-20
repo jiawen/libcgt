@@ -40,14 +40,14 @@ Matrix2f::Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns )
 
 Matrix2f::Matrix2f( const Matrix2f& rm )
 {
-	memcpy( m_elements, rm.m_elements, 2 * sizeof( float ) );
+	memcpy( m_elements, rm.m_elements, 4 * sizeof( float ) );
 }
 
 Matrix2f& Matrix2f::operator = ( const Matrix2f& rm )
 {
 	if( this != &rm )
 	{
-		memcpy( m_elements, rm.m_elements, 2 * sizeof( float ) );
+		memcpy( m_elements, rm.m_elements, 4 * sizeof( float ) );
 	}
 	return *this;
 }

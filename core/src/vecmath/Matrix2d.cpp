@@ -40,7 +40,7 @@ Matrix2d::Matrix2d( const Vector2d& v0, const Vector2d& v1, bool setColumns )
 
 Matrix2d::Matrix2d( const Matrix2d& rm )
 {
-	memcpy( m_elements, rm.m_elements, 2 * sizeof( double ) );
+	memcpy( m_elements, rm.m_elements, 4 * sizeof( double ) );
 }
 
 Matrix2d::Matrix2d( const Matrix2f& rm )
@@ -55,7 +55,7 @@ Matrix2d& Matrix2d::operator = ( const Matrix2d& rm )
 {
 	if( this != &rm )
 	{
-		memcpy( m_elements, rm.m_elements, 2 * sizeof( double ) );
+		memcpy( m_elements, rm.m_elements, 4 * sizeof( double ) );
 	}
 	return *this;
 }

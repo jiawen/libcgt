@@ -20,6 +20,13 @@ private:
 
 	std::shared_ptr< Energy > m_pEnergy;
 	float m_epsilon;
+
+	FloatMatrix m_J;
+	FloatMatrix m_prevBeta;
+	FloatMatrix m_currBeta;
+	FloatMatrix m_delta;
+	FloatMatrix m_r;
+
 };
 
 #endif // GAUSS_NEWTON_H

@@ -49,6 +49,11 @@ FloatMatrix::FloatMatrix( const FloatMatrix& m ) :
 
 }
 
+FloatMatrix::FloatMatrix( FloatMatrix&& m )
+{
+	*this = std::move( m );
+}
+
 FloatMatrix::FloatMatrix( FloatMatrix* m ) :
 
 	m_nRows( m->m_nRows ),
@@ -63,6 +68,28 @@ FloatMatrix::FloatMatrix( FloatMatrix* m ) :
 FloatMatrix::~FloatMatrix()
 {
 
+}
+
+FloatMatrix& FloatMatrix::operator = ( const FloatMatrix& m )
+{
+	if( this != &m )
+	{
+		m_nRows = m.m_nRows;
+		m_nCols = m.m_nCols;
+		m_data = m.m_data;
+	}
+	return *this;
+}
+
+FloatMatrix& FloatMatrix::operator = ( FloatMatrix&& m )
+{
+	if( this != &m )
+	{
+		m_nRows = m.m_nRows;
+		m_nCols = m.m_nCols;
+		m_data = std::move( m.m_data );
+	}
+	return *this;
 }
 
 int FloatMatrix::numRows() const
@@ -99,27 +126,19 @@ void FloatMatrix::resize( int nRows, int nCols )
 
 	m_nRows = nRows;
 	m_nCols = nCols;
-	m_data = QVector< float >( nRows * nCols, 0 );
+	m_data.resize( nRows * nCols, 0 );
 }
 
-void FloatMatrix::reshape( int nRows, int nCols )
+bool FloatMatrix::reshape( int nRows, int nCols )
 {
-	// TODO: fix this
-	assert( nRows * nCols == numElements() );
+	if( nRows * nCols != numElements() )
+	{
+		return false;
+	}
 
 	m_nRows = nRows;
 	m_nCols = nCols;
-}
-
-FloatMatrix& FloatMatrix::operator = ( const FloatMatrix& m )
-{
-	if( &m != this )
-	{
-		m_nRows = m.m_nRows;
-		m_nCols = m.m_nCols;
-		m_data = m.m_data;
-	}
-	return *this;
+	return true;
 }
 
 bool FloatMatrix::isNull() const
@@ -203,7 +222,7 @@ float* FloatMatrix::data()
 
 const float* FloatMatrix::constData() const
 {
-	return m_data.constData();
+	return m_data.data();
 }
 
 FloatMatrix FloatMatrix::inverted() const
