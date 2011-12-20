@@ -11,6 +11,8 @@ public:
 	virtual int numFunctions() = 0;
 	virtual int numVariables() = 0;
 
+	virtual void evaluateInitialGuess( FloatMatrix& guess ) = 0;
+
 	// Evaluate the energy at argument beta (a numVariables x 1 vector)
 	// and return it in r (a numFunctions x 1 vector)
 	virtual void evaluateResidual( const FloatMatrix& beta, FloatMatrix& residual ) = 0;

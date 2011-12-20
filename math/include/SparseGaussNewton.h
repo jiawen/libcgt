@@ -12,12 +12,28 @@ class SparseGaussNewton
 {
 public:
 
-	// Initialize Gauss-Newton solver
+	// Initialize Sparse Gauss-Newton solver
 	// pEnergy->numFunctions() >= pEnergy->numParameters()
-	SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, cholmod_common* pcc, int maxNumIterations = 100, float epsilon = 1e-6 );
+	//
+	// Parameters:
+	//   epsilon: minimize() will run until the residual has squared norm < epsilon
+	//   or...
+	//
+	//   maxNumIterations n: minimize() will run for at most n iterations.
+	//   Set to a negative number to ignore
+	//
+	SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, cholmod_common* pcc,
+		int maxNumIterations = 100,
+		float epsilon = 1e-6 );
 	virtual ~SparseGaussNewton();
 
-	FloatMatrix minimize( const FloatMatrix& guess, float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
+	int maxNumIterations() const;
+	void setMaxNumIterations( int maxNumIterations );
+
+	float epsilon() const;
+	void setEpsilon( float epsilon );
+
+	FloatMatrix minimize( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
 private:
 

@@ -5,9 +5,12 @@
 
 #include "LinearLeastSquaresSolvers.h"
 
-GaussNewton::GaussNewton( std::shared_ptr< Energy > pEnergy, float epsilon ) :
+GaussNewton::GaussNewton( std::shared_ptr< Energy > pEnergy,
+	int maxNumIterations,
+	float epsilon ) :
 
 	m_pEnergy( pEnergy ),
+	m_maxNumIterations( maxNumIterations ),
 	m_epsilon( epsilon )
 
 {
@@ -23,9 +26,29 @@ GaussNewton::GaussNewton( std::shared_ptr< Energy > pEnergy, float epsilon ) :
 	Q_ASSERT_X( m >= n, "Gauss Newton", "Number of functions (m) must be greater than the number of parameters (n)." );
 }
 
-FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound, int* pNumIterations )
+int GaussNewton::maxNumIterations() const
 {
-	m_currBeta.copy( guess );
+	return m_maxNumIterations;
+}
+
+void GaussNewton::setMaxNumIterations( int maxNumIterations )
+{
+	m_maxNumIterations = maxNumIterations;
+}
+
+float GaussNewton::epsilon() const
+{
+	return m_epsilon;
+}
+
+void GaussNewton::setEpsilon( float epsilon )
+{
+	m_epsilon = epsilon;
+}
+
+FloatMatrix GaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
+{
+	m_pEnergy->evaluateInitialGuess( m_currBeta );
 	m_pEnergy->evaluateResidual( m_currBeta, m_r );
 
 	float prevEnergy = FLT_MAX;
@@ -34,7 +57,8 @@ FloatMatrix GaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound
 	
 	// check for convergence
 	int nIterations = 0;
-	while( deltaEnergy > m_epsilon * ( 1 + currEnergy ) )
+	while( ( deltaEnergy > m_epsilon * ( 1 + currEnergy ) ) &&
+		( ( m_maxNumIterations > 0 ) && ( nIterations < m_maxNumIterations ) ) )
 	{
 		// not converged
 		prevEnergy = currEnergy;

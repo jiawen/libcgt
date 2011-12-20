@@ -37,6 +37,26 @@ SparseGaussNewton::~SparseGaussNewton()
 	m_pcc = nullptr;
 }
 
+int SparseGaussNewton::maxNumIterations() const
+{
+	return m_maxNumIterations;
+}
+
+void SparseGaussNewton::setMaxNumIterations( int maxNumIterations )
+{
+	m_maxNumIterations = maxNumIterations;
+}
+
+float SparseGaussNewton::epsilon() const
+{
+	return m_epsilon;
+}
+
+void SparseGaussNewton::setEpsilon( float epsilon )
+{
+	m_epsilon = epsilon;
+}
+
 void copyFloatMatrixToCholmodDense( const FloatMatrix& src, cholmod_dense* dst )
 {
 	double* dstArray = reinterpret_cast< double* >( dst->x );
@@ -55,36 +75,87 @@ void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst)
 	}
 }
 
-FloatMatrix SparseGaussNewton::minimize( const FloatMatrix& guess, float* pEnergyFound, int* pNumIterations )
+#define TIMING 0
+
+#if TIMING
+#include <time/StopWatch.h>
+#endif
+
+FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
 {
-	m_currBeta.copy( guess );
+#if TIMING
+	float tR = 0;
+	float tJ = 0;
+	float tCopy = 0;
+	float tConvert = 0;
+	float tQR = 0;
+	StopWatch sw;
+#endif
+	
+	m_pEnergy->evaluateInitialGuess( m_currBeta );
+
+#if TIMING
+	sw.reset();
+#endif
 	m_pEnergy->evaluateResidual( m_currBeta, m_r );
+#if TIMING
+	tR += sw.millisecondsElapsed();
+#endif
+
+#if TIMING
+	sw.reset();
+#endif
 	copyFloatMatrixToCholmodDense( m_r, m_r2 );
+#if TIMING
+	tCopy += sw.millisecondsElapsed();
+#endif
 
 	float prevEnergy = FLT_MAX;
 	float currEnergy = FloatMatrix::dot( m_r, m_r );
 	float deltaEnergy = fabs( currEnergy - prevEnergy );
-	
 
 	// check for convergence
 	int nIterations = 0;
 	while( deltaEnergy > m_epsilon * ( 1 + currEnergy ) &&
-		nIterations < m_maxNumIterations )
+		( ( m_maxNumIterations > 0 ) && ( nIterations < m_maxNumIterations ) ) )
 	{
 		// not converged
 		prevEnergy = currEnergy;
 		m_prevBeta = m_currBeta;
 
 		// take a step:
+#if TIMING
+		sw.reset();
+#endif
 		m_pEnergy->evaluateJacobian( m_currBeta, m_J );
-		//J.print( "J = " );
+#if TIMING
+		tJ += sw.millisecondsElapsed();
+#endif
 
+#if TIMING
+		sw.reset();
+#endif
 		cholmod_sparse* jSparse = cholmod_l_triplet_to_sparse( m_J, m_J->nnz, m_pcc );		
+#if TIMING
+		tConvert += sw.millisecondsElapsed();
+#endif
 
+#if TIMING
+		sw.reset();
+#endif
 		auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
+#if TIMING
+		tQR += sw.millisecondsElapsed();
+#endif
 
+#if TIMING
+		sw.reset();
+#endif
 		copyCholmodDenseToFloatMatrix( delta, m_delta );
-		
+#if TIMING
+		tCopy += sw.millisecondsElapsed();
+#endif
+
 		m_J->nnz = 0; // reset sparse jacobian
 		cholmod_l_free_dense( &delta, m_pcc );
 		cholmod_l_free_sparse( &jSparse, m_pcc );
@@ -93,13 +164,31 @@ FloatMatrix SparseGaussNewton::minimize( const FloatMatrix& guess, float* pEnerg
 		m_currBeta = m_prevBeta - m_delta;
 
 		// update energy
+#if TIMING
+		sw.reset();
+#endif
 		m_pEnergy->evaluateResidual( m_currBeta, m_r );
+#if TIMING
+		tR += sw.millisecondsElapsed();
+#endif
+
+#if TIMING
+		sw.reset();
+#endif
 		copyFloatMatrixToCholmodDense( m_r, m_r2 );
+#if TIMING
+		tCopy += sw.millisecondsElapsed();
+#endif
 
 		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
 		++nIterations;
 	}
+
+#if TIMING
+	printf( "timing breakdown:\ntR = %f, tJ = %f, tCopy = %f, tConvert = %f, tQR = %f\n",
+		tR, tJ, tCopy, tConvert, tQR );
+#endif
 
 	if( pEnergyFound != nullptr )
 	{
