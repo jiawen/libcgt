@@ -5,7 +5,9 @@
 #include "ArrayUtils.h"
 #include "ArrayWithLength.h"
 #include "BasicTypes.h"
+#include "Comparators.h"
 #include "QAtomicQueue.h"
+#include "QReferenceHash.h"
 #include "Reference.h"
 #include "ReferenceCountedArray.h"
 

@@ -1,6 +1,8 @@
 TEMPLATE = lib
 CONFIG += qt console thread debug_and_release staticlib
 
+DESTDIR = "../../lib"
+
 INCLUDEPATH += ./include
 
 INCLUDEPATH += $(QTDIR)/include/QtCore

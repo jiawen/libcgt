@@ -1,4 +1,4 @@
-#include "QD3D10Viewer.h"
+#include "QD3D11Viewer.h"
 
 #include <QApplication>
 #include <QMouseEvent>
@@ -15,7 +15,7 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-QD3D10Viewer::QD3D10Viewer( bool flipMouseUpDown,
+QD3D11Viewer::QD3D11Viewer( bool flipMouseUpDown,
 						   float keyWalkSpeed,
 						   float mousePitchSpeed,
 						   QWidget* parent ) :
@@ -25,7 +25,7 @@ QD3D10Viewer::QD3D10Viewer( bool flipMouseUpDown,
 	m_keyWalkSpeed( keyWalkSpeed ),
 	m_mousePitchSpeed( mousePitchSpeed ),
 
-	QD3D10Widget( parent )
+	QD3D11Widget( parent )
 
 {
     m_camera.setDirectX( true );
@@ -36,12 +36,12 @@ QD3D10Viewer::QD3D10Viewer( bool flipMouseUpDown,
 	setUpVector( Vector3f( 0, 1, 0 ) );
 }
 
-Vector3f QD3D10Viewer::upVector() const
+Vector3f QD3D11Viewer::upVector() const
 {
 	return m_groundPlaneToWorld.getCol( 1 );
 }
 
-void QD3D10Viewer::setUpVector( const Vector3f& y )
+void QD3D11Viewer::setUpVector( const Vector3f& y )
 {
 	Vector3f x;
 	Vector3f z;
@@ -54,37 +54,37 @@ void QD3D10Viewer::setUpVector( const Vector3f& y )
 	// TODO: reset camera
 }
 
-bool QD3D10Viewer::flipMouseUpDown() const
+bool QD3D11Viewer::flipMouseUpDown() const
 {
 	return m_flipMouseUpDown;
 }
 
-float QD3D10Viewer::keyWalkSpeed() const
+float QD3D11Viewer::keyWalkSpeed() const
 {
 	return m_keyWalkSpeed;
 }
 
-void QD3D10Viewer::setKeyWalkSpeed( float speed )
+void QD3D11Viewer::setKeyWalkSpeed( float speed )
 {
 	m_keyWalkSpeed = speed;
 }
 
-float QD3D10Viewer::mousePitchSpeed() const
+float QD3D11Viewer::mousePitchSpeed() const
 {
 	return m_mousePitchSpeed;
 }
 
-void QD3D10Viewer::setMousePitchSpeed( float speed )
+void QD3D11Viewer::setMousePitchSpeed( float speed )
 {
 	m_mousePitchSpeed = speed;
 }
 
-PerspectiveCamera& QD3D10Viewer::camera()
+PerspectiveCamera& QD3D11Viewer::camera()
 {
 	return m_camera;
 }
 
-void QD3D10Viewer::setCamera( const PerspectiveCamera& camera )
+void QD3D11Viewer::setCamera( const PerspectiveCamera& camera )
 {
 	m_camera = camera;
 }
@@ -93,7 +93,7 @@ void QD3D10Viewer::setCamera( const PerspectiveCamera& camera )
 // Public Slots
 //////////////////////////////////////////////////////////////////////////
 
-void QD3D10Viewer::setFlipMouseUpDown( bool flip )
+void QD3D11Viewer::setFlipMouseUpDown( bool flip )
 {
 	m_flipMouseUpDown = flip;
 }
@@ -102,7 +102,7 @@ void QD3D10Viewer::setFlipMouseUpDown( bool flip )
 // Protected
 //////////////////////////////////////////////////////////////////////////
 
-void QD3D10Viewer::updateKeyboard()
+void QD3D11Viewer::updateKeyboard()
 {
 	if ( !isActiveWindow() )
 		return;
@@ -139,7 +139,7 @@ void QD3D10Viewer::updateKeyboard()
 }
 
 // virtual
-void QD3D10Viewer::keyPressEvent( QKeyEvent* event )
+void QD3D11Viewer::keyPressEvent( QKeyEvent* event )
 {
 	if( event->key() == Qt::Key_Escape ||
 		event->key() == Qt::Key_Q )
@@ -150,12 +150,12 @@ void QD3D10Viewer::keyPressEvent( QKeyEvent* event )
 	update();
 }
 
-void QD3D10Viewer::mousePressEvent( QMouseEvent * event )
+void QD3D11Viewer::mousePressEvent( QMouseEvent * event )
 {
 	m_prevPos = Vector2i( event->x(), event->y() );
 }
 
-void QD3D10Viewer::mouseMoveEvent( QMouseEvent* event )
+void QD3D11Viewer::mouseMoveEvent( QMouseEvent* event )
 {
 	Vector2i curPos( event->x(), event->y() );
 	Vector2f delta = curPos - m_prevPos;
@@ -179,7 +179,7 @@ void QD3D10Viewer::mouseMoveEvent( QMouseEvent* event )
 	if( event->buttons() == Qt::LeftButton )
 	{
 		// pitch around the local x axis		
-		float pitch = pitchSpeed * delta.y;		
+		float pitch = pitchSpeed * delta.y;
 
 		Matrix3f pitchMatrix = Matrix3f::rotateX( pitch );		
 
@@ -245,12 +245,12 @@ void QD3D10Viewer::mouseMoveEvent( QMouseEvent* event )
 	update();
 }
 
-void QD3D10Viewer::mouseReleaseEvent( QMouseEvent * )
+void QD3D11Viewer::mouseReleaseEvent( QMouseEvent * )
 {
 	m_prevPos = Vector2i( -1, -1 );
 }
 
-void QD3D10Viewer::wheelEvent( QWheelEvent * event )
+void QD3D11Viewer::wheelEvent( QWheelEvent * event )
 {
 	//float speed = 0.002f;
 	//float zoom = exp(event->delta() * speed);
@@ -267,7 +267,7 @@ void QD3D10Viewer::wheelEvent( QWheelEvent * event )
  //   update();
 }
 
-void QD3D10Viewer::resizeD3D( int width, int height )
+void QD3D11Viewer::resizeD3D( int width, int height )
 {
     float fovY, aspect, zNear, zFar;
     m_camera.getPerspective(&fovY, &aspect, &zNear, &zFar);
@@ -280,7 +280,7 @@ void QD3D10Viewer::resizeD3D( int width, int height )
 // Private
 //////////////////////////////////////////////////////////////////////////
 
-void QD3D10Viewer::translate( float dx, float dy, float dz )
+void QD3D11Viewer::translate( float dx, float dy, float dz )
 {
 	Vector3f eye = m_camera.getEye();
 	Vector3f x = m_camera.getRight();

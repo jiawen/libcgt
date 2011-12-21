@@ -1,20 +1,53 @@
-#include "D3D10Utils.h"
+#include "D3D11Utils.h"
+
+#include <QFile>
+#include <QTextStream>
 
 #include <common/BasicTypes.h>
 #include <color/ColorUtils.h>
 #include "DynamicTexture2D.h"
 #include "StagingTexture2D.h"
+#include "StagingStructuredBuffer.h"
 
 // static
-D3D10_VIEWPORT D3D10Utils::createViewport( int width, int height )
+QVector< IDXGIAdapter* > D3D11Utils::getDXGIAdapters()
+{
+	QVector< IDXGIAdapter* > adapters;
+
+	IDXGIFactory1* pFactory;
+	HRESULT hr = CreateDXGIFactory1( __uuidof( IDXGIFactory1 ), ( void** )( &pFactory ) );
+	if( SUCCEEDED( hr ) )
+	{
+		uint i = 0;
+		IDXGIAdapter* pAdapter;
+		while( pFactory->EnumAdapters( i, &pAdapter ) != DXGI_ERROR_NOT_FOUND )
+		{ 
+			adapters.append( pAdapter );
+			++i; 
+		}
+
+		pFactory->Release();
+	}
+
+	return adapters;
+}
+
+// static
+D3D11_VIEWPORT D3D11Utils::createViewport( int width, int height )
 {
 	return createViewport( 0, 0, width, height, 0.0f, 1.0f );
 }
 
 // static
-D3D10_VIEWPORT D3D10Utils::createViewport( int topLeftX, int topLeftY, int width, int height, float zMin, float zMax )
+D3D11_VIEWPORT D3D11Utils::createViewport( const Vector2i& wh )
 {
-	D3D10_VIEWPORT vp;
+	return createViewport( wh[ 0 ], wh[ 1 ] );
+}
+
+// static
+D3D11_VIEWPORT D3D11Utils::createViewport( int topLeftX, int topLeftY, int width, int height, float zMin, float zMax )
+{
+	D3D11_VIEWPORT vp;
 	vp.TopLeftX = topLeftX;
 	vp.TopLeftY = topLeftY;
 	vp.Width = width;
@@ -26,7 +59,7 @@ D3D10_VIEWPORT D3D10Utils::createViewport( int topLeftX, int topLeftY, int width
 }
 
 // static
-QVector< VertexPosition4fNormal3fTexture2f > D3D10Utils::createBox( bool normalsPointOutward )
+QVector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normalsPointOutward )
 {
 	Vector4f positions[ 8 ];
 	for( int i = 0; i < 8; ++i )
@@ -167,11 +200,11 @@ QVector< VertexPosition4fNormal3fTexture2f > D3D10Utils::createBox( bool normals
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D10Utils::createAxes( ID3D10Device* pDevice )
+Reference< DynamicVertexBuffer > D3D11Utils::createAxes( ID3D11Device* pDevice )
 {
 	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );
 
-	VertexPosition4fColor4f* vertexArray = reinterpret_cast< VertexPosition4fColor4f* >( buffer->mapForWriteDiscard() );
+	VertexPosition4fColor4f* vertexArray = reinterpret_cast< VertexPosition4fColor4f* >( buffer->mapForWriteDiscard().pData );
 	writeAxes( vertexArray );
 	buffer->unmap();
 
@@ -179,7 +212,7 @@ Reference< DynamicVertexBuffer > D3D10Utils::createAxes( ID3D10Device* pDevice )
 }
 
 // static
-void D3D10Utils::writeAxes( VertexPosition4fColor4f* vertexArray )
+void D3D11Utils::writeAxes( VertexPosition4fColor4f* vertexArray )
 {
 	// x
 	vertexArray[ 0 ] = VertexPosition4fColor4f( 0, 0, 0, 1, 0, 0 );
@@ -195,11 +228,11 @@ void D3D10Utils::writeAxes( VertexPosition4fColor4f* vertexArray )
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D10Utils::createFullScreenQuad( ID3D10Device* pDevice )
+Reference< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device* pDevice )
 {
 	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4f::sizeInBytes() );
 
-	VertexPosition4f* vertexArray = reinterpret_cast< VertexPosition4f* >( buffer->mapForWriteDiscard() );
+	VertexPosition4f* vertexArray = reinterpret_cast< VertexPosition4f* >( buffer->mapForWriteDiscard().pData );
 	writeFullScreenQuad( vertexArray );
 	buffer->unmap();
 
@@ -207,11 +240,11 @@ Reference< DynamicVertexBuffer > D3D10Utils::createFullScreenQuad( ID3D10Device*
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D10Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D10Device* pDevice )
+Reference< DynamicVertexBuffer > D3D11Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice )
 {
 	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() );
 
-	VertexPosition4fTexture2f* vertexArray = reinterpret_cast< VertexPosition4fTexture2f* >( buffer->mapForWriteDiscard() );
+	VertexPosition4fTexture2f* vertexArray = reinterpret_cast< VertexPosition4fTexture2f* >( buffer->mapForWriteDiscard().pData );
 	writeScreenAlignedQuad( x, y, width, height, vertexArray );
 	buffer->unmap();
 
@@ -219,7 +252,7 @@ Reference< DynamicVertexBuffer > D3D10Utils::createScreenAlignedQuad( float x, f
 }
 
 // static
-void D3D10Utils::writeFullScreenQuad( VertexPosition4f* vertexArray )
+void D3D11Utils::writeFullScreenQuad( VertexPosition4f* vertexArray )
 {
 	vertexArray[ 0 ] = VertexPosition4f( -1, -1, 0, 1 );
 	vertexArray[ 1 ] = VertexPosition4f( 1, -1, 0, 1 );
@@ -231,7 +264,19 @@ void D3D10Utils::writeFullScreenQuad( VertexPosition4f* vertexArray )
 }
 
 // static
-void D3D10Utils::writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool flipUV )
+void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4f* vertexArray )
+{
+	vertexArray[ 0 ] = VertexPosition4f( x, y, 0, 1 );
+	vertexArray[ 1 ] = VertexPosition4f( x + width, y, 0, 1 );
+	vertexArray[ 2 ] = VertexPosition4f( x, y + height, 0, 1 );
+
+	vertexArray[ 3 ] = VertexPosition4f( x, y + height, 0, 1 );
+	vertexArray[ 4 ] = VertexPosition4f( x + width, y, 0, 1 );
+	vertexArray[ 5 ] = VertexPosition4f( x + width, y + height, 0, 1 );
+}
+
+// static
+void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool flipUV )
 {
 	if( flipUV )
 	{
@@ -256,14 +301,14 @@ void D3D10Utils::writeScreenAlignedQuad( float x, float y, float width, float he
 }
 
 // static
-Reference< DynamicTexture2D > D3D10Utils::createTextureFromFile( ID3D10Device* pDevice, QString filename, bool flipUV )
+Reference< DynamicTexture2D > D3D11Utils::createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV )
 {
 	Reference< Image4ub > im = new Image4ub( filename );
 	return createTextureFromImage( pDevice, im, flipUV );
 }
 
 // static
-Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* pDevice, Reference< Image4ub > im, bool flipUV )
+Reference< DynamicTexture2D > D3D11Utils::createTextureFromImage( ID3D11Device* pDevice, Reference< Image4ub > im, bool flipUV )
 {
 	Reference< DynamicTexture2D > pTexture = DynamicTexture2D::createUnsignedByte4( pDevice, im->width(), im->height() );
 	copyImageToTexture( im, pTexture, flipUV );
@@ -271,7 +316,7 @@ Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* 
 }
 
 // static
-Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* pDevice, Reference< Image4f > im, bool flipUV )
+Reference< DynamicTexture2D > D3D11Utils::createTextureFromImage( ID3D11Device* pDevice, Reference< Image4f > im, bool flipUV )
 {
 	Reference< DynamicTexture2D > pTexture = DynamicTexture2D::createFloat4( pDevice, im->width(), im->height() );
 	copyImageToTexture( im, pTexture, flipUV );
@@ -279,7 +324,7 @@ Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* 
 }
 
 // static
-Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* pDevice, Reference< Image1f > im, bool flipUV )
+Reference< DynamicTexture2D > D3D11Utils::createTextureFromImage( ID3D11Device* pDevice, Reference< Image1f > im, bool flipUV )
 {
 	Reference< DynamicTexture2D > pTexture = DynamicTexture2D::createFloat1( pDevice, im->width(), im->height() );
 	copyImageToTexture( im, pTexture, flipUV );
@@ -287,12 +332,12 @@ Reference< DynamicTexture2D > D3D10Utils::createTextureFromImage( ID3D10Device* 
 }
 
 // static
-void D3D10Utils::copyImageToTexture( Reference< Image1f > im, Reference< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils::copyImageToTexture( Reference< Image1f > im, Reference< DynamicTexture2D > tex, bool flipUV )
 {
 	int width = im->width();
 	int height = im->height();
 
-	D3D10_MAPPED_TEXTURE2D mapping = tex->map();
+	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
 
 	float* sourceData = im->pixels();
 	quint8* destData = reinterpret_cast< quint8* >( mapping.pData );
@@ -311,12 +356,12 @@ void D3D10Utils::copyImageToTexture( Reference< Image1f > im, Reference< Dynamic
 }
 
 // static
-void D3D10Utils::copyImageToTexture( Reference< Image4f > im, Reference< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils::copyImageToTexture( Reference< Image4f > im, Reference< DynamicTexture2D > tex, bool flipUV )
 {
 	int width = im->width();
 	int height = im->height();
 
-	D3D10_MAPPED_TEXTURE2D mapping = tex->map();
+	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
 
 	float* sourceData = im->pixels();
 	ubyte* destDataBytes = reinterpret_cast< ubyte* >( mapping.pData );
@@ -347,12 +392,12 @@ void D3D10Utils::copyImageToTexture( Reference< Image4f > im, Reference< Dynamic
 
 
 // static
-void D3D10Utils::copyImageToTexture( Reference< Image4ub > im, Reference< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils::copyImageToTexture( Reference< Image4ub > im, Reference< DynamicTexture2D > tex, bool flipUV )
 {
 	int width = im->width();
 	int height = im->height();
 
-	D3D10_MAPPED_TEXTURE2D mapping = tex->map();
+	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
 
 	quint8* sourceData = im->pixels();
 	quint8* destData = reinterpret_cast< quint8* >( mapping.pData );
@@ -371,9 +416,9 @@ void D3D10Utils::copyImageToTexture( Reference< Image4ub > im, Reference< Dynami
 }
 
 // static
-void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, Reference< Image1f > im )
+void D3D11Utils::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image1f > im )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -389,7 +434,7 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 	if( desc.Format == DXGI_FORMAT_R32_FLOAT )
 	{
 		pST->copyFrom( pTexture );
-		D3D10_MAPPED_TEXTURE2D mt = pST->map();
+		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
 		float* sourceData = reinterpret_cast< float* >( mt.pData );
 
 		for( int y = 0; y < height; ++y )
@@ -413,9 +458,9 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 }
 
 // static
-void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, Reference< Image1i > im )
+void D3D11Utils::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image1i > im )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -436,7 +481,7 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 		desc.Format == DXGI_FORMAT_R16_UINT )
 	{
 		pST->copyFrom( pTexture );
-		D3D10_MAPPED_TEXTURE2D mt = pST->map();
+		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
 		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
 
 		for( int y = 0; y < height; ++y )
@@ -459,9 +504,9 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 }
 
 // static
-void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, Reference< Image4ub > im )
+void D3D11Utils::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image4ub > im )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -477,7 +522,7 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 	if( desc.Format == DXGI_FORMAT_R8G8B8A8_UNORM )
 	{
 		pST->copyFrom( pTexture );
-		D3D10_MAPPED_TEXTURE2D mt = pST->map();
+		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
 		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
 
 		for( int y = 0; y < height; ++y )
@@ -503,9 +548,9 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 }
 
 // static
-void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, Reference< Image4f > im )
+void D3D11Utils::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image4f > im )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -513,15 +558,39 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 
 	Reference< StagingTexture2D > pST;
 
-	if( desc.Format == DXGI_FORMAT_R32G32B32A32_FLOAT )
+	if( desc.Format == DXGI_FORMAT_R32G32_FLOAT )
+	{
+		pST = StagingTexture2D::createFloat2( pDevice, width, height );
+	}
+	else if( desc.Format == DXGI_FORMAT_R32G32B32A32_FLOAT )
 	{
 		pST = StagingTexture2D::createFloat4( pDevice, width, height );
 	}
 
-	if( desc.Format == DXGI_FORMAT_R32G32B32A32_FLOAT )
+	if( desc.Format == DXGI_FORMAT_R32G32_FLOAT )
 	{
 		pST->copyFrom( pTexture );
-		D3D10_MAPPED_TEXTURE2D mt = pST->map();
+		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+
+		for( int y = 0; y < height; ++y )
+		{
+			int yy = height - y - 1;
+
+			float* sourceRow = reinterpret_cast< float* >( &( sourceData[ y * mt.RowPitch ] ) );
+			for( int x = 0; x < width; ++x )
+			{
+				float r = sourceRow[ 2 * x ];
+				float g = sourceRow[ 2 * x + 1 ];
+				im->setPixel( x, yy, Vector4f( r, g, 0, 1 ) );
+			}
+		}
+		pST->unmap();
+	}
+	else if( desc.Format == DXGI_FORMAT_R32G32B32A32_FLOAT )
+	{
+		pST->copyFrom( pTexture );
+		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
 		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
 
 		for( int y = 0; y < height; ++y )
@@ -547,10 +616,10 @@ void D3D10Utils::copyTextureToImage( ID3D10Device* pDevice, ID3D10Texture2D* pTe
 }
 
 // static
-void D3D10Utils::saveTextureToBinary( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, QString filename )
+void D3D11Utils::saveTextureToBinary( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename )
 {
 	// TODO: port Array2D to libcgt
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -589,9 +658,9 @@ void D3D10Utils::saveTextureToBinary( ID3D10Device* pDevice, ID3D10Texture2D* pT
 }
 
 // static
-void D3D10Utils::saveTextureToPFM( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, QString filename )
+void D3D11Utils::saveTextureToPFM( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -606,13 +675,52 @@ void D3D10Utils::saveTextureToPFM( ID3D10Device* pDevice, ID3D10Texture2D* pText
 			im->save( filename );
 			break;
 		}
+		case DXGI_FORMAT_R32G32_FLOAT:
+		case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		{
+			Reference< Image4f > im = new Image4f( width, height );
+			copyTextureToImage( pDevice, pTexture, im );
+			im->save( filename );
+			break;		
+		}
+		default:
+		{			
+			printf( "Unsupported format, TODO: USHORT_16 for depths\n" );
+			break;
+		}
 	}
 }
 
 // static
-void D3D10Utils::saveTextureToPNG( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, QString filename, bool scale, float factor )
+void D3D11Utils::saveTextureToPFM4( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
+	pTexture->GetDesc( &desc );
+
+	int width = desc.Width;
+	int height = desc.Height;
+
+	switch( desc.Format )
+	{
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		{
+			Reference< Image4f > im = new Image4f( width, height );
+			copyTextureToImage( pDevice, pTexture, im );
+			im->save( filename );
+			break;		
+		}
+	default:
+		{			
+			printf( "Unsupported format, TODO: USHORT_16 for depths\n" );
+			break;
+		}
+	}
+}
+
+// static
+void D3D11Utils::saveTextureToPNG( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename, bool scale, float factor )
+{
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -667,9 +775,9 @@ void D3D10Utils::saveTextureToPNG( ID3D10Device* pDevice, ID3D10Texture2D* pText
 }
 
 // static
-void D3D10Utils::saveTextureToTXT( ID3D10Device* pDevice, ID3D10Texture2D* pTexture, QString filename )
+void D3D11Utils::saveTextureToTXT( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename )
 {
-	D3D10_TEXTURE2D_DESC desc;
+	D3D11_TEXTURE2D_DESC desc;
 	pTexture->GetDesc( &desc );
 
 	int width = desc.Width;
@@ -685,9 +793,102 @@ void D3D10Utils::saveTextureToTXT( ID3D10Device* pDevice, ID3D10Texture2D* pText
 			im->saveTXT( filename );
 			break;
 		}
+	case DXGI_FORMAT_R32_FLOAT:
+		{
+			Reference< Image1f > im = new Image1f( width, height );
+			copyTextureToImage( pDevice, pTexture, im );
+			im->save( filename );
+			break;
+		}
+	case DXGI_FORMAT_R32G32_FLOAT:
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		{
+			Reference< Image4f > im = new Image4f( width, height );
+			copyTextureToImage( pDevice, pTexture, im );
+			im->save( filename );
+			break;
+		}
 	default:
 		{
 			printf( "saveTextureToTXT: texture format unsupported\n" );
 		}
 	}
+}
+
+// static
+bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticDataBuffer > pBuffer, QString filename )
+{
+	int ne = pBuffer->numElements();
+	int esb = pBuffer->elementSizeBytes();
+	Reference< StagingStructuredBuffer > sb = StagingStructuredBuffer::create
+	(
+		pDevice, ne, esb
+	);
+
+	sb->copyFrom( pBuffer->buffer() );
+
+	QFile outputFile( filename );
+
+	// try to open the file in write only mode
+	if( !( outputFile.open( QIODevice::WriteOnly ) ) )
+	{
+		return false;
+	}
+
+	QTextStream outputTextStream( &outputFile );
+	outputTextStream.setCodec( "UTF-8" );
+
+	outputTextStream << "float2 buffer: nElements = " << ne << "\n";
+	outputTextStream << "[index]: x y\n";
+
+	float* pData = reinterpret_cast< float* >( sb->mapForReadWrite().pData );
+	for( int i = 0; i < ne; ++i )
+	{
+		float x = pData[ 2 * i ];
+		float y = pData[ 2 * i + 1 ];
+
+		outputTextStream << "[" << i << "]: " << x << " " << y << "\n";
+	}
+
+	outputFile.close();
+	return true;
+}
+
+// static
+bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename )
+{
+	int ne = pBuffer->numElements();
+	int esb = pBuffer->elementSizeBytes();
+	Reference< StagingStructuredBuffer > sb = StagingStructuredBuffer::create
+		(
+			pDevice, ne, esb
+		);
+
+	sb->copyFrom( pBuffer->buffer() );
+
+	QFile outputFile( filename );
+
+	// try to open the file in write only mode
+	if( !( outputFile.open( QIODevice::WriteOnly ) ) )
+	{
+		return false;
+	}
+
+	QTextStream outputTextStream( &outputFile );
+	outputTextStream.setCodec( "UTF-8" );
+
+	outputTextStream << "float2 buffer: nElements = " << ne << "\n";
+	outputTextStream << "[index]: x y\n";
+
+	float* pData = reinterpret_cast< float* >( sb->mapForReadWrite().pData );
+	for( int i = 0; i < ne; ++i )
+	{
+		float x = pData[ 2 * i ];
+		float y = pData[ 2 * i + 1 ];
+
+		outputTextStream << "[" << i << "]: " << x << " " << y << "\n";
+	}
+
+	outputFile.close();
+	return true;
 }
