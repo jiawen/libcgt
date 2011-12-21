@@ -1,5 +1,6 @@
 debug
 release
+ipch
 *.opensdf
 *.pdb
 *.sdf

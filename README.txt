@@ -6,6 +6,10 @@ Dependencies:
 core:
 Qt 4.x, tested with Qt 4.7.2
 
+CUDA:
+NVIDIA CUDA Toolkit 4.0
+NVIDIA GPU Computing SDK (for cutil)
+
 GL:
 GLEW 1.7.0
 
