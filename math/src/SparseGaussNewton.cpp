@@ -97,7 +97,7 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 	sw.reset();
 #endif
-	m_pEnergy->evaluateResidual( m_currBeta, m_r );
+	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 #if TIMING
 	tR += sw.millisecondsElapsed();
 #endif
@@ -127,7 +127,6 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 		sw.reset();
 #endif
-		m_pEnergy->evaluateJacobian( m_currBeta, m_J );
 #if TIMING
 		tJ += sw.millisecondsElapsed();
 #endif
@@ -167,7 +166,7 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 		sw.reset();
 #endif
-		m_pEnergy->evaluateResidual( m_currBeta, m_r );
+		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 #if TIMING
 		tR += sw.millisecondsElapsed();
 #endif
