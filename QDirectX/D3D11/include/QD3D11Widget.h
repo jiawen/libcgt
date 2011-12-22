@@ -14,7 +14,10 @@ public:
 	QD3D11Widget( QWidget* parent = NULL );
 	virtual ~QD3D11Widget();
 
-	HRESULT initialize( int width, int height );
+	// Returns if this widget is a vaild D3D11 context.
+	// It should be valid after show() has been called,
+	// but D3D11 initialization may fail.
+	bool isValid() const;
 
 	ID3D11Device* device() const;
 	ID3D11DeviceContext* immediateContext() const;
@@ -52,11 +55,13 @@ protected:
 
 private:
 
+	bool m_bD3DInitialized;
+
 	virtual QPaintEngine* paintEngine() const;
 	virtual void paintEvent( QPaintEvent* e );
 	virtual void resizeEvent( QResizeEvent* e );
 
-	bool m_bD3DInitialized;
+	HRESULT initialize( int width, int height );
 
 	// initialization
 	HRESULT createSwapChainAndDevice( int width, int height );

@@ -42,12 +42,12 @@ Vector2d& Vector2d::operator = ( const Vector2d& rv )
 
 const double& Vector2d::operator [] ( int i ) const
 {
-	return m_elements[ i % 2 ];
+	return m_elements[ i ];
 }
 
 double& Vector2d::operator [] ( int i )
 {
-	return m_elements[ i % 2 ];
+	return m_elements[ i ];
 }
 
 double& Vector2d::x()

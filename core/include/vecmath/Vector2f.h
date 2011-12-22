@@ -43,7 +43,7 @@ public:
 
 	// no destructor necessary
 
-	// returns the ith element (mod 2)
+	// returns the ith element
     const float& operator [] ( int i ) const { return m_elements[i]; }
 	float& operator [] ( int i ) { return m_elements[i]; }
 

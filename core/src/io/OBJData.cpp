@@ -9,6 +9,15 @@ OBJData::OBJData()
 	
 }
 
+// virtual
+OBJData::~OBJData()
+{
+	foreach( OBJGroup* pGroup, m_qhGroups )
+	{
+		delete pGroup;
+	}
+}
+
 QVector< Vector3f >* OBJData::getPositions()
 {
 	return &m_qvPositions;

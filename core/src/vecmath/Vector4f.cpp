@@ -132,12 +132,12 @@ Vector4f::operator float* ()
 
 const float& Vector4f::operator [] ( int i ) const
 {
-	return m_elements[ i % 4 ];
+	return m_elements[ i ];
 }
 
 float& Vector4f::operator [] ( int i )
 {
-	return m_elements[ i % 4 ];
+	return m_elements[ i ];
 }
 
 Vector2f Vector4f::xy() const
@@ -207,14 +207,7 @@ float Vector4f::abs() const
 
 float Vector4f::absSquared() const
 {
-	const int mask = 0xffffffff;
-	//float dp;
-
-	__m128* m = ( __m128* )( m_elements );
-	__m128 res = _mm_dp_ps( *m, *m, 0xffffffff );
-
-	return res.m128_f32[0];
-
+	return x * x + y * y + z * z + w * w;
 	//return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
 }
 

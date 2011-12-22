@@ -14,7 +14,7 @@ public:
 	Vector2d& operator = ( const Vector2d& rv ); // assignment operator
 	// no destructor necessary
 
-	// returns the ith element (mod 2)
+	// returns the ith element
 	const double& operator [] ( int i ) const;
 	double& operator [] ( int i );
 

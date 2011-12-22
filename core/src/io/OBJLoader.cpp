@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>
-#include <QRegExp>
+//#include <QRegExp>
 
 #include "io/OBJData.h"
 #include "io/OBJGroup.h"
@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-OBJData* OBJLoader::loadFile( QString filename )
+std::shared_ptr< OBJData > OBJLoader::loadFile( QString filename )
 {
 	// attempt to read the file
 	// return NULL if failed
@@ -34,7 +34,8 @@ OBJData* OBJLoader::loadFile( QString filename )
 	OBJData* pOBJData = new OBJData;
 	OBJGroup* pCurrentGroup = pOBJData->addGroup( "" ); // default group name is the empty string
 	
-	QRegExp splitExp( "\\s+" );
+	QString delim( " " );
+	//QRegExp splitExp( "\\s+" );
 
 	while( !( inputTextStream.atEnd() ) )
 	{
@@ -43,7 +44,7 @@ OBJData* OBJLoader::loadFile( QString filename )
 
 		if( line != "" )
 		{
-			QStringList tokens = line.split( splitExp, QString::SkipEmptyParts );
+			QStringList tokens = line.split( delim, QString::SkipEmptyParts );
 			
 			if( tokens.size() > 0 )
 			{
@@ -99,7 +100,7 @@ OBJData* OBJLoader::loadFile( QString filename )
 		}		
 	}
 
-	return pOBJData;
+	return std::shared_ptr< OBJData >( pOBJData );
 }
 
 

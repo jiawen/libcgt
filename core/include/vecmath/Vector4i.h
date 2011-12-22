@@ -24,7 +24,7 @@ public:
 	Vector4i& operator = ( const Vector4i& rv ); // assignment operator
 	// no destructor necessary
 
-	// returns the ith element (mod 4)
+	// returns the ith element
 	const int& operator [] ( int i ) const;
 	int& operator [] ( int i );
 

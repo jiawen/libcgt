@@ -59,12 +59,12 @@ Vector3i& Vector3i::operator = ( const Vector3i& rv )
 
 const int& Vector3i::operator [] ( int i ) const
 {
-	return m_elements[ i % 3 ];
+	return m_elements[ i ];
 }
 
 int& Vector3i::operator [] ( int i )
 {
-	return m_elements[ i % 3 ];
+	return m_elements[ i ];
 }
 
 Vector2i Vector3i::xy() const

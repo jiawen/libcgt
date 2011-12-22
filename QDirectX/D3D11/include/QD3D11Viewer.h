@@ -16,7 +16,7 @@ public:
 	QD3D11Viewer( bool flipMouseUpDown = true,
 		float keyWalkSpeed = 0.15f,
 		float mousePitchSpeed = 0.005f,
-		QWidget* parent = NULL );
+		QWidget* parent = nullptr );
 
 	bool flipMouseUpDown() const;
 

@@ -1,6 +1,7 @@
 #ifndef OBJ_LOADER_H
 #define OBJ_LOADER_H
 
+#include <memory>
 #include <QString>
 
 class OBJData;
@@ -10,7 +11,7 @@ class OBJLoader
 {
 public:
 
-	static OBJData* loadFile( QString filename );
+	static std::shared_ptr< OBJData > loadFile( QString filename );
 
 private:
 

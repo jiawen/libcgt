@@ -41,12 +41,12 @@ Vector2i& Vector2i::operator = ( const Vector2i& rv )
 
 const int& Vector2i::operator [] ( int i ) const
 {
-	return m_elements[ i % 2 ];
+	return m_elements[ i ];
 }
 
 int& Vector2i::operator [] ( int i )
 {
-	return m_elements[ i % 2 ];
+	return m_elements[ i ];
 }
 
 Vector2i Vector2i::xy() const

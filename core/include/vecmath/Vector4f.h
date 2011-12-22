@@ -7,9 +7,6 @@ class Vector3f;
 class Vector4i;
 class Vector4d;
 
-#include <smmintrin.h>
-
-__declspec( align( 16 ) )
 class Vector4f
 {
 public:
@@ -41,7 +38,7 @@ public:
 
 	operator float* (); // implicit cast
 
-	// returns the ith element (mod 4)
+	// returns the ith element
 	const float& operator [] ( int i ) const;
 	float& operator [] ( int i );
 	
@@ -103,28 +100,12 @@ public:
 
 inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
 {
-	Vector4f result;
-	__m128* m0 = ( __m128* )( &v0 );
-	__m128* m1 = ( __m128* )( &v1 );
-	__m128* r = ( __m128* )( &result );
-
-	*r = _mm_add_ps( *m0, *m1 );
-	return result;
-
-	//return Vector4f( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
+	return Vector4f( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
 }
 
 inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
 {
-	Vector4f result;
-	__m128* m0 = ( __m128* )( &v0 );
-	__m128* m1 = ( __m128* )( &v1 );
-	__m128* r = ( __m128* )( &result );
-
-	*r = _mm_sub_ps( *m0, *m1 );
-	return result;
-
-	//return Vector4f( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
+	return Vector4f( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
 }
 
 inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )

@@ -66,12 +66,12 @@ Vector3d& Vector3d::operator = ( const Vector3d& rv )
 
 const double& Vector3d::operator [] ( int i ) const
 {
-	return m_elements[ i % 3 ];
+	return m_elements[ i ];
 }
 
 double& Vector3d::operator [] ( int i )
 {
-	return m_elements[ i % 3 ];
+	return m_elements[ i ];
 }
 
 double& Vector3d::x()

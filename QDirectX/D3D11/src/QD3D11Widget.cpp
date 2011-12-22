@@ -28,35 +28,9 @@ QD3D11Widget::~QD3D11Widget()
 	}
 }
 
-// TODO: optional: refresh rate, multisampling, driver type (hardware vs ref vs WARP)
-HRESULT QD3D11Widget::initialize( int width, int height )
+bool QD3D11Widget::isValid() const
 {
-	QSize size( width, height );
-	resize( size );
-
-	HRESULT hr = createSwapChainAndDevice( width, height );
-	if( SUCCEEDED( hr ) )
-	{
-		hr = createBackBufferRenderTargetView();
-		if( SUCCEEDED( hr ) )
-		{
-			hr = createDepthStencilBuffers( width, height );
-			if( SUCCEEDED( hr ) )
-			{
-				// set render targets
-				m_pImmediateContext->OMSetRenderTargets( 1, &m_pBackBufferRenderTargetView, m_pDepthStencilView );
-
-				// setup viewport
-				D3D11_VIEWPORT viewport = D3D11Utils::createViewport( width, height );
-				m_pImmediateContext->RSSetViewports( 1, &viewport );				
-			}
-		}
-	}
-
-	initializeD3D();
-
-	m_bD3DInitialized = true;
-	return hr;
+	return m_bD3DInitialized;
 }
 
 ID3D11Device* QD3D11Widget::device() const
@@ -142,8 +116,11 @@ QPaintEngine* QD3D11Widget::paintEngine() const
 // virtual
 void QD3D11Widget::paintEvent( QPaintEvent* e )
 {
-	paintD3D();
-	m_pSwapChain->Present( 0, 0 );
+	if( m_bD3DInitialized )
+	{
+		paintD3D();
+		m_pSwapChain->Present( 0, 0 );
+	}
 }
 
 // virtual
@@ -154,6 +131,12 @@ void QD3D11Widget::resizeEvent( QResizeEvent* e )
 	int width = size.width();
 	int height = size.height();
 
+	if( !m_bD3DInitialized )
+	{
+		initialize( width, height );
+	}
+
+	if( m_bD3DInitialized )
 	// set render targets to null
 	m_pImmediateContext->OMSetRenderTargets( 0, NULL, NULL );
 
@@ -178,6 +161,36 @@ void QD3D11Widget::resizeEvent( QResizeEvent* e )
 	m_pImmediateContext->RSSetViewports( 1, &viewport );	
 
 	resizeD3D( width, height );
+}
+
+// TODO: optional: refresh rate, multisampling, driver type (hardware vs ref vs WARP)
+HRESULT QD3D11Widget::initialize( int width, int height )
+{
+	QSize size( width, height );
+	resize( size );
+
+	HRESULT hr = createSwapChainAndDevice( width, height );
+	if( SUCCEEDED( hr ) )
+	{
+		hr = createBackBufferRenderTargetView();
+		if( SUCCEEDED( hr ) )
+		{
+			hr = createDepthStencilBuffers( width, height );
+			if( SUCCEEDED( hr ) )
+			{
+				// set render targets
+				m_pImmediateContext->OMSetRenderTargets( 1, &m_pBackBufferRenderTargetView, m_pDepthStencilView );
+
+				// setup viewport
+				D3D11_VIEWPORT viewport = D3D11Utils::createViewport( width, height );
+				m_pImmediateContext->RSSetViewports( 1, &viewport );
+
+				initializeD3D();
+				m_bD3DInitialized = true;
+			}
+		}
+	}	
+	return hr;
 }
 
 HRESULT QD3D11Widget::createSwapChainAndDevice( int width, int height )

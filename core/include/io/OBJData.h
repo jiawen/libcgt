@@ -14,7 +14,7 @@ class OBJData
 public:
 
 	OBJData();
-	// TODO: destructor!
+	virtual ~OBJData();
 
 	QVector< Vector3f >* getPositions();
 	QVector< Vector2f >* getTextureCoordinates();

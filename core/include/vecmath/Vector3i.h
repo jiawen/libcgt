@@ -17,7 +17,7 @@ public:
 	Vector3i& operator = ( const Vector3i& rv ); // assignment operator
 	// no destructor necessary
 
-	// returns the ith element (mod 3)
+	// returns the ith element
 	const int& operator [] ( int i ) const;
 	int& operator [] ( int i );
 

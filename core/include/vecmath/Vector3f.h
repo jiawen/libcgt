@@ -33,9 +33,9 @@ public:
 
 	// no destructor necessary
 
-	// returns the ith element (mod 3)
-    const float& operator [] ( int i ) const { return m_elements[i % 3]; }
-    float& operator [] ( int i ) { return m_elements[i % 3]; }
+	// returns the ith element
+    const float& operator [] ( int i ) const { return m_elements[i]; }
+    float& operator [] ( int i ) { return m_elements[i]; }
 
     float& x() { return m_elements[0]; }
 	float& y() { return m_elements[1]; }
