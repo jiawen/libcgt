@@ -91,10 +91,16 @@ Vector3f BoundingBox3f::center() const
 	return( 0.5 * ( m_max + m_min ) );
 }
 
-float BoundingBox3f::radius() const
+float BoundingBox3f::shortestSideLength() const
 {
 	Vector3f diameter = range();
 	return min( diameter.x(), min( diameter.y(), diameter.z() ) );
+}
+
+float BoundingBox3f::longestSideLength() const
+{
+	Vector3f diameter = range();
+	return max( diameter.x(), max( diameter.y(), diameter.z() ) );
 }
 
 QVector< Vector3f > BoundingBox3f::corners() const

@@ -200,9 +200,72 @@ QVector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normals
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D11Utils::createAxes( ID3D11Device* pDevice )
+DynamicVertexBuffer* D3D11Utils::createFrustum( ID3D11Device* pDevice,
+	const Vector3f& eye, QVector< Vector3f > frustumCorners,
+	const Vector4f& color )
 {
-	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );
+	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() );
+	
+	VertexPosition4fColor4f* vertexArray = buffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
+	writeFrustum( eye, frustumCorners, color, vertexArray );
+	buffer->unmap();
+
+	return buffer;
+}
+
+// static
+void D3D11Utils::writeFrustum( const Vector3f& eye, QVector< Vector3f > frustumCorners, const Vector4f& color,
+	VertexPosition4fColor4f* vertexArray )
+{
+	// 4 lines from eye to each far corner
+	vertexArray[0].m_position = Vector4f( eye, 1 );
+	vertexArray[1].m_position = Vector4f( frustumCorners[4], 1 );
+
+	vertexArray[2].m_position = Vector4f( eye, 1 );
+	vertexArray[3].m_position = Vector4f( frustumCorners[5], 1 );
+
+	vertexArray[4].m_position = Vector4f( eye, 1 );
+	vertexArray[5].m_position = Vector4f( frustumCorners[6], 1 );
+
+	vertexArray[6].m_position = Vector4f( eye, 1 );
+	vertexArray[7].m_position = Vector4f( frustumCorners[7], 1 );
+
+	// 4 lines between near corners
+	vertexArray[8].m_position = Vector4f( frustumCorners[0], 1 );
+	vertexArray[9].m_position = Vector4f( frustumCorners[1], 1 );
+
+	vertexArray[10].m_position = Vector4f( frustumCorners[1], 1 );
+	vertexArray[11].m_position = Vector4f( frustumCorners[2], 1 );
+
+	vertexArray[12].m_position = Vector4f( frustumCorners[2], 1 );
+	vertexArray[13].m_position = Vector4f( frustumCorners[3], 1 );
+
+	vertexArray[14].m_position = Vector4f( frustumCorners[3], 1 );
+	vertexArray[15].m_position = Vector4f( frustumCorners[0], 1 );
+
+	// 4 lines between far corners
+	vertexArray[16].m_position = Vector4f( frustumCorners[4], 1 );
+	vertexArray[17].m_position = Vector4f( frustumCorners[5], 1 );
+
+	vertexArray[18].m_position = Vector4f( frustumCorners[5], 1 );
+	vertexArray[19].m_position = Vector4f( frustumCorners[6], 1 );
+
+	vertexArray[20].m_position = Vector4f( frustumCorners[6], 1 );
+	vertexArray[21].m_position = Vector4f( frustumCorners[7], 1 );
+
+	vertexArray[22].m_position = Vector4f( frustumCorners[7], 1 );
+	vertexArray[23].m_position = Vector4f( frustumCorners[4], 1 );
+
+	for( int i = 0; i < 24; ++i )
+	{
+		vertexArray[i].m_color = color;
+	}
+}
+
+// static
+DynamicVertexBuffer* D3D11Utils::createAxes( ID3D11Device* pDevice )
+{
+	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );
 
 	VertexPosition4fColor4f* vertexArray = reinterpret_cast< VertexPosition4fColor4f* >( buffer->mapForWriteDiscard().pData );
 	writeAxes( vertexArray );

@@ -71,8 +71,10 @@ public:
 	Vector3f getForward() const;
 	
 	float getZNear() const;
+	void setZNear( float zNear );
 
 	float getZFar() const;
+	void setZFar( float zFar );
 
 	Matrix4f getProjectionMatrix() const;
 

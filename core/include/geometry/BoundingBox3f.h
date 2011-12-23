@@ -32,7 +32,11 @@ public:
 	Vector3f range() const;
 	Vector3f center() const;
 
-	float radius() const;
+	// returns the minimum of the lengths of the 3 sides of this box
+	float shortestSideLength() const;
+	
+	// returns the maximum of the lengths of the 3 sides of this box
+	float longestSideLength() const;
 
 	QVector< Vector3f > corners() const;
 

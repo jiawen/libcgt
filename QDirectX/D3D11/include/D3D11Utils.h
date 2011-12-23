@@ -59,12 +59,20 @@ public:
 		}
 	}
 
+	// Create a DynamicVertexBuffer of 16 vertices
+	// each vertex is a VertexPosition4fColor4f
+	static DynamicVertexBuffer* createFrustum( ID3D11Device* pDevice,
+		const Vector3f& eye, QVector< Vector3f > frustumCorners,
+		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
+
+	static void writeFrustum( const Vector3f& eye, QVector< Vector3f > frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
+
 	// Create a DynamicVertexBuffer of 6 vertices
 	// each vertex is a VertexPosition4fColor4f
-	static Reference< DynamicVertexBuffer > createAxes( ID3D11Device* pDevice );
+	static DynamicVertexBuffer* createAxes( ID3D11Device* pDevice );
 
 	// writes a set of axes into buffer
-	static void writeAxes( VertexPosition4fColor4f* vertexArray );
+	static void writeAxes( VertexPosition4fColor4f* vertexArray );	
 
 	// Create a DynamicVertexBuffer of 6 vertices (2 triangles) for a fullscreen quad
 	// the vertices are in clip coordinates (-1,-1) --> (1,1)

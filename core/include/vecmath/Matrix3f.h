@@ -70,8 +70,6 @@ public:
 	// if q is not normalized, it it normalized first
 	static Matrix3f rotation( const Quat4f& rq );
 
-private:
-
 	union
 	{
 		struct

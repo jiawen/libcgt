@@ -167,9 +167,19 @@ float Camera::getZNear() const
 	return m_fZNear;
 }
 
+void Camera::setZNear( float zNear )
+{
+	m_fZNear = zNear;
+}
+
 float Camera::getZFar() const
 {
 	return m_fZFar;
+}
+
+void Camera::setZFar( float zFar )
+{
+	m_fZFar = zFar;
 }
 
 Matrix4f Camera::getProjectionMatrix() const

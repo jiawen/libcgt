@@ -40,6 +40,9 @@ SOURCES += src/imageproc/*.cpp
 HEADERS += include/io/*.h
 SOURCES += src/io/*.cpp
 
+HEADERS += include/lights/*.h
+SOURCES += src/lights/*.cpp
+
 HEADERS += include/math/*.h
 SOURCES += src/math/*.cpp
 

@@ -7,6 +7,10 @@ class DynamicVertexBuffer
 {
 public:
 
+	// Create a new DynamicVertexBuffer
+	// capacity is specified in number of vertices
+	// vertexSizeBytes is the number of bytes per vertex
+	// total capacity in bytes is capacity * vertexSizeBytes
 	DynamicVertexBuffer( ID3D11Device* pDevice, int capacity, int vertexSizeBytes );
 	virtual ~DynamicVertexBuffer();
 
@@ -17,7 +21,15 @@ public:
 	UINT defaultOffset();
 
 	D3D11_MAPPED_SUBRESOURCE mapForWriteDiscard();
-	void unmap();
+
+	// same as reinterpret_cast< T* >( mapForWriteDiscard().pData )
+	template< typename T >
+	T* mapForWriteDiscardAs()
+	{
+		return reinterpret_cast< T* >( mapForWriteDiscard().pData );
+	}
+
+	void unmap();	
 
 private:
 
