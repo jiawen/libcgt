@@ -43,10 +43,10 @@ Image4ub::Image4ub( int width, int height, const Vector4i& fill ) :
 	int nPixels = m_width * m_height;
 	for( int i = 0; i < nPixels; ++i )
 	{
-		m_data[ 4 * i ] = ColorUtils::saturate( fill.x() );
-		m_data[ 4 * i + 1 ] = ColorUtils::saturate( fill.y() );
-		m_data[ 4 * i + 2 ] = ColorUtils::saturate( fill.z() );
-		m_data[ 4 * i + 3 ] = ColorUtils::saturate( fill.w() );
+		m_data[ 4 * i ] = ColorUtils::saturate( fill.x );
+		m_data[ 4 * i + 1 ] = ColorUtils::saturate( fill.y );
+		m_data[ 4 * i + 2 ] = ColorUtils::saturate( fill.z );
+		m_data[ 4 * i + 3 ] = ColorUtils::saturate( fill.w );
 	}
 }
 
@@ -60,10 +60,10 @@ Image4ub::Image4ub( const Vector2i& size, const Vector4i& fill ) :
 	int nPixels = m_width * m_height;
 	for( int i = 0; i < nPixels; ++i )
 	{
-		m_data[ 4 * i ] = ColorUtils::saturate( fill.x() );
-		m_data[ 4 * i + 1 ] = ColorUtils::saturate( fill.y() );
-		m_data[ 4 * i + 2 ] = ColorUtils::saturate( fill.z() );
-		m_data[ 4 * i + 3 ] = ColorUtils::saturate( fill.w() );
+		m_data[ 4 * i ] = ColorUtils::saturate( fill.x );
+		m_data[ 4 * i + 1 ] = ColorUtils::saturate( fill.y );
+		m_data[ 4 * i + 2 ] = ColorUtils::saturate( fill.z );
+		m_data[ 4 * i + 3 ] = ColorUtils::saturate( fill.w );
 	}
 }
 
@@ -204,7 +204,7 @@ QImage Image4ub::toQImage()
 		for( int x = 0; x < m_width; ++x )
 		{
 			Vector4i pi = pixel( x, y );
-			QRgb rgba = qRgba( pi.x(), pi.y(), pi.z(), pi.w() );
+			QRgb rgba = qRgba( pi.x, pi.y, pi.z, pi.w );
 			q.setPixel( x, m_height - y - 1, rgba );
 		}
 	}

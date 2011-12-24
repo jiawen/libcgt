@@ -68,9 +68,24 @@ public:
 	// if q is not normalized, it it normalized first
 	static Matrix3d rotation( const Quat4f& rq );
 
-private:
+	union
+	{
+		struct
+		{
+			double m00;
+			double m10;
+			double m20;
 
-	double m_elements[ 9 ];
+			double m01;
+			double m11;
+			double m21;
+
+			double m02;
+			double m12;
+			double m22;
+		};
+		double m_elements[ 9 ];
+	};
 
 };
 

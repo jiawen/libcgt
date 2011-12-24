@@ -133,15 +133,15 @@ float ColorUtils::rgba2luminance( ubyte rgba[4] )
 // static
 Vector3f ColorUtils::rgb2xyz( const Vector3f& rgb )
 {
-	float rOut = ( rgb.x() > 0.04045f ) ?
-		pow( ( rgb.x() + 0.055f ) / 1.055f, 2.4f ) :
-		rgb.x() / 12.92f;
-	float gOut = ( rgb.y() > 0.04045 ) ?
-		pow( ( rgb.y() + 0.055f ) / 1.055f, 2.4f ) :
-		rgb.y() / 12.92f;
-	float bOut = ( rgb.z() > 0.04045f ) ?
-		pow( ( rgb.z() + 0.055f ) / 1.055f, 2.4f ) :
-		rgb.z() / 12.92f;
+	float rOut = ( rgb.x > 0.04045f ) ?
+		pow( ( rgb.x + 0.055f ) / 1.055f, 2.4f ) :
+		rgb.x / 12.92f;
+	float gOut = ( rgb.y > 0.04045 ) ?
+		pow( ( rgb.y + 0.055f ) / 1.055f, 2.4f ) :
+		rgb.y / 12.92f;
+	float bOut = ( rgb.z > 0.04045f ) ?
+		pow( ( rgb.z + 0.055f ) / 1.055f, 2.4f ) :
+		rgb.z / 12.92f;
 	
 	Vector3f rgbOut = 100 * Vector3f( rOut, gOut, bOut );
 	
@@ -161,15 +161,15 @@ Vector3f ColorUtils::xyz2lab( const Vector3f& xyz,
 {
 	Vector3f xyzNormalized = xyz / xyzRef;
 	
-	float fx = ( xyzNormalized.x() > epsilon ) ?
-		pow( xyzNormalized.x(), 1.f / 3.f ) :
-		( ( kappa * xyzNormalized.x() + 16.f ) / 116.f );
-	float fy = ( xyzNormalized.y() > epsilon ) ?
-		pow( xyzNormalized.y(), 1.f / 3.f ) :
-		( ( kappa * xyzNormalized.y() + 16.f ) / 116.f );
-	float fz = ( xyzNormalized.z() > epsilon ) ?
-		pow( xyzNormalized.z(), 1.f / 3.f ) :
-		( ( kappa * xyzNormalized.z() + 16.f ) / 116.f );
+	float fx = ( xyzNormalized.x > epsilon ) ?
+		pow( xyzNormalized.x, 1.f / 3.f ) :
+		( ( kappa * xyzNormalized.x + 16.f ) / 116.f );
+	float fy = ( xyzNormalized.y > epsilon ) ?
+		pow( xyzNormalized.y, 1.f / 3.f ) :
+		( ( kappa * xyzNormalized.y + 16.f ) / 116.f );
+	float fz = ( xyzNormalized.z > epsilon ) ?
+		pow( xyzNormalized.z, 1.f / 3.f ) :
+		( ( kappa * xyzNormalized.z + 16.f ) / 116.f );
 		
 	return Vector3f
 	(
@@ -188,9 +188,9 @@ Vector3f ColorUtils::rgb2lab( const Vector3f& rgb )
 // static
 Vector3f ColorUtils::hsv2rgb( const Vector3f& hsv )
 {
-	float h = hsv.x();
-	float s = hsv.y();
-	float v = hsv.z();
+	float h = hsv.x;
+	float s = hsv.y;
+	float v = hsv.z;
 
 	float r;
 	float g;

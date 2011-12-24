@@ -27,17 +27,7 @@ public:
 	// returns the ith element
 	const int& operator [] ( int i ) const;
 	int& operator [] ( int i );
-
-	int& x();
-	int& y();
-	int& z();
-	int& w();
-
-	int x() const;
-	int y() const;
-	int z() const;
-	int w() const;
-
+	
 	Vector2i xy() const;
 	Vector2i yz() const;
 	Vector2i zw() const;
@@ -74,9 +64,17 @@ public:
 	static int dot( const Vector4i& v0, const Vector4i& v1 );
 	static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
 
-private:
-
-	int m_elements[ 4 ];
+	union
+	{
+		struct
+		{
+			int x;
+			int y;
+			int z;
+			int w;
+		};
+		int m_elements[ 4 ];
+	};
 
 };
 

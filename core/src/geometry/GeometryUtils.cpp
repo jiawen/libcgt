@@ -187,7 +187,7 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 Vector2f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
 											   const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
-	return( b.x() * v0 + b.y() * v1 + b.z() * v2 );
+	return( b.x * v0 + b.y * v1 + b.z * v2 );
 }
 
 // static
@@ -239,13 +239,13 @@ void GeometryUtils::getBasisWithPreferredUp( const Vector3f& z, const Vector3f& 
 // static
 bool GeometryUtils::pointInBox( const Vector3f& crPoint, const BoundingBox3f& bbox )
 {
-	float x = crPoint.x();
-	float y = crPoint.y();
-	float z = crPoint.z();
+	float x = crPoint.x;
+	float y = crPoint.y;
+	float z = crPoint.z;
 
-	return( ( x > bbox.minimum().x() ) && ( x < bbox.maximum().x() ) &&
-		( y > bbox.minimum().y() ) && ( y < bbox.maximum().y() ) &&
-		( z > bbox.minimum().z() ) && ( z < bbox.maximum().z() ) );
+	return( ( x > bbox.minimum().x ) && ( x < bbox.maximum().x ) &&
+		( y > bbox.minimum().y ) && ( y < bbox.maximum().y ) &&
+		( z > bbox.minimum().z ) && ( z < bbox.maximum().z ) );
 }
 
 // static

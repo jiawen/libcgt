@@ -75,18 +75,18 @@ Vector4f::Vector4f( const Vector2f& xy, const Vector2f& zw )
 
 Vector4f::Vector4f( const Vector3f& xyz, float w )
 {
-	m_elements[0] = xyz.x();
-	m_elements[1] = xyz.y();
-	m_elements[2] = xyz.z();
+	m_elements[0] = xyz.x;
+	m_elements[1] = xyz.y;
+	m_elements[2] = xyz.z;
 	m_elements[3] = w;
 }
 
 Vector4f::Vector4f( float x, const Vector3f& yzw )
 {
 	m_elements[0] = x;
-	m_elements[1] = yzw.x();
-	m_elements[2] = yzw.y();
-	m_elements[3] = yzw.z();
+	m_elements[1] = yzw.x;
+	m_elements[2] = yzw.y;
+	m_elements[3] = yzw.z;
 }
 
 Vector4f::Vector4f( const Vector4f& rv )
@@ -99,18 +99,18 @@ Vector4f::Vector4f( const Vector4f& rv )
 
 Vector4f::Vector4f( const Vector4d& rv )
 {
-	m_elements[ 0 ] = static_cast< float >( rv.x() );
-	m_elements[ 1 ] = static_cast< float >( rv.y() );
-	m_elements[ 2 ] = static_cast< float >( rv.z() );
-	m_elements[ 3 ] = static_cast< float >( rv.w() );
+	m_elements[ 0 ] = static_cast< float >( rv.x );
+	m_elements[ 1 ] = static_cast< float >( rv.y );
+	m_elements[ 2 ] = static_cast< float >( rv.z );
+	m_elements[ 3 ] = static_cast< float >( rv.w );
 }
 
 Vector4f::Vector4f( const Vector4i& rv )
 {
-	m_elements[ 0 ] = static_cast< float >( rv.x() );
-	m_elements[ 1 ] = static_cast< float >( rv.y() );
-	m_elements[ 2 ] = static_cast< float >( rv.z() );
-	m_elements[ 3 ] = static_cast< float >( rv.w() );
+	m_elements[ 0 ] = static_cast< float >( rv.x );
+	m_elements[ 1 ] = static_cast< float >( rv.y );
+	m_elements[ 2 ] = static_cast< float >( rv.z );
+	m_elements[ 3 ] = static_cast< float >( rv.w );
 }
 
 Vector4f& Vector4f::operator = ( const Vector4f& rv )

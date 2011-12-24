@@ -94,13 +94,13 @@ Vector3f BoundingBox3f::center() const
 float BoundingBox3f::shortestSideLength() const
 {
 	Vector3f diameter = range();
-	return min( diameter.x(), min( diameter.y(), diameter.z() ) );
+	return min( diameter.x, min( diameter.y, diameter.z ) );
 }
 
 float BoundingBox3f::longestSideLength() const
 {
 	Vector3f diameter = range();
-	return max( diameter.x(), max( diameter.y(), diameter.z() ) );
+	return max( diameter.x, max( diameter.y, diameter.z ) );
 }
 
 QVector< Vector3f > BoundingBox3f::corners() const
@@ -112,9 +112,9 @@ QVector< Vector3f > BoundingBox3f::corners() const
 		out[ i ] =
 			Vector3f
 			(
-				( i & 1 ) ? minimum().x() : maximum().x(),
-				( i & 2 ) ? minimum().y() : maximum().y(),
-				( i & 4 ) ? minimum().z() : maximum().z()
+				( i & 1 ) ? minimum().x : maximum().x,
+				( i & 2 ) ? minimum().y : maximum().y,
+				( i & 4 ) ? minimum().z : maximum().z
 			);
 	}
 
@@ -153,8 +153,8 @@ BoundingBox3f BoundingBox3f::unite( const BoundingBox3f& b0, const BoundingBox3f
     Vector3f b1Min = b1.minimum();
     Vector3f b1Max = b1.maximum();
 
-    Vector3f newMin( min( b0Min.x(), b1Min.x() ), min( b0Min.y(), b1Min.y() ), min( b0Min.z(), b1Min.z() ) );
-    Vector3f newMax( max( b0Max.x(), b1Max.x() ), max( b0Max.y(), b1Max.y() ), max( b0Max.z(), b1Max.z() ) );
+    Vector3f newMin( min( b0Min.x, b1Min.x ), min( b0Min.y, b1Min.y ), min( b0Min.z, b1Min.z ) );
+    Vector3f newMax( max( b0Max.x, b1Max.x ), max( b0Max.y, b1Max.y ), max( b0Max.z, b1Max.z ) );
 
     return BoundingBox3f( newMin, newMax );
 }
@@ -167,8 +167,8 @@ BoundingBox3f BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingB
     Vector3f b1Min = b1.minimum();
     Vector3f b1Max = b1.maximum();
 
-    Vector3f newMin( max( b0Min.x(), b1Min.x() ), max( b0Min.y(), b1Min.y() ), max( b0Min.z(), b1Min.z() ) );
-    Vector3f newMax( min( b0Max.x(), b1Max.x() ), min( b0Max.y(), b1Max.y() ), min( b0Max.z(), b1Max.z() ) );
+    Vector3f newMin( max( b0Min.x, b1Min.x ), max( b0Min.y, b1Min.y ), max( b0Min.z, b1Min.z ) );
+    Vector3f newMax( min( b0Max.x, b1Max.x ), min( b0Max.y, b1Max.y ), min( b0Max.z, b1Max.z ) );
 
     for(int i = 0; i < 3; ++i)
         newMax[i] = max(newMax[i], newMin[i]);
@@ -178,10 +178,10 @@ BoundingBox3f BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingB
 
 void BoundingBox3f::enlarge( const Vector3f& p )
 {
-	m_min.x() = min( p.x(), m_min.x() );
-	m_min.y() = min( p.y(), m_min.y() );
-	m_min.z() = min( p.z(), m_min.z() );
-	m_max.x() = max( p.x(), m_max.x() );
-	m_max.y() = max( p.y(), m_max.y() );
-	m_max.z() = max( p.z(), m_max.z() );
+	m_min.x = min( p.x, m_min.x );
+	m_min.y = min( p.y, m_min.y );
+	m_min.z = min( p.z, m_min.z );
+	m_max.x = max( p.x, m_max.x );
+	m_max.y = max( p.y, m_max.y );
+	m_max.z = max( p.z, m_max.z );
 }

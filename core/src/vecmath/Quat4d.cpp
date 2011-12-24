@@ -85,26 +85,6 @@ double& Quat4d::operator [] ( int i )
 	return m_elements[ i ];
 }
 
-double Quat4d::w() const
-{
-	return m_elements[ 0 ];
-}
-
-double Quat4d::x() const
-{
-	return m_elements[ 1 ];
-}
-
-double Quat4d::y() const
-{
-	return m_elements[ 2 ];
-}
-
-double Quat4d::z() const
-{
-	return m_elements[ 3 ];
-}
-
 Vector3d Quat4d::xyz() const
 {
 	return Vector3d
@@ -194,17 +174,17 @@ Quat4d Quat4d::inverse() const
 
 Vector3d Quat4d::getAxisAngle( double* radiansOut )
 {
-	double theta = acos( w() ) * 2;
-	double vectorNorm = sqrt( x() * x() + y() * y() + z() * z() );
+	double theta = acos( w ) * 2;
+	double vectorNorm = sqrt( x * x + y * y + z * z );
 	double reciprocalVectorNorm = 1.0 / vectorNorm;
 
 	*radiansOut = theta;
 	return Vector3d
-		(
-		x() * reciprocalVectorNorm,
-		y() * reciprocalVectorNorm,
-		z() * reciprocalVectorNorm
-		);
+	(
+		x * reciprocalVectorNorm,
+		y * reciprocalVectorNorm,
+		z * reciprocalVectorNorm
+	);
 }
 
 void Quat4d::setAxisAngle( double radians, const Vector3d& axis )
@@ -215,9 +195,9 @@ void Quat4d::setAxisAngle( double radians, const Vector3d& axis )
 	double vectorNorm = axis.abs();
 	double reciprocalVectorNorm = 1.0 / vectorNorm;
 
-	m_elements[ 1 ] = axis.x() * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 2 ] = axis.y() * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 3 ] = axis.z() * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 1 ] = axis.x * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 2 ] = axis.y * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 3 ] = axis.z * sinHalfTheta * reciprocalVectorNorm;
 }
 
 void Quat4d::print()
@@ -230,12 +210,12 @@ void Quat4d::print()
 double Quat4d::dot( const Quat4d& q0, const Quat4d& q1 )
 {
 	return
-		(
-		q0.w() * q1.w() +
-		q0.x() * q1.x() +
-		q0.y() * q1.y() +
-		q0.z() * q1.z()
-		);
+	(
+		q0.w * q1.w +
+		q0.x * q1.x +
+		q0.y * q1.y +
+		q0.z * q1.z
+	);
 }
 
 // static
@@ -306,44 +286,44 @@ Vector3d Quat4d::rotateVector( const Vector3d& v )
 Quat4d operator + ( const Quat4d& q0, const Quat4d& q1 )
 {
 	return Quat4d
-		(
-		q0.w() + q1.w(),
-		q0.x() + q1.x(),
-		q0.y() + q1.y(),
-		q0.z() + q1.z()
-		);
+	(
+		q0.w + q1.w,
+		q0.x + q1.x,
+		q0.y + q1.y,
+		q0.z + q1.z
+	);
 }
 
 Quat4d operator - ( const Quat4d& q0, const Quat4d& q1 )
 {
 	return Quat4d
-		(
-		q0.w() - q1.w(),
-		q0.x() - q1.x(),
-		q0.y() - q1.y(),
-		q0.z() - q1.z()
-		);
+	(
+		q0.w - q1.w,
+		q0.x - q1.x,
+		q0.y - q1.y,
+		q0.z - q1.z
+	);
 }
 
 Quat4d operator * ( const Quat4d& q0, const Quat4d& q1 )
 {
 	return Quat4d
-		(
-		q0.w() * q1.w() - q0.x() * q1.x() - q0.y() * q1.y() - q0.z() * q1.z(),
-		q0.w() * q1.x() + q0.x() * q1.w() + q0.y() * q1.z() - q0.z() * q1.y(),
-		q0.w() * q1.y() - q0.x() * q1.z() + q0.y() * q1.w() + q0.z() * q1.x(),
-		q0.w() * q1.z() + q0.x() * q1.y() - q0.y() * q1.x() + q0.z() * q1.w()
-		);
+	(
+		q0.w * q1.w - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z,
+		q0.w * q1.x + q0.x * q1.w + q0.y * q1.z - q0.z * q1.y,
+		q0.w * q1.y - q0.x * q1.z + q0.y * q1.w + q0.z * q1.x,
+		q0.w * q1.z + q0.x * q1.y - q0.y * q1.x + q0.z * q1.w
+	);
 }
 
 Quat4d operator * ( double d, const Quat4d& q )
 {
 	return Quat4d
 	(
-		d * q.w(),
-		d * q.x(),
-		d * q.y(),
-		d * q.z()
+		d * q.w,
+		d * q.x,
+		d * q.y,
+		d * q.z
 	);
 }
 
@@ -351,9 +331,9 @@ Quat4d operator * ( const Quat4d& q, double d )
 {
 	return Quat4d
 	(
-		d * q.w(),
-		d * q.x(),
-		d * q.y(),
-		d * q.z()
+		d * q.w,
+		d * q.x,
+		d * q.y,
+		d * q.z
 	);
 }

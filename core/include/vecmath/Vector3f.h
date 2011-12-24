@@ -36,15 +36,7 @@ public:
 	// returns the ith element
     const float& operator [] ( int i ) const { return m_elements[i]; }
     float& operator [] ( int i ) { return m_elements[i]; }
-
-    float& x() { return m_elements[0]; }
-	float& y() { return m_elements[1]; }
-	float& z() { return m_elements[2]; }
-
-	float x() const { return m_elements[0]; }
-	float y() const { return m_elements[1]; }
-	float z() const { return m_elements[2]; }
-
+	
 	Vector2f xy() const;
 	Vector2f xz() const;
 	Vector2f yz() const;
@@ -76,9 +68,9 @@ public:
     {
         return Vector3f
         (
-			v0.y() * v1.z() - v0.z() * v1.y(),
-			v0.z() * v1.x() - v0.x() * v1.z(),
-			v0.x() * v1.y() - v0.y() * v1.x()
+			v0.y * v1.z - v0.z * v1.y,
+			v0.z * v1.x - v0.x * v1.z,
+			v0.x * v1.y - v0.y * v1.x
         );
     }
 
@@ -94,9 +86,16 @@ public:
     inline Vector3f& operator *= ( float f );
 	inline Vector3f& operator /= ( float f );
 
-private:
-
-	float m_elements[ 3 ];
+	union
+	{
+		struct
+		{
+			float x;
+			float y;
+			float z;
+		};
+		float m_elements[3];
+	};
 
 };
 

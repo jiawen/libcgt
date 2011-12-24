@@ -79,26 +79,6 @@ float& Quat4f::operator [] ( int i )
 	return m_elements[ i ];
 }
 
-float Quat4f::w() const
-{
-	return m_elements[ 0 ];
-}
-
-float Quat4f::x() const
-{
-	return m_elements[ 1 ];
-}
-
-float Quat4f::y() const
-{
-	return m_elements[ 2 ];
-}
-
-float Quat4f::z() const
-{
-	return m_elements[ 3 ];
-}
-
 Vector3f Quat4f::xyz() const
 {
 	return Vector3f
@@ -231,16 +211,16 @@ Quat4f Quat4f::exp() const
 
 Vector3f Quat4f::getAxisAngle( float* radiansOut )
 {
-	float theta = acos( w() ) * 2;
-	float vectorNorm = sqrt( x() * x() + y() * y() + z() * z() );
+	float theta = acos( w ) * 2;
+	float vectorNorm = sqrt( x * x + y * y + z * z );
 	float reciprocalVectorNorm = 1.f / vectorNorm;
 
 	*radiansOut = theta;
 	return Vector3f
 	(
-		x() * reciprocalVectorNorm,
-		y() * reciprocalVectorNorm,
-		z() * reciprocalVectorNorm
+		x * reciprocalVectorNorm,
+		y * reciprocalVectorNorm,
+		z * reciprocalVectorNorm
 	);
 }
 
@@ -252,9 +232,9 @@ void Quat4f::setAxisAngle( float radians, const Vector3f& axis )
 	float vectorNorm = axis.abs();
 	float reciprocalVectorNorm = 1.f / vectorNorm;
 
-	m_elements[ 1 ] = axis.x() * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 2 ] = axis.y() * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 3 ] = axis.z() * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 1 ] = axis.x * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 2 ] = axis.y * sinHalfTheta * reciprocalVectorNorm;
+	m_elements[ 3 ] = axis.z * sinHalfTheta * reciprocalVectorNorm;
 }
 
 void Quat4f::print()
@@ -268,10 +248,10 @@ float Quat4f::dot( const Quat4f& q0, const Quat4f& q1 )
 {
 	return
 	(
-		q0.w() * q1.w() +
-		q0.x() * q1.x() +
-		q0.y() * q1.y() +
-		q0.z() * q1.z()
+		q0.w * q1.w +
+		q0.x * q1.x +
+		q0.y * q1.y +
+		q0.z * q1.z
 	);
 }
 
@@ -456,10 +436,10 @@ Quat4f operator + ( const Quat4f& q0, const Quat4f& q1 )
 {
 	return Quat4f
 	(
-		q0.w() + q1.w(),
-		q0.x() + q1.x(),
-		q0.y() + q1.y(),
-		q0.z() + q1.z()
+		q0.w + q1.w,
+		q0.x + q1.x,
+		q0.y + q1.y,
+		q0.z + q1.z
 	);
 }
 
@@ -467,10 +447,10 @@ Quat4f operator - ( const Quat4f& q0, const Quat4f& q1 )
 {
 	return Quat4f
 	(
-		q0.w() - q1.w(),
-		q0.x() - q1.x(),
-		q0.y() - q1.y(),
-		q0.z() - q1.z()
+		q0.w - q1.w,
+		q0.x - q1.x,
+		q0.y - q1.y,
+		q0.z - q1.z
 	);
 }
 
@@ -478,10 +458,10 @@ Quat4f operator * ( const Quat4f& q0, const Quat4f& q1 )
 {
 	return Quat4f
 	(
-		q0.w() * q1.w() - q0.x() * q1.x() - q0.y() * q1.y() - q0.z() * q1.z(),
-		q0.w() * q1.x() + q0.x() * q1.w() + q0.y() * q1.z() - q0.z() * q1.y(),
-		q0.w() * q1.y() - q0.x() * q1.z() + q0.y() * q1.w() + q0.z() * q1.x(),
-		q0.w() * q1.z() + q0.x() * q1.y() - q0.y() * q1.x() + q0.z() * q1.w()
+		q0.w * q1.w - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z,
+		q0.w * q1.x + q0.x * q1.w + q0.y * q1.z - q0.z * q1.y,
+		q0.w * q1.y - q0.x * q1.z + q0.y * q1.w + q0.z * q1.x,
+		q0.w * q1.z + q0.x * q1.y - q0.y * q1.x + q0.z * q1.w
 	);
 }
 
@@ -489,10 +469,10 @@ Quat4f operator * ( float f, const Quat4f& q )
 {
 	return Quat4f
 	(
-		f * q.w(),
-		f * q.x(),
-		f * q.y(),
-		f * q.z()
+		f * q.w,
+		f * q.x,
+		f * q.y,
+		f * q.z
 	);
 }
 
@@ -500,9 +480,9 @@ Quat4f operator * ( const Quat4f& q, float f )
 {
 	return Quat4f
 	(
-		f * q.w(),
-		f * q.x(),
-		f * q.y(),
-		f * q.z()
+		f * q.w,
+		f * q.x,
+		f * q.y,
+		f * q.z
 	);
 }

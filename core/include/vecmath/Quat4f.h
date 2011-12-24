@@ -32,10 +32,6 @@ public:
 	const float& operator [] ( int i ) const;
 	float& operator [] ( int i );
 
-	float w() const;
-	float x() const;
-	float y() const;
-	float z() const;
 	Vector3f xyz() const;
 	Vector4f wxyz() const;
 
@@ -102,9 +98,17 @@ public:
 	static void rotateVector( Quat4f* pqRotation, Vector3f* pvVector, Vector3f* pvOut );
 #endif
 
-private:
-
-	float m_elements[ 4 ];
+	union
+	{
+		struct
+		{
+			float w;
+			float x;
+			float y;
+			float z;
+		};
+		float m_elements[ 4 ];
+	};
 
 };
 

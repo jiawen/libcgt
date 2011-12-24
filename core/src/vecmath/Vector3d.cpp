@@ -27,16 +27,16 @@ Vector3d::Vector3d( double x, double y, double z )
 
 Vector3d::Vector3d( const Vector2d& xy, double z )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 }
 
 Vector3d::Vector3d( double x, const Vector2d& yz )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 }
 
 Vector3d::Vector3d( const Vector3d& rv )
@@ -72,36 +72,6 @@ const double& Vector3d::operator [] ( int i ) const
 double& Vector3d::operator [] ( int i )
 {
 	return m_elements[ i ];
-}
-
-double& Vector3d::x()
-{
-	return m_elements[ 0 ];
-}
-
-double& Vector3d::y()
-{
-	return m_elements[ 1 ];
-}
-
-double& Vector3d::z()
-{
-	return m_elements[ 2 ];
-}
-
-double Vector3d::x() const
-{
-	return m_elements[0];
-}
-
-double Vector3d::y() const
-{
-	return m_elements[1];
-}
-
-double Vector3d::z() const
-{
-	return m_elements[2];
 }
 
 Vector2d Vector3d::xy() const
@@ -186,7 +156,7 @@ void Vector3d::print() const
 // static
 double Vector3d::dot( const Vector3d& v0, const Vector3d& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y() + v0.z() * v1.z();
+	return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z;
 }
 
 // static
@@ -194,9 +164,9 @@ Vector3d Vector3d::cross( const Vector3d& v0, const Vector3d& v1 )
 {
 	return Vector3d
 		(
-			v0.y() * v1.z() - v0.z() * v1.y(),
-			v0.z() * v1.x() - v0.x() * v1.z(),
-			v0.x() * v1.y() - v0.y() * v1.x()
+			v0.y * v1.z - v0.z * v1.y,
+			v0.z * v1.x - v0.x * v1.z,
+			v0.x * v1.y - v0.y * v1.x
 		);
 }
 
@@ -212,35 +182,35 @@ Vector3d Vector3d::lerp( const Vector3d& v0, const Vector3d& v1, double alpha )
 
 Vector3d operator + ( const Vector3d& v0, const Vector3d& v1 )
 {
-	return Vector3d( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z() );
+	return Vector3d( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z );
 }
 
 Vector3d operator - ( const Vector3d& v0, const Vector3d& v1 )
 {
-	return Vector3d( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z() );
+	return Vector3d( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z );
 }
 
 Vector3d operator * ( const Vector3d& v0, const Vector3d& v1 )
 {
-	return Vector3d( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z() );
+	return Vector3d( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z );
 }
 
 Vector3d operator / ( const Vector3d& v0, const Vector3d& v1 )
 {
-	return Vector3d( v0.x() / v1.x(), v0.y() / v1.y(), v0.z() / v1.z() );
+	return Vector3d( v0.x / v1.x, v0.y / v1.y, v0.z / v1.z );
 }
 
 Vector3d operator - ( const Vector3d& v )
 {
-	return Vector3d( -v.x(), -v.y(), -v.z() );
+	return Vector3d( -v.x, -v.y, -v.z );
 }
 
 Vector3d operator * ( double d, const Vector3d& v )
 {
-	return Vector3d( d * v.x(), d * v.y(), d * v.z() );
+	return Vector3d( d * v.x, d * v.y, d * v.z );
 }
 
 Vector3d operator * ( const Vector3d& v, double d )
 {
-	return Vector3d( d * v.x(), d * v.y(), d * v.z() );
+	return Vector3d( d * v.x, d * v.y, d * v.z );
 }

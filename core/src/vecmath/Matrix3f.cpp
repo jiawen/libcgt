@@ -88,9 +88,9 @@ Vector3f Matrix3f::getRow( int i ) const
 
 void Matrix3f::setRow( int i, const Vector3f& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 3 ] = v.y();
-	m_elements[ i + 6 ] = v.z();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 3 ] = v.y;
+	m_elements[ i + 6 ] = v.z;
 }
 
 Vector3f Matrix3f::getCol( int j ) const
@@ -109,9 +109,9 @@ void Matrix3f::setCol( int j, const Vector3f& v )
 {
 	int colStart = 3 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
-	m_elements[ colStart + 2 ] = v.z();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
+	m_elements[ colStart + 2 ] = v.z;
 }
 
 Matrix2f Matrix3f::getSubmatrix2x2( int i0, int j0 ) const
@@ -360,9 +360,9 @@ Matrix3f Matrix3f::rotation( const Vector3f& rDirection, float degrees )
 	float cosTheta = cos( theta );
 	float sinTheta = sin( theta );
 
-	float x = normalizedDirection.x();
-	float y = normalizedDirection.y();
-	float z = normalizedDirection.z();
+	float x = normalizedDirection.x;
+	float y = normalizedDirection.y;
+	float z = normalizedDirection.z;
 
 	return Matrix3f
 		(
@@ -377,18 +377,18 @@ Matrix3f Matrix3f::rotation( const Quat4f& rq )
 {
 	Quat4f q = rq.normalized();
 
-	float xx = q.x() * q.x();
-	float yy = q.y() * q.y();
-	float zz = q.z() * q.z();
+	float xx = q.x * q.x;
+	float yy = q.y * q.y;
+	float zz = q.z * q.z;
 
-	float xy = q.x() * q.y();
-	float zw = q.z() * q.w();
+	float xy = q.x * q.y;
+	float zw = q.z * q.w;
 
-	float xz = q.x() * q.z();
-	float yw = q.y() * q.w();
+	float xz = q.x * q.z;
+	float yw = q.y * q.w;
 
-	float yz = q.y() * q.z();
-	float xw = q.x() * q.w();
+	float yz = q.y * q.z;
+	float xw = q.x * q.w;
 
 	return Matrix3f
 		(

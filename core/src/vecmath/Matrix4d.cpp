@@ -123,10 +123,10 @@ Vector4d Matrix4d::getRow( int i ) const
 
 void Matrix4d::setRow( int i, const Vector4d& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 4 ] = v.y();
-	m_elements[ i + 8 ] = v.z();
-	m_elements[ i + 12 ] = v.w();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 4 ] = v.y;
+	m_elements[ i + 8 ] = v.z;
+	m_elements[ i + 12 ] = v.w;
 }
 
 Vector4d Matrix4d::getCol( int j ) const
@@ -146,10 +146,10 @@ void Matrix4d::setCol( int j, const Vector4d& v )
 {
 	int colStart = 4 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
-	m_elements[ colStart + 2 ] = v.z();
-	m_elements[ colStart + 3 ] = v.w();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
+	m_elements[ colStart + 2 ] = v.z;
+	m_elements[ colStart + 3 ] = v.w;
 }
 
 Matrix2d Matrix4d::getSubmatrix2x2( int i0, int j0 ) const
@@ -381,9 +381,9 @@ Matrix4d Matrix4d::translation( const Vector3d& rTranslation )
 {
 	return Matrix4d
 	(
-		1, 0, 0, rTranslation.x(),
-		0, 1, 0, rTranslation.y(),
-		0, 0, 1, rTranslation.z(),
+		1, 0, 0, rTranslation.x,
+		0, 1, 0, rTranslation.y,
+		0, 0, 1, rTranslation.z,
 		0, 0, 0, 1
 	);
 }
@@ -397,9 +397,9 @@ Matrix4d Matrix4d::rotation( const Vector3d& rDirection, double degrees )
 	double cosTheta = cos( theta );
 	double sinTheta = sin( theta );
 
-	double x = normalizedDirection.x();
-	double y = normalizedDirection.y();
-	double z = normalizedDirection.z();
+	double x = normalizedDirection.x;
+	double y = normalizedDirection.y;
+	double z = normalizedDirection.z;
 
 	return Matrix4d
 	(
@@ -415,18 +415,18 @@ Matrix4d Matrix4d::rotation( const Quat4d& q )
 {
 	Quat4d qq = q.normalized();
 
-	double xx = qq.x() * qq.x();
-	double yy = qq.y() * qq.y();
-	double zz = qq.z() * qq.z();
+	double xx = qq.x * qq.x;
+	double yy = qq.y * qq.y;
+	double zz = qq.z * qq.z;
 
-	double xy = qq.x() * qq.y();
-	double zw = qq.z() * qq.w();
+	double xy = qq.x * qq.y;
+	double zw = qq.z * qq.w;
 
-	double xz = qq.x() * qq.z();
-	double yw = qq.y() * qq.w();
+	double xz = qq.x * qq.z;
+	double yw = qq.y * qq.w;
 
-	double yz = qq.y() * qq.z();
-	double xw = qq.x() * qq.w();
+	double yz = qq.y * qq.z;
+	double xw = qq.x * qq.w;
 
 	return Matrix4d
 	(

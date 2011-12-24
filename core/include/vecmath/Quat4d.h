@@ -29,10 +29,6 @@ public:
 	const double& operator [] ( int i ) const;
 	double& operator [] ( int i );
 
-	double w() const;
-	double x() const;
-	double y() const;
-	double z() const;
 	Vector3d xyz() const;
 	Vector4d wxyz() const;
 
@@ -80,9 +76,17 @@ public:
 	static void rotateVector( Quat4d* pqRotation, Vector3d* pvVector, Vector3d* pvOut );
 #endif
 
-private:
-
-	double m_elements[ 4 ];
+	union
+	{
+		struct
+		{
+			double w;
+			double x;
+			double y;
+			double z;
+		};
+		double m_elements[ 4 ];
+	};
 
 };
 

@@ -50,26 +50,6 @@ double& Vector2d::operator [] ( int i )
 	return m_elements[ i ];
 }
 
-double& Vector2d::x()
-{
-	return m_elements[ 0 ];
-}
-
-double& Vector2d::y()
-{
-	return m_elements[ 1 ];
-}
-
-double Vector2d::x() const
-{
-	return m_elements[0];
-}
-
-double Vector2d::y() const
-{
-	return m_elements[1];
-}
-
 Vector2d Vector2d::xy() const
 {
 	return Vector2d( m_elements[0], m_elements[1] );
@@ -139,7 +119,7 @@ void Vector2d::print() const
 // static
 double Vector2d::dot( const Vector2d& v0, const Vector2d& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y();
+	return v0.x * v1.x + v0.y * v1.y;
 }
 
 //static
@@ -149,7 +129,7 @@ Vector3d Vector2d::cross( const Vector2d& v0, const Vector2d& v1 )
 		(
 			0,
 			0,
-			v0.x() * v1.y() - v0.y() * v1.x()
+			v0.x * v1.y - v0.y * v1.x
 		);
 }
 
@@ -165,35 +145,35 @@ Vector2d Vector2d::lerp( const Vector2d& v0, const Vector2d& v1, double alpha )
 
 Vector2d operator + ( const Vector2d& v0, const Vector2d& v1 )
 {
-	return Vector2d( v0.x() + v1.x(), v0.y() + v1.y() );
+	return Vector2d( v0.x + v1.x, v0.y + v1.y );
 }
 
 Vector2d operator - ( const Vector2d& v0, const Vector2d& v1 )
 {
-	return Vector2d( v0.x() - v1.x(), v0.y() - v1.y() );
+	return Vector2d( v0.x - v1.x, v0.y - v1.y );
 }
 
 Vector2d operator * ( const Vector2d& v0, const Vector2d& v1 )
 {
-	return Vector2d( v0.x() * v1.x(), v0.y() * v1.y() );
+	return Vector2d( v0.x * v1.x, v0.y * v1.y );
 }
 
 Vector2d operator / ( const Vector2d& v0, const Vector2d& v1 )
 {
-	return Vector2d( v0.x() / v1.x(), v0.y() / v1.y() );
+	return Vector2d( v0.x / v1.x, v0.y / v1.y );
 }
 
 Vector2d operator - ( const Vector2d& v )
 {
-	return Vector2d( -v.x(), -v.y() );
+	return Vector2d( -v.x, -v.y );
 }
 
 Vector2d operator * ( double d, const Vector2d& v )
 {
-	return Vector2d( d * v.x(), d * v.y() );
+	return Vector2d( d * v.x, d * v.y );
 }
 
 Vector2d operator * ( const Vector2d& v, double d )
 {
-	return Vector2d( d * v.x(), d * v.y() );
+	return Vector2d( d * v.x, d * v.y );
 }

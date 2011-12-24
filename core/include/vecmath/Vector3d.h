@@ -21,15 +21,7 @@ public:
 	// returns the ith element
 	const double& operator [] ( int i ) const;
 	double& operator [] ( int i );
-
-	double& x();
-	double& y();
-	double& z();
-
-	double x() const;
-	double y() const;
-	double z() const;
-
+	
 	Vector2d xy() const;
 	Vector2d xz() const;
 	Vector2d yz() const;
@@ -58,9 +50,16 @@ public:
 	// returns v0 * ( 1 - alpha ) * v1 * alpha
 	static Vector3d lerp( const Vector3d& v0, const Vector3d& v1, double alpha );
 
-private:
-
-	double m_elements[3];
+	union
+	{
+		struct
+		{
+			double x;
+			double y;
+			double z;
+		};
+		double m_elements[3];
+	};
 
 };
 

@@ -81,8 +81,8 @@ Vector2d Matrix2d::getRow( int i ) const
 
 void Matrix2d::setRow( int i, const Vector2d& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 2 ] = v.y();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 2 ] = v.y;
 }
 
 Vector2d Matrix2d::getCol( int j ) const
@@ -100,8 +100,8 @@ void Matrix2d::setCol( int j, const Vector2d& v )
 {
 	int colStart = 2 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
 }
 
 double Matrix2d::determinant()

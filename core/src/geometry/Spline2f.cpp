@@ -154,7 +154,7 @@ float Spline2f::computeHalfSpace( const Vector2f& p, float* closestT, float* clo
 		*closestT = t;
 	}
 
-	return Vector2f::cross( tangent, pointToClosestPoint ).z();
+	return Vector2f::cross( tangent, pointToClosestPoint ).z;
 }
 
 Vector2f Spline2f::closestPointOnSpline( const Vector2f& p, float* closestT, float* closestDistance )

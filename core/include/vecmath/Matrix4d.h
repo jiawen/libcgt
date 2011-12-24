@@ -80,9 +80,32 @@ public:
 	// given u[i] is a uniformly distributed random number in [0,1]
 	static Matrix4d randomRotation( double u0, double u1, double u2 );
 
-private:
+	union
+	{
+		struct
+		{
+			double m00;
+			double m10;
+			double m20;
+			double m30;
 
-	double m_elements[ 16 ];
+			double m01;
+			double m11;
+			double m21;
+			double m31;
+
+			double m02;
+			double m12;
+			double m22;
+			double m32;
+
+			double m03;
+			double m13;
+			double m23;
+			double m33;
+		};
+		double m_elements[ 16 ];
+	};
 
 };
 

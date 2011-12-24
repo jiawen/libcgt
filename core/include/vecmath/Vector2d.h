@@ -18,11 +18,6 @@ public:
 	const double& operator [] ( int i ) const;
 	double& operator [] ( int i );
 
-	double& x();
-	double& y();
-
-	double x() const;
-	double y() const;
 	Vector2d xy() const;
 	Vector2d yx() const;
 	Vector2d xx() const;
@@ -48,9 +43,15 @@ public:
 	// returns v0 * ( 1 - alpha ) * v1 * alpha
 	static Vector2d lerp( const Vector2d& v0, const Vector2d& v1, double alpha );
 
-private:
-
-	double m_elements[2];
+	union
+	{
+		struct
+		{
+			double x;
+			double y;
+		};
+		double m_elements[ 2 ];
+	};
 
 };
 

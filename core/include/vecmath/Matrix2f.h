@@ -48,8 +48,6 @@ public:
 	static Matrix2f identity();
 	static Matrix2f rotation( float degrees );
 
-private:
-
 	union
 	{
 		struct

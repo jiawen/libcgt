@@ -101,9 +101,9 @@ Vector3d Matrix3d::getRow( int i ) const
 
 void Matrix3d::setRow( int i, const Vector3d& v )
 {
-	m_elements[ i ] = v.x();
-	m_elements[ i + 3 ] = v.y();
-	m_elements[ i + 6 ] = v.z();
+	m_elements[ i ] = v.x;
+	m_elements[ i + 3 ] = v.y;
+	m_elements[ i + 6 ] = v.z;
 }
 
 Vector3d Matrix3d::getCol( int j ) const
@@ -122,9 +122,9 @@ void Matrix3d::setCol( int j, const Vector3d& v )
 {
 	int colStart = 3 * j;
 
-	m_elements[ colStart ] = v.x();
-	m_elements[ colStart + 1 ] = v.y();
-	m_elements[ colStart + 2 ] = v.z();
+	m_elements[ colStart ] = v.x;
+	m_elements[ colStart + 1 ] = v.y;
+	m_elements[ colStart + 2 ] = v.z;
 }
 
 Matrix2d Matrix3d::getSubmatrix2x2( int i0, int j0 ) const
@@ -308,9 +308,9 @@ Matrix3d Matrix3d::rotation( const Vector3d& rDirection, double degrees )
 	double cosTheta = cos( theta );
 	double sinTheta = sin( theta );
 
-	double x = normalizedDirection.x();
-	double y = normalizedDirection.y();
-	double z = normalizedDirection.z();
+	double x = normalizedDirection.x;
+	double y = normalizedDirection.y;
+	double z = normalizedDirection.z;
 
 	return Matrix3d
 	(
@@ -325,18 +325,18 @@ Matrix3d Matrix3d::rotation( const Quat4f& rq )
 {
 	Quat4f q = rq.normalized();
 
-	double xx = q.x() * q.x();
-	double yy = q.y() * q.y();
-	double zz = q.z() * q.z();
+	double xx = q.x * q.x;
+	double yy = q.y * q.y;
+	double zz = q.z * q.z;
 
-	double xy = q.x() * q.y();
-	double zw = q.z() * q.w();
+	double xy = q.x * q.y;
+	double zw = q.z * q.w;
 
-	double xz = q.x() * q.z();
-	double yw = q.y() * q.w();
+	double xz = q.x * q.z;
+	double yw = q.y * q.w;
 
-	double yz = q.y() * q.z();
-	double xw = q.x() * q.w();
+	double yz = q.y * q.z;
+	double xw = q.x * q.w;
 
 	return Matrix3d
 	(

@@ -369,9 +369,9 @@ Matrix4f Matrix4f::translation( const Vector3f& rTranslation )
 {
 	return Matrix4f
 	(
-		1, 0, 0, rTranslation.x(),
-		0, 1, 0, rTranslation.y(),
-		0, 0, 1, rTranslation.z(),
+		1, 0, 0, rTranslation.x,
+		0, 1, 0, rTranslation.y,
+		0, 0, 1, rTranslation.z,
 		0, 0, 0, 1
 	);
 }
@@ -430,9 +430,9 @@ Matrix4f Matrix4f::rotation( const Vector3f& rDirection, float degrees )
 	float cosTheta = cos( theta );
 	float sinTheta = sin( theta );
 
-	float x = normalizedDirection.x();
-	float y = normalizedDirection.y();
-	float z = normalizedDirection.z();
+	float x = normalizedDirection.x;
+	float y = normalizedDirection.y;
+	float z = normalizedDirection.z;
 
 	return Matrix4f
 	(
@@ -448,18 +448,18 @@ Matrix4f Matrix4f::rotation( const Quat4f& q )
 {
 	Quat4f qq = q.normalized();
 
-	float xx = qq.x() * qq.x();
-	float yy = qq.y() * qq.y();
-	float zz = qq.z() * qq.z();
+	float xx = qq.x * qq.x;
+	float yy = qq.y * qq.y;
+	float zz = qq.z * qq.z;
 
-	float xy = qq.x() * qq.y();
-	float zw = qq.z() * qq.w();
+	float xy = qq.x * qq.y;
+	float zw = qq.z * qq.w;
 
-	float xz = qq.x() * qq.z();
-	float yw = qq.y() * qq.w();
+	float xz = qq.x * qq.z;
+	float yw = qq.y * qq.w;
 
-	float yz = qq.y() * qq.z();
-	float xw = qq.x() * qq.w();
+	float yz = qq.y * qq.z;
+	float xw = qq.x * qq.w;
 
 	return Matrix4f
 	(

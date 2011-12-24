@@ -24,8 +24,8 @@ Vector4d::Vector4d( double x, double y, double z, double w )
 
 Vector4d::Vector4d( const Vector2d& xy, double z, double w )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
 	m_elements[2] = z;
 	m_elements[3] = w;
 }
@@ -33,8 +33,8 @@ Vector4d::Vector4d( const Vector2d& xy, double z, double w )
 Vector4d::Vector4d( double x, const Vector2d& yz, double w )
 {
 	m_elements[0] = x;
-	m_elements[1] = yz.x();
-	m_elements[2] = yz.y();
+	m_elements[1] = yz.x;
+	m_elements[2] = yz.y;
 	m_elements[3] = w;
 }
 
@@ -42,32 +42,32 @@ Vector4d::Vector4d( double x, double y, const Vector2d& zw )
 {
 	m_elements[0] = x;
 	m_elements[1] = y;
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4d::Vector4d( const Vector2d& xy, const Vector2d& zw )
 {
-	m_elements[0] = xy.x();
-	m_elements[1] = xy.y();
-	m_elements[2] = zw.x();
-	m_elements[3] = zw.y();
+	m_elements[0] = xy.x;
+	m_elements[1] = xy.y;
+	m_elements[2] = zw.x;
+	m_elements[3] = zw.y;
 }
 
 Vector4d::Vector4d( const Vector3d& xyz, double w )
 {
-	m_elements[0] = xyz.x();
-	m_elements[1] = xyz.y();
-	m_elements[2] = xyz.z();
+	m_elements[0] = xyz.x;
+	m_elements[1] = xyz.y;
+	m_elements[2] = xyz.z;
 	m_elements[3] = w;
 }
 
 Vector4d::Vector4d( double x, const Vector3d& yzw )
 {
 	m_elements[0] = x;
-	m_elements[1] = yzw.x();
-	m_elements[2] = yzw.y();
-	m_elements[3] = yzw.z();
+	m_elements[1] = yzw.x;
+	m_elements[2] = yzw.y;
+	m_elements[3] = yzw.z;
 }
 
 Vector4d::Vector4d( const Vector4d& rv )
@@ -98,46 +98,6 @@ const double& Vector4d::operator [] ( int i ) const
 double& Vector4d::operator [] ( int i )
 {
 	return m_elements[ i % 4 ];
-}
-
-double& Vector4d::x()
-{
-	return m_elements[ 0 ];
-}
-
-double& Vector4d::y()
-{
-	return m_elements[ 1 ];
-}
-
-double& Vector4d::z()
-{
-	return m_elements[ 2 ];
-}
-
-double& Vector4d::w()
-{
-	return m_elements[ 3 ];
-}
-
-double Vector4d::x() const
-{
-	return m_elements[0];
-}
-
-double Vector4d::y() const
-{
-	return m_elements[1];
-}
-
-double Vector4d::z() const
-{
-	return m_elements[2];
-}
-
-double Vector4d::w() const
-{
-	return m_elements[3];
 }
 
 Vector2d Vector4d::xy() const
@@ -290,7 +250,7 @@ void Vector4d::print() const
 // static
 double Vector4d::dot( const Vector4d& v0, const Vector4d& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y() + v0.z() * v1.z() + v0.w() * v1.w();
+	return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z + v0.w * v1.w;
 }
 
 // static
@@ -305,35 +265,35 @@ Vector4d Vector4d::lerp( const Vector4d& v0, const Vector4d& v1, double alpha )
 
 Vector4d operator + ( const Vector4d& v0, const Vector4d& v1 )
 {
-	return Vector4d( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
+	return Vector4d( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
 }
 
 Vector4d operator - ( const Vector4d& v0, const Vector4d& v1 )
 {
-	return Vector4d( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
+	return Vector4d( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
 }
 
 Vector4d operator * ( const Vector4d& v0, const Vector4d& v1 )
 {
-	return Vector4d( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z(), v0.w() * v1.w() );
+	return Vector4d( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
 }
 
 Vector4d operator / ( const Vector4d& v0, const Vector4d& v1 )
 {
-	return Vector4d( v0.x() / v1.x(), v0.y() / v1.y(), v0.z() / v1.z(), v0.w() / v1.w() );
+	return Vector4d( v0.x / v1.x, v0.y / v1.y, v0.z / v1.z, v0.w / v1.w );
 }
 
 Vector4d operator - ( const Vector4d& v )
 {
-	return Vector4d( -v.x(), -v.y(), -v.z(), -v.w() );
+	return Vector4d( -v.x, -v.y, -v.z, -v.w );
 }
 
 Vector4d operator * ( double d, const Vector4d& v )
 {
-	return Vector4d( d * v.x(), d * v.y(), d * v.z(), d * v.w() );
+	return Vector4d( d * v.x, d * v.y, d * v.z, d * v.w );
 }
 
 Vector4d operator * ( const Vector4d& v, double d )
 {
-	return Vector4d( d * v.x(), d * v.y(), d * v.z(), d * v.w() );
+	return Vector4d( d * v.x, d * v.y, d * v.z, d * v.w );
 }

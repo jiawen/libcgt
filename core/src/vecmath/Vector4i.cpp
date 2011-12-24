@@ -108,46 +108,6 @@ int& Vector4i::operator [] ( int i )
 	return m_elements[ i % 4 ];
 }
 
-int& Vector4i::x()
-{
-	return m_elements[ 0 ];
-}
-
-int& Vector4i::y()
-{
-	return m_elements[ 1 ];
-}
-
-int& Vector4i::z()
-{
-	return m_elements[ 2 ];
-}
-
-int& Vector4i::w()
-{
-	return m_elements[ 3 ];
-}
-
-int Vector4i::x() const
-{
-	return m_elements[0];
-}
-
-int Vector4i::y() const
-{
-	return m_elements[1];
-}
-
-int Vector4i::z() const
-{
-	return m_elements[2];
-}
-
-int Vector4i::w() const
-{
-	return m_elements[3];
-}
-
 Vector2i Vector4i::xy() const
 {
 	return Vector2i( m_elements[0], m_elements[1] );
@@ -296,7 +256,7 @@ void Vector4i::print() const
 // static
 int Vector4i::dot( const Vector4i& v0, const Vector4i& v1 )
 {
-	return v0.x() * v1.x() + v0.y() * v1.y() + v0.z() * v1.z() + v0.w() * v1.w();
+	return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z + v0.w * v1.w;
 }
 
 // static
@@ -311,45 +271,45 @@ Vector4f Vector4i::lerp( const Vector4i& v0, const Vector4i& v1, float alpha )
 
 Vector4i operator + ( const Vector4i& v0, const Vector4i& v1 )
 {
-	return Vector4i( v0.x() + v1.x(), v0.y() + v1.y(), v0.z() + v1.z(), v0.w() + v1.w() );
+	return Vector4i( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
 }
 
 Vector4i operator - ( const Vector4i& v0, const Vector4i& v1 )
 {
-	return Vector4i( v0.x() - v1.x(), v0.y() - v1.y(), v0.z() - v1.z(), v0.w() - v1.w() );
+	return Vector4i( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
 }
 
 Vector4i operator * ( const Vector4i& v0, const Vector4i& v1 )
 {
-	return Vector4i( v0.x() * v1.x(), v0.y() * v1.y(), v0.z() * v1.z(), v0.w() * v1.w() );
+	return Vector4i( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
 }
 
 Vector4i operator - ( const Vector4i& v )
 {
-	return Vector4i( -v.x(), -v.y(), -v.z(), -v.w() );
+	return Vector4i( -v.x, -v.y, -v.z, -v.w );
 }
 
 Vector4i operator * ( int c, const Vector4i& v )
 {
-	return Vector4i( c * v.x(), c * v.y(), c * v.z(), c * v.w() );
+	return Vector4i( c * v.x, c * v.y, c * v.z, c * v.w );
 }
 
 Vector4i operator * ( const Vector4i& v, int c )
 {
-	return Vector4i( c * v.x(), c * v.y(), c * v.z(), c * v.w() );
+	return Vector4i( c * v.x, c * v.y, c * v.z, c * v.w );
 }
 
 Vector4f operator * ( float f, const Vector4i& v )
 {
-	return Vector4f( f * v.x(), f * v.y(), f * v.z(), f * v.w() );
+	return Vector4f( f * v.x, f * v.y, f * v.z, f * v.w );
 }
 
 Vector4f operator * ( const Vector4i& v, float f )
 {
-	return Vector4f( f * v.x(), f * v.y(), f * v.z(), f * v.w() );
+	return Vector4f( f * v.x, f * v.y, f * v.z, f * v.w );
 }
 
 Vector4i operator / ( const Vector4i& v, int c )
 {
-	return Vector4i( v.x() / c, v.y() / c, v.z() / c, v.w() / c );
+	return Vector4i( v.x / c, v.y / c, v.z / c, v.w / c );
 }

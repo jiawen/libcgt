@@ -50,9 +50,17 @@ public:
 	static Matrix2d identity();
 	static Matrix2d rotation( double degrees );
 
-private:
-
-	double m_elements[ 4 ];
+	union
+	{
+		struct
+		{
+			double m00;
+			double m10;
+			double m01;
+			double m11;
+		};
+		double m_elements[ 4 ];
+	};
 
 };
 
