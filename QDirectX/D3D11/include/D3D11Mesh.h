@@ -5,6 +5,7 @@
 
 #include <geometry/BoundingBox3f.h>
 #include <vecmath/Matrix4f.h>
+#include <vecmath/Vector2i.h>
 
 #include <DynamicVertexBuffer.h>
 #include <VertexPosition4fNormal3fTexture2f.h>
@@ -15,18 +16,22 @@ class D3D11Mesh
 {
 public:
 
-	D3D11Mesh( ID3D11Device* pDevice, int nVertices );
-	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int nVertices );
+	// capacity is in number of vertices
+	D3D11Mesh( ID3D11Device* pDevice, int capacity );
+	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int capacity );
 	D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData, bool generatePerFaceNormalsIfNonExistent = true );
 
 	virtual ~D3D11Mesh();
 
-	int numVertices() const;
+	int capacity() const;
+	
+	std::vector< Vector2i >& vertexRanges();
 
 	std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray();
 	const std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray() const;
 
 	// updates the backing vertex buffer on the GPU
+	// by copying from the cpu vertex array
 	void updateGPUBuffer();
 
 	// object space bounding box
@@ -55,6 +60,9 @@ private:
 	ID3D11Device* m_pDevice;
 	std::vector< VertexPosition4fNormal3fTexture2f > m_vertexArray;
 	std::shared_ptr< DynamicVertexBuffer > m_pVertexBuffer;
+
+	std::vector< Vector2i > m_vertexRanges;
+
 };
 
 #endif // D3D11_MESH_H

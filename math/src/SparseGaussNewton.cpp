@@ -8,33 +8,77 @@
 SparseGaussNewton::SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, cholmod_common* pcc,
 	int maxNumIterations, float epsilon ) :
 
-	m_pEnergy( pEnergy ),
 	m_maxNumIterations( maxNumIterations ),
 	m_epsilon( epsilon ),
 
-	m_pcc( pcc )
+	m_pcc( pcc ),
+	m_J( nullptr ),
+	m_r2( nullptr )
 
 {
+	setEnergy( pEnergy );	
+}
+
+SparseGaussNewton::~SparseGaussNewton()
+{
+	if( m_r2 != nullptr )
+	{
+		cholmod_l_free_dense( &m_r2, m_pcc );
+	}
+	if( m_J != nullptr )
+	{
+		cholmod_l_free_triplet( &m_J, m_pcc );
+	}
+	m_pcc = nullptr;
+}
+
+void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
+{
+	m_pEnergy = pEnergy;
+
 	int m = pEnergy->numFunctions();
 	int n = pEnergy->numVariables();
-	int nzMax = pEnergy->maxNumNonZeroes();
+	Q_ASSERT_X( m >= n, "Gauss Newton", "Number of functions (m) must be greater than the number of parameters (n)." );
 
-	m_J = cholmod_l_allocate_triplet( m, n, nzMax, 0, CHOLMOD_REAL, m_pcc );
 	m_prevBeta.resize( n, 1 );
 	m_currBeta.resize( n, 1 );
 	m_delta.resize( n, 1 );
 	m_r.resize( m, 1 );
 
-	m_r2 = cholmod_l_allocate_dense( m, 1, m, CHOLMOD_REAL, m_pcc );
+	int nzMax = pEnergy->maxNumNonZeroes();
 
-	Q_ASSERT_X( m >= n, "Gauss Newton", "Number of functions (m) must be greater than the number of parameters (n)." );
-}
+	// if m_r2 already exists
+	if( m_r2 != nullptr )
+	{
+		// and the sizes don't match
+		if( m_r2->nrow != m )
+		{
+			// then free it and re-allocate
+			cholmod_l_free_dense( &m_r2, m_pcc );
+			// TODO: use realloc instead?
+			m_r2 = cholmod_l_allocate_dense( m, 1, m, CHOLMOD_REAL, m_pcc );
+		}
+	}
+	else
+	{
+		m_r2 = cholmod_l_allocate_dense( m, 1, m, CHOLMOD_REAL, m_pcc );
+	}
 
-SparseGaussNewton::~SparseGaussNewton()
-{
-	cholmod_l_free_dense( &m_r2, m_pcc );
-	cholmod_l_free_triplet( &m_J, m_pcc );
-	m_pcc = nullptr;
+	if( m_J != nullptr )
+	{
+		if( m_J->nrow != m ||
+			m_J->ncol != n ||
+			m_J->nzmax != nzMax )
+		{
+			cholmod_l_free_triplet( &m_J, m_pcc );
+			// TODO: use realloc instead?
+			m_J = cholmod_l_allocate_triplet( m, n, nzMax, 0, CHOLMOD_REAL, m_pcc );	
+		}
+	}
+	else
+	{
+		m_J = cholmod_l_allocate_triplet( m, n, nzMax, 0, CHOLMOD_REAL, m_pcc );	
+	}
 }
 
 int SparseGaussNewton::maxNumIterations() const
@@ -97,6 +141,7 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 	sw.reset();
 #endif
+	m_J->nnz = 0;
 	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 #if TIMING
 	tR += sw.millisecondsElapsed();

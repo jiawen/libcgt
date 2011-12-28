@@ -193,29 +193,44 @@ Vector2f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
 // static
 void GeometryUtils::getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 )
 {
-    if(n.absSquared() < 1e-8f) {
-        if(b1)
-            *b1 = Vector3f(1, 0, 0);
-        if(b2)
-            *b2 = Vector3f(0, 1, 0);
+    if( n.absSquared() < 1e-8f )
+	{
+        if( b1 != nullptr )
+		{
+            *b1 = Vector3f( 1, 0, 0 );
+		}
+        if( b2 != nullptr )
+		{
+            *b2 = Vector3f( 0, 1, 0 );
+		}
         return;
     }
     
     Vector3f vec;
 
-    if(fabs(n[0]) <= fabs(n[1]) && fabs(n[0]) <= fabs(n[2]))
-        vec = Vector3f(1., 0., 0.);
-    else if(fabs(n[1]) <= fabs(n[2]))
-        vec = Vector3f(0., 1., 0.);
+    if( fabs( n[0] ) <= fabs( n[1] ) && fabs( n[0] ) <= fabs( n[2] ) )
+	{
+        vec = Vector3f( 1, 0, 0 );
+	}
+    else if( fabs( n[1] ) <= fabs( n[2] ) )
+	{
+        vec = Vector3f( 0, 1, 0 );
+	}
     else
-        vec = Vector3f(0., 0., 1.);
+	{
+        vec = Vector3f( 0, 0, 1 );
+	}
     
-    vec = Vector3f::cross(n, vec).normalized(); //first basis vector
-    if(b1)
+    vec = Vector3f::cross( n, vec ).normalized(); // first basis vector
+    if( b1 != nullptr )
+	{
         *b1 = vec;
-    vec = Vector3f::cross(n, vec).normalized(); //second basis vector
-    if(b2)
+	}
+    vec = Vector3f::cross( n, vec ).normalized(); // second basis vector
+    if( b2 != nullptr )
+	{
         *b2 = vec;
+	}
 }
 
 // static

@@ -3,18 +3,22 @@
 
 #include <vector>
 
+#include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
+#include "vecmath/Vector4f.h"
 
 class Sphere
 {
 public:
 
-	Sphere( float radius = 1, const Vector3f& center = Vector3f( 0, 0, 0 ) );
+	Sphere( float _radius = 1, const Vector3f& _center = Vector3f( 0, 0, 0 ) );
 
-	std::vector< Vector3f > tesselate( int nTheta, int nPhi );
+	void tesselate( int nTheta, int nPhi,
+		std::vector< Vector4f >& positions,
+		std::vector< Vector3f >& normals );
 
-	Vector3f m_center;
-	float m_radius;
+	Vector3f center;
+	float radius;
 
 };
 

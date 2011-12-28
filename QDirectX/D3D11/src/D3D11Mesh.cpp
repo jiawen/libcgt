@@ -6,26 +6,32 @@
 #include <io/OBJData.h>
 #include <vecmath/Matrix3f.h>
 
-D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, int nVertices ) :
+D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, int capacity ) :
 
 	m_pDevice( pDevice ),
-	m_vertexArray( nVertices ),
+	m_vertexArray( capacity ),
 	m_worldMatrix( Matrix4f::identity() )
 
 {
 	m_pDevice->AddRef();
 }
 
-D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int nVertices ) :
+// virtual
+D3D11Mesh::~D3D11Mesh()
+{
+	m_pDevice->Release();
+}
+
+D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int capacity ) :
 
 	m_pDevice( pDevice ),
-	m_vertexArray( nVertices ),
+	m_vertexArray( capacity ),
 	m_worldMatrix( Matrix4f::identity() )
 
 {
 	m_pDevice->AddRef();
 
-	memcpy( &( m_vertexArray[ 0 ] ), vertexArray, nVertices * VertexPosition4fNormal3fTexture2f::sizeInBytes() );
+	memcpy( &( m_vertexArray[ 0 ] ), vertexArray, capacity * VertexPosition4fNormal3fTexture2f::sizeInBytes() );
 	updateGPUBuffer();
 	updateBoundingBox();
 }
@@ -99,18 +105,19 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 	}
 
 	updateGPUBuffer();
-	updateBoundingBox();	
+	updateBoundingBox();
+
+	m_vertexRanges.push_back( Vector2i( 0, m_vertexArray.size() ) );
 }
 
-// virtual
-D3D11Mesh::~D3D11Mesh()
-{
-	m_pDevice->Release();
-}
-
-int D3D11Mesh::numVertices() const
+int D3D11Mesh::capacity() const
 {
 	return m_vertexArray.size();
+}
+
+std::vector< Vector2i >& D3D11Mesh::vertexRanges()
+{
+	return m_vertexRanges;
 }
 
 std::vector< VertexPosition4fNormal3fTexture2f >& D3D11Mesh::vertexArray()

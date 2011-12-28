@@ -27,6 +27,8 @@ public:
 		float epsilon = 1e-6 );
 	virtual ~SparseGaussNewton();
 
+	void setEnergy( std::shared_ptr< SparseEnergy > pEnergy );
+
 	int maxNumIterations() const;
 	void setMaxNumIterations( int maxNumIterations );
 
