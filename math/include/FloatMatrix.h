@@ -95,6 +95,9 @@ public:
 		QVector< Vector3f > to, FloatMatrix& output );
 	*/
 
+	float minimum() const;
+	float maximum() const;
+
 	void print( const char* prefix = nullptr, const char* suffix = nullptr );
 	QString toString();
 

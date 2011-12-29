@@ -9,13 +9,15 @@ SparseGaussNewton::SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, c
 	int maxNumIterations, float epsilon ) :
 
 	m_maxNumIterations( maxNumIterations ),
-	m_epsilon( epsilon ),
 
 	m_pcc( pcc ),
 	m_J( nullptr ),
+	m_pFactorization( nullptr ),
+
 	m_r2( nullptr )
 
 {
+	setEpsilon( epsilon );
 	setEnergy( pEnergy );	
 }
 
@@ -25,15 +27,21 @@ SparseGaussNewton::~SparseGaussNewton()
 	{
 		cholmod_l_free_dense( &m_r2, m_pcc );
 	}
+	if( m_pFactorization != nullptr )
+	{
+		SuiteSparseQR_free< double >( &m_pFactorization, m_pcc );
+	}		
 	if( m_J != nullptr )
 	{
 		cholmod_l_free_triplet( &m_J, m_pcc );
-	}
+	}	
 	m_pcc = nullptr;
 }
 
 void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 {
+	printf( "resetting energy!\n" );
+
 	m_pEnergy = pEnergy;
 
 	int m = pEnergy->numFunctions();
@@ -79,14 +87,19 @@ void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 	{
 		m_J = cholmod_l_allocate_triplet( m, n, nzMax, 0, CHOLMOD_REAL, m_pcc );	
 	}
+
+	if( m_pFactorization != nullptr )
+	{
+		SuiteSparseQR_free< double >( &m_pFactorization, m_pcc );
+	}
 }
 
-int SparseGaussNewton::maxNumIterations() const
+uint SparseGaussNewton::maxNumIterations() const
 {
 	return m_maxNumIterations;
 }
 
-void SparseGaussNewton::setMaxNumIterations( int maxNumIterations )
+void SparseGaussNewton::setMaxNumIterations( uint maxNumIterations )
 {
 	m_maxNumIterations = maxNumIterations;
 }
@@ -99,6 +112,7 @@ float SparseGaussNewton::epsilon() const
 void SparseGaussNewton::setEpsilon( float epsilon )
 {
 	m_epsilon = epsilon;
+	m_sqrtEpsilon = sqrtf( epsilon );
 }
 
 void copyFloatMatrixToCholmodDense( const FloatMatrix& src, cholmod_dense* dst )
@@ -159,10 +173,14 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 	float currEnergy = FloatMatrix::dot( m_r, m_r );
 	float deltaEnergy = fabs( currEnergy - prevEnergy );
 
+	bool deltaEnergyConverged;
+	bool deltaBetaConverged;
+	bool converged = false;
+
 	// check for convergence
 	int nIterations = 0;
-	while( deltaEnergy > m_epsilon * ( 1 + currEnergy ) &&
-		( ( m_maxNumIterations > 0 ) && ( nIterations < m_maxNumIterations ) ) )
+	while( ( nIterations < m_maxNumIterations ) &&
+		!converged )
 	{
 		// not converged
 		prevEnergy = currEnergy;
@@ -187,7 +205,19 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 		sw.reset();
 #endif
-		auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
+		//auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
+
+		if( m_pFactorization == nullptr )
+		{
+			m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, SPQR_DEFAULT_TOL, jSparse, m_pcc );
+		}
+		else
+		{
+			SuiteSparseQR_numeric< double >( SPQR_DEFAULT_TOL, jSparse, m_pFactorization, m_pcc );
+		}
+		auto y = SuiteSparseQR_qmult< double >( SPQR_QTX, m_pFactorization, m_r2, m_pcc );
+		auto delta = SuiteSparseQR_solve< double >( SPQR_RETX_EQUALS_B, m_pFactorization, y, m_pcc );
+		
 #if TIMING
 		tQR += sw.millisecondsElapsed();
 #endif
@@ -202,6 +232,7 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 
 		m_J->nnz = 0; // reset sparse jacobian
 		cholmod_l_free_dense( &delta, m_pcc );
+		cholmod_l_free_dense( &y, m_pcc );
 		cholmod_l_free_sparse( &jSparse, m_pcc );
 
 		// TODO: OPTIMIZE: do it in place
@@ -226,6 +257,16 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 
 		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
+
+		deltaEnergyConverged = ( deltaEnergy < m_epsilon * ( 1 + currEnergy ) );
+
+#if 0
+		//float deltaBetaMax = m_delta.maximum();
+		//deltaBetaConverged = ( deltaBetaMax < m_sqrtEpsilon * ( 1 + deltaBetaMax ) );		
+		converged = deltaEnergyConverged && deltaBetaConverged;
+#else
+		converged = deltaEnergyConverged;
+#endif
 		++nIterations;
 	}
 

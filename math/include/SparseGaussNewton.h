@@ -2,11 +2,13 @@
 #define SPARSE_GAUSS_NEWTON_H
 
 #include <memory>
+#include <common/BasicTypes.h>
 
 #include "SparseEnergy.h"
 #include "FloatMatrix.h"
 
 #include <cholmod.h>
+#include <SuiteSparseQR.hpp>
 
 class SparseGaussNewton
 {
@@ -29,8 +31,8 @@ public:
 
 	void setEnergy( std::shared_ptr< SparseEnergy > pEnergy );
 
-	int maxNumIterations() const;
-	void setMaxNumIterations( int maxNumIterations );
+	uint maxNumIterations() const;
+	void setMaxNumIterations( uint maxNumIterations );
 
 	float epsilon() const;
 	void setEpsilon( float epsilon );
@@ -40,11 +42,14 @@ public:
 private:
 
 	std::shared_ptr< SparseEnergy > m_pEnergy;
-	int m_maxNumIterations;
+	uint m_maxNumIterations;
 	float m_epsilon;
+	float m_sqrtEpsilon;
 
 	cholmod_common* m_pcc;
 	cholmod_triplet* m_J;	
+	SuiteSparseQR_factorization< double >* m_pFactorization;
+
 	FloatMatrix m_prevBeta;
 	FloatMatrix m_currBeta;
 	FloatMatrix m_delta;

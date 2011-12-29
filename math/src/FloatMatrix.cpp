@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cstdarg>
 
+#include <algorithm>
+
 #include "LUFactorization.h"
 
 // static
@@ -420,6 +422,16 @@ void FloatMatrix::homography( QVector< Vector3f > from,
 	}
 }
 #endif
+
+float FloatMatrix::minimum() const
+{
+	return *( std::min_element( m_data.begin(), m_data.end() ) );
+}
+
+float FloatMatrix::maximum() const
+{
+	return *( std::max_element( m_data.begin(), m_data.end() ) );
+}
 
 void FloatMatrix::print( const char* prefix, const char* suffix )
 {
