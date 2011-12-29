@@ -778,7 +778,7 @@ void GeometryUtils::tripleSphereIntersection( Vector3f* c0, float r0,
 #endif
 
 // static
-Vector3f GeometryUtils::randomPointInSphere( float radius, const Random& random )
+Vector3f GeometryUtils::randomPointInSphere( float radius, Random& random )
 {
 	float s = static_cast< float >( ( 2.f * random.nextDouble() ) - 1 );
 	float phi = random.nextFloatRange( 0, 2.f * MathUtils::PI );

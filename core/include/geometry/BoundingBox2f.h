@@ -8,7 +8,8 @@ class BoundingBox2f
 public:
 
 	// constructs an invalid bounding box with
-	// min = FLT_MAX, max = FLT_MIN
+	// min = numeric_limist< float >.max(),
+	// max = numeric_limist< float >.lowest(),
 	// so that merge( this, a ) = a
 	BoundingBox2f();
 

@@ -36,7 +36,7 @@ public:
 
 	static D3D11_VIEWPORT createViewport( int width, int height );
 	static D3D11_VIEWPORT createViewport( const Vector2i& wh );
-	static D3D11_VIEWPORT createViewport( int topLeft, int topRight, int width, int height, float zMin, float zMax );
+	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin, float zMax );
 
 	// creates a unit box [0,1]^3
 	static QVector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );

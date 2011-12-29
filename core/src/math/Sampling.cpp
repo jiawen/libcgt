@@ -14,7 +14,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
 // static
-void Sampling::latinHypercubeSampling( const Random& random, SamplingPatternND* pPattern )
+void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPattern )
 {
 	int nDimensions = pPattern->getNumDimensions();
 	int nSamples = pPattern->getNumSamples();
@@ -111,4 +111,16 @@ void Sampling::concentricSampleDisc( float u1, float u2,
 	theta *= static_cast< float >( MathUtils::PI / 4.f );
 	*px = r * cos( theta );
 	*py = r * sin( theta );
+}
+
+// static
+Vector3f Sampling::areaSampleTriangle( float u0, float u1 )
+{
+	if( u0 + u1 > 1 )
+	{
+		u0 = 1 - u0;
+		u1 = 1 - u1;
+	}
+
+	return Vector3f( 1 - u0 - u1, u0, u1 );
 }

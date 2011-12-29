@@ -76,7 +76,7 @@ public:
 	float getZFar() const;
 	void setZFar( float zFar );
 
-	Matrix4f getProjectionMatrix() const;
+	virtual Matrix4f projectionMatrix() const = 0;
 
 	// returns the projection matrix P such that
 	// the plane at a distance fFocusZ in front of the center of the lens
@@ -104,16 +104,16 @@ public:
 	Matrix4f getInverseViewMatrix() const;
 	Matrix4f getInverseViewProjectionMatrix() const;
 
-	static Camera lerp( const Camera& a, const Camera& b, float t );
-	static Camera cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t );
+	//static Camera lerp( const Camera& a, const Camera& b, float t );
+	//static Camera cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t );
 
 protected:
 
-	float m_fLeft;
-	float m_fRight;
+	float m_left;
+	float m_right;
 	
-	float m_fTop;
-	float m_fBottom;
+	float m_top;
+	float m_bottom;
 
 	float m_fZNear;
 	float m_fZFar;

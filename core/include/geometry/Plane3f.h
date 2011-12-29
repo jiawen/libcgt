@@ -37,30 +37,30 @@ public:
     Vector3f unitNormal() const;
 
     // Projects the point p to the point q closest to p on the plane.
-    Vector3f closestPointOnPlane( const Vector3f& p );
+    Vector3f closestPointOnPlane( const Vector3f& p ) const;
 
     // Returns the *signed* shortest distance between p and the plane.
-    float distance( const Vector3f& p );
+    float distance( const Vector3f& p ) const;
 
     // Returns the point on the plane closest to the origin
     // http://en.wikipedia.org/wiki/Point_on_plane_closest_to_origin 
-    Vector3f pointOnPlane();
+    Vector3f pointOnPlane() const;
 
     // Returns an orthonormal basis u, v, and n on the plane
     // given a *preferred* u vector.  If u is not on the plane,
     // then u is projected onto the plane first.
 	// Returns the matrix [ u v n ]
-    Matrix3f basis( const Vector3f& u );
+    Matrix3f basis( const Vector3f& u ) const;
 
     // Returns an orthonormal basis u, v, n on the plane
 	// Returns the matrix [ u v n ]
-    Matrix3f basis();
+    Matrix3f basis() const;
 
     // Returns the same plane, but with its normal flipped
-    Plane3f flipped();
+    Plane3f flipped() const;
 
     // Returns a plane parallel this this at distance z in the direction of the normal
-    Plane3f offset( float z );
+    Plane3f offset( float z ) const;
 
     static float cosineDihedralAngle( const Plane3f& p0, const Plane3f& p1 );
 

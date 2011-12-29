@@ -1,15 +1,15 @@
 #include "geometry/BoundingBox3f.h"
 
 #include <algorithm>
-#include <cfloat>
 #include <cstdio>
+#include <limits>
 
 using namespace std;
 
 BoundingBox3f::BoundingBox3f() :
 	
-	m_min( FLT_MAX, FLT_MAX, FLT_MAX ),
-	m_max( FLT_MIN, FLT_MIN, FLT_MIN )
+	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
+	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
 
 {
 
@@ -51,6 +51,59 @@ BoundingBox3f& BoundingBox3f::operator = ( const BoundingBox3f& rb )
 		m_max = rb.m_max;
 	}
 	return *this;
+}
+
+BoundingBox3f::BoundingBox3f( const vector< Vector4f >& points ) :
+
+	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
+	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
+
+{
+	for( int i = 0; i < points.size(); ++i )
+	{
+		Vector4f xyzw = points[ i ];
+		float x = xyzw.x;
+		float y = xyzw.y;
+		float z = xyzw.z;
+
+		if( x < m_min.x )
+		{
+			m_min.x = x;
+		}
+		if( x > m_max.x )
+		{
+			m_max.x = x;
+		}
+		if( y < m_min.y )
+		{
+			m_min.y = y;
+		}
+		if( y > m_max.y )
+		{
+			m_max.y = y;
+		}
+		if( z < m_min.z )
+		{
+			m_min.z = z;
+		}
+		if( z > m_max.z )
+		{
+			m_max.z = z;
+		}
+	}
+}
+
+QString BoundingBox3f::toString() const
+{
+	QString out;
+
+	out.append( "BoundingBox3f:\n" );
+	out.append( "\tmin: " );
+	out.append( m_min.toString() );
+	out.append( "\n\tmax: " );
+	out.append( m_max.toString() );
+
+	return out;
 }
 
 void BoundingBox3f::print()

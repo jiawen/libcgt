@@ -41,7 +41,7 @@ Reference< Image4f > Patterns::createCheckerboard( int width, int height, int ch
 }
 
 // static
-Reference< Image1f > Patterns::createRandom( int width, int height, const Random& random )
+Reference< Image1f > Patterns::createRandom( int width, int height, Random& random )
 {
 	Reference< Image1f > im = new Image1f( width, height );
 	float* pixels = im->pixels();
@@ -55,7 +55,7 @@ Reference< Image1f > Patterns::createRandom( int width, int height, const Random
 }
 
 // static
-Reference< Image4f > Patterns::createRandomFloat4( int width, int height, const Random& random )
+Reference< Image4f > Patterns::createRandomFloat4( int width, int height, Random& random )
 {
 	Reference< Image4f > im = new Image4f( width, height );
 	float* pixels = im->pixels();

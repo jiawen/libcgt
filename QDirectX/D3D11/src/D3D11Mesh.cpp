@@ -179,13 +179,13 @@ void D3D11Mesh::updateGPUBuffer()
 
 void D3D11Mesh::updateBoundingBox()
 {
-	// compute bounding box
-	float xMin = FLT_MAX;
-	float xMax = FLT_MIN;
-	float yMin = FLT_MAX;
-	float yMax = FLT_MIN;
-	float zMin = FLT_MAX;
-	float zMax = FLT_MIN;
+	// compute bounding box	
+	float xMin = ( std::numeric_limits< float >::max )();
+	float xMax = std::numeric_limits< float >::lowest();
+	float yMin = ( std::numeric_limits< float >::max )();
+	float yMax = std::numeric_limits< float >::lowest();
+	float zMin = ( std::numeric_limits< float >::max )();
+	float zMax = std::numeric_limits< float >::lowest();
 
 	for( int i = 0; i < m_vertexArray.size(); ++i )
 	{

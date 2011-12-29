@@ -15,23 +15,23 @@ public:
 	Random( int seed ); // seed from integer
 
 	// [0,1]
-	double nextDouble() const;
+	double nextDouble();
 
 	// [0,1]
-	float nextFloat() const;
+	float nextFloat();
 
 	// [0, 2^32 - 1]
-	uint nextInt() const;
+	uint nextInt();
 
-	double nextDoubleRange( double lo, double hi ) const;
+	double nextDoubleRange( double lo, double hi );
 
-	float nextFloatRange( float lo, float hi ) const;
+	float nextFloatRange( float lo, float hi );
 
 	// [0,n] for n < 2^32
-	int nextIntInclusive( int n ) const;
+	int nextIntInclusive( int n );
 
 	// [0,n) for n < 2^32
-	int nextIntExclusive( int n ) const;
+	int nextIntExclusive( int n );
 
 private:
 

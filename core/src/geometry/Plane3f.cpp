@@ -82,13 +82,13 @@ Vector3f Plane3f::unitNormal() const
 	return normal().normalized();
 }
 
-Vector3f Plane3f::closestPointOnPlane( const Vector3f& p )
+Vector3f Plane3f::closestPointOnPlane( const Vector3f& p ) const
 {
     float d = distance( p );
     return ( p - d * unitNormal() );
 }
 
-float Plane3f::distance( const Vector3f& p )
+float Plane3f::distance( const Vector3f& p ) const
 {
     // pick a point x on the plane
     // get the vector x --> p
@@ -99,13 +99,13 @@ float Plane3f::distance( const Vector3f& p )
     return Vector3f::dot( xp, unitNormal() );
 }
 
-Vector3f Plane3f::pointOnPlane()
+Vector3f Plane3f::pointOnPlane() const
 {
     float den = a * a + b * b + c * c;
     return Vector3f( -a * d / den, -b * d / den, -c * d / den );
 }
 
-Matrix3f Plane3f::basis( const Vector3f& u )
+Matrix3f Plane3f::basis( const Vector3f& u ) const
 {
     // normalize u first
     auto u2 = u.normalized();
@@ -124,7 +124,7 @@ Matrix3f Plane3f::basis( const Vector3f& u )
     return Matrix3f( u2, v, n );
 }
 
-Matrix3f Plane3f::basis()
+Matrix3f Plane3f::basis() const
 {
     auto n = unitNormal();
 
@@ -135,12 +135,12 @@ Matrix3f Plane3f::basis()
     return Matrix3f( u, v, n );
 }
 
-Plane3f Plane3f::flipped()
+Plane3f Plane3f::flipped() const
 {
     return Plane3f( -a, -b, -c, -d );
 }
 
-Plane3f Plane3f::offset( float z )
+Plane3f Plane3f::offset( float z ) const
 {
     return Plane3f( a, b, c, d - z * ( a + b + c ) );
 }

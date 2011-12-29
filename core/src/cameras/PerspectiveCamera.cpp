@@ -113,6 +113,24 @@ void PerspectiveCamera::setFovYDegrees( float fovY )
 	setFrustum( left, right, bottom, top, m_fZNear, m_fZFar, m_bZFarIsInfinite );
 }
 
+// virtual
+Matrix4f PerspectiveCamera::projectionMatrix() const
+{
+	if( m_bZFarIsInfinite )
+	{
+		return Matrix4f::infinitePerspectiveProjection( m_left, m_right,
+			m_bottom, m_top,
+            m_fZNear, m_bDirectX );
+	}
+	else
+	{
+		return Matrix4f::perspectiveProjection( m_left, m_right,
+			m_bottom, m_top,
+			m_fZNear, m_fZFar, m_bDirectX );
+	}
+}
+
+
 bool PerspectiveCamera::saveTXT( QString filename )
 {
 	QFile outputFile( filename );

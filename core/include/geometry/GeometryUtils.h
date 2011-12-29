@@ -128,7 +128,7 @@ public:
 		Vector3f* intersect1 );
 #endif
 
-	static Vector3f randomPointInSphere( float radius, const Random& random );
+	static Vector3f randomPointInSphere( float radius, Random& random );
 
 private:
 

@@ -141,6 +141,19 @@ void Vector3f::negate()
 
 // ---- Utility ----
 
+QString Vector3f::toString() const
+{
+	QString out;
+
+	out.append( "( " );
+	out.append( QString( "%1" ).arg( x, 10, 'g', 4 ) );
+	out.append( QString( "%1" ).arg( y, 10, 'g', 4 ) );
+	out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
+	out.append( " )" );
+
+	return out;
+}
+
 void Vector3f::print() const
 {
 	printf( "< %.3f, %.3f, %.3f >\n",

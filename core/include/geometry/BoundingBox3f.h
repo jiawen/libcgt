@@ -2,7 +2,10 @@
 #define BOUNDING_BOX_3F
 
 #include <vecmath/Vector3f.h>
+#include <vecmath/Vector4f.h>
+#include <QString>
 #include <QVector>
+#include <vector>
 
 class BoundingBox3f
 {
@@ -10,8 +13,9 @@ public:
 
 	// TODO: make a const INFINITY
 	// constructs an invalid bounding box with
-	// min = FLT_MAX, max = FLT_MIN
-	// so that unite( this, a ) = a
+	// min = numeric_limist< float >.max(),
+	// max = numeric_limist< float >.lowest(),
+	// so that merge( this, a ) = a
 	BoundingBox3f();
 
 	BoundingBox3f( float minX, float minY, float minZ,
@@ -19,8 +23,11 @@ public:
 	BoundingBox3f( const Vector3f& min, const Vector3f& max );
 	BoundingBox3f( const BoundingBox3f& rb );
 	BoundingBox3f& operator = ( const BoundingBox3f& rb ); // assignment operator
-	// no destructor necessary
+	// no destructor necessary	
 
+	BoundingBox3f( const std::vector< Vector4f >& points );
+
+	QString toString() const;
 	void print();
 
 	Vector3f& minimum();

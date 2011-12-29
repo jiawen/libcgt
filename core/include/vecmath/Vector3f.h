@@ -1,6 +1,8 @@
 #ifndef VECTOR_3F_H
 #define VECTOR_3F_H
 
+#include <QString>
+
 class Vector2f;
 class Vector3d;
 class Vector3i;
@@ -60,6 +62,7 @@ public:
 	// ---- Utility ----
     operator const float* () const { return m_elements; } // automatic type conversion for GL
     operator float* () { return m_elements; } // automatic type conversion for Direct3D
+	QString toString() const;
 	void print() const;	
 
     static float dot( const Vector3f& v0, const Vector3f& v1 ) { return v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2]; }

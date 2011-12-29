@@ -38,6 +38,8 @@ public:
 	float fovYDegrees() const;
 	void setFovYDegrees( float fovY );
 
+	Matrix4f projectionMatrix() const;
+
 	bool saveTXT( QString filename );
 
 	static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );	

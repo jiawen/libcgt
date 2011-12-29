@@ -1,13 +1,15 @@
 #include "geometry/BoundingBox2f.h"
 
 #include <algorithm>
-#include <cfloat>
 #include <cstdio>
+#include <limits>
+
+using namespace std;
 
 BoundingBox2f::BoundingBox2f() :
 
-	m_min( FLT_MAX, FLT_MAX ),
-	m_max( FLT_MIN, FLT_MIN )
+	m_min( numeric_limits< float >::max(), numeric_limits< float >::max() ),
+	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
 
 {
 

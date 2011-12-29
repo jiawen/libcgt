@@ -42,11 +42,11 @@ void Camera::getFrustum( float* pfLeft, float* pfRight,
 						  float* pfZNear, float* pfZFar,
 						  bool* pbZFarIsInfinite ) const
 {
-	*pfLeft = m_fLeft;
-	*pfRight = m_fRight;
+	*pfLeft = m_left;
+	*pfRight = m_right;
 
-	*pfBottom = m_fBottom;
-	*pfTop = m_fTop;
+	*pfBottom = m_bottom;
+	*pfTop = m_top;
 
 	*pfZNear = m_fZNear;
 	*pfZFar = m_fZFar;
@@ -88,11 +88,11 @@ void Camera::setFrustum( float left, float right,
 				float zNear, float zFar,
 				bool bZFarIsInfinite )
 {
-	m_fLeft = left;
-	m_fRight = right;
+	m_left = left;
+	m_right = right;
 
-	m_fBottom = bottom;
-	m_fTop = top;
+	m_bottom = bottom;
+	m_top = top;
 
 	m_fZNear = zNear;
 	m_fZFar = zFar;
@@ -182,22 +182,6 @@ void Camera::setZFar( float zFar )
 	m_fZFar = zFar;
 }
 
-Matrix4f Camera::getProjectionMatrix() const
-{
-	if( m_bZFarIsInfinite )
-	{
-		return Matrix4f::infinitePerspectiveProjection( m_fLeft, m_fRight,
-			m_fBottom, m_fTop,
-            m_fZNear, m_bDirectX );
-	}
-	else
-	{
-		return Matrix4f::perspectiveProjection( m_fLeft, m_fRight,
-			m_fBottom, m_fTop,
-			m_fZNear, m_fZFar, m_bDirectX );
-	}
-}
-
 Matrix4f Camera::getJitteredProjectionMatrix( float fEyeX, float fEyeY, float fFocusZ ) const
 {
 	float dx = -fEyeX * m_fZNear / fFocusZ;
@@ -205,14 +189,14 @@ Matrix4f Camera::getJitteredProjectionMatrix( float fEyeX, float fEyeY, float fF
 
 	if( m_bZFarIsInfinite )
 	{
-		return Matrix4f::infinitePerspectiveProjection( m_fLeft + dx, m_fRight + dx,
-			m_fBottom + dy, m_fTop + dy,
+		return Matrix4f::infinitePerspectiveProjection( m_left + dx, m_right + dx,
+			m_bottom + dy, m_top + dy,
 			m_fZNear, m_bDirectX );
 	}
 	else
 	{
-		return Matrix4f::perspectiveProjection( m_fLeft + dx, m_fRight + dx,
-			m_fBottom + dy, m_fTop + dy,
+		return Matrix4f::perspectiveProjection( m_left + dx, m_right + dx,
+			m_bottom + dy, m_top + dy,
 			m_fZNear, m_fZFar, m_bDirectX );
 	}
 }
@@ -246,7 +230,7 @@ Matrix4f Camera::getJitteredViewMatrix( float fEyeX, float fEyeY ) const
 
 Matrix4f Camera::getViewProjectionMatrix() const
 {
-	return getProjectionMatrix() * getViewMatrix();
+	return projectionMatrix() * getViewMatrix();
 }
 
 Matrix4f Camera::getJitteredViewProjectionMatrix( float fEyeX, float fEyeY, float fFocusZ ) const
@@ -260,7 +244,7 @@ Matrix4f Camera::getJitteredViewProjectionMatrix( float fEyeX, float fEyeY, floa
 
 Matrix4f Camera::getInverseProjectionMatrix() const
 {
-	return getProjectionMatrix().inverse();
+	return projectionMatrix().inverse();
 }
 
 Matrix4f Camera::getInverseViewMatrix() const
@@ -273,14 +257,15 @@ Matrix4f Camera::getInverseViewProjectionMatrix() const
 	return getViewProjectionMatrix().inverse();
 }
 
+#if 0
 // static
 Camera Camera::lerp( const Camera& a, const Camera& b, float t )
 {
-	float left = MathUtils::lerp( a.m_fLeft, b.m_fLeft, t );
-	float right = MathUtils::lerp( a.m_fRight, b.m_fRight, t );
+	float left = MathUtils::lerp( a.m_left, b.m_left, t );
+	float right = MathUtils::lerp( a.m_right, b.m_right, t );
 
-	float top = MathUtils::lerp( a.m_fTop, b.m_fTop, t );
-	float bottom = MathUtils::lerp( a.m_fBottom, b.m_fBottom, t );
+	float top = MathUtils::lerp( a.m_top, b.m_top, t );
+	float bottom = MathUtils::lerp( a.m_bottom, b.m_bottom, t );
 
 	float zNear = MathUtils::lerp( a.m_fZNear, b.m_fZNear, t );
 	float zFar = MathUtils::lerp( a.m_fZFar, b.m_fZFar, t );
@@ -313,11 +298,11 @@ Camera Camera::lerp( const Camera& a, const Camera& b, float t )
 // static
 Camera Camera::cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t )
 {
-	float left = MathUtils::cubicInterpolate( c0.m_fLeft, c1.m_fLeft, c2.m_fLeft, c3.m_fLeft, t );
-	float right = MathUtils::cubicInterpolate( c0.m_fRight, c1.m_fRight, c2.m_fRight, c3.m_fRight, t );
+	float left = MathUtils::cubicInterpolate( c0.m_left, c1.m_left, c2.m_left, c3.m_left, t );
+	float right = MathUtils::cubicInterpolate( c0.m_right, c1.m_right, c2.m_right, c3.m_right, t );
 
-	float top = MathUtils::cubicInterpolate( c0.m_fTop, c1.m_fTop, c2.m_fTop, c3.m_fTop, t );
-	float bottom = MathUtils::cubicInterpolate( c0.m_fBottom, c1.m_fBottom, c2.m_fBottom, c3.m_fBottom, t );
+	float top = MathUtils::cubicInterpolate( c0.m_top, c1.m_top, c2.m_top, c3.m_top, t );
+	float bottom = MathUtils::cubicInterpolate( c0.m_bottom, c1.m_bottom, c2.m_bottom, c3.m_bottom, t );
 
 	float zNear = MathUtils::cubicInterpolate( c0.m_fZNear, c1.m_fZNear, c2.m_fZNear, c3.m_fZNear, t );
 	float zFar = MathUtils::cubicInterpolate( c0.m_fZFar, c1.m_fZFar, c2.m_fZFar, c3.m_fZFar, t );
@@ -349,3 +334,4 @@ Camera Camera::cubicInterpolate( const Camera& c0, const Camera& c1, const Camer
 
 	return camera;
 }
+#endif
