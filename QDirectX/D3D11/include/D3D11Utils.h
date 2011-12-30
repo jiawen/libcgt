@@ -93,7 +93,7 @@ public:
 	static void writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4f* vertexArray );
 
 	template< typename T >
-	static void writeScreenAlignedQuad( float x, float y, float width, float height, T* vertexArray )
+	static void writeAxisAlignedQuad( float x, float y, float width, float height, T* vertexArray )
 	{
 		vertexArray[ 0 ].position = Vector4f( x, y, 0, 1 );
 		vertexArray[ 1 ].position = Vector4f( x + width, y, 0, 1 );
