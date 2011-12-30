@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdio>
 
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix4f.h>
 
@@ -25,8 +27,6 @@ public:
 		float fBottom = -0.46630767, float fTop = 0.46630767,
 		float fZNear = 1.0f, float fZFar = 100.0f,
 		bool bIsInfinite = false );
-
-	//virtual ~GLCamera();
 
     void setDirectX( bool directX );
 
@@ -106,6 +106,15 @@ public:
 
 	//static Camera lerp( const Camera& a, const Camera& b, float t );
 	//static Camera cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t );
+
+	// given a 2D pixel (x,y) on a screen of size screenSize
+	// returns a 3D ray direction
+	// (call getEye() to get the ray origin)
+	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize );
+
+	// Given a point in the world and a screen of size screenSize
+	// returns the 2D pixel coordinate (along with the nonlinear Z)
+	Vector3f projectToScreen( const Vector4f& world, const Vector2i& screenSize );
 
 protected:
 

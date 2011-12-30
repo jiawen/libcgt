@@ -257,6 +257,37 @@ Matrix4f Camera::getInverseViewProjectionMatrix() const
 	return getViewProjectionMatrix().inverse();
 }
 
+Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2i& screenSize )
+{
+	// convert from screen coordinates to NDC
+	float ndcX = 2 * xy.x / screenSize.x - 1;
+	float ndcY = 2 * xy.y / screenSize.y - 1;
+
+	Vector4f clip( ndcX, ndcY, 0, 1 );
+	Vector4f eye = getInverseProjectionMatrix() * clip;
+	Vector4f world = getInverseViewMatrix() * eye;
+	
+	Vector3f pointOnNearPlane = world.homogenized().xyz();
+
+	return ( pointOnNearPlane - m_vEye ).normalized();
+}
+
+Vector3f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenSize )
+{
+	Vector4f clip = getViewProjectionMatrix() * world;
+	Vector4f ndc = clip.homogenized();
+
+	float sx = screenSize.x * 0.5f * ( ndc.x + 1.0f );
+	float sy = screenSize.y * 0.5f * ( ndc.y + 1.0f );
+
+	// OpenGL:
+	// float sz = 0.5f * ( ndc.z + 1.0f );
+	float sz = ndc.z;
+	// float w = clip.w?
+
+	return Vector3f( sx, sy, sz );
+}
+
 #if 0
 // static
 Camera Camera::lerp( const Camera& a, const Camera& b, float t )

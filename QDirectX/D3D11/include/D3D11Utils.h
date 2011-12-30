@@ -124,7 +124,7 @@ public:
 		vertexArray[  2 ].position = Vector4f( x, y + height, z, 1 );
 		vertexArray[  3 ].position = vertexArray[ 2 ].position;
 		vertexArray[  4 ].position = vertexArray[ 1 ].position;
-		vertexArray[  5 ].position = Vector4f( x + width, y + height, 0, 1 );
+		vertexArray[  5 ].position = Vector4f( x + width, y + height, z, 1 );
 
 		// right
 		vertexArray[  6 ].position = Vector4f( x + width, y, z, 1 );
