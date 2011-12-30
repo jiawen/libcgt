@@ -130,6 +130,13 @@ public:
 
 	static Vector3f randomPointInSphere( float radius, Random& random );
 
+	static std::vector< Vector2f > uniformSampleLineSegment( const Vector2f& p0, const Vector2f& p1, int nSamples );
+	
+	static std::vector< Vector3f > uniformSampleLineSegment( const Vector3f& p0, const Vector3f& p1, int nSamples );
+
+	static std::vector< Vector2f > uniformSampleBoxAroundLineSegment( const Vector2f& p0, const Vector2f& p1,
+		float width, int nSamplesWidth, int nSamplesLength );
+
 private:
 
 };

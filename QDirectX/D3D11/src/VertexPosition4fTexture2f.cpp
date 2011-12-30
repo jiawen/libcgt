@@ -7,17 +7,17 @@ VertexPosition4fTexture2f::VertexPosition4fTexture2f()
 
 VertexPosition4fTexture2f::VertexPosition4fTexture2f( float x, float y, float z, float w, float u, float v ) :
 
-	m_position( x, y, z, w ),
-	m_texture( u, v )
+	position( x, y, z, w ),
+	texture( u, v )
 
 {
 
 }
 
-VertexPosition4fTexture2f::VertexPosition4fTexture2f( Vector4f position, Vector2f texture ) :
+VertexPosition4fTexture2f::VertexPosition4fTexture2f( const Vector4f& _position, const Vector2f& _texture ) :
 
-	m_position( position ),
-	m_texture( texture )
+	position( _position ),
+	texture( _texture )
 
 {
 

@@ -6,13 +6,13 @@ VertexPosition4f::VertexPosition4f()
 }
 
 VertexPosition4f::VertexPosition4f( float x, float y, float z, float w ) :
-	m_position( x, y, z, w )
+	position( x, y, z, w )
 {
 
 }
 
-VertexPosition4f::VertexPosition4f( Vector4f position ) :
-	m_position( position )
+VertexPosition4f::VertexPosition4f( const Vector4f& _position ) :
+	position( _position )
 {
 
 }

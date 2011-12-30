@@ -5,11 +5,13 @@ VertexPosition4fNormal3fColor4fTexture2f::VertexPosition4fNormal3fColor4fTexture
 
 }
 
-VertexPosition4fNormal3fColor4fTexture2f::VertexPosition4fNormal3fColor4fTexture2f( Vector4f position, Vector3f normal, Vector4f color, Vector2f texture ) :
-	m_position( position ),
-	m_normal( normal ),
-	m_color( color ),
-	m_texture( texture )
+VertexPosition4fNormal3fColor4fTexture2f::VertexPosition4fNormal3fColor4fTexture2f( const Vector4f& _position,
+	const Vector3f& _normal, const Vector4f& _color, const Vector2f& _texture ) :
+
+	position( _position ),
+	normal( _normal ),
+	color( _color ),
+	texture( _texture )
 {
 
 }    

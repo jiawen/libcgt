@@ -9,12 +9,12 @@
 struct VertexPosition4fNormal3fColor4fTexture2f
 {
 	VertexPosition4fNormal3fColor4fTexture2f();
-	VertexPosition4fNormal3fColor4fTexture2f( Vector4f position, Vector3f normal, Vector4f color, Vector2f texture );
+	VertexPosition4fNormal3fColor4fTexture2f( const Vector4f& _position, const Vector3f& _normal, const Vector4f& _color, const Vector2f& _texture );
 
-	Vector4f m_position;
-	Vector3f m_normal;
-	Vector4f m_color;
-	Vector2f m_texture;
+	Vector4f position;
+	Vector3f normal;
+	Vector4f color;
+	Vector2f texture;
 
 	static int numElements();
 	static int sizeInBytes();

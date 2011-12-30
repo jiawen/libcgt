@@ -37,6 +37,8 @@ public:
 	ID3D11Texture2D* backBufferDepthStencil();
 	ID3D11DepthStencilView* backBufferDepthStencilView();
 
+	D3D11_VIEWPORT fullWindowViewport();
+
 protected:
 
 	virtual void initializeD3D();
@@ -52,6 +54,8 @@ protected:
 
 	ID3D11Texture2D* m_pDepthStencilBuffer;
 	ID3D11DepthStencilView* m_pDepthStencilView;
+
+	D3D11_VIEWPORT m_fullWindowViewport;
 
 private:
 

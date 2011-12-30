@@ -794,3 +794,57 @@ Vector3f GeometryUtils::randomPointInSphere( float radius, Random& random )
 			radius * s
 		);
 }
+
+// static
+std::vector< Vector2f > GeometryUtils::uniformSampleLineSegment( const Vector2f& p0, const Vector2f& p1, int nSamples )
+{
+	std::vector< Vector2f > samples( nSamples );
+
+	Vector2f unit = ( p1 - p0 ).normalized();
+	float sampleSpacing = ( p1 - p0 ).abs() / ( nSamples - 1 );
+	for( int i = 0; i < nSamples; ++i )
+	{
+		samples[ i ] = p0 + i * sampleSpacing * unit;				
+	}
+
+	return samples;
+}
+
+// static
+std::vector< Vector3f > GeometryUtils::uniformSampleLineSegment( const Vector3f& p0, const Vector3f& p1, int nSamples )
+{
+	std::vector< Vector3f > samples( nSamples );
+
+	Vector3f unit = ( p1 - p0 ).normalized();
+	float sampleSpacing = ( p1 - p0 ).abs() / ( nSamples - 1 );
+	for( int i = 0; i < nSamples; ++i )
+	{
+		samples[ i ] = p0 + i * sampleSpacing * unit;				
+	}
+
+	return samples;
+}
+
+// static
+std::vector< Vector2f > GeometryUtils::uniformSampleBoxAroundLineSegment( const Vector2f& p0, const Vector2f& p1,
+	float width, int nSamplesWidth, int nSamplesLength )
+{
+	std::vector< Vector2f > samples( nSamplesWidth * nSamplesLength );
+
+	Vector2f unitLength = ( p1 - p0 ).normalized();
+	Vector2f unitWidth = unitLength.normal().normalized();
+	float sampleSpacingW = width / ( nSamplesWidth - 1 );
+	float sampleSpacingL = ( p1 - p0 ).abs() / ( nSamplesLength - 1 );
+
+	Vector2f origin = p0 - 0.5f * width * unitWidth;
+	for( int w = 0; w < nSamplesWidth; ++w )
+	{
+		for( int l = 0; l < nSamplesLength; ++l )
+		{
+			samples[ w * nSamplesLength + l ] =
+				origin + w * sampleSpacingW * unitWidth + l * sampleSpacingL * unitLength;
+		}
+	}
+
+	return samples;
+}

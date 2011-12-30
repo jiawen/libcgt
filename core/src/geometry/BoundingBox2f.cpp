@@ -6,6 +6,10 @@
 
 using namespace std;
 
+//////////////////////////////////////////////////////////////////////////
+// Public
+//////////////////////////////////////////////////////////////////////////
+
 BoundingBox2f::BoundingBox2f() :
 
 	m_min( numeric_limits< float >::max(), numeric_limits< float >::max() ),
@@ -90,6 +94,44 @@ Vector2f BoundingBox2f::center() const
 	return( 0.5f * ( m_max + m_min ) );
 }
 
+bool BoundingBox2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
+	float* tIntersect )
+{
+	float tEnter = 0;
+	float tExit = ( std::numeric_limits< float >::max )();
+
+	intersectSlab( origin.x, direction.x, m_min.x, m_max.x, tEnter, tExit );
+	intersectSlab( origin.y, direction.y, m_min.y, m_max.y, tEnter, tExit );
+
+	bool intersected = ( tEnter < tExit );
+	if( intersected && tIntersect != nullptr )
+	{
+		if( tEnter == 0 )
+		{
+			*tIntersect = tExit;
+		}
+		else
+		{
+			*tIntersect = std::min( tEnter, tExit );
+		}
+	}
+	return intersected;
+}
+
+bool BoundingBox2f::intersectLine( const Vector2f& p0, const Vector2f& p1 )
+{
+	float tEnter = std::numeric_limits< float >::lowest();
+	float tExit = ( std::numeric_limits< float >::max )();
+
+	Vector2f direction = p1 - p0;
+
+	intersectSlab( p0.x, direction.x, m_min.x, m_max.x, tEnter, tExit );
+	intersectSlab( p1.y, direction.y, m_min.y, m_max.y, tEnter, tExit );
+
+	bool intersected = ( tEnter < tExit );
+	return intersected;
+}
+
 // static
 BoundingBox2f BoundingBox2f::merge( const BoundingBox2f& b0, const BoundingBox2f& b1 )
 {
@@ -102,4 +144,30 @@ BoundingBox2f BoundingBox2f::merge( const BoundingBox2f& b0, const BoundingBox2f
 	Vector2f mergedMax( std::max( b0Max.x, b1Max.x ), std::max( b0Max.y, b1Max.y ) );
 
 	return BoundingBox2f( mergedMin, mergedMax );
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+void BoundingBox2f::intersectSlab( float origin, float direction, float s0, float s1,
+	float& tEnter, float& tExit )
+{
+	float t0 = ( s0 - origin ) / direction;
+	float t1 = ( s1 - origin ) / direction;
+
+	if( t0 > t1 )
+	{
+		std::swap( t0, t1 );
+	}
+
+	if( t0 > tEnter )
+	{
+		tEnter = t0;
+	}
+
+	if( t1 < tExit )
+	{
+		tExit = t1;
+	}
 }

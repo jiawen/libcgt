@@ -89,6 +89,11 @@ ID3D11DepthStencilView* QD3D11Widget::backBufferDepthStencilView()
 	return m_pDepthStencilView;
 }
 
+D3D11_VIEWPORT QD3D11Widget::fullWindowViewport()
+{
+	return m_fullWindowViewport;
+}
+
 // virtual
 void QD3D11Widget::initializeD3D()
 {
@@ -136,31 +141,34 @@ void QD3D11Widget::resizeEvent( QResizeEvent* e )
 		initialize( width, height );
 	}
 
+	// initialize might fail
 	if( m_bD3DInitialized )
-	// set render targets to null
-	m_pImmediateContext->OMSetRenderTargets( 0, NULL, NULL );
+	{
+		// set render targets to null
+		m_pImmediateContext->OMSetRenderTargets( 0, NULL, NULL );
 
-	// release the old render target view and make a new one
-	m_pBackBufferRenderTargetView->Release();
-	m_pBackBuffer->Release();
+		// release the old render target view and make a new one
+		m_pBackBufferRenderTargetView->Release();
+		m_pBackBuffer->Release();
 
-	// resize the swap chain
-	resizeSwapChain( width, height );
+		// resize the swap chain
+		resizeSwapChain( width, height );
 
-	// recreate the render targets
-	createBackBufferRenderTargetView();
+		// recreate the render targets
+		createBackBufferRenderTargetView();
 
-	// resize depth stencil buffer
-	resizeDepthStencilBuffer( width, height );
+		// resize depth stencil buffer
+		resizeDepthStencilBuffer( width, height );
 
-	// point device at new back buffers
-	restoreBackBuffer();
+		// point device at new back buffers
+		restoreBackBuffer();
 
-	// resize viewport
-	D3D11_VIEWPORT viewport = D3D11Utils::createViewport( width, height );
-	m_pImmediateContext->RSSetViewports( 1, &viewport );	
+		// resize viewport
+		m_fullWindowViewport = D3D11Utils::createViewport( width, height );
+		m_pImmediateContext->RSSetViewports( 1, &m_fullWindowViewport );
 
-	resizeD3D( width, height );
+		resizeD3D( width, height );
+	}
 }
 
 // TODO: optional: refresh rate, multisampling, driver type (hardware vs ref vs WARP)
@@ -182,8 +190,8 @@ HRESULT QD3D11Widget::initialize( int width, int height )
 				m_pImmediateContext->OMSetRenderTargets( 1, &m_pBackBufferRenderTargetView, m_pDepthStencilView );
 
 				// setup viewport
-				D3D11_VIEWPORT viewport = D3D11Utils::createViewport( width, height );
-				m_pImmediateContext->RSSetViewports( 1, &viewport );
+				m_fullWindowViewport = D3D11Utils::createViewport( width, height );
+				m_pImmediateContext->RSSetViewports( 1, &m_fullWindowViewport );
 
 				initializeD3D();
 				m_bD3DInitialized = true;

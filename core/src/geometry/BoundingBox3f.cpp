@@ -6,6 +6,10 @@
 
 using namespace std;
 
+//////////////////////////////////////////////////////////////////////////
+// Public
+//////////////////////////////////////////////////////////////////////////
+
 BoundingBox3f::BoundingBox3f() :
 	
 	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
@@ -51,6 +55,46 @@ BoundingBox3f& BoundingBox3f::operator = ( const BoundingBox3f& rb )
 		m_max = rb.m_max;
 	}
 	return *this;
+}
+
+BoundingBox3f::BoundingBox3f( const vector< Vector3f >& points ) :
+
+	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
+	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
+
+{
+	for( int i = 0; i < points.size(); ++i )
+	{
+		Vector3f xyz = points[ i ];
+		float x = xyz.x;
+		float y = xyz.y;
+		float z = xyz.z;
+
+		if( x < m_min.x )
+		{
+			m_min.x = x;
+		}
+		if( x > m_max.x )
+		{
+			m_max.x = x;
+		}
+		if( y < m_min.y )
+		{
+			m_min.y = y;
+		}
+		if( y > m_max.y )
+		{
+			m_max.y = y;
+		}
+		if( z < m_min.z )
+		{
+			m_min.z = z;
+		}
+		if( z > m_max.z )
+		{
+			m_max.z = z;
+		}
+	}
 }
 
 BoundingBox3f::BoundingBox3f( const vector< Vector4f >& points ) :
@@ -198,6 +242,31 @@ bool BoundingBox3f::overlaps( const BoundingBox3f& other )
 	return bOverlapsInDirection[0] && bOverlapsInDirection[1] && bOverlapsInDirection[2];
 }
 
+bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
+	float* tIntersect )
+{
+	float tEnter = 0;
+	float tExit = ( std::numeric_limits< float >::max )();
+
+	intersectSlab( origin.x, direction.x, m_min.x, m_max.x, tEnter, tExit );
+	intersectSlab( origin.y, direction.y, m_min.y, m_max.y, tEnter, tExit );
+	intersectSlab( origin.z, direction.z, m_min.z, m_max.z, tEnter, tExit );
+
+	bool intersected = ( tEnter < tExit );
+	if( intersected && tIntersect != nullptr )
+	{
+		if( tEnter == 0 )
+		{
+			*tIntersect = tExit;
+		}
+		else
+		{
+			*tIntersect = std::min( tEnter, tExit );
+		}
+	}
+	return intersected;
+}
+
 // static
 BoundingBox3f BoundingBox3f::unite( const BoundingBox3f& b0, const BoundingBox3f& b1 )
 {
@@ -237,4 +306,30 @@ void BoundingBox3f::enlarge( const Vector3f& p )
 	m_max.x = max( p.x, m_max.x );
 	m_max.y = max( p.y, m_max.y );
 	m_max.z = max( p.z, m_max.z );
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+void BoundingBox3f::intersectSlab( float origin, float direction, float s0, float s1,
+	float& tEnter, float& tExit )
+{
+	float t0 = ( s0 - origin ) / direction;
+	float t1 = ( s1 - origin ) / direction;
+
+	if( t0 > t1 )
+	{
+		std::swap( t0, t1 );
+	}
+
+	if( t0 > tEnter )
+	{
+		tEnter = t0;
+	}
+
+	if( t1 < tExit )
+	{
+		tExit = t1;
+	}
 }

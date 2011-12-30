@@ -5,10 +5,11 @@ VertexPosition4fNormal3fColor4f::VertexPosition4fNormal3fColor4f()
 
 }
 
-VertexPosition4fNormal3fColor4f::VertexPosition4fNormal3fColor4f( Vector4f position, Vector3f normal, Vector4f color ) :
-	m_position( position ),
-	m_normal( normal ),
-	m_color( color )
+VertexPosition4fNormal3fColor4f::VertexPosition4fNormal3fColor4f( const Vector4f& _position, const Vector3f& _normal, const Vector4f& _color ) :
+
+	position( _position ),
+	normal( _normal ),
+	color( _color )
 {
 
 }    

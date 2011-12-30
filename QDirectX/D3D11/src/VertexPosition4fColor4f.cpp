@@ -6,29 +6,33 @@ VertexPosition4fColor4f::VertexPosition4fColor4f()
 }
 
 VertexPosition4fColor4f::VertexPosition4fColor4f( float x, float y, float z, float r, float g, float b ) :
-	m_position( x, y, z, 1 ),
-	m_color( r, g, b, 1 )
+
+	position( x, y, z, 1 ),
+	color( r, g, b, 1 )
 {
 
 }
 
 VertexPosition4fColor4f::VertexPosition4fColor4f( float x, float y, float z, float w, float r, float g, float b, float a ) :
-	m_position( x, y, z, w ),
-	m_color( r, g, b, a )
+
+	position( x, y, z, w ),
+	color( r, g, b, a )
 {
 
 }
 
-VertexPosition4fColor4f::VertexPosition4fColor4f( Vector3f position, Vector4f color ) :
-	m_position( position, 1.f ),
-	m_color( color )
+VertexPosition4fColor4f::VertexPosition4fColor4f( const Vector3f& _position, const Vector4f& _color ) :
+
+	position( _position, 1.f ),
+	color( _color )
 {
 
 }
 
-VertexPosition4fColor4f::VertexPosition4fColor4f( Vector4f position, Vector4f color ) :
-	m_position( position ),
-	m_color( color )
+VertexPosition4fColor4f::VertexPosition4fColor4f( const Vector4f& _position, const Vector4f& _color ) :
+
+	position( _position ),
+	color( _color )
 {
 
 }

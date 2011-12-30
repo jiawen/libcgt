@@ -189,7 +189,7 @@ void D3D11Mesh::updateBoundingBox()
 
 	for( int i = 0; i < m_vertexArray.size(); ++i )
 	{
-		Vector4f xyzw = m_vertexArray[ i ].m_position;
+		Vector4f xyzw = m_vertexArray[ i ].position;
 		float x = xyzw.x;
 		float y = xyzw.y;
 		float z = xyzw.z;

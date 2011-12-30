@@ -8,9 +8,9 @@ struct VertexPosition4f
 {
 	VertexPosition4f();
 	VertexPosition4f( float x, float y, float z, float w );
-	VertexPosition4f( Vector4f position );
+	VertexPosition4f( const Vector4f& _position );
 
-	Vector4f m_position;
+	Vector4f position;
 
 	static int numElements();
 	static int sizeInBytes();

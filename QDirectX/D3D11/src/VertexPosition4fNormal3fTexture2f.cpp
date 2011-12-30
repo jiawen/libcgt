@@ -5,11 +5,11 @@ VertexPosition4fNormal3fTexture2f::VertexPosition4fNormal3fTexture2f()
 
 }
 
-VertexPosition4fNormal3fTexture2f::VertexPosition4fNormal3fTexture2f( Vector4f position, Vector3f normal, Vector2f texture ) :
+VertexPosition4fNormal3fTexture2f::VertexPosition4fNormal3fTexture2f( const Vector4f& _position, const Vector3f& _normal, const Vector2f& _texture ) :
 
-	m_position( position ),
-	m_normal( normal ),
-	m_texture( texture )
+	position( _position ),
+	normal( _normal ),
+	texture( _texture )
 {
 
 }    

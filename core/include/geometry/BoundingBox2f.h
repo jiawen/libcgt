@@ -30,6 +30,10 @@ public:
 	
 	Vector2f range() const;
 	Vector2f center() const;
+	
+	bool intersectRay( const Vector2f& origin, const Vector2f& direction,
+		float* tIntersect = nullptr );
+	bool intersectLine( const Vector2f& p0, const Vector2f& p1 );
 
 	// returns the smallest bounding box that contains both bounding boxes
 	static BoundingBox2f merge( const BoundingBox2f& b0, const BoundingBox2f& b1 );
@@ -39,6 +43,14 @@ private:
 	Vector2f m_min;
 	Vector2f m_max;
 
+	// TODO: if direction ~ 0, then it's parallel to that slab
+	// TODO: early out: http://www.gamedev.net/topic/309689-ray-aabb-intersection/
+
+	// intersects one axis of a ray against a "slab" (interval) defined by [s0,s1]
+	// tEnter is updated if the new tEnter is bigger
+	// tExit is updated if the new tExit is smaller
+	void intersectSlab( float origin, float direction, float s0, float s1,
+		float& tEnter, float& tExit );
 };
 
 #endif
