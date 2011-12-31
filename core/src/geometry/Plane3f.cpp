@@ -20,6 +20,17 @@ Plane3f Plane3f::ZX()
 	return Plane3f( 0, 1, 0, 0 );
 }
 
+Plane3f::Plane3f() :
+
+	a( 0 ),
+	b( 0 ),
+	c( 0 ),
+	d( 0 )
+
+{
+
+}
+
 Plane3f::Plane3f( float _a, float _b, float _c, float _d ) :
 
 	a( _a ),
@@ -143,6 +154,28 @@ Plane3f Plane3f::flipped() const
 Plane3f Plane3f::offset( float z ) const
 {
     return Plane3f( a, b, c, d - z * ( a + b + c ) );
+}
+
+bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
+	float* tIntersect )
+{
+    Vector3f u = unitNormal();
+    float vd = Vector3f::dot( u, direction );
+            
+    // ray is parallel to plane
+    if( vd == 0 )
+    {
+        return false;
+    }
+
+    float v0 = -( Vector3f::dot( u, origin ) + d );
+    float t = v0 / vd;
+
+	if( tIntersect != nullptr )
+	{
+		*tIntersect = t;
+	}
+	return( t > 0 );
 }
 
 // static

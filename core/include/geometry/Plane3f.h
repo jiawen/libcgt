@@ -19,6 +19,9 @@ public:
     /// The ZX plane, with the normal pointing right (0,1,0)
     static Plane3f ZX();
 
+	// an invalid plane that's all 0s
+	Plane3f();
+
     // Construct a plane directly from its coefficients
     Plane3f( float a, float b, float c, float d );
 	Plane3f( const Plane3f& p );
@@ -62,48 +65,21 @@ public:
     // Returns a plane parallel this this at distance z in the direction of the normal
     Plane3f offset( float z ) const;
 
+	// TODO: set an epsilon for vd = 0
+    // Given a ray defined by origin + t * direction
+    // (direction need not be normalized)
+    // Returns:
+	//    true if the ray hits the plane for some positive t
+	//    false otherwise
+    bool intersectRay( const Vector3f& origin, const Vector3f& direction,
+		float* tIntersect = nullptr );
+
     static float cosineDihedralAngle( const Plane3f& p0, const Plane3f& p1 );
 
 	float a;
 	float b;
 	float c;
-	float d;
-
-#if 0
-      
-
-
-    // TODO: set an epsilon for vd = 0
-    /// <summary>
-    /// Given a ray defined by origin + t * direction
-    /// (direction need not be normalized)
-    /// returns true if the ray hits the plane, along with the appropriate t and intersection point (t can be negative)
-    /// and false if the ray misses the plane
-    /// </summary>
-    /// <param name="origin"></param>
-    /// <param name="direction"></param>
-    /// <param name="intersectionT"></param>
-    /// <param name="intersectionPoint"></param>
-    /// <returns></returns>
-    public RayIntersectionRecord IntersectRay( Vector3f origin, Vector3f direction )
-    {
-        var unitNormal = Normal.Normalized();
-        var vd = Vector3f.Dot( unitNormal, direction );
-            
-        // ray is parallel to plane
-        if( vd == 0 )
-        {
-            return RayIntersectionRecord.None;
-        }
-
-        var v0 = -( Vector3f.Dot( unitNormal, origin ) + D );
-        float t = v0 / vd;
-
-        var p = origin + t * direction;
-        return RayIntersectionRecord.Single( t, p );
-    }
-
-#endif
+	float d;    
 };
 
 #endif // PLANE_3F_H

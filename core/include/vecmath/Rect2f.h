@@ -3,6 +3,8 @@
 
 #include "Vector2f.h"
 
+// TODO: unify with BoundingBox2f, they're the same thing
+
 class Rect2f
 {
 public:
