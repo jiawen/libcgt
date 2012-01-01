@@ -17,6 +17,12 @@ public:
 	static float divideIntsToFloat( int numerator, int denominator );
 	static int divideIntsToFloatAndRound( int numerator, int denominator );
 
+	// given an array of length "arraySize", and bins of size "binSize"
+	// computes the minimum number of bins needed to cover all arraySize elements.
+	//   - The last bin may not be full
+	//   - Simply divides them as floats and takes the ceil, returning it as an integer
+	static int numBins( int arraySize, int binSize );
+
 	static bool isPowerOfTwo( int x );
 	
 	static int roundToInt( double val );

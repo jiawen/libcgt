@@ -22,6 +22,12 @@ int Arithmetic::divideIntsToFloatAndRound( int numerator, int denominator )
 	return Arithmetic::roundToInt( Arithmetic::divideIntsToFloat( numerator, denominator ) );
 }
 
+// static		
+int Arithmetic::numBins( int arraySize, int binSize )
+{
+	return ceilToInt( divideIntsToFloat( arraySize, binSize ) );
+}
+
 // static
 bool Arithmetic::isPowerOfTwo( int x )
 {
