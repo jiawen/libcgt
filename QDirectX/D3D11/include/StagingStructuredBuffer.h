@@ -30,17 +30,23 @@ public:
 	void unmap();
 
 	// Copy from pSource to this
-	void copyFrom( ID3D11Buffer* pSource );
+	void copyFrom( ID3D11Buffer* pSource );	
+
+	// Copy from this to pTarget
+	void copyTo( ID3D11Buffer* pTarget );
 
 	// Copy count items, starting with srcIndex, from pSource to this
 	// indices and count are in units of elementSizeBytes() bytes
 	// (i.e., if each element is 16 bytes, then index 2 would be at
 	// byte offset 32)
 	void copyRangeFrom( ID3D11Buffer* pSource, int srcIndex, int count,
-		int dstIndex );
+		int dstIndex = 0 );
 
-	// Copy from this to pTarget
-	void copyTo( ID3D11Buffer* pTarget );
+	void copyRangeTo( int srcIndex, int count,
+		ID3D11Buffer* pTarget, int dstIndex = 0 );
+
+	// TODO: D3D11Resource superclass?
+	// that has copy from / to?
 
 private:
 

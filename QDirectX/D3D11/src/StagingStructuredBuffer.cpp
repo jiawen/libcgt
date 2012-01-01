@@ -74,6 +74,11 @@ void StagingStructuredBuffer::copyFrom( ID3D11Buffer* pSource )
 	m_pContext->CopyResource( m_pBuffer, pSource );
 }
 
+void StagingStructuredBuffer::copyTo( ID3D11Buffer* pTarget )
+{
+	m_pContext->CopyResource( pTarget, m_pBuffer );
+}
+
 void StagingStructuredBuffer::copyRangeFrom( ID3D11Buffer* pSource, int srcIndex, int count,
 	int dstIndex )
 {
@@ -89,9 +94,19 @@ void StagingStructuredBuffer::copyRangeFrom( ID3D11Buffer* pSource, int srcIndex
 	);
 }
 
-void StagingStructuredBuffer::copyTo( ID3D11Buffer* pTarget )
+void StagingStructuredBuffer::copyRangeTo( int srcIndex, int count,
+	ID3D11Buffer* pTarget, int dstIndex )
 {
-	m_pContext->CopyResource( pTarget, m_pBuffer );
+	int esb = elementSizeBytes();
+	D3D11_BOX srcBox = D3D11Utils_Box::createRange( srcIndex * esb, count * esb );
+
+	m_pContext->CopySubresourceRegion
+	(
+		pTarget, 0,
+		dstIndex * esb, 0, 0,
+		m_pBuffer, 0,
+		&srcBox
+	);
 }
 
 //////////////////////////////////////////////////////////////////////////

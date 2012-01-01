@@ -165,36 +165,10 @@ public:
 		vertexArray[ 33 ].position = vertexArray[ 32 ].position;
 		vertexArray[ 34 ].position = vertexArray[ 31 ].position;
 		vertexArray[ 35 ].position = Vector4f( x + width, y, z, 1 );
-	}
-
-	// Loads a texture from a standard image file, 8-bits per color channel
-	// By default, Image4ub loads images such that the bottom left has coordinates (0,0) and is at location 0 memory
-	// set flipUV to true to flip it up/down
-	static Reference< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV = true );
-
-	static Reference< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, Reference< Image4ub > im, bool flipUV = true );
-	static Reference< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, Reference< Image4f > im, bool flipUV = true );
-	static Reference< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, Reference< Image1f > im, bool flipUV = true );
-
-	static void copyImageToTexture( Reference< Image1f > im, Reference< DynamicTexture2D > tex, bool flipUV = true );
-	static void copyImageToTexture( Reference< Image4f > im, Reference< DynamicTexture2D > tex, bool flipUV = true );
-	static void copyImageToTexture( Reference< Image4ub > im, Reference< DynamicTexture2D > tex, bool flipUV = true );
-
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image1f > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image1i > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image4ub > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Reference< Image4f > im );
-
-	static void saveTextureToPFM( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
-	static void saveTextureToPFM4( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
-	static void saveTextureToPNG( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename, bool scale = false, float factor = 1.f );
-	static void saveTextureToTXT( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
+	}	
 
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticDataBuffer > pBuffer, QString filename );
-	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename );
-
-	// HACK
-	static void saveTextureToBinary( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
+	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename );	
 
 	// HACK
 	template< typename T >
