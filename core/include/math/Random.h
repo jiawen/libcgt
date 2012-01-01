@@ -35,7 +35,7 @@ public:
 
 private:
 
-	mutable MTRand m_mtRand;
+	MTRand m_mtRand;
 
 };
 

@@ -64,6 +64,7 @@ StagingTexture2D* StagingTexture2D::createUnsignedByte4( ID3D11Device* pDevice, 
 StagingTexture2D::~StagingTexture2D()
 {
 	m_pTexture->Release();
+	m_pContext->Release();
 	m_pDevice->Release();
 }
 

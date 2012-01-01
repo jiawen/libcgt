@@ -1,5 +1,7 @@
 #include "StagingStructuredBuffer.h"
 
+#include "D3D11Utils_Box.h"
+
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
@@ -36,6 +38,8 @@ StagingStructuredBuffer* StagingStructuredBuffer::create( ID3D11Device* pDevice,
 StagingStructuredBuffer::~StagingStructuredBuffer()
 {
 	m_pBuffer->Release();
+	m_pContext->Release();
+	m_pDevice->Release();
 }
 
 int StagingStructuredBuffer::numElements() const
@@ -68,6 +72,21 @@ void StagingStructuredBuffer::unmap()
 void StagingStructuredBuffer::copyFrom( ID3D11Buffer* pSource )
 {
 	m_pContext->CopyResource( m_pBuffer, pSource );
+}
+
+void StagingStructuredBuffer::copyRangeFrom( ID3D11Buffer* pSource, int srcIndex, int count,
+	int dstIndex )
+{
+	int esb = elementSizeBytes();
+	D3D11_BOX srcBox = D3D11Utils_Box::createRange( srcIndex * esb, count * esb );
+
+	m_pContext->CopySubresourceRegion
+	(
+		m_pBuffer, 0,
+		dstIndex * esb, 0, 0,
+		pSource, 0,
+		&srcBox
+	);
 }
 
 void StagingStructuredBuffer::copyTo( ID3D11Buffer* pTarget )

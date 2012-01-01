@@ -19,10 +19,25 @@ public:
 	
 	// read/write mapping
 	D3D11_MAPPED_SUBRESOURCE mapForReadWrite();
+	
+	// same as reinterpret_cast< T* >( mapForReadWrite().pData )
+	template< typename T >
+	T* mapForReadWriteAs()
+	{
+		return reinterpret_cast< T* >( mapForReadWrite().pData );
+	}
+
 	void unmap();
 
 	// Copy from pSource to this
 	void copyFrom( ID3D11Buffer* pSource );
+
+	// Copy count items, starting with srcIndex, from pSource to this
+	// indices and count are in units of elementSizeBytes() bytes
+	// (i.e., if each element is 16 bytes, then index 2 would be at
+	// byte offset 32)
+	void copyRangeFrom( ID3D11Buffer* pSource, int srcIndex, int count,
+		int dstIndex );
 
 	// Copy from this to pTarget
 	void copyTo( ID3D11Buffer* pTarget );
@@ -42,3 +57,4 @@ private:
 };
 
 #endif // STAGING_STRUCTURED_BUFFER_H
+	

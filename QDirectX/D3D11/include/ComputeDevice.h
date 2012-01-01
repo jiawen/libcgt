@@ -2,7 +2,6 @@
 #define COMPUTE_DEVICE_H
 
 #include <D3D11.h>
-#include <common/Reference.h>
 
 class ComputeDevice
 {
