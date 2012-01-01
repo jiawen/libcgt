@@ -23,7 +23,7 @@ LIBS += mkl_core.lib mkl_intel_lp64.lib
 #LIBS += mkl_sequential.lib
 # multi-threaded
 LIBPATH += $(ICPP_COMPILER12)/compiler/lib/intel64
-LIBS += mkl_intel_thread.lib libiomp5md.lib
+LIBS += mkl_intel_thread.lib libiomp5md.lib # libiomp5mt.lib is the static library, for /MT
 
 INCLUDEPATH += "./include"
 

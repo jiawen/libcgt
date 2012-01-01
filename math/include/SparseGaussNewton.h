@@ -37,7 +37,7 @@ public:
 	float epsilon() const;
 	void setEpsilon( float epsilon );
 
-	FloatMatrix minimize( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
+	const FloatMatrix& minimize( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
 private:
 

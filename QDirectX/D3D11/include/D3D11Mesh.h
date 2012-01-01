@@ -45,7 +45,10 @@ public:
 	Matrix4f worldMatrix() const;
 	void setWorldMatrix( const Matrix4f& m );
 
-	Matrix4f normalMatrix() const;
+	// get the inverse transpose of the top-left 3x3 submatrix of worldMatrix()
+	Matrix3f normalMatrix() const;
+	// for Direct3D: returns normalMatrix() as a 4x4 matrix (with 0 everywhere else)
+	Matrix4f normalMatrix4x4() const;
 
 	std::shared_ptr< DynamicVertexBuffer > vertexBuffer() const;
 

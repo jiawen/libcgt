@@ -29,10 +29,10 @@ public:
 	float mousePitchSpeed() const;
 	void setMousePitchSpeed( float p );
 
-#if 0
+	OrthographicCamera& frontCamera();
+	OrthographicCamera& topCamera();
+	OrthographicCamera& leftCamera();
 	PerspectiveCamera& perspectiveCamera();
-	void setPerspectiveCamera( const PerspectiveCamera& camera );
-#endif
 
 	Vector3f upVector() const;
 	void setUpVector( const Vector3f& y );

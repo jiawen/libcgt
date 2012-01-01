@@ -152,10 +152,15 @@ void D3D11Mesh::setWorldMatrix( const Matrix4f& m )
 	m_worldMatrix = m;
 }
 
-Matrix4f D3D11Mesh::normalMatrix() const
+Matrix3f D3D11Mesh::normalMatrix() const
+{
+	return worldMatrix().getSubmatrix3x3( 0, 0 ).inverse().transposed();
+}
+
+Matrix4f D3D11Mesh::normalMatrix4x4() const
 {
 	Matrix4f n;
-	n.setSubmatrix3x3( 0, 0, worldMatrix().getSubmatrix3x3( 0, 0 ).inverse().transposed() );
+	n.setSubmatrix3x3( 0, 0, normalMatrix() );
 	return n;
 }
 

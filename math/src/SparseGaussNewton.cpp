@@ -133,17 +133,17 @@ void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst)
 	}
 }
 
-#define TIMING 0
+#define TIMING 1
+#define FACTORIZE 0
 
 #if TIMING
 #include <time/StopWatch.h>
 #endif
 
-FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
+const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
 {
 #if TIMING
 	float tR = 0;
-	float tJ = 0;
 	float tCopy = 0;
 	float tConvert = 0;
 	float tQR = 0;
@@ -186,14 +186,6 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 		prevEnergy = currEnergy;
 		m_prevBeta = m_currBeta;
 
-		// take a step:
-#if TIMING
-		sw.reset();
-#endif
-#if TIMING
-		tJ += sw.millisecondsElapsed();
-#endif
-
 #if TIMING
 		sw.reset();
 #endif
@@ -205,8 +197,8 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 #if TIMING
 		sw.reset();
 #endif
-		//auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
 
+#if FACTORIZE		
 		if( m_pFactorization == nullptr )
 		{
 			m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, SPQR_DEFAULT_TOL, jSparse, m_pcc );
@@ -217,7 +209,10 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 		}
 		auto y = SuiteSparseQR_qmult< double >( SPQR_QTX, m_pFactorization, m_r2, m_pcc );
 		auto delta = SuiteSparseQR_solve< double >( SPQR_RETX_EQUALS_B, m_pFactorization, y, m_pcc );
-		
+#else
+		auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
+#endif
+
 #if TIMING
 		tQR += sw.millisecondsElapsed();
 #endif
@@ -232,7 +227,9 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 
 		m_J->nnz = 0; // reset sparse jacobian
 		cholmod_l_free_dense( &delta, m_pcc );
+#if FACTORIZE
 		cholmod_l_free_dense( &y, m_pcc );
+#endif
 		cholmod_l_free_sparse( &jSparse, m_pcc );
 
 		// TODO: OPTIMIZE: do it in place
@@ -271,8 +268,8 @@ FloatMatrix SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIteration
 	}
 
 #if TIMING
-	printf( "timing breakdown:\ntR = %f, tJ = %f, tCopy = %f, tConvert = %f, tQR = %f\n",
-		tR, tJ, tCopy, tConvert, tQR );
+	printf( "timing breakdown:\ntR = %f, tCopy = %f, tConvert = %f, tQR = %f\n",
+		tR, tCopy, tConvert, tQR );
 #endif
 
 	if( pEnergyFound != nullptr )

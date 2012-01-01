@@ -4,7 +4,7 @@
 class Vector2i;
 class Vector3i;
 
-#include "Vector4f.h"
+#include "vecmath/Vector4f.h"
 
 class Vector4i
 {

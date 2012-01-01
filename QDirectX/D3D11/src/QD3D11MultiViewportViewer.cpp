@@ -92,17 +92,25 @@ void QD3D11MultiViewportViewer::setMousePitchSpeed( float speed )
 	m_mousePitchSpeed = speed;
 }
 
-#if 0
-PerspectiveCamera& QD3D11MultiViewportViewer::camera()
+OrthographicCamera& QD3D11MultiViewportViewer::frontCamera()
 {
-	return m_camera;
+	return m_frontCamera;
 }
 
-void QD3D11MultiViewportViewer::setCamera( const PerspectiveCamera& camera )
+OrthographicCamera& QD3D11MultiViewportViewer::topCamera()
 {
-	m_camera = camera;
+	return m_topCamera;
 }
-#endif
+
+OrthographicCamera& QD3D11MultiViewportViewer::leftCamera()
+{
+	return m_leftCamera;
+}
+
+PerspectiveCamera& QD3D11MultiViewportViewer::perspectiveCamera()
+{
+	return m_perspectiveCamera;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Public Slots
