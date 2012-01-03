@@ -57,7 +57,7 @@ BoundingBox3f& BoundingBox3f::operator = ( const BoundingBox3f& rb )
 	return *this;
 }
 
-BoundingBox3f::BoundingBox3f( const vector< Vector3f >& points ) :
+BoundingBox3f::BoundingBox3f( const vector< Vector3f >& points, const Matrix4f& worldMatrix ) :
 
 	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
 	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
@@ -65,7 +65,8 @@ BoundingBox3f::BoundingBox3f( const vector< Vector3f >& points ) :
 {
 	for( int i = 0; i < points.size(); ++i )
 	{
-		Vector3f xyz = points[ i ];
+		Vector4f xyz1( points[ i ], 1 );
+		Vector3f xyz = ( worldMatrix * xyz1 ).xyz();
 		float x = xyz.x;
 		float y = xyz.y;
 		float z = xyz.z;
@@ -97,7 +98,7 @@ BoundingBox3f::BoundingBox3f( const vector< Vector3f >& points ) :
 	}
 }
 
-BoundingBox3f::BoundingBox3f( const vector< Vector4f >& points ) :
+BoundingBox3f::BoundingBox3f( const vector< Vector4f >& points, const Matrix4f& worldMatrix ) :
 
 	m_min( numeric_limits< float >::max(), numeric_limits< float >::max(), numeric_limits< float >::max() ),
 	m_max( numeric_limits< float >::lowest(), numeric_limits< float >::lowest(), numeric_limits< float >::lowest() )
@@ -105,7 +106,7 @@ BoundingBox3f::BoundingBox3f( const vector< Vector4f >& points ) :
 {
 	for( int i = 0; i < points.size(); ++i )
 	{
-		Vector4f xyzw = points[ i ];
+		Vector4f xyzw = worldMatrix * points[ i ];
 		float x = xyzw.x;
 		float y = xyzw.y;
 		float z = xyzw.z;

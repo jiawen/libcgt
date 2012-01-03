@@ -23,8 +23,6 @@
 #include "VertexPosition4fColor4f.h"
 #include "VertexPosition4fNormal3fTexture2f.h"
 
-class DynamicTexture2D;
-
 class D3D11Utils
 {
 public:
@@ -109,63 +107,7 @@ public:
 	// by default, texture coordinates are flipped upside down ((0,0) at the top left corner)
 	static void writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool flipUV = true );
 
-	template< typename T >
-	static void writeAxisAlignedBox( const Vector3f& origin, const Vector3f& size, T* vertexArray )
-	{
-		writeAxisAlignedBox( origin.x, origin.y, origin.z, size.x, size.y, size.z, vertexArray );
-	}
-
-	template< typename T >
-	static void writeAxisAlignedBox( float x, float y, float z, float width, float height, float depth, T* vertexArray )
-	{
-		// front
-		vertexArray[  0 ].position = Vector4f( x, y, z, 1 );
-		vertexArray[  1 ].position = Vector4f( x + width, y, z, 1 );
-		vertexArray[  2 ].position = Vector4f( x, y + height, z, 1 );
-		vertexArray[  3 ].position = vertexArray[ 2 ].position;
-		vertexArray[  4 ].position = vertexArray[ 1 ].position;
-		vertexArray[  5 ].position = Vector4f( x + width, y + height, z, 1 );
-
-		// right
-		vertexArray[  6 ].position = Vector4f( x + width, y, z, 1 );
-		vertexArray[  7 ].position = Vector4f( x + width, y, z + depth, 1 );
-		vertexArray[  8 ].position = Vector4f( x + width, y + height, z, 1 );
-		vertexArray[  9 ].position = vertexArray[ 8 ].position;
-		vertexArray[ 10 ].position = vertexArray[ 7 ].position;
-		vertexArray[ 11 ].position = Vector4f( x + width, y + height, z + depth, 1 );
-
-		// back
-		vertexArray[ 12 ].position = Vector4f( x + width, y, z + depth, 1 );
-		vertexArray[ 13 ].position = Vector4f( x, y, z + depth, 1 );
-		vertexArray[ 14 ].position = Vector4f( x + width, y + height, z + depth, 1 );
-		vertexArray[ 15 ].position = vertexArray[ 14 ].position;
-		vertexArray[ 16 ].position = vertexArray[ 13 ].position;
-		vertexArray[ 17 ].position = Vector4f( x, y + height, z + depth, 1 );
-
-		// left
-		vertexArray[ 18 ].position = Vector4f( x, y, z + depth, 1 );
-		vertexArray[ 19 ].position = Vector4f( x, y, z, 1 );
-		vertexArray[ 20 ].position = Vector4f( x, y + height, z + depth, 1 );
-		vertexArray[ 21 ].position = vertexArray[ 20 ].position;
-		vertexArray[ 22 ].position = vertexArray[ 19 ].position;
-		vertexArray[ 23 ].position = Vector4f( x, y + height, z, 1 );
-
-		// top
-		vertexArray[ 24 ].position = Vector4f( x, y + height, z, 1 );
-		vertexArray[ 25 ].position = Vector4f( x + width, y + height, z, 1 );
-		vertexArray[ 26 ].position = Vector4f( x, y + height, z + depth, 1 );
-		vertexArray[ 27 ].position = vertexArray[ 26 ].position;
-		vertexArray[ 28 ].position = vertexArray[ 25 ].position;
-		vertexArray[ 29 ].position = Vector4f( x + width, y + height, z + depth, 1 );
-
-		// bottom
-		vertexArray[ 30 ].position = Vector4f( x, y, z + depth, 1 );
-		vertexArray[ 31 ].position = Vector4f( x + width, y, z + depth, 1 );
-		vertexArray[ 32 ].position = Vector4f( x, y, z, 1 );
-		vertexArray[ 33 ].position = vertexArray[ 32 ].position;
-		vertexArray[ 34 ].position = vertexArray[ 31 ].position;
-		vertexArray[ 35 ].position = Vector4f( x + width, y, z, 1 );
-	}	
+	
 
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticDataBuffer > pBuffer, QString filename );
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename );	

@@ -124,7 +124,7 @@ void copyFloatMatrixToCholmodDense( const FloatMatrix& src, cholmod_dense* dst )
 	}
 }
 
-void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst)
+void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst )
 {
 	double* srcArray = reinterpret_cast< double* >( src->x );
 	for( int k = 0; k < dst.numElements(); ++k )
@@ -133,8 +133,9 @@ void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst)
 	}
 }
 
-#define TIMING 1
+#define TIMING 0
 #define FACTORIZE 0
+#define SPLIT_FACTORIZATION 0
 
 #if TIMING
 #include <time/StopWatch.h>
@@ -146,7 +147,13 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 	float tR = 0;
 	float tCopy = 0;
 	float tConvert = 0;
+#if FACTORIZE
+	float tFactorize = 0;
+	float tQMult = 0;
+	float tSolve = 0;
+#else
 	float tQR = 0;
+#endif
 	StopWatch sw;
 #endif
 	
@@ -159,9 +166,6 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 #if TIMING
 	tR += sw.millisecondsElapsed();
-#endif
-
-#if TIMING
 	sw.reset();
 #endif
 	copyFloatMatrixToCholmodDense( m_r, m_r2 );
@@ -192,29 +196,53 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 		cholmod_sparse* jSparse = cholmod_l_triplet_to_sparse( m_J, m_J->nnz, m_pcc );		
 #if TIMING
 		tConvert += sw.millisecondsElapsed();
-#endif
-
-#if TIMING
 		sw.reset();
 #endif
+		
+#if FACTORIZE
 
-#if FACTORIZE		
+#if SPLIT_FACTORIZATION // symbolic then numeric
 		if( m_pFactorization == nullptr )
 		{
+			m_pFactorization = SuiteSparseQR_symbolic< double >( SPQR_ORDERING_DEFAULT, false, jSparse, m_pcc );
+		}
+		SuiteSparseQR_numeric< double >( SPQR_DEFAULT_TOL, jSparse, m_pFactorization, m_pcc );
+#else
+		// numeric directly
+		if( m_pFactorization == nullptr )
+		{
+			printf( "factorization is null, factorizing...\n" );
 			m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, SPQR_DEFAULT_TOL, jSparse, m_pcc );
 		}
 		else
 		{
+			printf( "factorization exists, reusing...\n" );
 			SuiteSparseQR_numeric< double >( SPQR_DEFAULT_TOL, jSparse, m_pFactorization, m_pcc );
 		}
-		auto y = SuiteSparseQR_qmult< double >( SPQR_QTX, m_pFactorization, m_r2, m_pcc );
-		auto delta = SuiteSparseQR_solve< double >( SPQR_RETX_EQUALS_B, m_pFactorization, y, m_pcc );
-#else
-		auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
 #endif
 
 #if TIMING
+		tFactorize += sw.millisecondsElapsed();
+		sw.reset();
+#endif
+
+		auto y = SuiteSparseQR_qmult< double >( SPQR_QTX, m_pFactorization, m_r2, m_pcc );
+
+#if TIMING
+		tQMult += sw.millisecondsElapsed();
+		sw.reset();
+#endif
+		auto delta = SuiteSparseQR_solve< double >( SPQR_RETX_EQUALS_B, m_pFactorization, y, m_pcc );
+#if TIMING
+		tSolve += sw.millisecondsElapsed();
+#endif
+
+#else
+		auto delta = SuiteSparseQR< double >( jSparse, m_r2, m_pcc );
+#if TIMING
 		tQR += sw.millisecondsElapsed();
+#endif
+
 #endif
 
 #if TIMING
@@ -242,9 +270,6 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 #if TIMING
 		tR += sw.millisecondsElapsed();
-#endif
-
-#if TIMING
 		sw.reset();
 #endif
 		copyFloatMatrixToCholmodDense( m_r, m_r2 );
@@ -263,13 +288,22 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 		converged = deltaEnergyConverged && deltaBetaConverged;
 #else
 		converged = deltaEnergyConverged;
+
+		//printf( "k = %d, E[k] = %f, |deltaE| = %f, eps * ( 1 + E[k] ) = %f, converged = %d\n",
+		//	nIterations, currEnergy, deltaEnergy, m_epsilon * ( 1 + currEnergy ), (int)deltaEnergyConverged );
+
 #endif
 		++nIterations;
 	}
 
 #if TIMING
+#if FACTORIZE
+	printf( "timing breakdown:\ntR = %f, tCopy = %f, tConvert = %f, tFactorize = %f, tQMult = %f, tSolve = %f\n",
+		tR, tCopy, tConvert, tFactorize, tQMult, tSolve );
+#else
 	printf( "timing breakdown:\ntR = %f, tCopy = %f, tConvert = %f, tQR = %f\n",
 		tR, tCopy, tConvert, tQR );
+#endif
 #endif
 
 	if( pEnergyFound != nullptr )

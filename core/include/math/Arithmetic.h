@@ -34,6 +34,12 @@ public:
 	static int log2ToInt( float v );
 	static uint roundUpToNearestPowerOfTwo( uint v );
 
+	// leaves x alone if it's already a multiple
+	static int roundUpToNearestMultipleOf4( int x );
+	static int roundUpToNearestMultipleOf8( int x );
+	static int roundUpToNearestMultipleOf16( int x );
+	static int roundUpToNearestMultipleOf256( int x );
+
 	// finds y where y is the next perfect square greater than or equal to x
 	// if sqrtOut != NULL, returns the square root of y in sqrtOut
 	static int findNextPerfectSquare( int x, int* sqrtOut = NULL );

@@ -1,6 +1,7 @@
 #ifndef BOUNDING_BOX_3F
 #define BOUNDING_BOX_3F
 
+#include <vecmath/Matrix4f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 #include <QString>
@@ -25,8 +26,8 @@ public:
 	BoundingBox3f& operator = ( const BoundingBox3f& rb ); // assignment operator
 	// no destructor necessary	
 
-	BoundingBox3f( const std::vector< Vector3f >& points );
-	BoundingBox3f( const std::vector< Vector4f >& points );
+	BoundingBox3f( const std::vector< Vector3f >& points, const Matrix4f& worldMatrix = Matrix4f::identity() );
+	BoundingBox3f( const std::vector< Vector4f >& points, const Matrix4f& worldMatrix = Matrix4f::identity() );
 
 	QString toString() const;
 	void print();

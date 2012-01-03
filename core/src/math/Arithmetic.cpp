@@ -95,6 +95,30 @@ uint Arithmetic::roundUpToNearestPowerOfTwo( uint v )
 }
 
 // static
+int Arithmetic::roundUpToNearestMultipleOf4( int x )
+{
+	return ( x + 3 ) & ( ~( 0x3 ) );
+}
+
+// static
+int Arithmetic::roundUpToNearestMultipleOf8( int x )
+{
+	return ( x + 7 ) & ( ~( 0x7 ) );
+}
+
+// static
+int Arithmetic::roundUpToNearestMultipleOf16( int x )
+{
+	return ( x + 15 ) & ( ~( 0xf ) );
+}
+
+// static
+int Arithmetic::roundUpToNearestMultipleOf256( int x )
+{
+	return ( x + 255 ) & ( ~( 0xff ) );
+}
+
+// static
 int Arithmetic::findNextPerfectSquare( int x, int* sqrtOut )
 {
 	int y = x;
