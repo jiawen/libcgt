@@ -154,12 +154,6 @@ QString Vector3f::toString() const
 	return out;
 }
 
-void Vector3f::print() const
-{
-	printf( "< %.3f, %.3f, %.3f >\n",
-		m_elements[0], m_elements[1], m_elements[2] );
-}
-
 // static
 Vector3f Vector3f::lerp( const Vector3f& v0, const Vector3f& v1, float alpha )
 {

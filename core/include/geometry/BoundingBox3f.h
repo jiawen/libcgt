@@ -40,6 +40,8 @@ public:
 
 	Vector3f range() const;
 	Vector3f center() const;
+	
+	float volume() const;
 
 	// returns the minimum of the lengths of the 3 sides of this box
 	float shortestSideLength() const;

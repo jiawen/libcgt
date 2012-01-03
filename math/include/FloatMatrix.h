@@ -75,6 +75,9 @@ public:
 	// Returns the sum of the square of each element
 	//float frobeniusNormSquared() const;
 
+	FloatMatrix& operator += ( const FloatMatrix& x );
+	FloatMatrix& operator -= ( const FloatMatrix& x );
+
 	// Returns the dot product of a . b
 	// a can be m x 1 or 1 x m
 	// b can be m x 1 or 1 x m
@@ -84,6 +87,9 @@ public:
 	static void add( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
 	static void subtract( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
 	static void multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
+
+	// y <-- alpha * x + y
+	static void scaledMultiplyAdd( float alpha, const FloatMatrix& x, FloatMatrix& y );
 
 	/*
 	void eigenvalueDecomposition( QVector< QVector< float > >* eigen_vector,
@@ -99,7 +105,7 @@ public:
 	float maximum() const;
 
 	void print( const char* prefix = nullptr, const char* suffix = nullptr );
-	QString toString();
+	QString toString();	
 
 private:
 

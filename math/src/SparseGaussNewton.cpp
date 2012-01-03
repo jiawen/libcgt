@@ -5,6 +5,43 @@
 
 #include <SuiteSparseQR.hpp>
 
+void copyFloatMatrixToCholmodDense( const FloatMatrix& src, cholmod_dense* dst )
+{
+	double* dstArray = reinterpret_cast< double* >( dst->x );
+	for( int k = 0; k < src.numElements(); ++k )
+	{
+		dstArray[k] = src[k];
+	}
+}
+
+void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst )
+{
+	double* srcArray = reinterpret_cast< double* >( src->x );
+	for( int k = 0; k < dst.numElements(); ++k )
+	{
+		dst[k] = srcArray[k];
+	}
+}
+
+void saveVector( const FloatMatrix& x, QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "w" );
+	for( int i = 0; i < x.numElements(); ++i )
+	{
+		fprintf( fp, "%f\n", x[i] );
+	}
+	fclose( fp );
+}
+
+#define TIMING 0
+#define FACTORIZE 0
+#define SPLIT_FACTORIZATION 0
+
+#if TIMING
+#include <time/StopWatch.h>
+#endif
+
+
 SparseGaussNewton::SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, cholmod_common* pcc,
 	int maxNumIterations, float epsilon ) :
 
@@ -115,32 +152,6 @@ void SparseGaussNewton::setEpsilon( float epsilon )
 	m_sqrtEpsilon = sqrtf( epsilon );
 }
 
-void copyFloatMatrixToCholmodDense( const FloatMatrix& src, cholmod_dense* dst )
-{
-	double* dstArray = reinterpret_cast< double* >( dst->x );
-	for( int k = 0; k < src.numElements(); ++k )
-	{
-		dstArray[k] = src[k];
-	}
-}
-
-void copyCholmodDenseToFloatMatrix( cholmod_dense* src, FloatMatrix& dst )
-{
-	double* srcArray = reinterpret_cast< double* >( src->x );
-	for( int k = 0; k < dst.numElements(); ++k )
-	{
-		dst[k] = srcArray[k];
-	}
-}
-
-#define TIMING 0
-#define FACTORIZE 0
-#define SPLIT_FACTORIZATION 0
-
-#if TIMING
-#include <time/StopWatch.h>
-#endif
-
 const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
 {
 #if TIMING
@@ -181,6 +192,8 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 	bool deltaBetaConverged;
 	bool converged = false;
 
+	//printf( "initial energy = %f\n", currEnergy );	
+
 	// check for convergence
 	int nIterations = 0;
 	while( ( nIterations < m_maxNumIterations ) &&
@@ -188,7 +201,17 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 	{
 		// not converged
 		prevEnergy = currEnergy;
-		m_prevBeta = m_currBeta;
+		//m_prevBeta = m_currBeta;
+
+#if 0
+		if( nIterations == 0 )
+		{
+			//printf( "prev beta = %s\n", qPrintable( m_prevBeta.toString() ) );
+			//printf( "curr beta = %s\n", qPrintable( m_currBeta.toString() ) );
+			//printf( "curr residual =\n%s\n", qPrintable( m_r.toString() ) );
+			saveVector( m_r, "c:/tmp/r0.txt" );
+		}
+#endif
 
 #if TIMING
 		sw.reset();
@@ -211,13 +234,21 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 		// numeric directly
 		if( m_pFactorization == nullptr )
 		{
-			printf( "factorization is null, factorizing...\n" );
-			m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, SPQR_DEFAULT_TOL, jSparse, m_pcc );
+			//printf( "factorization is null, factorizing...\n" );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, SPQR_DEFAULT_TOL, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_DEFAULT, 1e-3, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_CHOLMOD, 1e-3, jSparse, m_pcc );
+			m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_CHOLMOD, SPQR_DEFAULT_TOL, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_METIS, 1e-3, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_BEST, 1e-3, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_COLAMD, 1e-3, jSparse, m_pcc );
+			//m_pFactorization = SuiteSparseQR_factorize< double >( SPQR_ORDERING_AMD, 1e-3, jSparse, m_pcc );			
 		}
 		else
 		{
-			printf( "factorization exists, reusing...\n" );
+			//printf( "factorization exists, reusing...\n" );
 			SuiteSparseQR_numeric< double >( SPQR_DEFAULT_TOL, jSparse, m_pFactorization, m_pcc );
+			//SuiteSparseQR_numeric< double >( 1e-3, jSparse, m_pFactorization, m_pcc );
 		}
 #endif
 
@@ -259,9 +290,20 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 		cholmod_l_free_dense( &y, m_pcc );
 #endif
 		cholmod_l_free_sparse( &jSparse, m_pcc );
+		
+		//m_currBeta = m_prevBeta - m_delta;
+		m_currBeta -= m_delta;
 
-		// TODO: OPTIMIZE: do it in place
-		m_currBeta = m_prevBeta - m_delta;
+#if 0
+		if( nIterations == 0 )
+		{
+			saveVector( m_delta, "c:/tmp/delta_0.txt" );
+			saveVector( m_prevBeta, "c:/tmp/m_prevBeta.txt" );
+			saveVector( m_currBeta, "c:/tmp/m_currBeta.txt" );
+			//printf( "initial delta =\n%s\n", qPrintable( m_delta.toString() ) );
+			//printf( "beta[1] =\n%s\n", qPrintable( m_currBeta.toString() ) );
+		}
+#endif
 
 		// update energy
 #if TIMING

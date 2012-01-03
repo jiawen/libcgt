@@ -151,14 +151,6 @@ QString BoundingBox3f::toString() const
 	return out;
 }
 
-void BoundingBox3f::print()
-{
-	printf( "min: " );
-	m_min.print();
-	printf( "max: " );
-	m_max.print();
-}
-
 Vector3f& BoundingBox3f::minimum()
 {
 	return m_min;
@@ -187,6 +179,12 @@ Vector3f BoundingBox3f::range() const
 Vector3f BoundingBox3f::center() const
 {
 	return( 0.5 * ( m_max + m_min ) );
+}
+
+float BoundingBox3f::volume() const
+{
+	Vector3f r = range();
+	return r.x * r.y * r.z;
 }
 
 float BoundingBox3f::shortestSideLength() const

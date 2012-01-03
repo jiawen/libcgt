@@ -6,19 +6,41 @@
 
 #include <vecmath/Vector4f.h>
 
-SpotLight::SpotLight( const Vector3f& position,
-		  const Vector3f& center,
-		  const Vector3f& up,
-		  float fovYRadians,
-		  float zNear, float zFar ) :
+SpotLight::SpotLight( const Vector3f& position, const Vector3f& center, const Vector3f& up,
+		  float fovYRadians, float zNear, float zFar, float aspect,
+		  const Vector3f& color, const Vector3f& distanceFalloff ) :
 
 	m_fovYRadians( fovYRadians ),
 	m_zNear( zNear ),
 	m_zFar( zFar ),
 
-	m_aspect( 1.f )
+	m_aspect( aspect ),
+
+	m_color( color ),
+	m_distanceFalloff( distanceFalloff )
+
 {
 	setLookAt( position, center, up );
+}
+
+Vector3f SpotLight::color() const
+{
+	return m_color;
+}
+
+void SpotLight::setColor( const Vector3f& color )
+{
+	m_color = color;
+}
+
+Vector3f SpotLight::distanceFalloff() const
+{
+	return m_distanceFalloff;
+}
+
+void SpotLight::setDistanceFalloff( const Vector3f& distanceFalloff )
+{
+	m_distanceFalloff = distanceFalloff;
 }
 
 void SpotLight::setLookAt( const Vector3f& position,
@@ -78,6 +100,11 @@ const Vector3f& SpotLight::up() const
 void SpotLight::setUp( const Vector3f& up )
 {
 	m_up = up;
+}
+
+void SpotLight::setUpWithRight( const Vector3f& right )
+{
+	m_up = Vector3f::cross( right, lightDirection() );
 }
 
 float SpotLight::zNear() const

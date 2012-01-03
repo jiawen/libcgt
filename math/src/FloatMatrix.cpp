@@ -265,6 +265,18 @@ FloatMatrix FloatMatrix::transposed() const
 	return t;
 }
 
+FloatMatrix& FloatMatrix::operator += ( const FloatMatrix& x )
+{
+	scaledMultiplyAdd( 1.0f, x, *this );
+	return( *this );
+}
+
+FloatMatrix& FloatMatrix::operator -= ( const FloatMatrix& x )
+{
+	scaledMultiplyAdd( -1.0f, x, *this );
+	return( *this );
+}
+
 // static
 float FloatMatrix::dot( const FloatMatrix& a, const FloatMatrix& b )
 {
@@ -330,6 +342,16 @@ void FloatMatrix::multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMat
 			}
 		}
 	}
+}
+
+// static
+void FloatMatrix::scaledMultiplyAdd( float alpha, const FloatMatrix& x, FloatMatrix& y )
+{	
+	int n = x.numElements();
+	assert( n == y.numElements() );
+	int inc = 1;
+
+	saxpy( &n, &alpha, x.constData(), &inc, y.data(), &inc );
 }
 
 #if 0
