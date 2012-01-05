@@ -1,5 +1,4 @@
-#ifndef OBJ_GROUP_H
-#define OBJ_GROUP_H
+#pragma once
 
 #include <QString>
 #include <QVector>
@@ -14,8 +13,31 @@ public:
 
 	OBJGroup( QString name );
 
-	QString getName();
-	QVector< OBJFace >* getFaces();
+	QString name();
+
+	// add a new material
+	void addMaterial( QString materialName )
+	{
+		m_materials.append( materialName );
+		m_facesByMaterial.append( QVector< OBJFace >() );
+	}
+
+	void addFace( const OBJFace& face )
+	{
+		m_facesByMaterial.last().append( face );
+	}
+
+	QVector< QString >& getMaterials()
+	{
+		return m_materials;
+	}
+
+	QVector< OBJFace >& getFacesForMaterial( int materialIndex )
+	{
+		return m_facesByMaterial[ materialIndex ];
+	}
+	
+	// QVector< OBJFace >* getFaces();
 
 	bool hasTextureCoordinates();
 	void setHasTextureCoordinates( bool b );
@@ -25,11 +47,11 @@ public:
 
 private:
 
-	QString m_qsName;
-	bool m_bHasTextureCoordinates;
-	bool m_bHasNormals;
-	QVector< OBJFace > m_qvFaces;
+	QString m_name;
+	bool m_hasTextureCoordinates;
+	bool m_hasNormals;
+
+	QVector< QString > m_materials;
+	QVector< QVector< OBJFace > > m_facesByMaterial;
 
 };
-
-#endif // OBJ_GROUP_H

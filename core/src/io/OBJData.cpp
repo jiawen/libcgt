@@ -12,7 +12,11 @@ OBJData::OBJData()
 // virtual
 OBJData::~OBJData()
 {
-	foreach( OBJGroup* pGroup, m_qhGroups )
+	foreach( OBJMaterial* pMaterial, m_materials )
+	{
+		delete pMaterial;
+	}
+	foreach( OBJGroup* pGroup, m_groups )
 	{
 		delete pGroup;
 	}
@@ -20,40 +24,60 @@ OBJData::~OBJData()
 
 QVector< Vector3f >* OBJData::getPositions()
 {
-	return &m_qvPositions;
+	return &m_positions;
 }
 
 QVector< Vector2f >* OBJData::getTextureCoordinates()
 {
-	return &m_qvTextureCoordinates;
+	return &m_textureCoordinates;
 }
 
 QVector< Vector3f >* OBJData::getNormals()
 {
-	return &m_qvNormals;
+	return &m_normals;
 }
 
 QHash< QString, OBJGroup* >* OBJData::getGroups()
 {
-	return &m_qhGroups;
+	return &m_groups;
 }
 
-OBJGroup* OBJData::addGroup( QString groupName )
+OBJGroup* OBJData::addGroup( QString name )
 {
-	if( !( m_qhGroups.contains( groupName ) ) )
+	if( !( m_groups.contains( name ) ) )
 	{
-		m_qhGroups.insert( groupName, new OBJGroup( groupName ) );
+		m_groups.insert( name, new OBJGroup( name ) );
 	}
 
-	return m_qhGroups[ groupName ];
+	return m_groups[ name ];
 }
 
-OBJGroup* OBJData::getGroup( QString groupName )
+OBJGroup* OBJData::getGroup( QString name )
 {
-	return m_qhGroups[ groupName ];
+	return m_groups[ name ];
 }
 
-bool OBJData::containsGroup( QString groupName )
+bool OBJData::containsGroup( QString name )
 {
-	return m_qhGroups.contains( groupName );
+	return m_groups.contains( name );
+}
+
+OBJMaterial* OBJData::addMaterial( QString name )
+{
+	if( !( m_materials.contains( name ) ) )
+	{
+		m_materials.insert( name, new OBJMaterial( name ) );
+	}
+
+	return m_materials[ name ];
+}
+
+OBJMaterial* OBJData::getMaterial( QString name )
+{
+	return m_materials[ name ];
+}
+
+bool OBJData::containsMaterial( QString name )
+{
+	return m_materials.contains( name );
 }

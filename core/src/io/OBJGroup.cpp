@@ -6,38 +6,33 @@
 
 OBJGroup::OBJGroup( QString name ) :
 
-	m_qsName( name )
+	m_name( name )
 
 {
 
 }
 
-QString OBJGroup::getName()
+QString OBJGroup::name()
 {
-	return m_qsName;
-}
-
-QVector< OBJFace >* OBJGroup::getFaces()
-{
-	return &m_qvFaces;
+	return m_name;
 }
 
 bool OBJGroup::hasTextureCoordinates()
 {
-	return m_bHasTextureCoordinates;
+	return m_hasTextureCoordinates;
 }
 
 void OBJGroup::setHasTextureCoordinates( bool b )
 {
-	m_bHasTextureCoordinates = b;
+	m_hasTextureCoordinates = b;
 }
 
 bool OBJGroup::hasNormals()
 {
-	return m_bHasNormals;
+	return m_hasNormals;
 }
 
 void OBJGroup::setHasNormals( bool b )
 {
-	m_bHasNormals = b;
+	m_hasNormals = b;
 }

@@ -1,6 +1,8 @@
 #include "io/OBJLoader.h"
 
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QStringList>
 #include <QTextStream>
 //#include <QRegExp>
@@ -13,44 +15,63 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-std::shared_ptr< OBJData > OBJLoader::loadFile( QString filename )
+std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename )
+{
+	int lineNumber = 0;
+	QString line = "";
+	std::shared_ptr< OBJData > pOBJData( new OBJData );
+	OBJMaterial* pCurrentMaterial = pOBJData->addMaterial( "" ); // default material name is the empty string
+	OBJGroup* pCurrentGroup = pOBJData->addGroup( "" ); // default group name is the empty string
+	
+	parseOBJ( objFilename, pOBJData );
+
+	return pOBJData;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+// static
+void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData )
 {
 	// attempt to read the file
-	// return NULL if failed
-	QFile inputFile( filename );
-
-	// try to open the file in read only mode
+	QFile inputFile( objFilename );
 	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
 	{
-		return NULL;
+		return;
 	}
+
+	int lineNumber = 0;
+	QString line = "";	
+	OBJGroup* pCurrentGroup = pOBJData->getGroup( "" ); // default group name is the empty string
 
 	QTextStream inputTextStream( &inputFile );
 
-	////////////////////////////////
-
-	int lineNumber = 0;
-	QString line = "";
-	OBJData* pOBJData = new OBJData;
-	OBJGroup* pCurrentGroup = pOBJData->addGroup( "" ); // default group name is the empty string
-	
 	QString delim( " " );
-	//QRegExp splitExp( "\\s+" );
 
 	while( !( inputTextStream.atEnd() ) )
 	{
 		line = inputTextStream.readLine();
-		++lineNumber;
 
 		if( line != "" )
 		{
 			QStringList tokens = line.split( delim, QString::SkipEmptyParts );
-			
+
 			if( tokens.size() > 0 )
 			{
 				QString commandToken = tokens[ 0 ];
 
-				if( commandToken == "g" )
+				if( commandToken == "mtllib" )
+				{
+					QString mtlRelativeFilename = tokens[ 1 ];
+					QFileInfo objFileInfo( objFilename );
+					QDir objDir = objFileInfo.dir();
+					QString mtlAbsoluteFilename = objDir.absolutePath() + "/" + mtlRelativeFilename;
+					parseMTL( mtlAbsoluteFilename, pOBJData );
+				}
+				else if( commandToken == "g" )
 				{
 					QString newGroupName;
 
@@ -58,15 +79,15 @@ std::shared_ptr< OBJData > OBJLoader::loadFile( QString filename )
 					{
 						fprintf( stderr, "Warning: group has no name, defaulting to ""\nline: %d\n%s",
 							lineNumber, qPrintable( line ) );
-						
+
 						newGroupName = "";
 					}
 					else
 					{
 						newGroupName = tokens[ 1 ];
 					}
-					
-					if( newGroupName != pCurrentGroup->getName() )
+
+					if( newGroupName != pCurrentGroup->name() )
 					{
 						if( pOBJData->containsGroup( newGroupName ) )
 						{
@@ -91,27 +112,137 @@ std::shared_ptr< OBJData > OBJLoader::loadFile( QString filename )
 				{
 					OBJLoader::parseNormal( lineNumber, line, tokens, pOBJData );
 				}
+				else if( commandToken == "usemtl" )
+				{
+					pCurrentGroup->addMaterial( tokens[ 1 ] );
+				}
 				else if( commandToken == "f" || commandToken == "fo" )
 				{
 					OBJLoader::parseFace( lineNumber, line,
 						tokens, pCurrentGroup );
 				}
 			}
-		}		
-	}
+		}
 
-	return std::shared_ptr< OBJData >( pOBJData );
+		++lineNumber;
+	}
 }
 
+// static
+void OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData )
+{
+	// attempt to read the file
+	QFile inputFile( mtlFilename );
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{
+		return;
+	}
 
+	int lineNumber = 0;
+	QString line;
+	OBJMaterial* pCurrentMaterial = pOBJData->getMaterial( "" );
 
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
+	QRegExp splitExp( "\\s+" );
+
+	QTextStream inputTextStream( &inputFile );
+	line = inputTextStream.readLine();
+	while( !( line.isNull() ) )
+	{
+		if( line != "" )
+		{
+			QStringList tokens = line.split( splitExp, QString::SkipEmptyParts );
+
+			if( tokens.size() > 0 )
+			{
+				QString commandToken = tokens[ 0 ];
+
+				if( commandToken == "newmtl" )
+				{
+					QString newMaterialName;
+
+					if( tokens.size() < 2 )
+					{
+						fprintf( stderr, "Warning: material has no name, defaulting to ""\nline: %d\n%s",
+							lineNumber, qPrintable( line ) );
+
+						newMaterialName = "";
+					}
+					else
+					{
+						newMaterialName = tokens[ 1 ];
+					}
+
+					// if the new material's name isn't the same as the current one
+					if( newMaterialName != pCurrentMaterial->name() )
+					{
+						// but if it exists, then just set it as current
+						if( pOBJData->containsGroup( newMaterialName ) )
+						{
+							pCurrentMaterial = pOBJData->getMaterial( newMaterialName );
+						}
+						// otherwise, make a new one and set it as current
+						else
+						{
+							pCurrentMaterial = pOBJData->addMaterial( newMaterialName );
+						}						
+					}
+				}
+				else if( commandToken == "Ka" )
+				{
+					float r = tokens[ 1 ].toFloat();
+					float g = tokens[ 2 ].toFloat();
+					float b = tokens[ 3 ].toFloat();
+					pCurrentMaterial->setAmbientColor( Vector3f( r, g, b ) );
+				}
+				else if( commandToken == "Kd" )
+				{
+					float r = tokens[ 1 ].toFloat();
+					float g = tokens[ 2 ].toFloat();
+					float b = tokens[ 3 ].toFloat();
+					pCurrentMaterial->setDiffuseColor( Vector3f( r, g, b ) );
+				}
+				else if( commandToken == "Ks" )
+				{
+					float r = tokens[ 1 ].toFloat();
+					float g = tokens[ 2 ].toFloat();
+					float b = tokens[ 3 ].toFloat();
+					pCurrentMaterial->setSpecularColor( Vector3f( r, g, b ) );
+				}
+				else if( commandToken == "d" )
+				{
+					float d = tokens[ 1 ].toFloat();
+					pCurrentMaterial->setAlpha( d );
+				}
+				else if( commandToken == "Ns" )
+				{
+					float ns = tokens[ 1 ].toFloat();
+					pCurrentMaterial->setShininess( ns );
+				}
+				else if( commandToken == "illum" )
+				{
+					int il = tokens[ 1 ].toInt();
+					OBJMaterial::ILLUMINATION_MODEL illum = static_cast< OBJMaterial::ILLUMINATION_MODEL >( il );
+					pCurrentMaterial->setIlluminationModel( illum );
+				}
+				else if( commandToken == "map_Ka" )
+				{
+					pCurrentMaterial->setAmbientTexture( tokens[ 1 ] );
+				}
+				else if( commandToken == "map_Kd" )
+				{
+					pCurrentMaterial->setDiffuseTexture( tokens[ 1 ] );
+				}
+			}
+		}
+
+		++lineNumber;
+		line = inputTextStream.readLine();
+	}
+}
 
 // static
 bool OBJLoader::parsePosition( int lineNumber, QString line,
-							  QStringList tokens, OBJData* pOBJData )
+							  QStringList tokens, std::shared_ptr< OBJData > pOBJData )
 {
 	if( tokens.size() < 4 )
 	{
@@ -155,7 +286,7 @@ bool OBJLoader::parsePosition( int lineNumber, QString line,
 
 // static
 bool OBJLoader::parseTextureCoordinate( int lineNumber, QString line,
-									   QStringList tokens, OBJData* pOBJData )
+									   QStringList tokens, std::shared_ptr< OBJData > pOBJData )
 {
 	if( tokens.size() < 3 )
 	{
@@ -191,7 +322,7 @@ bool OBJLoader::parseTextureCoordinate( int lineNumber, QString line,
 
 // static
 bool OBJLoader::parseNormal( int lineNumber, QString line,
-							QStringList tokens, OBJData* pOBJData )
+							QStringList tokens, std::shared_ptr< OBJData > pOBJData )
 {
 	if( tokens.size() < 4 )
 	{
@@ -269,6 +400,8 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		// check how many faces the current group has
 		// if the group has no faces, then the first vertex sets it
 
+		/* HACK
+		// TODO: fix this
 		if( pCurrentGroup->getFaces()->size() == 0 )
 		{
 			pCurrentGroup->setHasTextureCoordinates( faceHasTextureCoordinates );
@@ -281,7 +414,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		if( !faceIsConsistentWithGroup )
 		{
 			fprintf( stderr, "Face attributes inconsistent with group: %s at line: %d\n%s\n",
-				qPrintable( pCurrentGroup->getName() ), lineNumber, qPrintable( line ) );
+				qPrintable( pCurrentGroup->name() ), lineNumber, qPrintable( line ) );
 			fprintf( stderr, "group.hasTextureCoordinates() = %d\n", pCurrentGroup->hasTextureCoordinates() );
 			fprintf( stderr, "face.hasTextureCoordinates() = %d\n", faceHasTextureCoordinates );
 			fprintf( stderr, "group.hasNormals() = %d\n", pCurrentGroup->hasNormals() );
@@ -289,6 +422,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 			
 			return false;
 		}
+		*/
 
 		OBJFace face( faceHasTextureCoordinates, faceHasNormals );
 
@@ -314,7 +448,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 			}
 		}
 
-		pCurrentGroup->getFaces()->append( face );
+		pCurrentGroup->addFace( face );
 		return true;
 	}
 }

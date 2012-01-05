@@ -2,12 +2,15 @@
 #define D3D11_MESH_H
 
 #include <memory>
+#include <QHash>
+#include <QString>
 
 #include <geometry/BoundingBox3f.h>
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector2i.h>
 
 #include <DynamicVertexBuffer.h>
+#include <DynamicTexture2D.h>
 #include <VertexPosition4fNormal3fTexture2f.h>
 
 class OBJData;
@@ -19,13 +22,24 @@ public:
 	// capacity is in number of vertices
 	D3D11Mesh( ID3D11Device* pDevice, int capacity );
 	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int capacity );
-	D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData, bool generatePerFaceNormalsIfNonExistent = true );
+	
+	// TODO: make this not a constructor
+	// TODO: texture path is pretty silly
+	D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData, QString texturePath, bool generatePerFaceNormalsIfNonExistent = true );
 
 	virtual ~D3D11Mesh();
 
 	int capacity() const;
 	
 	std::vector< Vector2i >& vertexRanges();
+	std::vector< Vector3f >& diffuseColors();
+	std::vector< std::shared_ptr< DynamicTexture2D > >& diffuseTextures()
+	{
+		return m_diffuseTexturesRanges;
+	}
+
+	//void addVertexRange( const Vector2i& vr, const Vector3f& kd );
+	void addVertexRange( const Vector2i& vr, const Vector3f& kd, std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
 
 	std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray();
 	const std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray() const;
@@ -65,6 +79,10 @@ private:
 	std::shared_ptr< DynamicVertexBuffer > m_pVertexBuffer;
 
 	std::vector< Vector2i > m_vertexRanges;
+	std::vector< Vector3f > m_diffuseColors;
+	std::vector< std::shared_ptr< DynamicTexture2D > > m_diffuseTexturesRanges;
+
+	QHash< QString, std::shared_ptr< DynamicTexture2D > > m_diffuseTextures;
 
 };
 

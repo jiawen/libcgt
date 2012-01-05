@@ -11,24 +11,27 @@ class OBJLoader
 {
 public:
 
-	static std::shared_ptr< OBJData > loadFile( QString filename );
+	static std::shared_ptr< OBJData > loadFile( QString objFilename );
 
 private:
+
+	static void parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData );
+	static void parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData );
 
 	// parses a position line (starting with "v")
 	// returns false on an error
 	static bool parsePosition( int lineNumber, QString line,
-		QStringList tokens, OBJData* pOBJData );
+		QStringList tokens, std::shared_ptr< OBJData > pOBJData );
 
 	// parses a texture coordinate line (starting with "vt")
 	// returns false on an error
 	static bool parseTextureCoordinate( int lineNumber, QString line,
-		QStringList tokens, OBJData* pOBJData );
+		QStringList tokens, std::shared_ptr< OBJData > pOBJData );
 
 	// parses a normal line (starting with "vn")
 	// returns false on an error
 	static bool parseNormal( int lineNumber, QString line,
-		QStringList tokens, OBJData* pOBJData );
+		QStringList tokens, std::shared_ptr< OBJData > pOBJData );
 
 	// parses a face line (starting with "f" or "fo")
 	// returns false on an error
