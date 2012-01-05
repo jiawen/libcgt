@@ -128,12 +128,19 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 				diffuseTexture = m_diffuseTextures[ diffuseTextureFilename ];
 			}
 
+			Vector2i vertexRange( nVerticesTotal, nVerticesInBatch );
 			Vector3f kd = pBatchMaterial->diffuseColor();
-			//printf( "Group %s, material %s, using kd = %s\n",
-			//	qPrintable( groupName ), qPrintable( materialName ), qPrintable( kd.toString() ) );			 
+			Vector4f ks = Vector4f( pBatchMaterial->specularColor(), pBatchMaterial->shininess() );
+			
+			/*
+			printf( "Group %s, material %s, using kd = %s\n",
+				qPrintable( groupName ), qPrintable( materialName ), qPrintable( kd.toString() ) );
+			printf( "Vertex range: [%d, %d]\n", vertexRange.x, vertexRange.y );
+			*/
 
-			addVertexRange( Vector2i( nVerticesTotal, nVerticesInBatch ),
-				kd, diffuseTexture );
+			addVertexRange( vertexRange, kd, ks, diffuseTexture );
+
+			nVerticesTotal += nVerticesInBatch;
 		}
 	}
 
@@ -156,12 +163,18 @@ std::vector< Vector3f >& D3D11Mesh::diffuseColors()
 	return m_diffuseColors;
 }
 
+std::vector< Vector4f >& D3D11Mesh::specularColors()
+{
+	return m_specularColors;
+}
+
 void D3D11Mesh::addVertexRange( const Vector2i& vr,
-	const Vector3f& kd,
+	const Vector3f& kd, const Vector4f& ks,
 	std::shared_ptr< DynamicTexture2D > pDiffuseTexture )
 {
 	m_vertexRanges.push_back( vr );
 	m_diffuseColors.push_back( kd );
+	m_specularColors.push_back( ks );
 	m_diffuseTexturesRanges.push_back( pDiffuseTexture );
 }
 

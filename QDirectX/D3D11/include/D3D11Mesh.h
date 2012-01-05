@@ -33,13 +33,16 @@ public:
 	
 	std::vector< Vector2i >& vertexRanges();
 	std::vector< Vector3f >& diffuseColors();
+	std::vector< Vector4f >& specularColors();
 	std::vector< std::shared_ptr< DynamicTexture2D > >& diffuseTextures()
 	{
 		return m_diffuseTexturesRanges;
 	}
 
 	//void addVertexRange( const Vector2i& vr, const Vector3f& kd );
-	void addVertexRange( const Vector2i& vr, const Vector3f& kd, std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
+	void addVertexRange( const Vector2i& vr,
+		const Vector3f& kd, const Vector4f& ks = Vector4f( 0, 0, 0, 0 ),
+		std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
 
 	std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray();
 	const std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray() const;
@@ -80,6 +83,7 @@ private:
 
 	std::vector< Vector2i > m_vertexRanges;
 	std::vector< Vector3f > m_diffuseColors;
+	std::vector< Vector4f > m_specularColors;
 	std::vector< std::shared_ptr< DynamicTexture2D > > m_diffuseTexturesRanges;
 
 	QHash< QString, std::shared_ptr< DynamicTexture2D > > m_diffuseTextures;
