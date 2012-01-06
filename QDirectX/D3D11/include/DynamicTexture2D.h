@@ -1,5 +1,4 @@
-#ifndef DYNAMIC_TEXTURE_2D_H
-#define DYNAMIC_TEXTURE_2D_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -45,5 +44,3 @@ private:
 	ID3D11DeviceContext* m_pContext;
 
 };
-
-#endif // DYNAMIC_TEXTURE_2D_H

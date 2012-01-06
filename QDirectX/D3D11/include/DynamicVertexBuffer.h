@@ -1,5 +1,4 @@
-#ifndef DYNAMIC_VERTEX_BUFFER_H
-#define DYNAMIC_VERTEX_BUFFER_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -40,5 +39,3 @@ private:
 	ID3D11DeviceContext* m_pContext;
 	
 };
-
-#endif // DYNAMIC_VERTEX_BUFFER_H

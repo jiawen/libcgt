@@ -11,7 +11,7 @@ OBJGroup::OBJGroup( QString name ) :
 	m_hasTextureCoordinates( false )
 
 {
-
+	addMaterial( "" );
 }
 
 QString OBJGroup::name()
