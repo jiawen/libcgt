@@ -7,7 +7,7 @@
 // static
 std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV )
 {
-	std::shared_ptr< Image4ub > im( new Image4ub( filename ) );
+	Image4ub im( filename );
 	return createTextureFromImage( pDevice, im, flipUV );
 }
 
@@ -28,9 +28,9 @@ std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( 
 }
 
 // static
-std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image4ub > im, bool flipUV )
+std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, Image4ub& im, bool flipUV )
 {
-	std::shared_ptr< DynamicTexture2D > pTexture( DynamicTexture2D::createUnsignedByte4( pDevice, im->width(), im->height() ) );
+	std::shared_ptr< DynamicTexture2D > pTexture( DynamicTexture2D::createUnsignedByte4( pDevice, im.width(), im.height() ) );
 	copyImageToTexture( im, pTexture, flipUV );
 	return pTexture;
 }
@@ -97,14 +97,14 @@ void D3D11Utils_Texture::copyImageToTexture( std::shared_ptr< Image4f > im, std:
 
 
 // static
-void D3D11Utils_Texture::copyImageToTexture( std::shared_ptr< Image4ub > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils_Texture::copyImageToTexture( Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
 {
-	int width = im->width();
-	int height = im->height();
+	int width = im.width();
+	int height = im.height();
 
 	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
 
-	quint8* sourceData = im->pixels();
+	quint8* sourceData = im.pixels();
 	quint8* destData = reinterpret_cast< quint8* >( mapping.pData );
 
 	for( int y = 0; y < height; ++y )

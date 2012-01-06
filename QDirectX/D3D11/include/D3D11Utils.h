@@ -76,11 +76,11 @@ public:
 	// the vertices are in clip coordinates (-1,-1) --> (1,1)
 	// so the projection matrix should be identity (i.e., don't use one)	
 	// each vertex is a VertexPosition4f
-	static Reference< DynamicVertexBuffer > createFullScreenQuad( ID3D11Device* pDevice );
+	static std::shared_ptr< DynamicVertexBuffer > createFullScreenQuad( ID3D11Device* pDevice );
 
 	// Create a DynamicVertexBuffer of 6 vertices (2 triangles) for a screen aligned quad
 	// each vertex is a VertexPosition4fTexture2f
-	static Reference< DynamicVertexBuffer > createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice );
+	static std::shared_ptr< DynamicVertexBuffer > createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice );
 
 	// writes a fullscreen quadrilateral (6 vertices, 2 triangles) into buffer
 	// clip coordinates are -1 to 1

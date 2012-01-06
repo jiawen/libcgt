@@ -39,6 +39,8 @@ public:
 
 	const FloatMatrix& minimize( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
+	const FloatMatrix& minimize2( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
+
 private:
 
 	std::shared_ptr< SparseEnergy > m_pEnergy;
@@ -55,6 +57,11 @@ private:
 	FloatMatrix m_delta;
 	FloatMatrix m_r;
 	cholmod_dense* m_r2;
+
+	// for Cholesky:
+	// solve J'J \Beta = J'r
+	cholmod_factor* m_L;
+	cholmod_dense* m_jtr2;
 };
 
 #endif // SPARSE_GAUSS_NEWTON_H

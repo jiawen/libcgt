@@ -6,7 +6,9 @@
 
 OBJGroup::OBJGroup( QString name ) :
 
-	m_name( name )
+	m_name( name ),
+	m_hasNormals( true ),
+	m_hasTextureCoordinates( false )
 
 {
 

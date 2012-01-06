@@ -112,6 +112,24 @@ quint8* Image4ub::pixels()
 	return m_data.data();
 }
 
+quint8* Image4ub::rowPointer( int y )
+{
+	quint8* p = m_data.data();
+	quint8* pRowPointer = &( p[ 4 * y * m_width ] );
+	return pRowPointer;
+}
+
+void Image4ub::fillChannel( int channel, quint8 value )
+{
+	quint8* p = m_data.data();
+	int nBytes = 4 * m_width * m_height;
+
+	for( int k = channel; k < nBytes; k += 4 )
+	{
+		p[k] = value;
+	}
+}
+
 Vector4i Image4ub::pixel( int x, int y ) const
 {
 	x = MathUtils::clampToRangeInt( x, 0, width() );

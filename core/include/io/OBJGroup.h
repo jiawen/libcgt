@@ -22,6 +22,9 @@ public:
 		m_facesByMaterial.append( QVector< OBJFace >() );
 	}
 
+	// TODO: store all faces in a single list
+	// each material has a vertex range
+
 	void addFace( const OBJFace& face )
 	{
 		m_facesByMaterial.last().append( face );

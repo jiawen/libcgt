@@ -291,9 +291,9 @@ void D3D11Utils::writeAxes( VertexPosition4fColor4f* vertexArray )
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device* pDevice )
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device* pDevice )
 {
-	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4f::sizeInBytes() );
+	std::shared_ptr< DynamicVertexBuffer > buffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4f::sizeInBytes() ) );
 
 	VertexPosition4f* vertexArray = reinterpret_cast< VertexPosition4f* >( buffer->mapForWriteDiscard().pData );
 	writeFullScreenQuad( vertexArray );
@@ -303,9 +303,9 @@ Reference< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device*
 }
 
 // static
-Reference< DynamicVertexBuffer > D3D11Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice )
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice )
 {
-	Reference< DynamicVertexBuffer > buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() );
+	std::shared_ptr< DynamicVertexBuffer > buffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() ) );
 
 	VertexPosition4fTexture2f* vertexArray = reinterpret_cast< VertexPosition4fTexture2f* >( buffer->mapForWriteDiscard().pData );
 	writeScreenAlignedQuad( x, y, width, height, vertexArray );

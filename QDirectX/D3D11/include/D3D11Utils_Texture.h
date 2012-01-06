@@ -23,14 +23,15 @@ public:
 	// set flipUV to true to flip it up/down
 	static std::shared_ptr< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV = true );
 
+	// TODO: const Image<T>&
 	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image1f > im, bool flipUV = true );
 	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image4f > im, bool flipUV = true );
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image4ub > im, bool flipUV = true );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, Image4ub& im, bool flipUV = true );
 
 	// image (cpu) --> texture (gpu)
 	static void copyImageToTexture( std::shared_ptr< Image1f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 	static void copyImageToTexture( std::shared_ptr< Image4f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
-	static void copyImageToTexture( std::shared_ptr< Image4ub > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
+	static void copyImageToTexture( Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 
 	// texture (gpu) --> image (cpu)
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image1f > im );

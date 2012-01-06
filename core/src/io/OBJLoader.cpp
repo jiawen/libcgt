@@ -226,11 +226,17 @@ void OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJDa
 				}
 				else if( commandToken == "map_Ka" )
 				{
-					pCurrentMaterial->setAmbientTexture( tokens[ 1 ] );
+					if( tokens.size() > 1 )
+					{
+						pCurrentMaterial->setAmbientTexture( tokens[ 1 ] );
+					}
 				}
 				else if( commandToken == "map_Kd" )
 				{
-					pCurrentMaterial->setDiffuseTexture( tokens[ 1 ] );
+					if( tokens.size() > 1 )
+					{
+						pCurrentMaterial->setDiffuseTexture( tokens[ 1 ] );
+					}
 				}
 			}
 		}

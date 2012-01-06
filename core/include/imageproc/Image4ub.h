@@ -36,6 +36,11 @@ public:
 	Vector2i size() const;
 
 	quint8* pixels();
+	quint8* rowPointer( int y );	
+
+	// fill the channel-th channel with value
+	// channel is 0, 1, 2 or 3
+	void fillChannel( int channel, quint8 value );
 
 	Vector4i pixel( int x, int y ) const;
 	Vector4i pixel( const Vector2i& xy ) const;
