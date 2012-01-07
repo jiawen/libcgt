@@ -1,5 +1,6 @@
-#ifndef VECTOR_2I_H
-#define VECTOR_2I_H
+#pragma once
+
+#include <QHash>
 
 class Vector2f;
 class Vector3i;
@@ -107,4 +108,4 @@ inline Vector2i& Vector2i::operator /= ( int s )
 	return *this;
 }
 
-#endif // VECTOR_2I_H
+uint qHash( const Vector2i& v );

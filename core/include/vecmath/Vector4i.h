@@ -1,5 +1,4 @@
-#ifndef VECTOR_4I_H
-#define VECTOR_4I_H
+#pragma once
 
 class Vector2i;
 class Vector3i;
@@ -91,5 +90,3 @@ Vector4f operator * ( float f, const Vector4i& v );
 Vector4f operator * ( const Vector4i& v, float f );
 
 Vector4i operator / ( const Vector4i& v, int c );
-
-#endif // VECTOR_4I_H

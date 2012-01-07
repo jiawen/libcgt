@@ -1,5 +1,4 @@
-#ifndef VECTOR_3I_H
-#define VECTOR_3I_H
+#pragma once
 
 class Vector2i;
 class Vector3f;
@@ -22,8 +21,13 @@ public:
 	int& operator [] ( int i );
 
 	Vector2i xy() const;
-	Vector2i xz() const;
 	Vector2i yz() const;
+	Vector2i zx() const;
+
+	Vector2i yx() const;
+	Vector2i zy() const;
+	Vector2i xz() const;
+
 	// TODO: all the other combinations
 
 	Vector3i xyz() const;
@@ -76,5 +80,3 @@ Vector3f operator * ( float f, const Vector3i& v );
 Vector3f operator * ( const Vector3i& v, float f );
 
 Vector3i operator / ( const Vector3i& v, int c );
-
-#endif // VECTOR_3I_H

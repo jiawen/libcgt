@@ -193,3 +193,8 @@ Vector2i operator / ( const Vector2i& v, int c )
 {
 	return Vector2i( v.x / c, v.y / c );
 }
+
+uint qHash( const Vector2i& v )
+{
+	return v.x ^ v.y;
+}

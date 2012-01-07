@@ -69,17 +69,32 @@ int& Vector3i::operator [] ( int i )
 
 Vector2i Vector3i::xy() const
 {
-	return Vector2i( m_elements[0], m_elements[1] );
-}
-
-Vector2i Vector3i::xz() const
-{
-	return Vector2i( m_elements[0], m_elements[2] );
+	return Vector2i( x, y );
 }
 
 Vector2i Vector3i::yz() const
 {
-	return Vector2i( m_elements[1], m_elements[2] );
+	return Vector2i( y, z );
+}
+
+Vector2i Vector3i::zx() const
+{
+	return Vector2i( z, x );
+}
+
+Vector2i Vector3i::yx() const
+{
+	return Vector2i( y, x );
+}
+
+Vector2i Vector3i::zy() const
+{
+	return Vector2i( z, y );
+}
+
+Vector2i Vector3i::xz() const
+{
+	return Vector2i( x, z );
 }
 
 Vector3i Vector3i::xyz() const
