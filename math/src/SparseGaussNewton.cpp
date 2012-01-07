@@ -71,7 +71,7 @@ SparseGaussNewton::~SparseGaussNewton()
 	if( m_pFactorization != nullptr )
 	{
 		SuiteSparseQR_free< double >( &m_pFactorization, m_pcc );
-	}		
+	}
 	if( m_J != nullptr )
 	{
 		cholmod_l_free_triplet( &m_J, m_pcc );

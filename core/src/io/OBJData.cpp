@@ -37,29 +37,35 @@ QVector< Vector3f >* OBJData::getNormals()
 	return &m_normals;
 }
 
-QHash< QString, OBJGroup* >* OBJData::getGroups()
+QVector< OBJGroup* >* OBJData::getGroups()
 {
 	return &m_groups;
 }
 
-OBJGroup* OBJData::addGroup( QString name )
+QHash< QString, OBJGroup* >* OBJData::getGroupsByName()
 {
-	if( !( m_groups.contains( name ) ) )
-	{
-		m_groups.insert( name, new OBJGroup( name ) );
-	}
-
-	return m_groups[ name ];
+	return &m_groupsByName;
 }
 
-OBJGroup* OBJData::getGroup( QString name )
+OBJGroup* OBJData::addGroup( QString name )
 {
-	return m_groups[ name ];
+	if( !( m_groupsByName.contains( name ) ) )
+	{
+		m_groupsByName.insert( name, new OBJGroup( name ) );
+		m_groups.append( m_groupsByName[ name ] );
+	}
+
+	return m_groupsByName[ name ];
+}
+
+OBJGroup* OBJData::getGroupByName( QString name )
+{
+	return m_groupsByName[ name ];
 }
 
 bool OBJData::containsGroup( QString name )
 {
-	return m_groups.contains( name );
+	return m_groupsByName.contains( name );
 }
 
 OBJMaterial* OBJData::addMaterial( QString name )

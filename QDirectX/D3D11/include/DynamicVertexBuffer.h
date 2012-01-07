@@ -6,6 +6,9 @@ class DynamicVertexBuffer
 {
 public:
 
+	// TODO: resize
+	// TODO: isEmpty() (support size 0 by storing null and resizing correctly)
+
 	// Create a new DynamicVertexBuffer
 	// capacity is specified in number of vertices
 	// vertexSizeBytes is the number of bytes per vertex

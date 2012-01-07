@@ -28,6 +28,7 @@ public:
 	void addFace( const OBJFace& face )
 	{
 		m_facesByMaterial.last().append( face );
+		m_faces.append( face );
 	}
 
 	QVector< QString >& getMaterials()
@@ -40,7 +41,15 @@ public:
 		return m_facesByMaterial[ materialIndex ];
 	}
 	
-	// QVector< OBJFace >* getFaces();
+	QVector< OBJFace >* getFaces()
+	{
+		return &m_faces;
+	}
+
+	int numFaces()
+	{
+		return m_faces.size();
+	}
 
 	bool hasTextureCoordinates();
 	void setHasTextureCoordinates( bool b );
@@ -56,5 +65,7 @@ private:
 
 	QVector< QString > m_materials;
 	QVector< QVector< OBJFace > > m_facesByMaterial;
+
+	QVector< OBJFace > m_faces;
 
 };

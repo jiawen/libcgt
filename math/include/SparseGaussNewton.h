@@ -1,5 +1,4 @@
-#ifndef SPARSE_GAUSS_NEWTON_H
-#define SPARSE_GAUSS_NEWTON_H
+#pragma once
 
 #include <memory>
 #include <common/BasicTypes.h>
@@ -63,5 +62,3 @@ private:
 	cholmod_factor* m_L;
 	cholmod_dense* m_jtr2;
 };
-
-#endif // SPARSE_GAUSS_NEWTON_H

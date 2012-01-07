@@ -20,14 +20,15 @@ public:
 	QVector< Vector2f >* getTextureCoordinates();
 	QVector< Vector3f >* getNormals();
 
-	QHash< QString, OBJGroup* >* getGroups();
+	QVector< OBJGroup* >* getGroups();
+	QHash< QString, OBJGroup* >* getGroupsByName();
 
 	// adds a group and returns a pointer to the group
 	OBJGroup* addGroup( QString groupName );
 
 	// returns a pointer to the group if it exists
 	// returns nullptr otherwise
-	OBJGroup* getGroup( QString groupName );
+	OBJGroup* getGroupByName( QString groupName );
 
 	bool containsGroup( QString groupName );
 
@@ -46,7 +47,8 @@ private:
 	QVector< Vector2f > m_textureCoordinates;
 	QVector< Vector3f > m_normals;
 
-	QHash< QString, OBJGroup* > m_groups;
+	QVector< OBJGroup* > m_groups;
+	QHash< QString, OBJGroup* > m_groupsByName;
 	QHash< QString, OBJMaterial* > m_materials;
 
 };

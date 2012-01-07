@@ -11,17 +11,18 @@
 
 #include <DynamicVertexBuffer.h>
 #include <DynamicTexture2D.h>
-#include <VertexPosition4fNormal3fTexture2f.h>
+#include <VertexPosition4fNormal3fColor4fTexture2f.h>
 
 class OBJData;
 
+// TODO: just templatize this thing
 class D3D11Mesh
 {
 public:
 
 	// capacity is in number of vertices
 	D3D11Mesh( ID3D11Device* pDevice, int capacity );
-	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int capacity );
+	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fColor4fTexture2f* vertexArray, int capacity );
 	
 	// TODO: make this not a constructor
 	// TODO: texture path is pretty silly
@@ -44,8 +45,8 @@ public:
 		const Vector3f& kd, const Vector4f& ks = Vector4f( 0, 0, 0, 0 ),
 		std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
 
-	std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray();
-	const std::vector< VertexPosition4fNormal3fTexture2f >& vertexArray() const;
+	std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray();
+	const std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray() const;
 
 	// updates the backing vertex buffer on the GPU
 	// by copying from the cpu vertex array
@@ -78,7 +79,7 @@ private:
 	Matrix4f m_worldMatrix;
 
 	ID3D11Device* m_pDevice;
-	std::vector< VertexPosition4fNormal3fTexture2f > m_vertexArray;
+	std::vector< VertexPosition4fNormal3fColor4fTexture2f > m_vertexArray;
 	std::shared_ptr< DynamicVertexBuffer > m_pVertexBuffer;
 
 	std::vector< Vector2i > m_vertexRanges;

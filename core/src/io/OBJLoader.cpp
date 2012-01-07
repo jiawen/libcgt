@@ -45,7 +45,7 @@ void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 
 	int lineNumber = 0;
 	QString line = "";	
-	OBJGroup* pCurrentGroup = pOBJData->getGroup( "" ); // default group name is the empty string
+	OBJGroup* pCurrentGroup = pOBJData->getGroupByName( "" ); // default group name is the empty string
 
 	QTextStream inputTextStream( &inputFile );
 
@@ -91,7 +91,7 @@ void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 					{
 						if( pOBJData->containsGroup( newGroupName ) )
 						{
-							pCurrentGroup = pOBJData->getGroup( newGroupName );
+							pCurrentGroup = pOBJData->getGroupByName( newGroupName );
 						}
 						else
 						{

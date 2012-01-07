@@ -220,6 +220,7 @@ void QD3D11MultiViewportViewer::mouseMoveEvent( QMouseEvent* event )
 
 		m_perspectiveCamera.setLookAt( eye, eye + z, y );
 	}
+	// walk
 	else if( event->buttons() == Qt::RightButton )
 	{
 		float dx = panSpeed * delta.x;
@@ -227,8 +228,8 @@ void QD3D11MultiViewportViewer::mouseMoveEvent( QMouseEvent* event )
 
 		translate( dx, 0, dz );
 	}
-	else if( event->buttons() & Qt::LeftButton &&
-		event->buttons() & Qt::RightButton )
+	// move up/down
+	else if( event->buttons() == Qt::MiddleButton )
 	{
 		float dy = -panSpeed * delta.y;
 		translate( 0, dy, 0 );

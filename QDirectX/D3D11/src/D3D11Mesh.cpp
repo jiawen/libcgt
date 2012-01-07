@@ -24,7 +24,7 @@ D3D11Mesh::~D3D11Mesh()
 	m_pDevice->Release();
 }
 
-D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* vertexArray, int capacity ) :
+D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fColor4fTexture2f* vertexArray, int capacity ) :
 
 	m_pDevice( pDevice ),
 	m_vertexArray( capacity ),
@@ -33,7 +33,7 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fTexture2f* 
 {
 	m_pDevice->AddRef();
 
-	memcpy( &( m_vertexArray[ 0 ] ), vertexArray, capacity * VertexPosition4fNormal3fTexture2f::sizeInBytes() );
+	memcpy( &( m_vertexArray[ 0 ] ), vertexArray, capacity * VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() );
 	updateGPUBuffer();
 	updateBoundingBox();
 }
@@ -50,12 +50,13 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 	QVector< Vector3f >* positions = pOBJData->getPositions();
 	QVector< Vector3f >* normals = pOBJData->getNormals();
 	QVector< Vector2f >* texcoords = pOBJData->getTextureCoordinates();
-	QHash< QString, OBJGroup* >* pGroups = pOBJData->getGroups();
+	QVector< OBJGroup* >* pGroups = pOBJData->getGroups();
 	
+	int nGroups = pGroups->size();
 	int nVerticesTotal = 0;
-	foreach( QString groupName, pGroups->keys() )
+	for( int g = 0; g < nGroups; ++g )
 	{
-		OBJGroup* pGroup = pGroups->value( groupName );
+		OBJGroup* pGroup = pGroups->at( g );
 
 		const auto& materials = pGroup->getMaterials();
 		for( int m = 0; m < materials.size(); ++m )
@@ -107,9 +108,11 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 					t2 = texcoords->at( texcoordIndices->at( 2 ) );
 				}
 
-				VertexPosition4fNormal3fTexture2f v0( Vector4f( p0, 1 ), n0, t0 );
-				VertexPosition4fNormal3fTexture2f v1( Vector4f( p1, 1 ), n1, t1 );
-				VertexPosition4fNormal3fTexture2f v2( Vector4f( p2, 1 ), n2, t2 );
+				Vector4f color( 1, 1, 1, 1 );
+
+				VertexPosition4fNormal3fColor4fTexture2f v0( Vector4f( p0, 1 ), n0, color, t0 );
+				VertexPosition4fNormal3fColor4fTexture2f v1( Vector4f( p1, 1 ), n1, color, t1 );
+				VertexPosition4fNormal3fColor4fTexture2f v2( Vector4f( p2, 1 ), n2, color, t2 );
 
 				m_vertexArray.push_back( v0 );
 				m_vertexArray.push_back( v1 );
@@ -178,12 +181,12 @@ void D3D11Mesh::addVertexRange( const Vector2i& vr,
 	m_diffuseTexturesRanges.push_back( pDiffuseTexture );
 }
 
-std::vector< VertexPosition4fNormal3fTexture2f >& D3D11Mesh::vertexArray()
+std::vector< VertexPosition4fNormal3fColor4fTexture2f >& D3D11Mesh::vertexArray()
 {
 	return m_vertexArray;
 }
 
-const std::vector< VertexPosition4fNormal3fTexture2f >& D3D11Mesh::vertexArray() const
+const std::vector< VertexPosition4fNormal3fColor4fTexture2f >& D3D11Mesh::vertexArray() const
 {
 	return m_vertexArray;
 }
@@ -232,11 +235,11 @@ void D3D11Mesh::updateGPUBuffer()
 	if( m_pVertexBuffer.get() == nullptr ||
 		m_pVertexBuffer->capacity() < m_vertexArray.size() )
 	{
-		m_pVertexBuffer.reset( new DynamicVertexBuffer( m_pDevice, static_cast< int >( m_vertexArray.size() ), VertexPosition4fNormal3fTexture2f::sizeInBytes() ) );
+		m_pVertexBuffer.reset( new DynamicVertexBuffer( m_pDevice, static_cast< int >( m_vertexArray.size() ), VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() ) );
 	}
 
-	VertexPosition4fNormal3fTexture2f* gpuVertexArray = reinterpret_cast< VertexPosition4fNormal3fTexture2f* >( m_pVertexBuffer->mapForWriteDiscard().pData );
-	memcpy( gpuVertexArray, &( m_vertexArray[ 0 ] ), m_vertexArray.size() * VertexPosition4fNormal3fTexture2f::sizeInBytes() );
+	VertexPosition4fNormal3fColor4fTexture2f* gpuVertexArray = reinterpret_cast< VertexPosition4fNormal3fColor4fTexture2f* >( m_pVertexBuffer->mapForWriteDiscard().pData );
+	memcpy( gpuVertexArray, &( m_vertexArray[ 0 ] ), m_vertexArray.size() * VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() );
 	m_pVertexBuffer->unmap();
 }
 
