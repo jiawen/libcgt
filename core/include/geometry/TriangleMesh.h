@@ -18,33 +18,18 @@ class TriangleMesh
 {
 public:
 
-	TriangleMesh( std::shared_ptr< OBJData > pData )
-	{
-		QVector< Vector3f >* pPositions = pData->getPositions();
-		int nVertices = pPositions->size();
-		m_positions = std::vector< Vector3f >( nVertices );
+	TriangleMesh();
+	TriangleMesh( std::shared_ptr< OBJData > pData );
+	TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex );
 
-		for( int v = 0; v < pPositions->size(); ++v )
-		{
-			m_positions[ v ] = pPositions->at( v );
-		}
+	float area( int faceIndex ) const;
+	float totalArea() const;
 
-		QVector< OBJGroup* >* pGroups = pData->getGroups();
-		for( int g = 0; g < pGroups->size(); ++g )
-		{
-			auto pGroup = pGroups->at( g );
-			auto pFaces = pGroup->getFaces();
-			for( int f = 0; f < pFaces->size(); ++f )
-			{
-				auto pFace = pFaces->at( f );
-				int i0 = pFace.getPositionIndices()->at( 0 );
-				int i1 = pFace.getPositionIndices()->at( 1 );
-				int i2 = pFace.getPositionIndices()->at( 2 );
-
-				m_faces.push_back( Vector3i( i0, i1, i2 ) );
-			}
-		}
-	}
+	// given a set of connected faces in connectedComponent
+	// returns a consolidated mesh
+	// where vertices not referenced by a face are removed
+	// and faces index vertices from [0,nVertices)
+	TriangleMesh consolidate( const std::vector< int >& connectedComponent );
 
 	// returns the number of pruned faces
 	// if it's 0, then edgeToFace is valid
@@ -53,12 +38,14 @@ public:
 	int pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace );
 	void buildAdjacency();
 
-	void connectedComponents();
+	void computeConnectedComponents();
+
+	void computeAreas();
 
 	std::vector< Vector3f > m_positions;
+	std::vector< Vector3f > m_normals;
 	std::vector< Vector3i > m_faces;
 
-	//QHash< Vector2i, int > m_edgeToFace;
 	std::map< Vector2i, int > m_edgeToFace;
 	std::vector< std::vector< int > > m_faceToFace;
 
@@ -67,4 +54,6 @@ public:
 	// each m_connectedComponents[i] is a vector of face indices
 	// belonging to that component
 	std::vector< std::vector< int > > m_connectedComponents;
+
+	std::vector< float > m_areas;
 };

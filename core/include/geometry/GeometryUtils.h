@@ -59,6 +59,11 @@ public:
 	static Vector2f barycentricToEuclidean( const Vector3f& b,
 		const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
+	// given barycentric coordinates b = [ b0, b1, b2 ]
+	// returns its euclidean coordinates p = b0 * v0 + b1 * v1 + b2 * v2
+	static Vector3f barycentricToEuclidean( const Vector3f& b,
+		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2 );
+
     // given a vector n, writes two unit vectors normal to n and to each other to b1 and b2
     static void getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 );
 

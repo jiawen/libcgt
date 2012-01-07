@@ -191,6 +191,13 @@ Vector2f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
 }
 
 // static
+Vector3f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
+	const Vector3f& v0, const Vector3f& v1, const Vector3f& v2 )
+{
+	return( b.x * v0 + b.y * v1 + b.z * v2 );
+}
+
+// static
 void GeometryUtils::getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 )
 {
     if( n.absSquared() < 1e-8f )

@@ -3,9 +3,164 @@
 #include "common/ProgressReporter.h"
 
 #include <algorithm>
+#include <numeric>
 #include <stack>
 
-//int TriangleMesh::pruneInvalidFaces( QHash< Vector2i, int >& edgeToFace )
+TriangleMesh::TriangleMesh()
+{
+
+}
+
+TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
+{
+	QVector< Vector3f >* pPositions = pData->getPositions();
+	int nVertices = pPositions->size();
+	m_positions = std::vector< Vector3f >( nVertices );
+	for( int v = 0; v < nVertices; ++v )
+	{
+		m_positions[ v ] = pPositions->at( v );
+	}
+
+	QVector< Vector3f >* pNormals = pData->getNormals();
+	int nNormals = pNormals->size();
+	m_normals = std::vector< Vector3f >( nNormals );
+	for( int n = 0; n < nNormals; ++n )
+	{
+		m_normals[ n ] = pNormals->at( n );
+	}
+
+	QVector< OBJGroup* >* pGroups = pData->getGroups();
+	for( int g = 0; g < pGroups->size(); ++g )
+	{
+		auto pGroup = pGroups->at( g );
+		auto pFaces = pGroup->getFaces();
+		for( int f = 0; f < pFaces->size(); ++f )
+		{
+			auto pFace = pFaces->at( f );
+			int i0 = pFace.getPositionIndices()->at( 0 );
+			int i1 = pFace.getPositionIndices()->at( 1 );
+			int i2 = pFace.getPositionIndices()->at( 2 );
+
+			m_faces.push_back( Vector3i( i0, i1, i2 ) );
+		}
+	}
+}
+
+TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex )
+{
+	QVector< Vector3f >* pPositions = pData->getPositions();
+	int nVertices = pPositions->size();
+	m_positions = std::vector< Vector3f >( nVertices );
+	for( int v = 0; v < nVertices; ++v )
+	{
+		m_positions[ v ] = pPositions->at( v );
+	}
+
+	QVector< Vector3f >* pNormals = pData->getNormals();
+	int nNormals = pNormals->size();
+	m_normals = std::vector< Vector3f >( nNormals );
+	for( int n = 0; n < nNormals; ++n )
+	{
+		m_normals[ n ] = pNormals->at( n );
+	}
+
+	auto pGroup = pData->getGroups()->at( groupIndex );
+	auto pFaces = pGroup->getFaces();
+	for( int f = 0; f < pFaces->size(); ++f )
+	{
+		auto pFace = pFaces->at( f );
+		int i0 = pFace.getPositionIndices()->at( 0 );
+		int i1 = pFace.getPositionIndices()->at( 1 );
+		int i2 = pFace.getPositionIndices()->at( 2 );
+
+		m_faces.push_back( Vector3i( i0, i1, i2 ) );
+	}
+}
+
+
+float TriangleMesh::area( int faceIndex ) const
+{
+	return m_areas[ faceIndex ];
+}
+
+float TriangleMesh::totalArea() const
+{
+	float sum = 0;
+	for( int f = 0; f < m_areas.size(); ++f )
+	{
+		sum += m_areas[f];
+	}
+	return sum;
+}
+
+TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedComponent )
+{
+	TriangleMesh output;
+
+	int nVertices = m_positions.size();
+	std::vector< bool > touchedVertices( nVertices, false );
+
+	// walk over all faces in the component
+	// and mark all vertices that are used
+	int nFaces = connectedComponent.size();
+	for( int i = 0; i < nFaces; ++i )
+	{
+		int f = connectedComponent[ i ];
+		Vector3i face = m_faces[f];
+
+		touchedVertices[ face.x ] = true;
+		touchedVertices[ face.y ] = true;
+		touchedVertices[ face.z ] = true;
+	}
+
+	// walk over all used vertices and assign them new indices [0, nUsedVertices)
+	// -1 is unused
+	std::vector< int > oldVertexToNewVertexMap( nVertices, -1 );
+	int nUsedVertices = 0;
+	for( int i = 0; i < nVertices; ++i )
+	{
+		if( touchedVertices[i] )
+		{
+			oldVertexToNewVertexMap[i] = nUsedVertices;
+			++nUsedVertices;
+		}
+	}
+
+	// now that we know how many used vertices there are
+	// resize output arrays
+	output.m_positions.resize( nUsedVertices );
+	output.m_faces.resize( nFaces );
+
+	// walk over all used vertices and copy them onto the output
+	for( int i = 0; i < nVertices; ++i )
+	{
+		if( touchedVertices[i] )
+		{
+			Vector3f p = m_positions[i];
+			int j = oldVertexToNewVertexMap[i];			
+			output.m_positions[j] = p;
+		}
+	}
+
+	// walk over faces and assign them their new indices
+	for( int i = 0; i < nFaces; ++i )
+	{
+		int f = connectedComponent[i];
+		Vector3i face = m_faces[ f ];
+		
+		Vector3i newFace
+		(
+			oldVertexToNewVertexMap[ face.x ],
+			oldVertexToNewVertexMap[ face.y ],
+			oldVertexToNewVertexMap[ face.z ]
+		);
+
+		output.m_faces.push_back( newFace );
+	}
+
+	return output;
+}
+
 int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 {
 	// walk over all faces
@@ -20,7 +175,7 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 	std::vector< Vector3i > validFaces;
 	validFaces.reserve( nFaces );
 
-	ProgressReporter pr( "Pruning invalid faces", nFaces );
+	//ProgressReporter pr( "Pruning invalid faces", nFaces );
 
 	int nPruned = 0;
 	for( int f = 0; f < nFaces; ++f )
@@ -31,11 +186,6 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 		Vector2i e1 = face.yz();
 		Vector2i e2 = face.zx();
 
-		/*
-		if( !edgeToFace.contains( e0 ) &&
-			!edgeToFace.contains( e1 ) &&
-			!edgeToFace.contains( e2 ) )
-		*/
 		if( edgeToFace.find( e0 ) == edgeToFace.end() &&
 			edgeToFace.find( e1 ) == edgeToFace.end() &&
 			edgeToFace.find( e2 ) == edgeToFace.end() )
@@ -52,29 +202,27 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 			fprintf( stderr, "Found invalid face: (%d, %d, %d)\n",
 				face.x, face.y, face.z );
 			
-#if 0
-			if( edgeToFace.contains( e0 ) )
+			if( edgeToFace.find( e0 ) != edgeToFace.end() )
 			{
-				Vector3i existingFace = m_faces[ edgeToFace.value( e0 ) ];
+				Vector3i existingFace = m_faces[ edgeToFace[ e0 ] ];
 				fprintf( stderr, "Existing face: (%d, %d, %d)\n",
 					existingFace.x, existingFace.y, existingFace.z );
 			}
-			if( edgeToFace.contains( e1 ) )
+			if( edgeToFace.find( e1 ) != edgeToFace.end() )
 			{
-				Vector3i existingFace = m_faces[ edgeToFace.value( e1 ) ];
+				Vector3i existingFace = m_faces[ edgeToFace[ e1 ] ];
 				fprintf( stderr, "Existing face: (%d, %d, %d)\n",
 					existingFace.x, existingFace.y, existingFace.z );
 			}
-			if( edgeToFace.contains( e2 ) )
+			if( edgeToFace.find( e2 ) != edgeToFace.end() )
 			{
-				Vector3i existingFace = m_faces[ edgeToFace.value( e2 ) ];
+				Vector3i existingFace = m_faces[ edgeToFace[ e2 ] ];
 				fprintf( stderr, "Existing face: (%d, %d, %d)\n",
 					existingFace.x, existingFace.y, existingFace.z );
 			}
-#endif
 		}
 
-		pr.notifyAndPrintProgressString();
+		//pr.notifyAndPrintProgressString();
 	}
 	if( nPruned > 0 )
 	{
@@ -87,7 +235,6 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 
 void TriangleMesh::buildAdjacency()
 {
-	printf( "pruning invalid faces\n" );
 	int nPruned = pruneInvalidFaces( m_edgeToFace );
 
 	// walk over all faces
@@ -118,7 +265,6 @@ void TriangleMesh::buildAdjacency()
 	//    find 3 edges
 	//    flip edge: if the flipped edge has an adjacent face
 	//       add it as a neighbor of this face
-	printf( "building face to face adjacency\n" );
 	int nFaces = m_faces.size();
 	m_faceToFace.clear();
 	m_faceToFace.resize( nFaces );
@@ -130,17 +276,14 @@ void TriangleMesh::buildAdjacency()
 		Vector2i e1t = face.zy();
 		Vector2i e2t = face.xz();
 
-		//if( m_edgeToFace.contains( e0t ) )
 		if( m_edgeToFace.find( e0t ) != m_edgeToFace.end() )
 		{
 			m_faceToFace[ f ].push_back( m_edgeToFace[ e0t ] );
 		}
-		//if( m_edgeToFace.contains( e1t ) )
 		if( m_edgeToFace.find( e1t ) != m_edgeToFace.end() )
 		{
 			m_faceToFace[ f ].push_back( m_edgeToFace[ e1t ] );
 		}
-		//if( m_edgeToFace.contains( e2t ) )
 		if( m_edgeToFace.find( e2t ) != m_edgeToFace.end() )
 		{
 			m_faceToFace[ f ].push_back( m_edgeToFace[ e2t ] );
@@ -148,7 +291,7 @@ void TriangleMesh::buildAdjacency()
 	}
 }
 
-void TriangleMesh::connectedComponents()
+void TriangleMesh::computeConnectedComponents()
 {
 	m_connectedComponents.clear();
 
@@ -156,10 +299,6 @@ void TriangleMesh::connectedComponents()
 	// set them all to true for now
 	int nFaces = m_faces.size();
 	std::vector< bool > remainingFaces( nFaces, true );
-
-	// debugging
-	int nComponents = 0;
-	int nProcessedFaces = 0;
 
 	// loop until out of faces
 	auto rootItr = std::find( remainingFaces.begin(), remainingFaces.end(), true );
@@ -194,15 +333,27 @@ void TriangleMesh::connectedComponents()
 			}
 		}
 
-		++nComponents;
-		int componentSize = connectedComponent.size();
-		nProcessedFaces += componentSize;
-		printf( "Found %d components so far, this component %d faces, %d total faces processed, %d faces total.\n",
-			nComponents, componentSize, nProcessedFaces, nFaces );
-
 		m_connectedComponents.push_back( connectedComponent );
 		rootItr = std::find( remainingFaces.begin(), remainingFaces.end(), true );
 	}
+}
 
-	fprintf( stderr, "Found %d connected components\n", m_connectedComponents.size() );
+void TriangleMesh::computeAreas()
+{
+	int nFaces = m_faces.size();
+	m_areas.resize( nFaces );
+
+	for( int f = 0; f < nFaces; ++f )
+	{
+		Vector3i face = m_faces[ f ];
+		Vector3f p0 = m_positions[ face.x ];
+		Vector3f p1 = m_positions[ face.y ];
+		Vector3f p2 = m_positions[ face.z ];
+
+		Vector3f e0 = p1 - p0;
+		Vector3f e1 = p2 - p0;
+
+		float area = 0.5f * Vector3f::cross( e0, e1 ).abs();
+		m_areas[ f ] = area;
+	}
 }
