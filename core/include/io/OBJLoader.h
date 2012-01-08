@@ -15,8 +15,8 @@ public:
 
 private:
 
-	static void parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData );
-	static void parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData );
+	static bool parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData );
+	static bool parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData );
 
 	// parses a position line (starting with "v")
 	// returns false on an error

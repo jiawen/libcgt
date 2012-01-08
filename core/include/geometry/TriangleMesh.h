@@ -35,7 +35,8 @@ public:
 	// if it's 0, then edgeToFace is valid
 	// replaces m_faces with a set of valid faces
 	//int pruneInvalidFaces( QHash< Vector2i, int >& edgeToFace );
-	int pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace );
+	int pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace );	
+
 	void buildAdjacency();
 
 	void computeConnectedComponents();
@@ -44,6 +45,8 @@ public:
 
 	std::vector< Vector3f > m_positions;
 	std::vector< Vector3f > m_normals;
+
+	// each face indexes into m_positions
 	std::vector< Vector3i > m_faces;
 
 	std::map< Vector2i, int > m_edgeToFace;
@@ -56,4 +59,15 @@ public:
 	std::vector< std::vector< int > > m_connectedComponents;
 
 	std::vector< float > m_areas;
+
+private:
+
+	// the input data might have different number of normals vs vertices
+	// if the input has *more* normals,
+	//   then some of them are clearly unused and can be pruned
+	// if the input has *fewer* normals,
+	//   then some of them are shared and should be duplicated
+	// they indices should line up with the positions
+	// since the faces indexing them is authoritative
+	void harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices );
 };

@@ -29,6 +29,8 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
 		m_normals[ n ] = pNormals->at( n );
 	}
 
+	std::vector< Vector3i > normalIndices;
+
 	QVector< OBJGroup* >* pGroups = pData->getGroups();
 	for( int g = 0; g < pGroups->size(); ++g )
 	{
@@ -37,13 +39,20 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
 		for( int f = 0; f < pFaces->size(); ++f )
 		{
 			auto pFace = pFaces->at( f );
-			int i0 = pFace.getPositionIndices()->at( 0 );
-			int i1 = pFace.getPositionIndices()->at( 1 );
-			int i2 = pFace.getPositionIndices()->at( 2 );
+			int p0 = pFace.getPositionIndices()->at( 0 );
+			int p1 = pFace.getPositionIndices()->at( 1 );
+			int p2 = pFace.getPositionIndices()->at( 2 );
 
-			m_faces.push_back( Vector3i( i0, i1, i2 ) );
+			int n0 = pFace.getNormalIndices()->at( 0 );
+			int n1 = pFace.getNormalIndices()->at( 1 );
+			int n2 = pFace.getNormalIndices()->at( 2 );
+
+			m_faces.push_back( Vector3i( p0, p1, p2 ) );
+			normalIndices.push_back( Vector3i( n0, n1, n2 ) );
 		}
 	}
+
+	harmonizeNormalsWithPositions( normalIndices );
 }
 
 TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex )
@@ -64,17 +73,26 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex )
 		m_normals[ n ] = pNormals->at( n );
 	}
 
+	std::vector< Vector3i > normalIndices;
+
 	auto pGroup = pData->getGroups()->at( groupIndex );
 	auto pFaces = pGroup->getFaces();
 	for( int f = 0; f < pFaces->size(); ++f )
 	{
 		auto pFace = pFaces->at( f );
-		int i0 = pFace.getPositionIndices()->at( 0 );
-		int i1 = pFace.getPositionIndices()->at( 1 );
-		int i2 = pFace.getPositionIndices()->at( 2 );
+		int p0 = pFace.getPositionIndices()->at( 0 );
+		int p1 = pFace.getPositionIndices()->at( 1 );
+		int p2 = pFace.getPositionIndices()->at( 2 );
 
-		m_faces.push_back( Vector3i( i0, i1, i2 ) );
+		int n0 = pFace.getNormalIndices()->at( 0 );
+		int n1 = pFace.getNormalIndices()->at( 1 );
+		int n2 = pFace.getNormalIndices()->at( 2 );
+
+		m_faces.push_back( Vector3i( p0, p1, p2 ) );
+		normalIndices.push_back( Vector3i( n0, n1, n2 ) );
 	}
+
+	harmonizeNormalsWithPositions( normalIndices );
 }
 
 
@@ -129,6 +147,7 @@ TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedCompo
 	// now that we know how many used vertices there are
 	// resize output arrays
 	output.m_positions.resize( nUsedVertices );
+	output.m_normals.resize( nUsedVertices );
 	output.m_faces.resize( nFaces );
 
 	// walk over all used vertices and copy them onto the output
@@ -137,8 +156,12 @@ TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedCompo
 		if( touchedVertices[i] )
 		{
 			Vector3f p = m_positions[i];
+			Vector3f n = m_normals[i];
+
 			int j = oldVertexToNewVertexMap[i];			
+			
 			output.m_positions[j] = p;
+			output.m_normals[j] = n;
 		}
 	}
 
@@ -240,11 +263,11 @@ void TriangleMesh::buildAdjacency()
 	// walk over all faces
 	// and build an adjacency map:
 	// edge -> adjacent face
+	// if nothing was pruned, then it's already valid
 	if( nPruned != 0 )
 	{
 		int nFaces = m_faces.size();
 		m_edgeToFace.clear();
-		//m_edgeToFace.reserve( 3 * nFaces );
 
 		for( int f = 0; f < nFaces; ++f )
 		{
@@ -356,4 +379,27 @@ void TriangleMesh::computeAreas()
 		float area = 0.5f * Vector3f::cross( e0, e1 ).abs();
 		m_areas[ f ] = area;
 	}
+}
+
+void TriangleMesh::harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices )
+{
+	std::vector< Vector3f > outputNormalIndices( m_positions.size() );
+
+	int nFaces = m_faces.size();
+	for( int f = 0; f < nFaces; ++f )
+	{
+		Vector3i pIndices = m_faces[ f ];
+		Vector3i nIndices = normalIndices[ f ];
+
+		for( int i = 0; i < 3; ++i )
+		{
+			int pIndex = pIndices[i];
+			int nIndex = nIndices[i];
+
+			Vector3f normal = m_normals[ nIndex ];
+			outputNormalIndices[ pIndex ] = normal;
+		}
+	}
+
+	m_normals = outputNormalIndices;
 }

@@ -19,11 +19,17 @@ std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename )
 {
 	int lineNumber = 0;
 	QString line = "";
+	
 	std::shared_ptr< OBJData > pOBJData( new OBJData );
 	OBJMaterial* pCurrentMaterial = pOBJData->addMaterial( "" ); // default material name is the empty string
 	OBJGroup* pCurrentGroup = pOBJData->addGroup( "" ); // default group name is the empty string
 	
-	parseOBJ( objFilename, pOBJData );
+	bool succeeded = parseOBJ( objFilename, pOBJData );
+	if( !succeeded )
+	{
+		// return null
+		pOBJData.reset();
+	}
 
 	return pOBJData;
 }
@@ -34,13 +40,13 @@ std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename )
 //////////////////////////////////////////////////////////////////////////
 
 // static
-void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData )
+bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJData )
 {
 	// attempt to read the file
 	QFile inputFile( objFilename );
 	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
 	{
-		return;
+		return false;
 	}
 
 	int lineNumber = 0;
@@ -51,10 +57,9 @@ void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 
 	QString delim( " " );
 
-	while( !( inputTextStream.atEnd() ) )
+	line = inputTextStream.readLine();
+	while( !( line.isNull() ) )
 	{
-		line = inputTextStream.readLine();
-
 		if( line != "" )
 		{
 			QStringList tokens = line.split( delim, QString::SkipEmptyParts );
@@ -125,17 +130,20 @@ void OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 		}
 
 		++lineNumber;
+		line = inputTextStream.readLine();
 	}
+
+	return true;
 }
 
 // static
-void OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData )
+bool OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJData )
 {
 	// attempt to read the file
 	QFile inputFile( mtlFilename );
 	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
 	{
-		return;
+		return false;
 	}
 
 	int lineNumber = 0;
@@ -244,6 +252,8 @@ void OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJDa
 		++lineNumber;
 		line = inputTextStream.readLine();
 	}
+
+	return true;
 }
 
 // static
@@ -406,8 +416,6 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		// check how many faces the current group has
 		// if the group has no faces, then the first vertex sets it
 
-		/* HACK
-		// TODO: fix this
 		if( pCurrentGroup->getFaces()->size() == 0 )
 		{
 			pCurrentGroup->setHasTextureCoordinates( faceHasTextureCoordinates );
@@ -428,7 +436,6 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 			
 			return false;
 		}
-		*/
 
 		OBJFace face( faceHasTextureCoordinates, faceHasNormals );
 

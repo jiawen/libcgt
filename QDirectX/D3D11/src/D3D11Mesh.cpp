@@ -102,7 +102,7 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 
 				if( pGroup->hasTextureCoordinates() )
 				{
-					QVector< int >* texcoordIndices = face.getTextureCoordinateIndices();
+					QVector< int >* texcoordIndices = face.getTextureCoordinateIndices(); 
 					t0 = texcoords->at( texcoordIndices->at( 0 ) );
 					t1 = texcoords->at( texcoordIndices->at( 1 ) );
 					t2 = texcoords->at( texcoordIndices->at( 2 ) );
