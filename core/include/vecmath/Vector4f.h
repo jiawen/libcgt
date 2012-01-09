@@ -1,5 +1,6 @@
-#ifndef VECTOR_4F_H
-#define VECTOR_4F_H
+#pragma once
+
+#include <QString>
 
 class Vector2f;
 class Vector3f;
@@ -34,9 +35,7 @@ public:
 	Vector4f& operator = ( const Vector4d& rv );
 	Vector4f& operator = ( const Vector4i& rv );
 
-	// no destructor necessary
-
-	operator float* (); // implicit cast
+	// no destructor necessary	
 
 	// returns the ith element
 	const float& operator [] ( int i ) const;
@@ -73,9 +72,10 @@ public:
 	void negate();
 
 	// ---- Utility ----
-	// TODO: make the rest const compliant
-	operator const float* () const; // automatic type conversion for GL
-	void print() const;
+	// implicit cast
+	operator const float* () const;
+	operator float* ();
+	QString toString() const;
 
 	static float dot( const Vector4f& v0, const Vector4f& v1 );
 	static Vector4f lerp( const Vector4f& v0, const Vector4f& v1, float alpha );
@@ -159,5 +159,3 @@ inline Vector4f& Vector4f::operator /= ( float f )
 
 	return *this;
 }
-
-#endif // VECTOR_4F_H

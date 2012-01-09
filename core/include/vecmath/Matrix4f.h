@@ -1,5 +1,4 @@
-#ifndef MATRIX4F_H
-#define MATRIX4F_H
+#pragma once
 
 #include <cstdio>
 
@@ -61,9 +60,9 @@ public:
 	void transpose();
 	Matrix4f transposed() const;
 
-	// ---- Utility ----
-	operator float* (); // automatic type conversion to float*
-	operator const float* () const; // automatic type conversion to const float*
+	// implicit cast
+	operator const float* () const;
+	operator float* ();
 	void print();
 
 	static Matrix4f ones();
@@ -126,5 +125,3 @@ Vector4f operator * ( const Matrix4f& m, const Vector4f& v );
 
 // Matrix-Matrix multiplication
 Matrix4f operator * ( const Matrix4f& x, const Matrix4f& y );
-
-#endif // MATRIX4F_H

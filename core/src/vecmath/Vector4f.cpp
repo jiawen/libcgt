@@ -125,11 +125,6 @@ Vector4f& Vector4f::operator = ( const Vector4f& rv )
 	return *this;
 }
 
-Vector4f::operator float* ()
-{
-	return m_elements;
-}
-
 const float& Vector4f::operator [] ( int i ) const
 {
 	return m_elements[ i ];
@@ -275,17 +270,28 @@ void Vector4f::negate()
 	m_elements[3] = -m_elements[3];
 }
 
-// ---- Utility ----
-
 Vector4f::operator const float* () const
 {
 	return m_elements;
 }
 
-void Vector4f::print() const
+Vector4f::operator float* ()
 {
-	printf( "< %.3f, %.3f, %.3f, %.3f >\n",
-		m_elements[0], m_elements[1], m_elements[2], m_elements[3] );
+	return m_elements;
+}
+
+QString Vector4f::toString() const
+{
+	QString out;
+
+	out.append( "( " );
+	out.append( QString( "%1" ).arg( x, 10, 'g', 4 ) );
+	out.append( QString( "%1" ).arg( y, 10, 'g', 4 ) );
+	out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
+	out.append( QString( "%1" ).arg( w, 10, 'g', 4 ) );
+	out.append( " )" );
+
+	return out;
 }
 
 // static

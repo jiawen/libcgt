@@ -327,7 +327,7 @@ void TriangleMesh::computeConnectedComponents()
 	auto rootItr = std::find( remainingFaces.begin(), remainingFaces.end(), true );
 	while( rootItr != remainingFaces.end() )
 	{
-		int currentFaceIndex = static_cast< int >( rootItr - remainingFaces.begin() );
+		int rootFaceIndex = static_cast< int >( rootItr - remainingFaces.begin() );
 		std::vector< int > connectedComponent;
 		
 		// start with a root face and push it onto the stack
@@ -336,8 +336,8 @@ void TriangleMesh::computeConnectedComponents()
 		//    mark it as taken
 		//    then add its adjacent faces onto the stack
 		std::stack< int > adjStack;
-		adjStack.push( currentFaceIndex );
-		remainingFaces[ currentFaceIndex ] = false;
+		adjStack.push( rootFaceIndex );
+		remainingFaces[ rootFaceIndex ] = false;
 		while( !( adjStack.empty() ) )
 		{
 			int currentFaceIndex = adjStack.top();

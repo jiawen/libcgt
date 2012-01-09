@@ -17,7 +17,7 @@ const Vector3f Vector3f::ZERO = Vector3f( 0, 0, 0 );
 // static
 const Vector3f Vector3f::UP = Vector3f( 0, 1, 0 );
 
-// static Vector3f RIGHT;
+// static
 const Vector3f Vector3f::RIGHT = Vector3f( 1, 0, 0 );
 
 // static
@@ -138,8 +138,6 @@ void Vector3f::negate()
 	m_elements[1] = -m_elements[1];
 	m_elements[2] = -m_elements[2];
 }
-
-// ---- Utility ----
 
 QString Vector3f::toString() const
 {

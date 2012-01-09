@@ -311,14 +311,12 @@ Matrix4f Matrix4f::transposed() const
 	return out;
 }
 
-// ---- Utility ----
-
-Matrix4f::operator float* ()
+Matrix4f::operator const float* () const
 {
 	return m_elements;
 }
 
-Matrix4f::operator const float* () const
+Matrix4f::operator float* ()
 {
 	return m_elements;
 }

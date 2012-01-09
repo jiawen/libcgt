@@ -1,5 +1,4 @@
-#ifndef BOUNDING_BOX_3F
-#define BOUNDING_BOX_3F
+#pragma once
 
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector3f.h>
@@ -54,10 +53,13 @@ public:
 	// enlarges the box if p is outside it
 	void enlarge( const Vector3f& p );
 
+	// scales the box symmetrically about the center
+	void scale( const Vector3f& s );
+
 	// returns if this boundingbox overlaps the other bounding box
 	// note that a overlaps b iff b overlaps a
 	bool overlaps( const BoundingBox3f& other );
-	
+
 	bool intersectRay( const Vector3f& origin, const Vector3f& direction,
 		float* tIntersect = nullptr );
 
@@ -81,5 +83,3 @@ private:
 	void intersectSlab( float origin, float direction, float s0, float s1,
 		float& tEnter, float& tExit );
 };
-
-#endif

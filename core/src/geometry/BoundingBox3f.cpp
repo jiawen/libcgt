@@ -307,6 +307,16 @@ void BoundingBox3f::enlarge( const Vector3f& p )
 	m_max.z = max( p.z, m_max.z );
 }
 
+void BoundingBox3f::scale( const Vector3f& s )
+{
+	Vector3f c = center();
+	Vector3f r = range();	
+	Vector3f r2 = s * r;
+
+	m_min = c - 0.5f * r2;
+	m_max = m_min + r2;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Private
 //////////////////////////////////////////////////////////////////////////
