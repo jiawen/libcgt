@@ -1,5 +1,4 @@
-#ifndef BASIC_TYPES_H
-#define BASIC_TYPES_H
+#pragma once
 
 #include <cstdio>
 
@@ -52,5 +51,3 @@ typedef long long			int64;
 #ifndef uint64
 typedef unsigned long long	uint64;
 #endif
-
-#endif // BASIC_TYPES_H

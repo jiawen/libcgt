@@ -62,7 +62,8 @@ public:
 	Matrix4f transposed() const;
 
 	// ---- Utility ----
-	operator float* (); // automatic type conversion for GL
+	operator float* (); // automatic type conversion to float*
+	operator const float* () const; // automatic type conversion to const float*
 	void print();
 
 	static Matrix4f ones();

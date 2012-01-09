@@ -16,6 +16,8 @@ public:
 	static D3D11_BOX createBox( uint x, uint y, uint z, uint width, uint height, uint depth );
 
 	// writes pBuffer with the contents of box
+	// pBuffer needs to have capacity 36
+	// TODO: start index...
 	template< typename T >
 	static void writeAxisAlignedSolidBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer )
 	{
@@ -30,6 +32,9 @@ public:
 		pBuffer->unmap();
 	}
 
+	// writes vertexArray with the contents of box
+	// vertexArray needs to have capacity 36
+	// TODO: start index...
 	template< typename T >
 	static void writeAxisAlignedSolidBox( const Vector3f& origin, const Vector3f& size, T* vertexArray )
 	{
