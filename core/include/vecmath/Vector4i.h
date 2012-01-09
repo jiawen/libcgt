@@ -1,9 +1,10 @@
 #pragma once
 
+#include <QString>
+
 class Vector2i;
 class Vector3i;
-
-#include "vecmath/Vector4f.h"
+class Vector4f;
 
 class Vector4i
 {
@@ -55,10 +56,17 @@ public:
 	Vector4i homogenized() const;
 
 	void negate();
+	
+	// implicit cast
+	operator const int* () const;
+	operator int* ();
+	QString toString() const;
 
-	// ---- Utility ----
-	operator const int* (); // automatic type conversion for GL
-	void print() const;
+	Vector4i& operator += ( const Vector4i& v );
+	Vector4i& operator -= ( const Vector4i& v );
+	Vector4i& operator *= ( int i );
+	Vector4i& operator /= ( int i );
+
 
 	static int dot( const Vector4i& v0, const Vector4i& v1 );
 	static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );

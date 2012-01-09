@@ -5,6 +5,7 @@
 #include "vecmath/Vector4i.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3i.h"
+#include "vecmath/Vector4f.h"
 
 Vector4i::Vector4i()
 {
@@ -240,17 +241,68 @@ void Vector4i::negate()
 	m_elements[3] = -m_elements[3];
 }
 
-// ---- Utility ----
+Vector4i& Vector4i::operator += ( const Vector4i& v )
+{
+	x += v.x;
+	y += v.y;
+	z += v.z;
+	w += v.w;
 
-Vector4i::operator const int* ()
+	return *this;
+}
+
+Vector4i& Vector4i::operator -= ( const Vector4i& v )
+{
+	x -= v.x;
+	y -= v.y;
+	z -= v.z;
+	w -= v.w;
+
+	return *this;
+}
+
+Vector4i& Vector4i::operator *= ( int i )
+{
+	x *= i;
+	y *= i;
+	z *= i;
+	w *= i;
+
+	return *this;
+}
+
+Vector4i& Vector4i::operator /= ( int i )
+{
+	x /= i;
+	y /= i;
+	z /= i;
+	w /= i;
+
+	return *this;
+}
+
+Vector4i::operator const int* () const
 {
 	return m_elements;
 }
 
-void Vector4i::print() const
+Vector4i::operator int* ()
 {
-	printf( "< %1.2d, %1.2d, %1.2d, %1.2d >\n",
-		m_elements[0], m_elements[1], m_elements[2], m_elements[3] );
+	return m_elements;
+}
+
+QString Vector4i::toString() const
+{
+	QString out;
+
+	out.append( "( " );
+	out.append( QString( "%1" ).arg( x, 10 ) );
+	out.append( QString( "%1" ).arg( y, 10 ) );
+	out.append( QString( "%1" ).arg( z, 10 ) );
+	out.append( QString( "%1" ).arg( w, 10 ) );
+	out.append( " )" );
+
+	return out;
 }
 
 // static

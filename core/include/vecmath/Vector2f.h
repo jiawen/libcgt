@@ -48,12 +48,12 @@ public:
 	float& operator [] ( int i ) { return m_elements[i]; }
 
     Vector2f xy() const { return *this; }
-	Vector2f yx() const { return Vector2f(m_elements[1], m_elements[0]); }
-	Vector2f xx() const { return Vector2f(m_elements[0], m_elements[0]); }
-	Vector2f yy() const { return Vector2f(m_elements[1], m_elements[1]); }
+	Vector2f yx() const { return Vector2f( y, x ); }
+	Vector2f xx() const { return Vector2f( x, x ); }
+	Vector2f yy() const { return Vector2f( y, y ); }
 
 	// returns ( -y, x )
-    Vector2f normal() const { return Vector2f(-m_elements[1], m_elements[0]); }
+	Vector2f normal() const { return Vector2f( -y, x ); }
 
     float abs() const { return sqrt(absSquared()); }
     float absSquared() const { return m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1]; }

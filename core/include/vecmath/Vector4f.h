@@ -71,7 +71,6 @@ public:
 
 	void negate();
 
-	// ---- Utility ----
 	// implicit cast
 	operator const float* () const;
 	operator float* ();
