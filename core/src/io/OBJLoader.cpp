@@ -384,6 +384,8 @@ bool OBJLoader::parseNormal( int lineNumber, QString line,
 bool OBJLoader::parseFace( int lineNumber, QString line,
 						  QStringList tokens, OBJGroup* pCurrentGroup )
 {
+	// HACK
+	/*
 	if( tokens.size() < 4 )
 	{
 		fprintf( stderr, "Incorrect number of tokens at line number: %d\n, %s\n",
@@ -391,6 +393,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		return false;
 	}
 	else
+	*/
 	{
 		// first check line consistency - each vertex in the face
 		// should have the same number of attributes

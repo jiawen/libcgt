@@ -18,6 +18,13 @@ Vector3i::Vector3i()
 	m_elements[2] = 0;
 }
 
+Vector3i::Vector3i( int i )
+{
+	m_elements[0] = i;
+	m_elements[1] = i;
+	m_elements[2] = i;
+}
+
 Vector3i::Vector3i( int x, int y, int z )
 {
 	m_elements[0] = x;
@@ -141,17 +148,27 @@ void Vector3i::negate()
 	m_elements[2] = -m_elements[2];
 }
 
-// ---- Utility ----
-
-Vector3i::operator const int* ()
+Vector3i::operator const int* () const
 {
 	return m_elements;
 }
 
-void Vector3i::print() const
+Vector3i::operator int* ()
 {
-	printf( "< %5d, %5d, %5d >\n",
-		m_elements[0], m_elements[1], m_elements[2] );
+	return m_elements;
+}
+
+QString Vector3i::toString() const
+{
+	QString out;
+
+	out.append( "( " );
+	out.append( QString( "%1" ).arg( x, 10 ) );
+	out.append( QString( "%1" ).arg( y, 10 ) );
+	out.append( QString( "%1" ).arg( z, 10 ) );
+	out.append( " )" );
+
+	return out;
 }
 
 // static

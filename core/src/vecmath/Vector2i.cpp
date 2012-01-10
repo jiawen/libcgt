@@ -17,6 +17,12 @@ Vector2i::Vector2i()
 	m_elements[1] = 0;
 }
 
+Vector2i::Vector2i( int i )
+{
+	m_elements[0] = i;
+	m_elements[1] = i;
+}
+
 Vector2i::Vector2i( int x, int y )
 {
 	m_elements[0] = x;
@@ -96,16 +102,26 @@ void Vector2i::negate()
 	m_elements[1] = -m_elements[1];
 }
 
-// ---- Utility ----
-Vector2i::operator const int* ()
+Vector2i::operator const int* () const
 {
 	return m_elements;
 }
 
-void Vector2i::print() const
+Vector2i::operator int* ()
 {
-	printf( "< %1.2i, %1.2i >\n",
-		m_elements[0], m_elements[1] );
+	return m_elements;
+}
+
+QString Vector2i::toString() const
+{
+	QString out;
+
+	out.append( "( " );
+	out.append( QString( "%1" ).arg( x, 10 ) );
+	out.append( QString( "%1" ).arg( y, 10 ) );
+	out.append( " )" );
+
+	return out;
 }
 
 // static

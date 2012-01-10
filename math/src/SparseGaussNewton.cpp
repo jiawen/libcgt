@@ -456,6 +456,11 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 	m_J->nnz = 0;
 	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 	copyFloatMatrixToCholmodDense( m_r, m_r2 );
+#if 0
+	printf( "J is %d x %d\n", m_J->nrow, m_J->ncol );
+	save_triplet( m_J, "c:/tmp/j0.txt" );
+	save_dense( m_r2, "c:/tmp/r0.txt" );
+#endif
 
 	float prevEnergy;
 	float currEnergy = FloatMatrix::dot( m_r, m_r );
@@ -524,7 +529,14 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 		// update energy
 		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 		copyFloatMatrixToCholmodDense( m_r, m_r2 );
-
+#if 0
+		QString jFilename = QString( "c:/tmp/j%1.txt" ).arg( nIterations );
+		QString rFilename = QString( "c:/tmp/r%1.txt" ).arg( nIterations );
+		printf( "saving: %s\n", qPrintable( jFilename ) );
+		save_triplet( m_J, qPrintable( jFilename ) );
+		printf( "saving: %s\n", qPrintable( rFilename ) );
+		save_dense( m_r2, qPrintable( rFilename ) );
+#endif
 		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
 
@@ -543,6 +555,9 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 #endif
 		++nIterations;
 	}
+#if 0
+	exit(0);
+#endif
 
 #if TIMING
 	printf( "sparse * sparse took %f ms\n", tSSMult );

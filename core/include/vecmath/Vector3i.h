@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QString>
+
 class Vector2i;
 class Vector3f;
 
@@ -8,6 +10,7 @@ class Vector3i
 public:
 
 	Vector3i();
+	Vector3i( int i ); // fills all 3 components with i
 	Vector3i( int x, int y, int z );
 	Vector3i( const Vector2i& xy, int z );
 	Vector3i( int x, const Vector2i& yz );
@@ -41,9 +44,10 @@ public:
 
 	void negate();
 
-	// ---- Utility ----
-	operator const int* (); // automatic type conversion for GL
-	void print() const;
+	// implicit cast
+	operator const int* () const;
+	operator int* ();
+	QString toString() const;
 
 	static int dot( const Vector3i& v0, const Vector3i& v1 );	
 

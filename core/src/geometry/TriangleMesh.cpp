@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <numeric>
 #include <stack>
+#include <cstdio>
 
 TriangleMesh::TriangleMesh()
 {
@@ -55,8 +56,10 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
 	harmonizeNormalsWithPositions( normalIndices );
 }
 
-TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex )
+TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent )
 {
+	auto pGroup = pData->getGroups()->at( groupIndex );
+
 	QVector< Vector3f >* pPositions = pData->getPositions();
 	int nVertices = pPositions->size();
 	m_positions = std::vector< Vector3f >( nVertices );
@@ -65,34 +68,63 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex )
 		m_positions[ v ] = pPositions->at( v );
 	}
 
-	QVector< Vector3f >* pNormals = pData->getNormals();
-	int nNormals = pNormals->size();
-	m_normals = std::vector< Vector3f >( nNormals );
-	for( int n = 0; n < nNormals; ++n )
+	if( pGroup->hasNormals() )
 	{
-		m_normals[ n ] = pNormals->at( n );
+		QVector< Vector3f >* pNormals = pData->getNormals();
+		int nNormals = pNormals->size();
+		m_normals = std::vector< Vector3f >( nNormals );
+		for( int n = 0; n < nNormals; ++n )
+		{
+			m_normals[ n ] = pNormals->at( n );
+		}
 	}
 
 	std::vector< Vector3i > normalIndices;
 
-	auto pGroup = pData->getGroups()->at( groupIndex );
 	auto pFaces = pGroup->getFaces();
 	for( int f = 0; f < pFaces->size(); ++f )
 	{
 		auto pFace = pFaces->at( f );
-		int p0 = pFace.getPositionIndices()->at( 0 );
-		int p1 = pFace.getPositionIndices()->at( 1 );
-		int p2 = pFace.getPositionIndices()->at( 2 );
 
-		int n0 = pFace.getNormalIndices()->at( 0 );
-		int n1 = pFace.getNormalIndices()->at( 1 );
-		int n2 = pFace.getNormalIndices()->at( 2 );
+		int pi0 = pFace.getPositionIndices()->at( 0 );
+		int pi1 = pFace.getPositionIndices()->at( 1 );
+		int pi2 = pFace.getPositionIndices()->at( 2 );
 
-		m_faces.push_back( Vector3i( p0, p1, p2 ) );
-		normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+		m_faces.push_back( Vector3i( pi0, pi1, pi2 ) );
+
+		if( pGroup->hasNormals() )
+		{
+			int ni0 = pFace.getNormalIndices()->at( 0 );
+			int ni1 = pFace.getNormalIndices()->at( 1 );
+			int ni2 = pFace.getNormalIndices()->at( 2 );
+
+			normalIndices.push_back( Vector3i( ni0, ni1, ni2 ) );
+		}
+		else if( generatePerFaceNormalsIfNonExistent )
+		{
+			Vector3f p0 = pPositions->at( pi0 );
+			Vector3f p1 = pPositions->at( pi1 );
+			Vector3f p2 = pPositions->at( pi2 );
+
+			Vector3f normal = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
+			m_normals.push_back( normal );
+			int ni = m_normals.size() - 1;
+			normalIndices.push_back( Vector3i( ni ) );
+		}
 	}
 
 	harmonizeNormalsWithPositions( normalIndices );
+}
+
+float TriangleMesh::meanEdgeLength()
+{
+	float sum = 0;
+	for( auto itr = m_edgeLengths.begin(); itr != m_edgeLengths.end(); ++itr )
+	{
+		float len = ( *itr ).second;
+		sum += len;
+	}
+	return sum / m_edgeLengths.size();
 }
 
 
@@ -381,6 +413,19 @@ void TriangleMesh::computeAreas()
 	}
 }
 
+void TriangleMesh::computeEdgeLengths()
+{
+	for( auto itr = m_edgeToFace.begin(); itr != m_edgeToFace.end(); ++itr )
+	{
+		Vector2i vertexIndices = ( *itr ).first;
+
+		Vector3f p0 = m_positions[ vertexIndices.x ];
+		Vector3f p1 = m_positions[ vertexIndices.y ];
+
+		m_edgeLengths[ vertexIndices ] = ( p1 - p0 ).abs();
+	}
+}
+
 void TriangleMesh::harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices )
 {
 	std::vector< Vector3f > outputNormalIndices( m_positions.size() );
@@ -402,4 +447,30 @@ void TriangleMesh::harmonizeNormalsWithPositions( const std::vector< Vector3i >&
 	}
 
 	m_normals = outputNormalIndices;
+}
+
+void TriangleMesh::saveOBJ( QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "w" );
+
+	for( int i = 0; i < m_positions.size(); ++i )
+	{
+		Vector3f p = m_positions[i];
+		fprintf( fp, "v %f %f %f\n", p.x, p.y, p.z );
+	}
+
+	for( int i = 0; i < m_normals.size(); ++i )
+	{
+		Vector3f n = m_normals[i];
+		fprintf( fp, "vn %f %f %f\n", n.x, n.y, n.z );
+	}
+
+	for( int i = 0; i < m_faces.size(); ++i )
+	{
+		Vector3i f = m_faces[ i ];
+		fprintf( fp, "f %d//%d %d//%d %d//%d\n",
+			f.x + 1, f.x + 1, f.y + 1, f.y + 1, f.z + 1, f.z + 1 );
+	}
+
+	fclose( fp );
 }

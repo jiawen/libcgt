@@ -13,6 +13,11 @@ public:
 
 	Sphere( float _radius = 1, const Vector3f& _center = Vector3f( 0, 0, 0 ) );
 
+	// HACK: fix the stupid redundancy
+	void tesselate( int nTheta, int nPhi,
+		std::vector< Vector3f >& positions,
+		std::vector< Vector3f >& normals );
+
 	void tesselate( int nTheta, int nPhi,
 		std::vector< Vector4f >& positions,
 		std::vector< Vector3f >& normals );

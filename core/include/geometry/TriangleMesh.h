@@ -20,7 +20,9 @@ public:
 
 	TriangleMesh();
 	TriangleMesh( std::shared_ptr< OBJData > pData );
-	TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex );
+	TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent = true );
+
+	float meanEdgeLength();
 
 	float area( int faceIndex ) const;
 	float totalArea() const;
@@ -43,6 +45,8 @@ public:
 
 	void computeAreas();
 
+	void computeEdgeLengths();
+
 	std::vector< Vector3f > m_positions;
 	std::vector< Vector3f > m_normals;
 
@@ -59,6 +63,10 @@ public:
 	std::vector< std::vector< int > > m_connectedComponents;
 
 	std::vector< float > m_areas;
+
+	std::map< Vector2i, float > m_edgeLengths;
+
+	void saveOBJ( QString filename );
 
 private:
 

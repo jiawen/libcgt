@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QHash>
+#include <QString>
 
 class Vector2f;
 class Vector3i;
@@ -12,6 +13,7 @@ public:
 	// TODO: conversion operators for double <--> int on Vector3f and Vector4f
 
 	Vector2i();
+	Vector2i( int i ); // fills both elements with i
 	Vector2i( int x, int y );
 	Vector2i( const Vector2i& rv ); // copy constructor
 	Vector2i& operator = ( const Vector2i& rv ); // assignment operator
@@ -32,9 +34,10 @@ public:
 
 	void negate();
 
-	// ---- Utility ----
-	operator const int* (); // automatic type conversion for GL
-	void print() const;
+	// implicit cast
+	operator const int* () const;
+	operator int* ();
+	QString toString() const;
 
 	static int dot( const Vector2i& v0, const Vector2i& v1 );	
 
