@@ -398,6 +398,11 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		// first check line consistency - each vertex in the face
 		// should have the same number of attributes
 
+		// HACK
+		bool faceIsValid = true;
+		bool faceHasTextureCoordinates = false;
+		bool faceHasNormals = true;
+		/*
 		bool faceIsValid;
 		bool faceHasTextureCoordinates;
 		bool faceHasNormals;
@@ -411,6 +416,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 				lineNumber, qPrintable( line ) );
 			return false;
 		}
+		*/
 
 		// ensure that all faces in a group are consistent
 		// they either all have texture coordinates or they don't
