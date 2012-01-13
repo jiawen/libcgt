@@ -16,7 +16,7 @@ DynamicVertexBuffer::DynamicVertexBuffer( ID3D11Device* pDevice, int capacity, i
 	HRESULT hr = pDevice->CreateBuffer( &bd, NULL, &m_pBuffer );
 
 	// TODO: make this a factory function and return NULL on FAILED( hr )
-
+	// TODO: want something other than immediate context?
 	pDevice->GetImmediateContext( &m_pContext );
 }
 

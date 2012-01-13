@@ -97,21 +97,21 @@ void D3D11Utils_Texture::copyImageToTexture( std::shared_ptr< Image4f > im, std:
 
 
 // static
-void D3D11Utils_Texture::copyImageToTexture( Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils_Texture::copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
 {
 	int width = im.width();
 	int height = im.height();
 
 	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
 
-	quint8* sourceData = im.pixels();
+	const quint8* sourceData = im.pixels();
 	quint8* destData = reinterpret_cast< quint8* >( mapping.pData );
 
 	for( int y = 0; y < height; ++y )
 	{
 		int yy = flipUV ? height - y - 1 : y;
 
-		quint8* sourceRow = &( sourceData[ 4 * yy * width ] );
+		const quint8* sourceRow = &( sourceData[ 4 * yy * width ] );
 		quint8* destRow = &( destData[ y * mapping.RowPitch ] );
 
 		memcpy( destRow, sourceRow, 4 * width * sizeof( quint8 ) );

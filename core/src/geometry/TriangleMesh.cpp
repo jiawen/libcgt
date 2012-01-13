@@ -121,7 +121,7 @@ float TriangleMesh::meanEdgeLength()
 	float sum = 0;
 	for( auto itr = m_edgeLengths.begin(); itr != m_edgeLengths.end(); ++itr )
 	{
-		float len = ( *itr ).second;
+		float len = itr->second;
 		sum += len;
 	}
 	return sum / m_edgeLengths.size();
@@ -417,7 +417,7 @@ void TriangleMesh::computeEdgeLengths()
 {
 	for( auto itr = m_edgeToFace.begin(); itr != m_edgeToFace.end(); ++itr )
 	{
-		Vector2i vertexIndices = ( *itr ).first;
+		Vector2i vertexIndices = itr->first;
 
 		Vector3f p0 = m_positions[ vertexIndices.x ];
 		Vector3f p1 = m_positions[ vertexIndices.y ];

@@ -31,7 +31,7 @@ public:
 	// image (cpu) --> texture (gpu)
 	static void copyImageToTexture( std::shared_ptr< Image1f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 	static void copyImageToTexture( std::shared_ptr< Image4f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
-	static void copyImageToTexture( Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
+	static void copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 
 	// texture (gpu) --> image (cpu)
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image1f > im );

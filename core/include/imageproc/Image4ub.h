@@ -12,6 +12,7 @@
 
 class Image4f;
 
+// TODO: resize()
 class Image4ub
 {
 public:
@@ -35,6 +36,7 @@ public:
 	int height() const;
 	Vector2i size() const;
 
+	const quint8* pixels() const;
 	quint8* pixels();
 	quint8* rowPointer( int y );	
 

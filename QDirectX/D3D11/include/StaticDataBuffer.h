@@ -1,5 +1,4 @@
-#ifndef STATIC_DATA_BUFFER_H
-#define STATIC_DATA_BUFFER_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -41,5 +40,3 @@ private:
 	ID3D11Buffer* m_pBuffer;
 	ID3D11ShaderResourceView* m_pSRV;
 };
-
-#endif // STATIC_DATA_BUFFER_H

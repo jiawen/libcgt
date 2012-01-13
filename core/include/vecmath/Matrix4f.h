@@ -60,6 +60,13 @@ public:
 	void transpose();
 	Matrix4f transposed() const;
 
+	// inverse transpose of top left 3x3 submatrix
+	Matrix3f normalMatrix() const;
+	
+	// inverse transpose of top left 3x3 submatrix on top left
+	// 0 elsewhere
+	Matrix4f normalMatrix4x4() const;
+
 	// implicit cast
 	operator const float* () const;
 	operator float* ();

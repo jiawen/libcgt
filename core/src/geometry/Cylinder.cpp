@@ -38,14 +38,14 @@ void Cylinder::tesselate( int nTheta, int nHeight,
 			float h0 = h * dh;
 			float h1 = h0 + dh;
 
-			float x00 = cos( t0 );
-			float y00 = sin( t0 );
-			float x10 = cos( t1 );
-			float y10 = sin( t1 );
-			float x01 = cos( t0 );
-			float y01 = sin( t0 );
-			float x11 = cos( t1 );
-			float y11 = sin( t1 );
+			float x00 = cosf( t0 );
+			float y00 = sinf( t0 );
+			float x10 = cosf( t1 );
+			float y10 = sinf( t1 );
+			float x01 = cosf( t0 );
+			float y01 = sinf( t0 );
+			float x11 = cosf( t1 );
+			float y11 = sinf( t1 );
 
 			Vector4f v00 = bc + Vector4f( radius * x00, radius * y00, h0, 1 );
 			Vector3f n00( x00, y00, 0 );
@@ -74,4 +74,17 @@ void Cylinder::tesselate( int nTheta, int nHeight,
 			normals.push_back( n11 );
 		}
 	}
+}
+
+void Cylinder::sample( float thetaFraction, float zFraction, Vector4f& position, Vector3f& normal )
+{
+	// TODO: make tesselate use this?
+	float theta = thetaFraction * MathUtils::TWO_PI;
+	float z = zFraction * height;
+
+	float x = cosf( theta );
+	float y = sinf( theta );
+
+	position = Vector4f( baseCenter, 0 ) + Vector4f( radius * x, radius * y, z, 1 );
+	normal = Vector3f( x, y, 0 );
 }

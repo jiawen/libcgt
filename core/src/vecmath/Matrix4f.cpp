@@ -311,6 +311,19 @@ Matrix4f Matrix4f::transposed() const
 	return out;
 }
 
+Matrix3f Matrix4f::normalMatrix() const
+{
+	return getSubmatrix3x3( 0, 0 ).inverse().transposed();
+}
+
+Matrix4f Matrix4f::normalMatrix4x4() const
+{
+	Matrix3f n = getSubmatrix3x3( 0, 0 ).inverse().transposed();
+	Matrix4f n4;
+	n4.setSubmatrix3x3( 0, 0, n );
+	return n4;
+}
+
 Matrix4f::operator const float* () const
 {
 	return m_elements;

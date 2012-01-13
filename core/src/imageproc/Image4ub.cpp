@@ -107,6 +107,11 @@ Vector2i Image4ub::size() const
 	return Vector2i( m_width, m_height );
 }
 
+const quint8* Image4ub::pixels() const
+{
+	return m_data.constData();
+}
+
 quint8* Image4ub::pixels()
 {
 	return m_data.data();
