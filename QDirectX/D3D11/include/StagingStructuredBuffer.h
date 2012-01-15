@@ -63,4 +63,3 @@ private:
 };
 
 #endif // STAGING_STRUCTURED_BUFFER_H
-	

@@ -126,6 +126,7 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 				if( !( m_diffuseTextures.contains( diffuseTextureFilename ) ) )
 				{
 					QString absFilename = texturePath + diffuseTextureFilename;
+					printf( "absFilename = %s\n", qPrintable( absFilename ) );
 					m_diffuseTextures.insert( diffuseTextureFilename, D3D11Utils_Texture::createTextureFromFile( m_pDevice, absFilename ) );
 				}
 				diffuseTexture = m_diffuseTextures[ diffuseTextureFilename ];
