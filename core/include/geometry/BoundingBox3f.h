@@ -29,7 +29,6 @@ public:
 	BoundingBox3f( const std::vector< Vector4f >& points, const Matrix4f& worldMatrix = Matrix4f::identity() );
 
 	QString toString() const;
-	void print();
 
 	Vector3f& minimum();
 	Vector3f& maximum();

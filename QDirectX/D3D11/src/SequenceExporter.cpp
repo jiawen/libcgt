@@ -112,3 +112,8 @@ void SequenceExporter::end()
 	m_pSavedDSV->Release();
 	m_pSavedRTV->Release();
 }
+
+void SequenceExporter::setFrameIndex( int i )
+{
+	m_frameIndex = i;
+}

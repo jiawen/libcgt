@@ -44,8 +44,8 @@ void PerspectiveCamera::getPerspective( float* pfFovY, float* pfAspect,
 }
 
 void PerspectiveCamera::setPerspective( float fFovY, float fAspect,
-										 float fZNear, float fZFar,
-										 bool bIsInfinite )
+	float fZNear, float fZFar,
+	bool bIsInfinite )
 {
 	m_fFovY = fFovY;
 	m_fAspect = fAspect;
@@ -130,6 +130,54 @@ Matrix4f PerspectiveCamera::projectionMatrix() const
 	}
 }
 
+// static
+bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
+{
+	QFile inputFile( filename );
+
+	// try to open the file in write only mode
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{
+		return false;
+	}
+
+	QTextStream inputTextStream( &inputFile );
+	inputTextStream.setCodec( "UTF-8" );
+
+	QString str;
+	int i;
+
+	Vector3f eye;
+	Vector3f center;
+	Vector3f up;
+	float zNear;
+	float zFar;
+	float fovY;
+	float aspect;
+
+	bool isInfinite;
+	bool isDirectX;
+
+	inputTextStream >> str >> eye[ 0 ] >> eye[ 1 ] >> eye[ 2 ];
+	inputTextStream >> str >> center[ 0 ] >> center[ 1 ] >> center[ 2 ];
+	inputTextStream >> str >> up[ 0 ] >> up[ 1 ] >> up[ 2 ];
+	inputTextStream >> str >> zNear;
+	inputTextStream >> str >> zFar;
+	inputTextStream >> str >> i;
+	isInfinite = ( i != 0 );
+	inputTextStream >> str >> fovY;
+	inputTextStream >> str >> aspect;
+	inputTextStream >> str >> i;
+	isDirectX = ( i != 0 );
+
+	inputFile.close();
+
+	camera.setLookAt( eye, center, up );
+	camera.setPerspective( fovY, aspect, zNear, zFar, isInfinite );
+	camera.setDirectX( isDirectX );
+
+	return true;
+}
 
 bool PerspectiveCamera::saveTXT( QString filename )
 {
@@ -149,8 +197,10 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	outputTextStream << "up " << m_vUp[ 0 ] << " " << m_vUp[ 1 ] << " " << m_vUp[ 2 ] << "\n";
 	outputTextStream << "zNear " << m_fZNear << "\n";
 	outputTextStream << "zFar " << m_fZFar << "\n";
-	outputTextStream << "fov " << m_fFovY << "\n";
+	outputTextStream << "zFarInfinite " << static_cast< int >( m_bZFarIsInfinite ) << "\n";
+	outputTextStream << "fovY " << m_fFovY << "\n";
 	outputTextStream << "aspect " << m_fAspect << "\n";
+	outputTextStream << "isDirectX " << static_cast< int >( m_bDirectX ) << "\n";
 
 	outputFile.close();
 	return true;

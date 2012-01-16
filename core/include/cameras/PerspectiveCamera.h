@@ -41,6 +41,7 @@ public:
 	Matrix4f projectionMatrix() const;
 
 	bool saveTXT( QString filename );
+	static bool loadTXT( QString filename, PerspectiveCamera& camera );
 
 	static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );	
 

@@ -33,6 +33,9 @@ public:
 	// restore the render target, depth stencil target, and viewport
 	void end();
 
+	// in case you want to start somewhere else, or re-start and overwrite
+	void setFrameIndex( int i );
+
 private:
 
 	int m_frameIndex;

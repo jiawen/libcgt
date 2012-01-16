@@ -388,6 +388,8 @@ void save_triplet( cholmod_triplet* A, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 
+	fprintf( fp, "%d\t%d\t-1\n", A->nrow, A->ncol );
+
 	__int64* i = ( __int64* )( A->i );
 	__int64* j = ( __int64* )( A->j );
 	double* x = ( double* )( A->x );
@@ -458,8 +460,12 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 	copyFloatMatrixToCholmodDense( m_r, m_r2 );
 #if 0
 	printf( "J is %d x %d\n", m_J->nrow, m_J->ncol );
-	save_triplet( m_J, "c:/tmp/j0.txt" );
-	save_dense( m_r2, "c:/tmp/r0.txt" );
+	QString jFilename = QString( "c:/tmp/j_%1.txt" ).arg( 0, 5, 10, QChar( '0' ) );
+	QString rFilename = QString( "c:/tmp/r_%1.txt" ).arg( 0, 5, 10, QChar( '0' ) );
+	printf( "saving: %s\n", qPrintable( jFilename ) );
+	save_triplet( m_J, qPrintable( jFilename ) );
+	printf( "saving: %s\n", qPrintable( rFilename ) );
+	save_dense( m_r2, qPrintable( rFilename ) );
 #endif
 
 	float prevEnergy;
@@ -530,8 +536,8 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_J );
 		copyFloatMatrixToCholmodDense( m_r, m_r2 );
 #if 0
-		QString jFilename = QString( "c:/tmp/j%1.txt" ).arg( nIterations );
-		QString rFilename = QString( "c:/tmp/r%1.txt" ).arg( nIterations );
+		QString jFilename = QString( "c:/tmp/j_%1.txt" ).arg( nIterations, 5, 10, QChar( '0' ) );
+		QString rFilename = QString( "c:/tmp/r_%1.txt" ).arg( nIterations, 5, 10, QChar( '0' ) );
 		printf( "saving: %s\n", qPrintable( jFilename ) );
 		save_triplet( m_J, qPrintable( jFilename ) );
 		printf( "saving: %s\n", qPrintable( rFilename ) );

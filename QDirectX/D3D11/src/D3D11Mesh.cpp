@@ -192,10 +192,20 @@ const std::vector< VertexPosition4fNormal3fColor4fTexture2f >& D3D11Mesh::vertex
 	return m_vertexArray;
 }
 
-Matrix4f D3D11Mesh::twoUnitCubeWorldMatrix() const
+Matrix4f D3D11Mesh::twoUnitCubeWorldMatrix( int axis ) const
 {
 	Matrix4f tr = Matrix4f::translation( -m_boundingBox.center() );
-	Matrix4f s = Matrix4f::uniformScaling( 2.0f / m_boundingBox.longestSideLength() );
+
+	float sideLength;
+	if( axis == 0 || axis == 1 || axis == 2 )
+	{
+		sideLength = m_boundingBox.range()[ axis ];
+	}
+	else
+	{
+		axis = m_boundingBox.longestSideLength();
+	}
+	Matrix4f s = Matrix4f::uniformScaling( 2.0f / sideLength );
 	return s * tr;
 }
 

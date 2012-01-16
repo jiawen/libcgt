@@ -56,9 +56,9 @@ public:
 	const BoundingBox3f& boundingBox() const;
 	
 	// returns the matrix that centers this object at the origin
-	// and uniformly scales the object such that the shortest axis
+	// and uniformly scales the object such that axis (0, 1, or 2 for x, y, z, or -1 for longest)
 	// of its bounding box maps to [-1,1]
-	Matrix4f twoUnitCubeWorldMatrix() const;
+	Matrix4f twoUnitCubeWorldMatrix( int axis = -1 ) const;
 
 	Matrix4f worldMatrix() const;
 	void setWorldMatrix( const Matrix4f& m );
