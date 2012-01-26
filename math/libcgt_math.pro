@@ -14,15 +14,15 @@ INCLUDEPATH += $(QTDIR)/include
 LIBPATH += $(QTDIR)/lib
 
 # ===== MKL =====
-INCLUDEPATH += $(ICPP_COMPILER12)/mkl/include
-LIBPATH += $(ICPP_COMPILER12)/mkl/lib/intel64
+INCLUDEPATH += $(ICPP_COMPILER12)mkl/include
+LIBPATH += $(ICPP_COMPILER12)mkl/lib/intel64
 
 LIBS += mkl_core.lib mkl_intel_lp64.lib
 
 # sequential
 #LIBS += mkl_sequential.lib
 # multi-threaded
-LIBPATH += $(ICPP_COMPILER12)/compiler/lib/intel64
+LIBPATH += $(ICPP_COMPILER12)compiler/lib/intel64
 LIBS += mkl_intel_thread.lib libiomp5md.lib # libiomp5mt.lib is the static library, for /MT
 
 INCLUDEPATH += "./include"
@@ -34,16 +34,16 @@ CONFIG( debug, debug|release ) {
   TARGET = libcgt_mathd
   LIBS += libcgt_cored.lib
 
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparsed/UFconfig"
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparsed/CHOLMOD/Include"
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparsed/SPQR/Include"
+  INCLUDEPATH += $(SUITESPARSED)/UFconfig
+  INCLUDEPATH += $(SUITESPARSED)/CHOLMOD/Include
+  INCLUDEPATH += $(SUITESPARSED)/SPQR/Include
 
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/AMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/CAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/COLAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/CCOLAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/CHOLMOD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparsed/SPQR/Lib"
+  LIBPATH += $(SUITESPARSED)/AMD/Lib
+  LIBPATH += $(SUITESPARSED)/CAMD/Lib
+  LIBPATH += $(SUITESPARSED)/COLAMD/Lib
+  LIBPATH += $(SUITESPARSED)/CCOLAMD/Lib
+  LIBPATH += $(SUITESPARSED)/CHOLMOD/Lib
+  LIBPATH += $(SUITESPARSED)/SPQR/Lib
 
   LIBS += libamd.lib libcamd.lib libcolamd.lib libccolamd.lib libcholmod.lib libspqr.lib
 
@@ -52,16 +52,16 @@ CONFIG( debug, debug|release ) {
   DEFINES += _SECURE_SCL=0
   LIBS += libcgt_core.lib
 
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparse/UFconfig"
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparse/CHOLMOD/Include"
-  INCLUDEPATH += "C:/work/libs/cpp/SuiteSparse/SPQR/Include"
+  INCLUDEPATH += $(SUITESPARSE)/UFconfig
+  INCLUDEPATH += $(SUITESPARSE)/CHOLMOD/Include
+  INCLUDEPATH += $(SUITESPARSE)/SPQR/Include
 
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/AMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/CAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/COLAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/CCOLAMD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/CHOLMOD/Lib"
-  LIBPATH += "C:/work/libs/cpp/SuiteSparse/SPQR/Lib"
+  LIBPATH += $(SUITESPARSE)/AMD/Lib
+  LIBPATH += $(SUITESPARSE)/CAMD/Lib
+  LIBPATH += $(SUITESPARSE)/COLAMD/Lib
+  LIBPATH += $(SUITESPARSE)/CCOLAMD/Lib
+  LIBPATH += $(SUITESPARSE)/CHOLMOD/Lib
+  LIBPATH += $(SUITESPARSE)/SPQR/Lib
 
   LIBS += libamd.lib libcamd.lib libcolamd.lib libccolamd.lib libcholmod.lib libspqr.lib
 }
