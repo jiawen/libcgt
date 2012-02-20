@@ -1,7 +1,7 @@
-#ifndef SPARSE_ENERGY_H
-#define SPARSE_ENERGY_H
+#pragma once
 
 #include <cholmod.h>
+//#include <Eigen/Sparse>
 
 class FloatMatrix;
 
@@ -16,6 +16,8 @@ public:
 
 	virtual void evaluateInitialGuess( FloatMatrix& guess ) = 0;
 
+	//virtual void evaluateInitialGuess( Eigen::VectorXf& guess ) = 0;
+
 	// Evaluate the residual of the energy and its Jacobian at argument beta, where:
 	//
 	// input:
@@ -29,6 +31,9 @@ public:
 	// and return it in r (a numFunctions x 1 vector)
 	virtual void evaluateResidualAndJacobian( const FloatMatrix& beta,
 		FloatMatrix& residual, cholmod_triplet* J ) = 0;
-};
 
-#endif // SPARSE_ENERGY_H
+	/*
+	virtual void evaluateResidualAndJacobian( const Eigen::VectorXf& beta,
+		Eigen::VectorXf&, Eigen::SparseMatrix< float, Eigen::RowMajor >& J ) = 0;
+	*/
+};
