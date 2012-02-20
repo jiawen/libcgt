@@ -17,6 +17,7 @@ public:
 	uint numCols() const;
 
 	void append( uint i, uint j, const T& value );
+	void clear();
 
 	void compress( CompressedSparseMatrix< T >& output ) const;
 

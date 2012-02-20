@@ -89,15 +89,42 @@ CompressedStorageFormat CompressedSparseMatrix< T >::storageFormat() const
 }
 
 template< typename T >
-void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >& ata ) const
+std::vector< T >& CompressedSparseMatrix< T >::values()
 {
+	return m_values;
+}
+
+template< typename T >
+std::vector< uint >& CompressedSparseMatrix< T >::innerIndices()
+{
+	return m_innerIndices;
+}
+
+template< typename T >
+std::vector< uint >& CompressedSparseMatrix< T >::outerIndices()
+{
+	return m_outerIndices;
+}
+
+template< typename T >
+std::map< SparseMatrixKey, uint >& CompressedSparseMatrix< T >::structureMap()
+{
+	return m_structureMap;
+}
+
+template< typename T >
+void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >& product ) const
+{
+	product.clear();
 	uint n = static_cast< uint >( m_outerIndices.size() - 1 );
 
-	// iterate over rows of A'
+	// CSC: iterate over rows of A' (columns of A)
+	// CSR: iterate over rows of A (columns of A')
 	for( uint i = 0; i < n; ++i )
 	{
-		// iterate over columns of A (i.e., the same thing1)
-		for( uint j = i; j < n; ++j )
+		// CSC: iterate over columns of A
+		// CSR: iterate over columns of A'
+		for( uint j = 0; j <= i; ++j )
 		{
 			bool nonZero = false;
 			T sum( 0 );
@@ -136,25 +163,29 @@ void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >
 			// output sum
 			if( nonZero )
 			{
-				ata.append( i, j, sum );
+				product.append( i, j, sum );
 			}
 		}
 	}
 }
 
 template< typename T >
-void CompressedSparseMatrix< T >::multiplyTranspose( CompressedSparseMatrix< T >& ata ) const
+void CompressedSparseMatrix< T >::multiplyTranspose( CompressedSparseMatrix< T >& product ) const
 {
-	assert( ata.matrixType() == SYMMETRIC );
-	assert( ata.storageFormat() == COMPRESSED_SPARSE_ROW );
-
 	uint n = static_cast< uint >( m_outerIndices.size() - 1 );
 
-	// iterate over rows of A'
+	assert( product.numRows() == n );
+	assert( product.numCols() == n );
+	assert( product.matrixType() == SYMMETRIC );
+	assert( product.storageFormat() == COMPRESSED_SPARSE_COLUMN );
+
+	// CSC: iterate over rows of A' (columns of A)
+	// CSR: iterate over rows of A (columns of A')
 	for( uint i = 0; i < n; ++i )
 	{
-		// iterate over columns of A (i.e., the same thing1)
-		for( uint j = i; j < n; ++j )
+		// CSC: iterate over columns of A
+		// CSR: iterate over columns of A'
+		for( uint j = 0; j <= i; ++j )
 		{
 			bool nonZero = false;
 			T sum( 0 );
@@ -193,7 +224,7 @@ void CompressedSparseMatrix< T >::multiplyTranspose( CompressedSparseMatrix< T >
 			// output sum
 			if( nonZero )
 			{
-				ata.put( i, j, sum );
+				product.put( i, j, sum );
 			}
 		}
 	}

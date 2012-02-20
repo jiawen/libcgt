@@ -3,7 +3,7 @@
 template< typename T >
 CoordinateSparseMatrix< T >::CoordinateSparseMatrix() :
 
-m_nRows( 0 ),
+	m_nRows( 0 ),
 	m_nCols( 0 )
 
 {
@@ -13,7 +13,7 @@ m_nRows( 0 ),
 template< typename T >
 CoordinateSparseMatrix< T >::CoordinateSparseMatrix( uint initialCapacity ) :
 
-m_nRows( 0 ),
+	m_nRows( 0 ),
 	m_nCols( 0 )
 
 {
@@ -59,88 +59,88 @@ void CoordinateSparseMatrix< T >::append( uint i, uint j, const T& value )
 }
 
 template< typename T >
+void CoordinateSparseMatrix< T >::clear()
+{
+	m_nRows = 0;
+	m_nCols = 0;
+	m_ijv.clear();
+}
+
+template< typename T >
 void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output ) const
 {
-	std::vector< Triplet > ijvSorted( m_ijv );
-
 	uint m = numRows();
 	uint n = numCols();
 	uint nnz = numNonZeroes();
+	output.reset( m, n, nnz );
+
+	// TODO: if we want the output to be only symmetric or triangular
+	//if( ( !upperTriangleOnly ) ||
+	// ( j >= i ) )
+
+	// copy the triplet vector
+	std::vector< Triplet > ijvSorted( m_ijv );
+
+	if( output.storageFormat() == COMPRESSED_SPARSE_COLUMN )
+	{
+		for( uint k = 0; k < nnz; ++k )
+		{
+			Triplet& t = ijvSorted[k];
+			std::swap( t.i, t.j );
+		}
+	}	
+
+	std::sort( ijvSorted.begin(), ijvSorted.end(), rowMajorLess );
 
 	uint innerIndex = 0;
 	uint outerIndexIndex = 0;
 
-	// TODO: could just transpose i <--> j and use a single sort (or insert into a std::map)
-	// innerIndex == index in sorted list
+	auto& values = output.values();
+	auto& innerIndices = output.innerIndices();
+	auto& outerIndices = output.outerIndices();
 
-	if( output.storageFormat() == COMPRESSED_SPARSE_COLUMN )
+	for( uint k = 0; k < nnz; ++k )
 	{
-		std::sort( ijvSorted.begin(), ijvSorted.end(), colMajorLess );
+		const Triplet& t = ijvSorted[k];
+		uint i = t.i;
+		uint j = t.j;
+		const T& value = t.value;
+		
+		values[ innerIndex ] = value;
+		innerIndices[ innerIndex ] = j;
 
-		output.reset( m, n, nnz );
+		if( i == outerIndexIndex )
+		{
+			outerIndices[ outerIndexIndex ] = innerIndex;
+			++outerIndexIndex;
+		}
+		++innerIndex;				
+	}
+	outerIndices[ outerIndexIndex ] = innerIndex;
+	++outerIndexIndex;
 
+	// populate structure map
+	auto& structureMap = output.structureMap();
+	if( output.storageFormat() == COMPRESSED_SPARSE_ROW )
+	{
 		for( uint k = 0; k < nnz; ++k )
 		{
 			const Triplet& t = ijvSorted[k];
 			uint i = t.i;
 			uint j = t.j;
-			const T& value = t.value;
-
-			// TODO: if we want the output to be only symmetric or triangular
-			//if( ( !upperTriangleOnly ) ||
-			// ( j >= i ) )
-			{
-				output.m_values[ innerIndex ] = value;
-				output.m_innerIndices[ innerIndex ] = i;
-
-				output.m_structureMap[ std::make_pair( i, j ) ] = innerIndex;
-
-				if( j == outerIndexIndex )
-				{
-					output.m_outerIndices[ outerIndexIndex ] = innerIndex;
-					++outerIndexIndex;
-				}
-
-				++innerIndex;
-			}		
+			structureMap[ std::make_pair( i, j ) ] = k;
 		}
-		output.m_outerIndices[ outerIndexIndex ] = innerIndex;
-		++outerIndexIndex;
 	}
 	else
 	{
-		std::sort( ijvSorted.begin(), ijvSorted.end(), rowMajorLess );
-
-		output.reset( m, n, nnz );
-
 		for( uint k = 0; k < nnz; ++k )
 		{
 			const Triplet& t = ijvSorted[k];
-			uint i = t.i;
-			uint j = t.j;
-			const T& value = t.value;
-
-			// TODO: if we want the output to be only symmetric or triangular
-			//if( ( !upperTriangleOnly ) ||
-			// ( j >= i ) )
-			{
-				output.m_values[ innerIndex ] = value;
-				output.m_innerIndices[ innerIndex ] = j;
-
-				output.m_structureMap[ std::make_pair( i, j ) ] = innerIndex;
-
-				if( i == outerIndexIndex )
-				{
-					output.m_outerIndices[ outerIndexIndex ] = innerIndex;
-					++outerIndexIndex;
-				}
-
-				++innerIndex;				
-			}		
+			uint i = t.j;
+			uint j = t.i;
+			structureMap[ std::make_pair( i, j ) ] = k;
 		}
-		output.m_outerIndices[ outerIndexIndex ] = innerIndex;
-		++outerIndexIndex;
-	}	
+	}
 }
 
 // static

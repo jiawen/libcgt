@@ -76,6 +76,11 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 	// if column compressed
 	// then build a vector of (i,j,v) and sort into (j,i)
 
+	auto& values = output.values();
+	auto& innerIndices = output.innerIndices();
+	auto& outerIndices = output.outerIndices();
+	auto& structureMap = output.structureMap();
+
 	for( auto itr = m_values.begin(); itr != m_values.end(); ++itr )
 	{
 		auto ij = itr->first;
@@ -87,21 +92,21 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 		{
 			T value = itr->second;
 
-			output.m_values[ columnsIndex ] = value;
-			output.m_innerIndices[ columnsIndex ] = j + offset;
+			values[ columnsIndex ] = value;
+			innerIndices[ columnsIndex ] = j + offset;
 
-			output.m_structureMap[ ij ] = columnsIndex;
+			structureMap[ ij ] = columnsIndex;
 
 			if( i == rowIndexIndex )
 			{
-				output.m_outerIndices[ rowIndexIndex ] = columnsIndex;
+				outerIndices[ rowIndexIndex ] = columnsIndex;
 				++rowIndexIndex;
 			}
 
 			++columnsIndex;
 		}		
 	}
-	output.m_outerIndices[ rowIndexIndex ] = columnsIndex + offset;
+	outerIndices[ rowIndexIndex ] = columnsIndex + offset;
 	++rowIndexIndex;
 }
 

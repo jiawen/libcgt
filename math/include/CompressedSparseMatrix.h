@@ -28,39 +28,62 @@ public:
 	void put( uint i, uint j, const T& value );
 
 	MatrixType matrixType() const;
-
 	CompressedStorageFormat storageFormat() const;
+
+	// the non-zero values of this matrix
+	std::vector< T >& values();
+	
+	// the vector of inner indices
+	// CSC:
+	//   innerIndices has length numNonZeroes(), the same as values().size()
+	//   innerIndices[k] is the row index of the k-th non-zero element in values()
+	// 
+	// CSR: the same as above, but column indices
+	std::vector< uint >& innerIndices();
+
+	// the vector of outer indices
+	// CSC:
+	//   outerIndices has length numCols() + 1
+	//   outerIndices[j] is the index of the first element of column j in values()
+	//   outerIndices[j+1] - outerIndices[j] = # non-zero elements in column j
+	//   outerIndices[numCols()] = numNonZeroes()
+	//
+	// CSR: the same as above, but for rows
+	std::vector< uint >& outerIndices();
+
+	// returns a data structure mapping indices (i,j)
+	// to indices in values() and innerIndices()
+	std::map< SparseMatrixKey, uint >& structureMap();
 
 	// sparse-sparse product	
 	// let A = this
 	// If storageFormat is CSR, computes A A^T
 	// If storageFormat is CSC, computes A^T A
 	// Since the product is always symmetric,
-	// only the upper triangle of the output is ever stored
+	// only the lower triangle of the output is ever stored
 	//
-	// since we store only the upper triangle
-	// ata.compress() must output to COMPRESSED_SPARSE_ROW
+	// since we store only the lower triangle
+	// product.compress() must output to COMPRESSED_SPARSE_COLUMN
 	//
-	// TODO: allow lower
-	void multiplyTranspose( CoordinateSparseMatrix< T >& ata ) const;
+	// TODO: allow upper and full storage
+	void multiplyTranspose( CoordinateSparseMatrix< T >& product ) const;
 
 	// same as above, but optimized
 	// so that if ata has already been compressed once
 	// and the multiplication is of the same structure
 	// will use the existing structure
 	//
-	// since we store only the upper triangle
-	// ata must have storage format COMPRESSED_SPARSE_ROW
-	void multiplyTranspose( CompressedSparseMatrix< T >& ata ) const;
-
-	std::vector< T > m_values;
-	std::vector< uint > m_innerIndices;
-	std::vector< uint > m_outerIndices;	
-
-	// structure dictionary
-	// mapping matrix coordinates (i,j) --> index k
-	// in m_values and m_innerIndices
-	std::map< SparseMatrixKey, uint > m_structureMap;
+	// since we store only the lower triangle
+	// product must have:
+	//    size n x n where n is:
+	//      this->numRows(), if this is COMPRESSED_SPARSE_COLUMN
+	//      this->numCols(), if this is COMPRESSED_SPARSE_ROW
+	//    matrix type SYMMETRIC
+	//    storage format COMPRESSED_SPARSE_COLUMN
+	//
+	// TODO: if output format is compressed sparse col, store the lower triangle
+	// TODO: if output format is full, do the copy
+	void multiplyTranspose( CompressedSparseMatrix< T >& product ) const;	
 
 private:
 
@@ -69,4 +92,13 @@ private:
 
 	uint m_nRows;
 	uint m_nCols;
+
+	std::vector< T > m_values;
+	std::vector< uint > m_innerIndices;
+	std::vector< uint > m_outerIndices;
+
+	// structure dictionary
+	// mapping matrix coordinates (i,j) --> index k
+	// in m_values and m_innerIndices
+	std::map< SparseMatrixKey, uint > m_structureMap;
 };
