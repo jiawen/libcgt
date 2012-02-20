@@ -1,5 +1,4 @@
-#ifndef FLOAT_MATRIX_H
-#define FLOAT_MATRIX_H
+#pragma once
 
 #include <QString>
 #include <vector>
@@ -84,19 +83,20 @@ public:
 	// a and b must be of the same length
 	static float dot( const FloatMatrix& a, const FloatMatrix& b );
 
+	// TODO: call scaledMultiplyAdd
 	static void add( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
+	// TODO: call scaledMultiplyAdd
 	static void subtract( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
-	static void multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
 
 	// y <-- alpha * x + y
 	static void scaledMultiplyAdd( float alpha, const FloatMatrix& x, FloatMatrix& y );
 
+	// TODO: call sgemm
+	static void multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );	
+
 	/*
 	void eigenvalueDecomposition( QVector< QVector< float > >* eigen_vector,
 		QVector< float >* eigen_value );
-
-	void foo();
-
 	static void homography( QVector< Vector3f > from,
 		QVector< Vector3f > to, FloatMatrix& output );
 	*/
@@ -120,5 +120,3 @@ FloatMatrix operator - ( const FloatMatrix& a, const FloatMatrix& b );
 FloatMatrix operator - ( const FloatMatrix& a );
 
 FloatMatrix operator * ( const FloatMatrix& a, const FloatMatrix& b );
-
-#endif // FLOAT_MATRIX_H
