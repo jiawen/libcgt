@@ -19,6 +19,10 @@ public:
 	void append( uint i, uint j, const T& value );
 	void clear();
 
+	// reserve memory for at least nnz triplets
+	void reserve( uint nnz );
+
+	// TODO: bool removeDuplicates = false
 	void compress( CompressedSparseMatrix< T >& output ) const;
 
 private:

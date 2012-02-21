@@ -1,7 +1,10 @@
 #include "CompressedSparseMatrix.h"
 
 #include <assert.h>
+#include <mkl_spblas.h>
+
 #include "CoordinateSparseMatrix.h"
+#include "FloatMatrix.h"
 
 template< typename T >
 CompressedSparseMatrix< T >::CompressedSparseMatrix( MatrixType matrixType, CompressedStorageFormat storageFormat,
@@ -110,6 +113,87 @@ template< typename T >
 std::map< SparseMatrixKey, uint >& CompressedSparseMatrix< T >::structureMap()
 {
 	return m_structureMap;
+}
+
+template< typename T >
+void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y )
+{
+	assert( matrixType() == GENERAL );
+
+	int m = numRows();
+	int n = numCols();
+
+	assert( x.numRows() == n );
+	assert( x.numCols() == 1 );
+	assert( y.numRows() == m );
+	assert( y.numCols() == 1 );
+
+	if( matrixType() == GENERAL )
+	{
+		// mkl_cspblas_scsrgemv assumes CSR storage
+		// since this is the transposed version
+		// if it's CSC, don't transpose
+
+		char transa = 'n';
+		int* pm = &m;
+		if( storageFormat() == COMPRESSED_SPARSE_COLUMN )
+		{
+			transa = 't';
+			pm = &n;
+		}
+
+		int m = numRows();
+		mkl_cspblas_scsrgemv
+		(
+			&transa,
+			&m,
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templateize FloatMatrix
+			reinterpret_cast< int* >( m_outerIndices.data() ),
+			reinterpret_cast< int* >( m_innerIndices.data() ),
+			x.data(),
+			y.data()
+		);
+	}
+}
+
+template< typename T >
+void CompressedSparseMatrix< T >::multiplyTransposeVector( FloatMatrix& x, FloatMatrix& y )
+{
+	assert( matrixType() == GENERAL );
+		
+	int m = numRows();
+	int n = numCols();
+
+	assert( x.numRows() == m );
+	assert( x.numCols() == 1 );
+	assert( y.numRows() == n );
+	assert( y.numCols() == 1 );
+
+	if( matrixType() == GENERAL )
+	{
+		// mkl_cspblas_scsrgemv assumes CSR storage
+		// since this is the transposed version
+		// if it's CSC, don't transpose
+	
+		char transa = 'n';
+		int* pm = &n;
+		if( storageFormat() == COMPRESSED_SPARSE_ROW )
+		{
+			transa = 't';
+			pm = &m;
+		}
+	
+		mkl_cspblas_scsrgemv
+		(
+			&transa,
+			pm,
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templateize FloatMatrix
+			reinterpret_cast< int* >( m_outerIndices.data() ),
+			reinterpret_cast< int* >( m_innerIndices.data() ),
+			x.data(),
+			y.data()
+		);
+	}
 }
 
 template< typename T >

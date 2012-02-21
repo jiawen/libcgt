@@ -150,10 +150,10 @@ template
 void PARDISOSolver< double, false >::factorize( double* values );
 
 template
-void PARDISOSolver< float, false >::factorize( CompressedSparseMatrix< float >& A );
+void PARDISOSolver< float, true >::factorize( CompressedSparseMatrix< float >& A );
 
 template
-void PARDISOSolver< double, false >::factorize( CompressedSparseMatrix< double >& A );
+void PARDISOSolver< double, true >::factorize( CompressedSparseMatrix< double >& A );
 
 template
 void PARDISOSolver< float, true >::solve( const float* rhs, float* solution );

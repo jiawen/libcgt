@@ -67,6 +67,12 @@ void CoordinateSparseMatrix< T >::clear()
 }
 
 template< typename T >
+void CoordinateSparseMatrix< T >::reserve( uint nnz )
+{
+	m_ijv.reserve( nnz );
+}
+
+template< typename T >
 void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output ) const
 {
 	uint m = numRows();

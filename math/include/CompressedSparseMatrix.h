@@ -8,6 +8,8 @@
 template< typename T >
 class CoordinateSparseMatrix;
 
+class FloatMatrix;
+
 template< typename T >
 class CompressedSparseMatrix
 {
@@ -53,9 +55,20 @@ public:
 
 	// returns a data structure mapping indices (i,j)
 	// to indices in values() and innerIndices()
+	// TODO: consider std::unordered_map (hash table)
 	std::map< SparseMatrixKey, uint >& structureMap();
 
-	// sparse-sparse product	
+	// sparse-dense vector product
+	// y <-- Ax
+	void multiplyVector( FloatMatrix& x, FloatMatrix& y );
+
+	// sparse-dense vector product
+	// y <-- A' x
+	// A is m x n, so A' is n x m
+	// x should be m x 1, y should be n x 1
+	void multiplyTransposeVector( FloatMatrix& x, FloatMatrix& y );
+
+	// sparse-sparse product
 	// let A = this
 	// If storageFormat is CSR, computes A A^T
 	// If storageFormat is CSC, computes A^T A

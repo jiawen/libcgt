@@ -9,8 +9,7 @@
 #include <cholmod.h>
 #include <SuiteSparseQR.hpp>
 
-#include <Eigen/Sparse>
-
+#include "SparseMatrix.h"
 #include "PARDISOSolver.h"
 
 class SparseGaussNewton
@@ -44,7 +43,7 @@ public:
 
 	const FloatMatrix& minimize2( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
-	const Eigen::VectorXf& minimize3( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
+	const FloatMatrix& minimize3( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
 private:
 
@@ -69,15 +68,15 @@ private:
 	cholmod_dense* m_jtr2;
 
 	// for PARDISO + Eigen
-	Eigen::SparseMatrix< float, Eigen::RowMajor > m_eJ;
-	Eigen::SparseMatrix< float, Eigen::RowMajor > m_eJtJ;
+	CoordinateSparseMatrix< float > m_coordJ;
+	CompressedSparseMatrix< float > m_cscJ;
 
-	Eigen::VectorXf m_ePrevBeta;
-	Eigen::VectorXf m_eCurrBeta;
-	Eigen::VectorXf m_eR;
-	Eigen::VectorXf m_eDelta;
-	Eigen::VectorXf m_eJtR;
+	CoordinateSparseMatrix< float > m_coordJtJ;
+	CompressedSparseMatrix< float > m_cscJtJ;
+	FloatMatrix m_jtr;
+
+	// Eigen::VectorXf m_eJtR;
+
 	bool m_alreadySetup;
 	PARDISOSolver< float, true > m_pardiso;
-	Eigen::SimplicialLDLt< Eigen::SparseMatrix< float, Eigen::RowMajor > > m_solver;
 };

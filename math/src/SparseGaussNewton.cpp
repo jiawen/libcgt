@@ -41,7 +41,7 @@ void saveVector( const FloatMatrix& x, QString filename )
 	fclose( fp );
 }
 
-#define TIMING 0
+#define TIMING 1
 #define FACTORIZE 0
 #define SPLIT_FACTORIZATION 0
 
@@ -63,7 +63,9 @@ SparseGaussNewton::SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, c
 
 
 	m_L( nullptr ),
-	m_jtr2( nullptr )
+	m_jtr2( nullptr ),
+
+	m_cscJtJ( SYMMETRIC, COMPRESSED_SPARSE_COLUMN )
 
 {
 	setEpsilon( epsilon );
@@ -101,12 +103,6 @@ void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 	m_currBeta.resize( n, 1 );
 	m_delta.resize( n, 1 );
 	m_r.resize( m, 1 );
-
-	m_ePrevBeta.resize( n, 1 );
-	m_eCurrBeta.resize( n, 1 );
-	m_eDelta.resize( n, 1 );
-	m_eR.resize( m, 1 );
-	m_eJtR.resize( n, 1 );
 
 	int nzMax = pEnergy->maxNumNonZeroes();
 
@@ -170,8 +166,12 @@ void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 
 	// try PARDISO
 	m_alreadySetup = false;
-	m_eJ.resize( m, n );
-	m_eJtJ.resize( n, n );
+	m_coordJ.clear();
+	m_coordJtJ.clear();
+	// HACK
+	m_coordJ.reserve( m * n );
+	m_coordJtJ.reserve( n * n );
+	m_jtr.resize( n, 1 );
 }
 
 uint SparseGaussNewton::maxNumIterations() const
@@ -602,31 +602,48 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
 	return m_currBeta;
 }
 
-#if 0
-const Eigen::VectorXf& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumIterations )
+#if 1
+const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumIterations )
 {
-
 #if TIMING
 	StopWatch sw;
+	float tCompress0 = 0;
+	float tSSMult0 = 0;
+	float tCompress1 = 0;
+	float tSVMult = 0;
 	float tSSMult = 0;
 	float tFactorize = 0;
 	float tSolve = 0;
 #endif
 
-	m_pEnergy->evaluateInitialGuess( m_eCurrBeta );
-	m_pEnergy->evaluateResidualAndJacobian( m_eCurrBeta, m_eR, m_eJ );
-#if 0
-	printf( "J is %d x %d\n", m_J->nrow, m_J->ncol );
-	QString jFilename = QString( "c:/tmp/j_%1.txt" ).arg( 0, 5, 10, QChar( '0' ) );
-	QString rFilename = QString( "c:/tmp/r_%1.txt" ).arg( 0, 5, 10, QChar( '0' ) );
-	printf( "saving: %s\n", qPrintable( jFilename ) );
-	save_triplet( m_J, qPrintable( jFilename ) );
-	printf( "saving: %s\n", qPrintable( rFilename ) );
-	save_dense( m_r2, qPrintable( rFilename ) );
+	m_pEnergy->evaluateInitialGuess( m_currBeta );
+	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_coordJ );
+#if TIMING
+	sw.reset();
+#endif
+	m_coordJ.compress( m_cscJ );
+#if TIMING
+	tCompress0 += sw.millisecondsElapsed();
+#endif
+
+#if TIMING
+	sw.reset();
+#endif
+	m_cscJ.multiplyTranspose( m_coordJtJ );
+#if TIMING
+	tSSMult0 += sw.millisecondsElapsed();
+#endif
+
+#if TIMING
+	sw.reset();
+#endif
+	m_coordJtJ.compress( m_cscJtJ );
+#if TIMING
+	tCompress1 += sw.millisecondsElapsed();
 #endif
 
 	float prevEnergy;
-	float currEnergy = m_eR.squaredNorm();
+	float currEnergy = FloatMatrix::dot( m_r, m_r );
 	float deltaEnergy;
 
 	bool deltaEnergyConverged;
@@ -641,39 +658,35 @@ const Eigen::VectorXf& SparseGaussNewton::minimize3( float* pEnergyFound, int* p
 		// not converged
 		prevEnergy = currEnergy;
 
-		// compute J'
-		auto jt = m_eJ.transpose();
+		// compute J' * r
+#if TIMING
+		sw.reset();
+#endif
+		m_cscJ.multiplyTransposeVector( m_r, m_jtr );
+#if TIMING
+		tSVMult += sw.millisecondsElapsed();
+#endif
 
 		// compute J'J
 #if TIMING
 		sw.reset();
 #endif
-		m_eJtJ = ( jt * m_eJ ).selfadjointView< Eigen::Upper >();
-		m_eJtJ.prune( 0.f );
+		m_cscJ.multiplyTranspose( m_cscJtJ );
 #if TIMING
 		tSSMult += sw.millisecondsElapsed();
-#endif
-
-		// compute J' * r
-		m_eJtR = jt * m_eR;
+#endif		
 
 		// analyze
 		if( !m_alreadySetup )
 		{
-			int m = m_eJtJ.rows();
-			int n = m_eJtJ.cols();
-			int nnz = m_eJtJ.nonZeros();
-
-			m_pardiso.analyzePattern( m_eJtJ.rows(), m_eJtJ.cols(), m_eJtJ.outerIndexPtr(), m_eJtJ.innerIndexPtr(), m_eJtJ.nonZeros() );
-			//m_solver.analyzePattern( m_eJtJ );
+			m_pardiso.analyzePattern( m_cscJtJ );
 			m_alreadySetup = true;
 		}
 		// factorize
 #if TIMING
 		sw.reset();
 #endif
-		m_pardiso.factorize( m_eJtJ.valuePtr() );
-		//m_solver.factorize( m_eJtJ );
+		m_pardiso.factorize( m_cscJtJ );
 #if TIMING
 		tFactorize += sw.millisecondsElapsed();
 #endif
@@ -681,25 +694,16 @@ const Eigen::VectorXf& SparseGaussNewton::minimize3( float* pEnergyFound, int* p
 #if TIMING
 		sw.reset();
 #endif
-		m_pardiso.solve( m_eJtR.data(), m_eDelta.data() );
-		//m_eDelta = m_solver.solve( m_eJtR );
-		//Eigen::VectorXf dd = m_solver.solve( m_eJtR );
+		m_pardiso.solve( m_jtr, m_delta );
 #if TIMING
 		tSolve += sw.millisecondsElapsed();
 #endif
 
-		m_eCurrBeta -= m_eDelta;
+		m_currBeta -= m_delta;
 		// update energy
-		m_pEnergy->evaluateResidualAndJacobian( m_eCurrBeta, m_eR, m_eJ );
-#if 0
-		QString jFilename = QString( "c:/tmp/j_%1.txt" ).arg( nIterations, 5, 10, QChar( '0' ) );
-		QString rFilename = QString( "c:/tmp/r_%1.txt" ).arg( nIterations, 5, 10, QChar( '0' ) );
-		printf( "saving: %s\n", qPrintable( jFilename ) );
-		save_triplet( m_J, qPrintable( jFilename ) );
-		printf( "saving: %s\n", qPrintable( rFilename ) );
-		save_dense( m_r2, qPrintable( rFilename ) );
-#endif
-		currEnergy = m_eR.squaredNorm();
+		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_cscJ );
+
+		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );
 
 		deltaEnergyConverged = ( deltaEnergy < m_epsilon * ( 1 + currEnergy ) );
@@ -717,11 +721,16 @@ const Eigen::VectorXf& SparseGaussNewton::minimize3( float* pEnergyFound, int* p
 #endif
 		++nIterations;
 	}
-#if 0
-	exit(0);
-#endif
 
 #if TIMING
+
+	printf( "J'J is %d x %d\n", m_coordJtJ.numRows(), m_coordJtJ.numCols() );
+
+	printf( "compress0 took %f ms\n", tCompress0 );
+	printf( "ssmult0 took %f ms\n", tSSMult0 );
+	printf( "compress1 took %f ms\n", tCompress1 );
+	printf( "svMult took %f ms\n", tSVMult );
+
 	printf( "sparse * sparse took %f ms\n", tSSMult );
 	printf( "factorize took %f ms\n", tFactorize );
 	printf( "solve took %f ms\n", tSolve );
@@ -737,6 +746,6 @@ const Eigen::VectorXf& SparseGaussNewton::minimize3( float* pEnergyFound, int* p
 		*pNumIterations = nIterations;
 	}
 
-	return m_eCurrBeta;
+	return m_currBeta;
 }
 #endif

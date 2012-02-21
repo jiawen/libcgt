@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cholmod.h>
-//#include <Eigen/Sparse>
+#include <SparseMatrix.h>
 
 class FloatMatrix;
 
@@ -15,8 +15,6 @@ public:
 	virtual int maxNumNonZeroes() = 0;
 
 	virtual void evaluateInitialGuess( FloatMatrix& guess ) = 0;
-
-	//virtual void evaluateInitialGuess( Eigen::VectorXf& guess ) = 0;
 
 	// Evaluate the residual of the energy and its Jacobian at argument beta, where:
 	//
@@ -32,8 +30,9 @@ public:
 	virtual void evaluateResidualAndJacobian( const FloatMatrix& beta,
 		FloatMatrix& residual, cholmod_triplet* J ) = 0;
 
-	/*
-	virtual void evaluateResidualAndJacobian( const Eigen::VectorXf& beta,
-		Eigen::VectorXf&, Eigen::SparseMatrix< float, Eigen::RowMajor >& J ) = 0;
-	*/
+	virtual void evaluateResidualAndJacobian( const FloatMatrix& beta,
+		FloatMatrix& residual, CoordinateSparseMatrix< float >& J ) = 0;
+
+	virtual void evaluateResidualAndJacobian( const FloatMatrix& beta,
+		FloatMatrix& residual, CompressedSparseMatrix< float >& J ) = 0;
 };
