@@ -241,6 +241,27 @@ void GeometryUtils::getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 )
 }
 
 // static
+Matrix3f GeometryUtils::getRightHandedBasis( const Vector3f& z )
+{
+	Vector3f x;
+	Vector3f y;
+	Vector3f z2 = z.normalized();
+
+	getBasis( z2, &x, &y );
+
+	Matrix3f m( x, y, z2 );
+
+	if( m.determinant() < 0 )
+	{
+		return Matrix3f( y, x, z2 );
+	}
+	else
+	{
+		return m;
+	}
+}
+
+// static
 void GeometryUtils::getBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY,
 											Vector3f* b1, Vector3f* b2 )
 {

@@ -24,6 +24,7 @@ public:
 
 	// TODO: bool removeDuplicates = false
 	void compress( CompressedSparseMatrix< T >& output ) const;
+	void compressTranspose( CompressedSparseMatrix< T >& outputAt ) const;
 
 private:
 
@@ -33,6 +34,8 @@ private:
 		uint j;
 		T value;
 	};
+
+	void compressCore( std::vector< Triplet > ijvSorted, CompressedSparseMatrix< T >& output ) const;
 
 	// compare i first, then j
 	static bool rowMajorLess( Triplet& a, Triplet& b );
@@ -44,5 +47,5 @@ private:
 	uint m_nRows;
 	uint m_nCols;
 
-	std::vector< Triplet > m_ijv;
+	std::vector< Triplet > m_ijv;	
 };

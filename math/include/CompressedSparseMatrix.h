@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <vector>
 
 #include "SparseMatrixCommon.h"
@@ -16,8 +15,7 @@ class CompressedSparseMatrix
 public:	
 
 	// nOuterIndices = nRows for CSR, nCols for CSC
-	CompressedSparseMatrix( MatrixType matrixType = GENERAL, CompressedStorageFormat storageFormat = COMPRESSED_SPARSE_COLUMN,
-		uint nRows = 0, uint nCols = 0, uint nnz = 0 );
+	CompressedSparseMatrix( MatrixType matrixType = GENERAL, uint nRows = 0, uint nCols = 0, uint nnz = 0 );
 
 	void reset( uint nRows, uint nCols, uint nnz );
 
@@ -30,33 +28,29 @@ public:
 	void put( uint i, uint j, const T& value );
 
 	MatrixType matrixType() const;
-	CompressedStorageFormat storageFormat() const;
 
 	// the non-zero values of this matrix
 	std::vector< T >& values();
+	const std::vector< T >& values() const;
 	
 	// the vector of inner indices
-	// CSC:
 	//   innerIndices has length numNonZeroes(), the same as values().size()
 	//   innerIndices[k] is the row index of the k-th non-zero element in values()
-	// 
-	// CSR: the same as above, but column indices
 	std::vector< uint >& innerIndices();
+	const std::vector< uint >& innerIndices() const;
 
-	// the vector of outer indices
-	// CSC:
-	//   outerIndices has length numCols() + 1
-	//   outerIndices[j] is the index of the first element of column j in values()
-	//   outerIndices[j+1] - outerIndices[j] = # non-zero elements in column j
-	//   outerIndices[numCols()] = numNonZeroes()
-	//
-	// CSR: the same as above, but for rows
-	std::vector< uint >& outerIndices();
+	// the vector of outer index pointers
+	// compressed sparse column format:
+	//   outerIndexPointers has length numCols() + 1
+	//   outerIndexPointers[j] is the index of the first element of column j in values()
+	//   outerIndexPointers[j+1] - outerIndices[j] = # non-zero elements in column j
+	//   outerIndexPointers[numCols()] = numNonZeroes()
+	std::vector< uint >& outerIndexPointers();
+	const std::vector< uint >& outerIndexPointers() const;
 
 	// returns a data structure mapping indices (i,j)
 	// to indices in values() and innerIndices()
-	// TODO: consider std::unordered_map (hash table)
-	std::map< SparseMatrixKey, uint >& structureMap();
+	SparseMatrixStructureTreeMap& structureMap();
 
 	// sparse-dense vector product
 	// y <-- Ax
@@ -69,14 +63,9 @@ public:
 	void multiplyTransposeVector( FloatMatrix& x, FloatMatrix& y );
 
 	// sparse-sparse product
-	// let A = this
-	// If storageFormat is CSR, computes A A^T
-	// If storageFormat is CSC, computes A^T A
+	// computes A^T A
 	// Since the product is always symmetric,
 	// only the lower triangle of the output is ever stored
-	//
-	// since we store only the lower triangle
-	// product.compress() must output to COMPRESSED_SPARSE_COLUMN
 	//
 	// TODO: allow upper and full storage
 	void multiplyTranspose( CoordinateSparseMatrix< T >& product ) const;
@@ -88,30 +77,32 @@ public:
 	//
 	// since we store only the lower triangle
 	// product must have:
-	//    size n x n where n is:
-	//      this->numRows(), if this is COMPRESSED_SPARSE_COLUMN
-	//      this->numCols(), if this is COMPRESSED_SPARSE_ROW
+	//    size n x n where n = numRows()
 	//    matrix type SYMMETRIC
-	//    storage format COMPRESSED_SPARSE_COLUMN
 	//
 	// TODO: if output format is compressed sparse col, store the lower triangle
 	// TODO: if output format is full, do the copy
 	void multiplyTranspose( CompressedSparseMatrix< T >& product ) const;	
 
+	// product <- a * b
+	// if product.matrixType() == GENERAL, then the full sparse matrix is stored
+	// else, then the lower triangle is stored
+	static void multiply( const CompressedSparseMatrix< T >& a, const CompressedSparseMatrix< T >& b,
+		CompressedSparseMatrix< T >& product );
+
 private:
 
 	MatrixType m_matrixType;
-	CompressedStorageFormat m_storageFormat;
 
 	uint m_nRows;
 	uint m_nCols;
 
 	std::vector< T > m_values;
 	std::vector< uint > m_innerIndices;
-	std::vector< uint > m_outerIndices;
+	std::vector< uint > m_outerIndexPointers;
 
 	// structure dictionary
 	// mapping matrix coordinates (i,j) --> index k
 	// in m_values and m_innerIndices
-	std::map< SparseMatrixKey, uint > m_structureMap;
+	SparseMatrixStructureTreeMap m_structureMap;
 };

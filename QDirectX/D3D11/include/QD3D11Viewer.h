@@ -1,11 +1,12 @@
-#ifndef QD3D11VIEWER_H
-#define QD3D11VIEWER_H
+#pragma once
 
-#include "QD3D11Widget.h"
 #include <cameras/PerspectiveCamera.h>
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector3f.h>
+
+#include "QD3D11Widget.h"
+#include "FPSControls.h"
 
 class QD3D11Viewer : public QD3D11Widget
 {
@@ -31,6 +32,8 @@ public:
 	PerspectiveCamera& camera();
 	void setCamera( const PerspectiveCamera& camera );
 
+	XboxController* xboxController0();
+
 	Vector3f upVector() const;
 	void setUpVector( const Vector3f& y );
 
@@ -51,7 +54,14 @@ protected:
 
 	virtual void resizeD3D( int width, int height );
 
+	// sample keyboard state (moves the camera)
 	virtual void updateKeyboard();
+
+	// sample xbox controller state (i.e. move the camera with thumbsticks)
+	virtual void updateXboxController();
+
+	FPSControls m_fpsControls;
+	XboxController* m_pXboxController0;
 
 private:
 
@@ -71,6 +81,3 @@ private:
 
 	PerspectiveCamera m_camera;
 };
-
-
-#endif // QD3D11VIEWER_H

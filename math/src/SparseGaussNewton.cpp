@@ -65,7 +65,7 @@ SparseGaussNewton::SparseGaussNewton( std::shared_ptr< SparseEnergy > pEnergy, c
 	m_L( nullptr ),
 	m_jtr2( nullptr ),
 
-	m_cscJtJ( SYMMETRIC, COMPRESSED_SPARSE_COLUMN )
+	m_cscJtJ( SYMMETRIC )
 
 {
 	setEpsilon( epsilon );
@@ -617,11 +617,16 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 #endif
 
 	m_pEnergy->evaluateInitialGuess( m_currBeta );
+
+	// TODO: if not already set up, then call it with coordinate
+	// otherwise, call it with csc
+	// compute transpose...
 	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_coordJ );
 #if TIMING
 	sw.reset();
 #endif
 	m_coordJ.compress( m_cscJ );
+	m_coordJ.compressTranspose( m_cscJt );
 #if TIMING
 	tCompress0 += sw.millisecondsElapsed();
 #endif
@@ -629,10 +634,15 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 #if TIMING
 	sw.reset();
 #endif
-	m_cscJ.multiplyTranspose( m_coordJtJ );
+	CompressedSparseMatrix< float >::multiply( m_cscJt, m_cscJ, m_cscJtJ );
 #if TIMING
 	tSSMult0 += sw.millisecondsElapsed();
 #endif
+
+	printf( "compress0 took %f ms\n", tCompress0 );
+	printf( "ssmult0 took %f ms\n", tSSMult0 );
+
+	exit( 0 );
 
 #if TIMING
 	sw.reset();

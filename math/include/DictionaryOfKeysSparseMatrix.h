@@ -22,8 +22,6 @@ public:
 
 	// one-based: useful for FORTRAN-style numerical libraries
 	// upperTriangleOnly: if the input is already symmetric and positive definite
-	//
-	// can only do CSR output
 	void compress( CompressedSparseMatrix< T >& output,		
 		bool oneBased = false, bool upperTriangleOnly = false ) const;
 
@@ -35,6 +33,5 @@ private:
 	uint m_nRows;
 	uint m_nCols;
 
-	std::map< SparseMatrixKey, T > m_values;
+	std::map< SparseMatrixKey, T, SparseMatrixKeyColMajorLess > m_values;
 };
-

@@ -61,8 +61,6 @@ template< typename T >
 void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output,
 	bool oneBased, bool upperTriangleOnly ) const
 {
-	assert( output.storageFormat() == COMPRESSED_SPARSE_ROW );
-
 	int nnz = numNonZeroes();
 	uint m = numRows();
 	uint n = numCols();
@@ -78,7 +76,7 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 
 	auto& values = output.values();
 	auto& innerIndices = output.innerIndices();
-	auto& outerIndices = output.outerIndices();
+	auto& outerIndexPointers = output.outerIndexPointers();
 	auto& structureMap = output.structureMap();
 
 	for( auto itr = m_values.begin(); itr != m_values.end(); ++itr )
@@ -99,14 +97,14 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 
 			if( i == rowIndexIndex )
 			{
-				outerIndices[ rowIndexIndex ] = columnsIndex;
+				outerIndexPointers[ rowIndexIndex ] = columnsIndex;
 				++rowIndexIndex;
 			}
 
 			++columnsIndex;
 		}		
 	}
-	outerIndices[ rowIndexIndex ] = columnsIndex + offset;
+	outerIndexPointers[ rowIndexIndex ] = columnsIndex + offset;
 	++rowIndexIndex;
 }
 

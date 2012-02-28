@@ -24,20 +24,20 @@ public:
 	
 	// analyzePattern: take in matrix sparsity structure
 	// and perform fill-reducing ordering (symbolic factorization)
-	void analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
+	bool analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
 
-	void analyzePattern( CompressedSparseMatrix< valueType >& A );
+	bool analyzePattern( CompressedSparseMatrix< valueType >& A );
 
 	// factorize: take in the values, which has the same ordering as setup
 	// if sparsity structure has changed, call setup again
-	void factorize( valueType* values );
+	bool factorize( valueType* values );
 
-	void factorize( CompressedSparseMatrix< valueType >& A );
+	bool factorize( CompressedSparseMatrix< valueType >& A );
 
 	// actually solve
-	void solve( const valueType* rhs, valueType* solution );
+	bool solve( const valueType* rhs, valueType* solution );
 
-	void solve( const FloatMatrix& rhs, FloatMatrix& solution );
+	bool solve( const FloatMatrix& rhs, FloatMatrix& solution );
 
 private:
 

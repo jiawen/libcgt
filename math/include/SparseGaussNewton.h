@@ -70,6 +70,7 @@ private:
 	// for PARDISO + Eigen
 	CoordinateSparseMatrix< float > m_coordJ;
 	CompressedSparseMatrix< float > m_cscJ;
+	CompressedSparseMatrix< float > m_cscJt;
 
 	CoordinateSparseMatrix< float > m_coordJtJ;
 	CompressedSparseMatrix< float > m_cscJtJ;

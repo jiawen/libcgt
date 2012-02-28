@@ -6,8 +6,9 @@ class Vector3f;
 #include <QVector>
 
 #include "math/Random.h"
-#include "vecmath/Vector4f.h"
+#include "vecmath/Matrix3f.h"
 #include "vecmath/Vector2i.h"
+#include "vecmath/Vector4f.h"
 #include "geometry/BoundingBox2f.h"
 #include "geometry/BoundingBox3f.h"
 
@@ -66,6 +67,12 @@ public:
 
     // given a vector n, writes two unit vectors normal to n and to each other to b1 and b2
     static void getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 );
+
+	// given a non-zero vector z, returns a right handed basis matrix [ x y z' ]
+	// such that:
+	//    z' = z / ||z||
+	//    x, y, and z' are all unit vectors and x cross y = z'
+	static Matrix3f getRightHandedBasis( const Vector3f& z );
 
 	// given a vector z, and a preferred up vector y,
 	// writes two unit vectors normal to z and to each other to b1 and b2

@@ -1,5 +1,9 @@
 #include "CoordinateSparseMatrix.h"
 
+//////////////////////////////////////////////////////////////////////////
+// Public
+//////////////////////////////////////////////////////////////////////////
+
 template< typename T >
 CoordinateSparseMatrix< T >::CoordinateSparseMatrix() :
 
@@ -80,30 +84,74 @@ void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output 
 	uint nnz = numNonZeroes();
 	output.reset( m, n, nnz );
 
-	// TODO: if we want the output to be only symmetric or triangular
-	//if( ( !upperTriangleOnly ) ||
-	// ( j >= i ) )
+	// copy the triplet vector
+	std::vector< Triplet > ijvSorted( m_ijv );
+	std::sort( ijvSorted.begin(), ijvSorted.end(), colMajorLess );
+	compressCore( ijvSorted, output );
+
+	// populate structure map
+	auto& structureMap = output.structureMap();
+	for( uint k = 0; k < nnz; ++k )
+	{
+		const Triplet& t = ijvSorted[k];
+		uint i = t.i;
+		uint j = t.j;
+		structureMap[ std::make_pair( i, j ) ] = k;
+	}
+}
+
+template< typename T >
+void CoordinateSparseMatrix< T >::compressTranspose( CompressedSparseMatrix< T >& outputAt ) const
+{
+	uint m = numRows();
+	uint n = numCols();
+	uint nnz = numNonZeroes();
+	outputAt.reset( n, m, nnz );
 
 	// copy the triplet vector
 	std::vector< Triplet > ijvSorted( m_ijv );
 
-	if( output.storageFormat() == COMPRESSED_SPARSE_COLUMN )
+	// flip i and j
+	for( uint k = 0; k < nnz; ++k )
 	{
-		for( uint k = 0; k < nnz; ++k )
-		{
-			Triplet& t = ijvSorted[k];
-			std::swap( t.i, t.j );
-		}
-	}	
+		Triplet& t = ijvSorted[k];
+		std::swap( t.i, t.j );
+	}
 
-	std::sort( ijvSorted.begin(), ijvSorted.end(), rowMajorLess );
+	std::sort( ijvSorted.begin(), ijvSorted.end(), colMajorLess );	
 
+	compressCore( ijvSorted, outputAt );
+
+	// populate structure map
+	auto& structureMap = outputAt.structureMap();
+	for( uint k = 0; k < nnz; ++k )
+	{
+		const Triplet& t = ijvSorted[k];
+		// flip
+		uint i = t.j;
+		uint j = t.i;
+		structureMap[ std::make_pair( i, j ) ] = k;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+template< typename T >
+void CoordinateSparseMatrix< T >::compressCore( std::vector< Triplet > ijvSorted, CompressedSparseMatrix< T >& output ) const
+{
+	// TODO: if we want the output to be only symmetric or triangular
+	//if( ( !upperTriangleOnly ) ||
+	// ( j >= i ) )
+
+	uint nnz = numNonZeroes();
 	uint innerIndex = 0;
-	uint outerIndexIndex = 0;
+	uint outerIndexPointerIndex = 0;
 
 	auto& values = output.values();
 	auto& innerIndices = output.innerIndices();
-	auto& outerIndices = output.outerIndices();
+	auto& outerIndexPointers = output.outerIndexPointers();
 
 	for( uint k = 0; k < nnz; ++k )
 	{
@@ -111,42 +159,19 @@ void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output 
 		uint i = t.i;
 		uint j = t.j;
 		const T& value = t.value;
-		
+
 		values[ innerIndex ] = value;
-		innerIndices[ innerIndex ] = j;
+		innerIndices[ innerIndex ] = i;
 
-		if( i == outerIndexIndex )
+		if( j == outerIndexPointerIndex )
 		{
-			outerIndices[ outerIndexIndex ] = innerIndex;
-			++outerIndexIndex;
+			outerIndexPointers[ outerIndexPointerIndex ] = innerIndex;
+			++outerIndexPointerIndex;
 		}
-		++innerIndex;				
+		++innerIndex;
 	}
-	outerIndices[ outerIndexIndex ] = innerIndex;
-	++outerIndexIndex;
-
-	// populate structure map
-	auto& structureMap = output.structureMap();
-	if( output.storageFormat() == COMPRESSED_SPARSE_ROW )
-	{
-		for( uint k = 0; k < nnz; ++k )
-		{
-			const Triplet& t = ijvSorted[k];
-			uint i = t.i;
-			uint j = t.j;
-			structureMap[ std::make_pair( i, j ) ] = k;
-		}
-	}
-	else
-	{
-		for( uint k = 0; k < nnz; ++k )
-		{
-			const Triplet& t = ijvSorted[k];
-			uint i = t.j;
-			uint j = t.i;
-			structureMap[ std::make_pair( i, j ) ] = k;
-		}
-	}
+	outerIndexPointers[ outerIndexPointerIndex ] = innerIndex;
+	++outerIndexPointerIndex;	
 }
 
 // static
@@ -185,7 +210,9 @@ bool CoordinateSparseMatrix< T >::colMajorLess( Triplet& a, Triplet& b )
 	}
 }
 
-// instantiate
+// //////////////////////////////////////////////////////////////////////////
+// Instantiate Templates
+//////////////////////////////////////////////////////////////////////////
 
 template
 CoordinateSparseMatrix< float >;

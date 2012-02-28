@@ -25,6 +25,8 @@ QD3D11Viewer::QD3D11Viewer( bool flipMouseUpDown,
 	m_keyWalkSpeed( keyWalkSpeed ),
 	m_mousePitchSpeed( mousePitchSpeed ),
 
+	m_fpsControls( &m_camera ),	
+
 	QD3D11Widget( parent )
 
 {
@@ -32,6 +34,8 @@ QD3D11Viewer::QD3D11Viewer( bool flipMouseUpDown,
     // m_camera.setPerspective( 10.f, 1.f, 4.7f, 5.4f);
     // m_camera.setPerspective( 50.f, 1.f, 3.5f, 6.5f);	
 	m_camera.setPerspective( 50.f, 1.f, 0.01f, 10.0f );
+
+	m_pXboxController0 = new XboxController( 0, this );
 
 	setUpVector( Vector3f( 0, 1, 0 ) );
 }
@@ -89,6 +93,11 @@ void QD3D11Viewer::setCamera( const PerspectiveCamera& camera )
 	m_camera = camera;
 }
 
+XboxController* QD3D11Viewer::xboxController0()
+{
+	return m_pXboxController0;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Public Slots
 //////////////////////////////////////////////////////////////////////////
@@ -136,6 +145,12 @@ void QD3D11Viewer::updateKeyboard()
 	{
 		translate( 0, -m_keyWalkSpeed, 0 );
 	}
+}
+
+void QD3D11Viewer::updateXboxController()
+{
+	m_pXboxController0->sampleState();
+	m_fpsControls.handleXboxController( m_pXboxController0 );
 }
 
 // virtual
@@ -270,10 +285,10 @@ void QD3D11Viewer::wheelEvent( QWheelEvent * event )
 void QD3D11Viewer::resizeD3D( int width, int height )
 {
     float fovY, aspect, zNear, zFar;
-    m_camera.getPerspective(&fovY, &aspect, &zNear, &zFar);
+    m_camera.getPerspective( &fovY, &aspect, &zNear, &zFar);
 
     aspect = static_cast< float >( width ) / height;
-	m_camera.setPerspective(fovY, aspect, zNear, zFar);
+	m_camera.setPerspective( fovY, aspect, zNear, zFar);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -293,7 +308,7 @@ void QD3D11Viewer::translate( float dx, float dy, float dz )
 	//zp = m_groundPlaneToWorld * zp;
 	//zp.normalize();
 
-	// TODO: switch GLCamera over to have just a forward vector?
+	// TODO: switch Camera over to have just a forward vector?
 	// center is kinda stupid
 	eye = eye + dx * x + dy * upVector() + dz * z;
 	m_camera.setLookAt( eye, eye + z, y );

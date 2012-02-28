@@ -35,6 +35,10 @@ public:
 	float aspect() const;
 	void setAspect( float fAspect );
 
+	// TODO: switch to storing radians internally
+	//float fovYRadians() const;
+	//void setFovYRadians( float fovY );
+
 	float fovYDegrees() const;
 	void setFovYDegrees( float fovY );
 
