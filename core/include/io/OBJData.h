@@ -41,6 +41,8 @@ public:
 
 	bool containsMaterial( QString name );
 
+	bool save( QString filename );
+
 private:
 
 	QVector< Vector3f > m_positions;
