@@ -7,12 +7,17 @@
 #include <stack>
 #include <cstdio>
 
-TriangleMesh::TriangleMesh()
+TriangleMesh::TriangleMesh() :
+
+	m_adjacencyIsDirty( true )
 {
 
 }
 
-TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
+TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
+
+	m_adjacencyIsDirty( true )
+
 {
 	QVector< Vector3f >* pPositions = pData->getPositions();
 	int nVertices = pPositions->size();
@@ -56,7 +61,10 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData )
 	harmonizeNormalsWithPositions( normalIndices );
 }
 
-TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent )
+TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent ) :
+
+	m_adjacencyIsDirty( true )
+
 {
 	auto pGroup = pData->getGroups()->at( groupIndex );
 
@@ -344,6 +352,104 @@ void TriangleMesh::buildAdjacency()
 			m_faceToFace[ f ].push_back( m_edgeToFace[ e2t ] );
 		}
 	}
+
+	// build edge to next edge adjacency
+	// iterate over all faces
+	m_edgeToPrevEdge.clear();
+	m_edgeToNextEdge.clear();
+	for( int f = 0; f < nFaces; ++f )
+	{
+		Vector3i face = m_faces[ f ];
+
+		Vector2i e0 = face.xy();
+		Vector2i e1 = face.yz();
+		Vector2i e2 = face.zx();
+
+		m_edgeToPrevEdge[ e0 ] = e2;
+		m_edgeToPrevEdge[ e1 ] = e0;
+		m_edgeToPrevEdge[ e2 ] = e1;
+
+		m_edgeToNextEdge[ e0 ] = e1;
+		m_edgeToNextEdge[ e1 ] = e2;
+		m_edgeToNextEdge[ e2 ] = e0;
+	}
+
+	// build vertex to outgoing edge adjacency
+	int nVertices = m_positions.size();
+	m_vertexToOutgoingEdge.clear();
+	m_vertexToOutgoingEdge.resize( nVertices );
+	for( int f = 0; f < nFaces; ++f )
+	{
+		Vector3i face = m_faces[ f ];
+		m_vertexToOutgoingEdge[ face[0] ] = face[ 1 ];
+		m_vertexToOutgoingEdge[ face[1] ] = face[ 2 ];
+		m_vertexToOutgoingEdge[ face[2] ] = face[ 0 ];
+	}
+
+	// build vertex to vertex (one-ring neighborhoods)
+	// for each vertex v
+	//   start with initial outgoing edge
+	//   next edge = edge->next->next->twin
+	m_vertexToVertex.clear();
+	m_vertexToFace.clear();
+	m_vertexToVertex.resize( nVertices );
+	m_vertexToFace.resize( nVertices );
+	for( int v = 0; v < nVertices; ++v )
+	{
+		Vector2i initialOutgoingEdge( v, m_vertexToOutgoingEdge[ v ] );
+
+		m_vertexToVertex[ v ].push_back( initialOutgoingEdge.y );
+		m_vertexToFace[ v ].push_back( m_edgeToFace[ initialOutgoingEdge ] );
+
+		Vector2i nextIncomingEdge = m_edgeToNextEdge[ m_edgeToNextEdge[ initialOutgoingEdge ] ];
+		Vector2i nextOutgoingEdge = nextIncomingEdge.yx();
+
+		while( !( isBoundaryEdge( nextIncomingEdge ) ) &&
+			nextOutgoingEdge != initialOutgoingEdge )
+		{
+			m_vertexToVertex[ v ].push_back( nextIncomingEdge.x );
+			m_vertexToFace[ v ].push_back( m_edgeToFace[ nextOutgoingEdge ] );
+
+			nextIncomingEdge = m_edgeToNextEdge[ m_edgeToNextEdge[ nextOutgoingEdge ] ];
+			nextOutgoingEdge = nextIncomingEdge.yx();
+		}
+
+		// if we looped around, great, we're done
+		// otherwise, we hit a boundary, need to go the other way around!
+		if( isBoundaryEdge( nextIncomingEdge ) )
+		{
+			// don't forget to push on the last vertex
+			m_vertexToVertex[ v ].push_back( nextIncomingEdge.x );
+			// no face
+
+			// check that the initial outgoing edge is not a boundary
+			// (otherwise we're done)
+
+			if( isBoundaryEdge( initialOutgoingEdge ) )
+			{
+				continue;
+			}
+			
+			// flip orientation: start from the initial outgoing edge
+			// and go clockwise, pushing to the front
+			Vector2i initialIncomingEdge = initialOutgoingEdge.yx();
+
+			nextOutgoingEdge = m_edgeToNextEdge[ initialIncomingEdge ];
+			nextIncomingEdge = nextOutgoingEdge.yx();
+			while( !( isBoundaryEdge( nextOutgoingEdge ) ) )
+			{
+				m_vertexToVertex[ v ].push_front( nextOutgoingEdge.y );
+				m_vertexToFace[ v ].push_front( m_edgeToFace[ nextOutgoingEdge ] );
+
+				nextOutgoingEdge = m_edgeToNextEdge[ nextIncomingEdge ];
+				nextIncomingEdge = nextOutgoingEdge.yx();
+			}
+
+			// don't forget the last vertex
+			m_vertexToVertex[ v ].push_front( nextOutgoingEdge.y );
+			m_vertexToFace[ v ].push_front( m_edgeToFace[ nextOutgoingEdge ] );
+		}
+	}
 }
 
 void TriangleMesh::computeConnectedComponents()
@@ -424,6 +530,12 @@ void TriangleMesh::computeEdgeLengths()
 
 		m_edgeLengths[ vertexIndices ] = ( p1 - p0 ).abs();
 	}
+}
+
+bool TriangleMesh::isBoundaryEdge( const Vector2i& edge )
+{
+	// TODO: check cache
+	return m_edgeToFace.find( edge.yx() ) == m_edgeToFace.end();
 }
 
 void TriangleMesh::harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices )

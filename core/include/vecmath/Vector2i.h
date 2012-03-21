@@ -64,6 +64,7 @@ public:
 };
 
 bool operator == ( const Vector2i& v0, const Vector2i& v1 );
+bool operator != ( const Vector2i& v0, const Vector2i& v1 );
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 );
 Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 );
