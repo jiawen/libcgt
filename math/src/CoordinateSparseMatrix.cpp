@@ -210,6 +210,44 @@ bool CoordinateSparseMatrix< T >::colMajorLess( Triplet& a, Triplet& b )
 	}
 }
 
+template<>
+bool CoordinateSparseMatrix< float >::saveTXT( QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "w" );
+	bool succeeded = ( fp != NULL );
+
+	if( succeeded )
+	{
+		fprintf( fp, "%d\t%d\t%d\n", m_nRows, m_nCols, static_cast< int >( m_ijv.size() ) );
+		for( size_t k = 0; k < m_ijv.size(); ++k )
+		{
+			fprintf( fp, "%d\t%d\t%f\n", m_ijv[k].i, m_ijv[k].j, m_ijv[k].value );
+		}
+		fclose( fp );
+	}
+
+	return succeeded;
+}
+
+template<>
+bool CoordinateSparseMatrix< double >::saveTXT( QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "w" );
+	bool succeeded = ( fp != NULL );
+
+	if( succeeded )
+	{
+		fprintf( fp, "%d\t%d\t%d\n", m_nRows, m_nCols, static_cast< int >( m_ijv.size() ) );
+		for( size_t k = 0; k < m_ijv.size(); ++k )
+		{
+			fprintf( fp, "%d\t%d\t%lf\n", m_ijv[k].i, m_ijv[k].j, m_ijv[k].value );
+		}
+		fclose( fp );
+	}
+
+	return succeeded;
+}
+
 // //////////////////////////////////////////////////////////////////////////
 // Instantiate Templates
 //////////////////////////////////////////////////////////////////////////

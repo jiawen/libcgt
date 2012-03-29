@@ -10,6 +10,9 @@ public:
 	OBJFace();
 	OBJFace( bool hasTextureCoordinates, bool hasNormals );
 
+	bool hasTextureCoordinates() const;
+	bool hasNormals() const;
+
 	QVector< int >* getPositionIndices();
 	QVector< int >* getTextureCoordinateIndices();
 	QVector< int >* getNormalIndices();

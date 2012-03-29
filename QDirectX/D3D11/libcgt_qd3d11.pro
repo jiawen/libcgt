@@ -14,9 +14,6 @@ INCLUDEPATH += $(DXSDK_DIR)Samples/C++/Effects11/Inc
 
 INCLUDEPATH += ../../core/include
 
-#LIBPATH += $(QTDIR)/lib
-#LIBPATH += $(DXSDK_DIR)Lib/x64
-
 CONFIG( debug, debug|release ) {
   TARGET = libcgt_qd3d11d
 } else {
@@ -25,7 +22,7 @@ CONFIG( debug, debug|release ) {
 }
 
 QMAKE_CXXFLAGS += -MP4
-DEFINES += _CRT_SECURE_NO_WARNINGS
+DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX _ITERATOR_DEBUG_LEVEL=0
 
 # Code
 HEADERS = include/*.h

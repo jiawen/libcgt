@@ -87,9 +87,12 @@ public:
 	// given a line segment v0 --> v1
 	// and a point p
 	// finds the point on the segment closest to p
+	
+	// TODO: do these work??
 	static Vector2f closestPointOnSegment( const Vector2f& p, const Vector2f& v0, const Vector2f& v1 );
+	// TODO: do these work??
 	static Vector3f closestPointOnSegment( const Vector3f& p, const Vector3f& v0, const Vector3f& v1 );
-
+	// TODO: do these work??
 	static Vector2f closestPointOnTriangle( const Vector2f& p, const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
     //dir1 and dir2 should be normalized
@@ -124,8 +127,14 @@ public:
 	// plane is defined by dot( plane.xyz, X ) = plane.w
 	static float pointToPlaneDistance( const Vector3f& point, const Vector4f& plane );
 
-    // lineDir should be normalized
-	static float pointToLineDistance( const Vector3f& point, const Vector3f& linePoint, const Vector3f &lineDir );
+    // squared distance between a point and a line
+	// lineDir is *assumed to be unit length*
+	static float pointToLineDistanceSquared( const Vector3f& point, const Vector3f& linePoint, const Vector3f& lineDir,
+		Vector3f* pClosestPoint = nullptr );
+
+	// squared distance from a point to a line segment (correctly clamps to ends)
+	static float pointToLineSegmentDistanceSquared( const Vector3f& p, const Vector3f& s0, const Vector3f& s1,
+		Vector3f* pClosestPoint = nullptr );
 
     // lineDirs don't have to be normalized
 	static float lineToLineDistance( const Vector3f& linePoint1, const Vector3f& lineDir1, const Vector3f& linePoint2, const Vector3f& lineDir2 );

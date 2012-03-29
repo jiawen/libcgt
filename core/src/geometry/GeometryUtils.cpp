@@ -705,21 +705,80 @@ float GeometryUtils::pointToPlaneDistance( const Vector3f& point, const Vector4f
 	return Vector3f::dot( vectorToPoint, unitNormal );
 }
 
-float GeometryUtils::pointToLineDistance( const Vector3f& point, const Vector3f& linePoint, const Vector3f& lineDir )
+// static
+float GeometryUtils::pointToLineDistanceSquared( const Vector3f& point, const Vector3f& linePoint, const Vector3f& lineDir,
+	Vector3f* pClosestPoint )
 {
     Vector3f diff = point - linePoint;
-    float dot = Vector3f::dot(diff, lineDir); //assumes lineDir is normalized
-    float distSq = diff.absSquared() - dot * dot;
-    return (distSq > 0.f) ? sqrt(distSq) : 0.f;
+    float dot = Vector3f::dot( diff, lineDir ); // assumes lineDir is normalized
+    float distanceSquared = diff.absSquared() - dot * dot;
+
+	if( pClosestPoint != nullptr )
+	{
+		*pClosestPoint = linePoint + dot * lineDir;
+	}
+	return distanceSquared;    
 }
 
+// static
+float GeometryUtils::pointToLineSegmentDistanceSquared( const Vector3f& p, const Vector3f& s0, const Vector3f& s1,
+	Vector3f* pClosestPoint )
+{
+	Vector3f dir = s1 - s0;
+
+	// test if vector p --> s1 points in the opposite direction of dir, if so, s1 is closer
+	Vector3f dirs1 = s1 - p;
+	if( Vector3f::dot( dirs1, dir ) < 0 )
+	{
+		if( pClosestPoint != nullptr )
+		{
+			*pClosestPoint = s0;
+		}
+		return dirs1.absSquared();
+	}
+
+	// test if vector s0 --> p points in the opposite of direction of dir, if so, s0 is closer	
+	Vector3f dirs0 = p - s0;	
+	float dot = Vector3f::dot( dirs0, dir );
+	if( dot <= 0 )
+	{
+		if( pClosestPoint != nullptr )
+		{
+			*pClosestPoint = s1;
+		}
+		return dirs0.absSquared();
+	}
+
+	// dot = dirs0 dot dir
+	//     = |dirs0| |dir| cos(t)
+	// length of projection of dirs0 onto dir is |dirs0| cos(t)
+	//     = dot / |dir|
+	// projection itself is then
+	//     = ( dot / |dir| ) * ( dir / |dir| )
+	//     = dot * dir / dir.lengthSquared()
+	//
+	// closest approach distance is given by Pythagoras:
+	// ( length of projection )^2 + ( closest approach )^2 = |dirs0|^2
+
+	float rcpDirAbsSquared = 1.0f / dir.absSquared();
+
+	if( pClosestPoint != nullptr )
+	{
+		*pClosestPoint = dot * rcpDirAbsSquared;
+	}
+	
+	// clamp to 0 just in case
+	return std::max( 0.f, dirs0.absSquared() - dot * dot * rcpDirAbsSquared );
+}
+
+// static
 float GeometryUtils::lineToLineDistance( const Vector3f& linePoint1, const Vector3f& lineDir1, const Vector3f& linePoint2, const Vector3f& lineDir2 )
 {
     //distance is along the vector perpendicular to both lines
     Vector3f dirCross = Vector3f::cross(lineDir1, lineDir2);
     float crossLength = dirCross.abs();
     if(crossLength < EPSILON) //lines are approximately parallel
-        return pointToLineDistance( linePoint1, linePoint2, lineDir2.normalized() );
+        return sqrt( pointToLineDistanceSquared( linePoint1, linePoint2, lineDir2.normalized() ) );
     return fabs(Vector3f::dot(linePoint2 - linePoint1, dirCross) / crossLength);
 }
 

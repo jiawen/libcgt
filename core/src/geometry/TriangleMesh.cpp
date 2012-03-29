@@ -6,6 +6,7 @@
 #include <numeric>
 #include <stack>
 #include <cstdio>
+#include <cassert>
 
 TriangleMesh::TriangleMesh() :
 
@@ -29,12 +30,19 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 
 	QVector< Vector3f >* pNormals = pData->getNormals();
 	int nNormals = pNormals->size();
-	m_normals = std::vector< Vector3f >( nNormals );
-	for( int n = 0; n < nNormals; ++n )
+	if( nNormals > 0 )
 	{
-		m_normals[ n ] = pNormals->at( n );
+		m_normals = std::vector< Vector3f >( nNormals );
+		for( int n = 0; n < nNormals; ++n )
+		{
+			m_normals[ n ] = pNormals->at( n );
+		}
 	}
-
+	else
+	{
+		m_normals = std::vector< Vector3f >( m_positions.size() );
+	}
+	
 	std::vector< Vector3i > normalIndices;
 
 	QVector< OBJGroup* >* pGroups = pData->getGroups();
@@ -49,16 +57,23 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 			int p1 = pFace.getPositionIndices()->at( 1 );
 			int p2 = pFace.getPositionIndices()->at( 2 );
 
-			int n0 = pFace.getNormalIndices()->at( 0 );
-			int n1 = pFace.getNormalIndices()->at( 1 );
-			int n2 = pFace.getNormalIndices()->at( 2 );
-
 			m_faces.push_back( Vector3i( p0, p1, p2 ) );
-			normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+
+			if( pGroup->hasNormals() )
+			{
+				int n0 = pFace.getNormalIndices()->at( 0 );
+				int n1 = pFace.getNormalIndices()->at( 1 );
+				int n2 = pFace.getNormalIndices()->at( 2 );
+
+				normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+			}
 		}
 	}
 
-	harmonizeNormalsWithPositions( normalIndices );
+	if( normalIndices.size() > 0 )
+	{
+		consolidateNormalsWithPositions( normalIndices );
+	}
 }
 
 TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent ) :
@@ -121,7 +136,32 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bo
 		}
 	}
 
-	harmonizeNormalsWithPositions( normalIndices );
+	consolidateNormalsWithPositions( normalIndices );
+}
+
+int TriangleMesh::numVertices() const
+{
+	return m_positions.size();
+}
+
+int TriangleMesh::numFaces() const
+{
+	return m_faces.size();
+}
+
+int TriangleMesh::vertexOppositeEdge( int i, int j ) const
+{
+	return vertexOppositeEdge( Vector2i( i, j ) );
+}
+
+int TriangleMesh::vertexOppositeEdge( const Vector2i& ij ) const
+{
+	auto itr = m_edgeToNextEdge.find( ij );
+	if( itr != m_edgeToNextEdge.end() )
+	{
+		return itr->second.y;
+	}
+	return -1;
 }
 
 float TriangleMesh::meanEdgeLength()
@@ -138,6 +178,8 @@ float TriangleMesh::meanEdgeLength()
 
 float TriangleMesh::area( int faceIndex ) const
 {
+	assert( faceIndex >= 0 && faceIndex < m_faces.size() );
+
 	return m_areas[ faceIndex ];
 }
 
@@ -150,6 +192,24 @@ float TriangleMesh::totalArea() const
 	}
 	return sum;
 }
+
+bool TriangleMesh::obtuse( int faceIndex ) const
+{
+	assert( faceIndex >= 0 && faceIndex < m_faces.size() );
+
+	Vector3i ijk = m_faces[ faceIndex ];
+	Vector3f v0 = m_positions[ ijk.x ];
+	Vector3f v1 = m_positions[ ijk.y ];
+	Vector3f v2 = m_positions[ ijk.z ];
+
+	return
+	(
+		Vector3f::dot( v1 - v0, v2 - v0 ) < 0 ||
+		Vector3f::dot( v2 - v1, v0 - v1 ) < 0 ||
+		Vector3f::dot( v0 - v2, v1 - v2 ) < 0
+	);
+}
+
 
 TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedComponent )
 {
@@ -390,8 +450,10 @@ void TriangleMesh::buildAdjacency()
 	// for each vertex v
 	//   start with initial outgoing edge
 	//   next edge = edge->next->next->twin
+	m_oneRingIsClosed.clear();
 	m_vertexToVertex.clear();
 	m_vertexToFace.clear();
+	m_oneRingIsClosed.resize( nVertices );
 	m_vertexToVertex.resize( nVertices );
 	m_vertexToFace.resize( nVertices );
 	for( int v = 0; v < nVertices; ++v )
@@ -418,6 +480,8 @@ void TriangleMesh::buildAdjacency()
 		// otherwise, we hit a boundary, need to go the other way around!
 		if( isBoundaryEdge( nextIncomingEdge ) )
 		{
+			m_oneRingIsClosed[ v ] = false;
+
 			// don't forget to push on the last vertex
 			m_vertexToVertex[ v ].push_back( nextIncomingEdge.x );
 			// no face
@@ -448,6 +512,10 @@ void TriangleMesh::buildAdjacency()
 			// don't forget the last vertex
 			m_vertexToVertex[ v ].push_front( nextOutgoingEdge.y );
 			m_vertexToFace[ v ].push_front( m_edgeToFace[ nextOutgoingEdge ] );
+		}
+		else
+		{
+			m_oneRingIsClosed[ v ] = true;
 		}
 	}
 }
@@ -538,7 +606,7 @@ bool TriangleMesh::isBoundaryEdge( const Vector2i& edge )
 	return m_edgeToFace.find( edge.yx() ) == m_edgeToFace.end();
 }
 
-void TriangleMesh::harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices )
+void TriangleMesh::consolidateNormalsWithPositions( const std::vector< Vector3i >& normalIndices )
 {
 	std::vector< Vector3f > outputNormalIndices( m_positions.size() );
 

@@ -13,12 +13,11 @@ CONFIG( debug, debug|release ) {
 INCLUDEPATH += $(QTDIR)/include/QtCore
 INCLUDEPATH += $(QTDIR)/include/QtGui
 INCLUDEPATH += $(QTDIR)/include
-LIBPATH += $(QTDIR)/lib
 
 INCLUDEPATH += "./include"
 
 QMAKE_CXXFLAGS += -MP4
-DEFINES += _CRT_SECURE_NO_WARNINGS
+DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX _ITERATOR_DEBUG_LEVEL=0
 
 HEADERS += include/libcgt_core.h
 

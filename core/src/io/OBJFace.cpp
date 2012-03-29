@@ -22,6 +22,16 @@ OBJFace::OBJFace( bool hasTextureCoordinates, bool hasNormals ) :
 
 }
 
+bool OBJFace::hasTextureCoordinates() const
+{
+	return m_bHasTextureCoordinates;
+}
+
+bool OBJFace::hasNormals() const
+{
+	return m_bHasNormals;
+}
+
 QVector< int >* OBJFace::getPositionIndices()
 {
 	return &m_qvPositionIndices;

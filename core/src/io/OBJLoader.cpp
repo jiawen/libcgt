@@ -101,7 +101,7 @@ bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 						else
 						{
 							pCurrentGroup = pOBJData->addGroup( newGroupName );
-						}						
+						}
 					}
 				}
 				else if( commandToken == "v" )
@@ -397,12 +397,6 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 	{
 		// first check line consistency - each vertex in the face
 		// should have the same number of attributes
-
-		// HACK
-		bool faceIsValid = true;
-		bool faceHasTextureCoordinates = false;
-		bool faceHasNormals = true;
-		/*
 		bool faceIsValid;
 		bool faceHasTextureCoordinates;
 		bool faceHasNormals;
@@ -416,14 +410,13 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 				lineNumber, qPrintable( line ) );
 			return false;
 		}
-		*/
 
-		// ensure that all faces in a group are consistent
+		// ensure that all faces in a group are consistent:
 		// they either all have texture coordinates or they don't
 		// they either all have normals or they don't
 		// 
 		// check how many faces the current group has
-		// if the group has no faces, then the first vertex sets it
+		// if the group has no faces, then the first face sets the group attributes
 
 		if( pCurrentGroup->getFaces()->size() == 0 )
 		{
@@ -479,13 +472,20 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 bool OBJLoader::isFaceLineAttributesConsistent( QStringList tokens,
 											   bool* pHasTextureCoordinates, bool* pHasNormals )
 {
+	if( tokens.size() < 2 )
+	{
+		*pHasTextureCoordinates = false;
+		*pHasNormals = false;
+		return true;
+	}
+
 	int firstVertexPositionIndex;
 	int firstVertexTextureCoordinateIndex;
 	int firstVertexNormalIndex;
 
 	bool firstVertexIsValid;
 	bool firstVertexHasTextureCoordinates;
-	bool firstVertexHasNormals;
+	bool firstVertexHasNormals;	
 
 	firstVertexIsValid = OBJLoader::getVertexAttributes( tokens[1],
 		&firstVertexPositionIndex, &firstVertexTextureCoordinateIndex, &firstVertexNormalIndex );

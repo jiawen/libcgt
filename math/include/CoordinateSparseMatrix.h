@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <QString>
 
 #include "CompressedSparseMatrix.h"
 
@@ -26,6 +27,8 @@ public:
 	void compress( CompressedSparseMatrix< T >& output ) const;
 	void compressTranspose( CompressedSparseMatrix< T >& outputAt ) const;
 
+	bool saveTXT( QString filename );
+
 private:
 
 	struct Triplet
@@ -47,5 +50,5 @@ private:
 	uint m_nRows;
 	uint m_nCols;
 
-	std::vector< Triplet > m_ijv;	
+	std::vector< Triplet > m_ijv;
 };

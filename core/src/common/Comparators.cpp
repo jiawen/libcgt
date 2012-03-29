@@ -6,6 +6,7 @@ bool Comparators::indexAndDistanceLess( const std::pair< int, float >& a, const 
 	return a.second < b.second;
 }
 
+#if 0
 bool std::less< Vector2i >::operator () ( const Vector2i& a, const Vector2i& b )
 {
 	if( a.x < b.x )
@@ -21,3 +22,4 @@ bool std::less< Vector2i >::operator () ( const Vector2i& a, const Vector2i& b )
 		return a.y < b.y;
 	}
 }
+#endif

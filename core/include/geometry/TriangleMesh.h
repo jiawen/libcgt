@@ -23,10 +23,21 @@ public:
 	TriangleMesh( std::shared_ptr< OBJData > pData );
 	TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent = true );
 
+	int numVertices() const;
+	int numFaces() const;
+
+	// returns -1 if edge i --> j is not on a face
+	int vertexOppositeEdge( int i, int j ) const;
+
+	// returns -1 if edge i --> j is not on a face
+	int vertexOppositeEdge( const Vector2i& ij ) const;
+
 	float meanEdgeLength();
 
 	float area( int faceIndex ) const;
 	float totalArea() const;
+
+	bool obtuse( int faceIndex ) const;
 
 	// given a set of connected faces in connectedComponent
 	// returns a consolidated mesh
@@ -75,13 +86,11 @@ public:
 
 	void saveOBJ( QString filename );
 
+	// TODO: mark if one-ring is closed?
+	// or use an actual linked list
+	std::vector< bool > m_oneRingIsClosed; // whether the one ring is closed (loops around)
 	std::vector< std::list< int > > m_vertexToVertex; // vertex index --> one-ring vertices, in counterclockwise order
 	std::vector< std::list< int > > m_vertexToFace; // vertex index --> one-ring faces, in counterclockwise order
-
-private:
-
-	// TODO: invalidate()
-	bool m_adjacencyIsDirty; // marks whether the cached adjacency data structures are dirty
 
 	// adjacency data structures
 	std::map< Vector2i, int > m_edgeToFace; // edge (v0,v1) --> face index
@@ -94,6 +103,11 @@ private:
 
 	std::vector< int > m_vertexToOutgoingEdge; // vertex index --> one outgoing edge
 
+private:
+
+	// TODO: invalidate()
+	bool m_adjacencyIsDirty; // marks whether the cached adjacency data structures are dirty	
+
 	// the input data might have different number of normals vs vertices
 	// if the input has *more* normals,
 	//   then some of them are clearly unused and can be pruned
@@ -101,5 +115,5 @@ private:
 	//   then some of them are shared and should be duplicated
 	// they indices should line up with the positions
 	// since the faces indexing them is authoritative
-	void harmonizeNormalsWithPositions( const std::vector< Vector3i >& normalIndices );
+	void consolidateNormalsWithPositions( const std::vector< Vector3i >& normalIndices );
 };

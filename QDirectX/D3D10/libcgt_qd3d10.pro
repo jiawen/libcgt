@@ -10,7 +10,6 @@ INCLUDEPATH += $(QTDIR)/include/QtGui
 INCLUDEPATH += $(QTDIR)/include
 INCLUDEPATH += $(DXSDK_DIR)include
 INCLUDEPATH += ../../core/include
-LIBPATH += $(QTDIR)/lib
 
 CONFIG( debug, debug|release ) {
   TARGET = libcgt_qd3d10d
@@ -20,7 +19,7 @@ CONFIG( debug, debug|release ) {
 }
 
 QMAKE_CXXFLAGS += -MP4
-DEFINES += _CRT_SECURE_NO_WARNINGS
+DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX _ITERATOR_DEBUG_LEVEL=0
 
 #
 HEADERS = include/*.h

@@ -13,6 +13,7 @@ public:
 	static bool indexAndDistanceLess( const std::pair< int, float >& a, const std::pair< int, float >& b );	
 };
 
+#if 0
 namespace std
 {
 	template<>
@@ -21,3 +22,4 @@ namespace std
 		bool operator () ( const Vector2i& a, const Vector2i& b );
 	};
 }
+#endif
