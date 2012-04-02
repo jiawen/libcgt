@@ -88,7 +88,7 @@ public:
 		Vector3f* bottomLeft, Vector3f* bottomRight,
 		Vector3f* topRight, Vector3f* topLeft ) const;
 
-	QVector< Vector3f > getFrustumCorners() const;
+	std::vector< Vector3f > getFrustumCorners() const;
 
 	bool saveTXT( QString filename );
 

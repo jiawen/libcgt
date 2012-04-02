@@ -75,12 +75,13 @@ public:
 	static Matrix4f ones();
 	static Matrix4f identity();
 	static Matrix4f translation( float x, float y, float z );
-	static Matrix4f translation( const Vector3f& rTranslation );
+	static Matrix4f translation( const Vector3f& xyz );
 	static Matrix4f rotateX( float radians );
 	static Matrix4f rotateY( float radians );
 	static Matrix4f rotateZ( float radians );
-	static Matrix4f rotation( const Vector3f& rDirection, float degrees );
+	static Matrix4f rotation( const Vector3f& direction, float radians );
 	static Matrix4f scaling( float sx, float sy, float sz );
+	static Matrix4f scaling( const Vector3f& xyz );
 	static Matrix4f uniformScaling( float s );
 	static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 	static Matrix4f orthographicProjection( float width, float height, float zNear, float zFar, bool directX );

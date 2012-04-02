@@ -199,9 +199,9 @@ float BoundingBox3f::longestSideLength() const
 	return max( diameter.x, max( diameter.y, diameter.z ) );
 }
 
-QVector< Vector3f > BoundingBox3f::corners() const
+std::vector< Vector3f > BoundingBox3f::corners() const
 {
-	QVector< Vector3f > out( 8 );
+	std::vector< Vector3f > out( 8 );
 
 	for( int i = 0; i < 8; ++i )
 	{

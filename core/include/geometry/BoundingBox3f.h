@@ -4,7 +4,6 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 #include <QString>
-#include <QVector>
 #include <vector>
 
 class BoundingBox3f
@@ -47,7 +46,7 @@ public:
 	// returns the maximum of the lengths of the 3 sides of this box
 	float longestSideLength() const;
 
-	QVector< Vector3f > corners() const;
+	std::vector< Vector3f > corners() const;
 
 	// enlarges the box if p is outside it
 	void enlarge( const Vector3f& p );

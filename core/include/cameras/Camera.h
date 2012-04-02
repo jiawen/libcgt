@@ -1,15 +1,11 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
-#include <cmath>
-#include <cstdio>
+#include <vector>
 
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix4f.h>
-
-#include <QVector>
 
 class BoundingBox3f;
 
@@ -35,7 +31,7 @@ public:
 		float* pfZNear, float* pfZFar,
 		bool* pbZFarIsInfinite = NULL ) const;
 
-	QVector< Vector3f > getFrustumCorners() const;
+	std::vector< Vector3f > getFrustumCorners() const;
 
 	bool isZFarInfinite();
 
@@ -134,5 +130,3 @@ protected:
 
     bool m_bDirectX; // if the matrices are constructed for DirectX or OpenGL
 };
-
-#endif // CAMERA_H

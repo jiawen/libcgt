@@ -184,9 +184,9 @@ void SpotLight::rectangleAlignedAt( float z,
 	*topRight = m_position + top * m_up + right * worldRight + z * lightDirection();
 }
 
-QVector< Vector3f > SpotLight::getFrustumCorners() const
+std::vector< Vector3f > SpotLight::getFrustumCorners() const
 {
-	QVector< Vector3f > out( 8 );
+	std::vector< Vector3f > out( 8 );
 
 	Vector4f cubePoint( 0.f, 0.f, 0.f, 1.f );
 	Matrix4f invProj = inverseLightProjectionMatrix();

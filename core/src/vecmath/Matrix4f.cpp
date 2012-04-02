@@ -381,13 +381,13 @@ Matrix4f Matrix4f::translation( float x, float y, float z )
 }
 
 // static
-Matrix4f Matrix4f::translation( const Vector3f& rTranslation )
+Matrix4f Matrix4f::translation( const Vector3f& xyz )
 {
 	return Matrix4f
 	(
-		1, 0, 0, rTranslation.x,
-		0, 1, 0, rTranslation.y,
-		0, 0, 1, rTranslation.z,
+		1, 0, 0, xyz.x,
+		0, 1, 0, xyz.y,
+		0, 0, 1, xyz.z,
 		0, 0, 0, 1
 	);
 }
@@ -438,13 +438,12 @@ Matrix4f Matrix4f::rotateZ( float radians )
 }
 
 // static
-Matrix4f Matrix4f::rotation( const Vector3f& rDirection, float degrees )
+Matrix4f Matrix4f::rotation( const Vector3f& direction, float radians )
 {
-	Vector3f normalizedDirection = rDirection.normalized();
-	
-	float theta = MathUtils::degreesToRadians( degrees );
-	float cosTheta = cos( theta );
-	float sinTheta = sin( theta );
+	Vector3f normalizedDirection = direction.normalized();
+		
+	float cosTheta = cos( radians );
+	float sinTheta = sin( radians );
 
 	float x = normalizedDirection.x;
 	float y = normalizedDirection.y;
@@ -496,6 +495,12 @@ Matrix4f Matrix4f::scaling( float sx, float sy, float sz )
 		0, 0, sz, 0,
 		0, 0, 0, 1
 	);
+}
+
+// static
+Matrix4f Matrix4f::scaling( const Vector3f& xyz )
+{
+	return Matrix4f::scaling( xyz.x, xyz.y, xyz.z );
 }
 
 // static

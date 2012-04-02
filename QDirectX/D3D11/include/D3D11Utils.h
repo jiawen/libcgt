@@ -5,7 +5,7 @@
 #include <D3DX11.h>
 #include <d3dx11effect.h>
 
-#include <QVector>
+#include <vector>
 #include <DXGI.h>
 
 #include <common/Reference.h>
@@ -29,15 +29,14 @@ public:
 
 	// Returns a QVector of DXGI adapter on this machine
 	// Be sure to release the pointers
-	// TODO: make a class for this that auto-releases?
-	static QVector< IDXGIAdapter* > getDXGIAdapters();
+	static std::vector< IDXGIAdapter* > getDXGIAdapters();
 
 	static D3D11_VIEWPORT createViewport( int width, int height );
 	static D3D11_VIEWPORT createViewport( const Vector2i& wh );
 	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin, float zMax );
 
 	// creates a unit box [0,1]^3
-	static QVector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
+	static std::vector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
 
 	template< typename T >
 	static ID3D11InputLayout* createInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
@@ -60,10 +59,10 @@ public:
 	// Create a DynamicVertexBuffer of 16 vertices
 	// each vertex is a VertexPosition4fColor4f
 	static DynamicVertexBuffer* createFrustum( ID3D11Device* pDevice,
-		const Vector3f& eye, QVector< Vector3f > frustumCorners,
+		const Vector3f& eye, std::vector< Vector3f > frustumCorners,
 		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
 
-	static void writeFrustum( const Vector3f& eye, QVector< Vector3f > frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
+	static void writeFrustum( const Vector3f& eye, std::vector< Vector3f > frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
 
 	// Create a DynamicVertexBuffer of 6 vertices
 	// each vertex is a VertexPosition4fColor4f

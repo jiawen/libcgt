@@ -1,5 +1,8 @@
 #include "cameras/Camera.h"
 
+#include <cmath>
+#include <cstdio>
+
 #include <math/MathUtils.h>
 #include <vecmath/Vector4f.h>
 #include <vecmath/Quat4f.h>
@@ -57,9 +60,9 @@ void Camera::getFrustum( float* pfLeft, float* pfRight,
 	}
 }
 
-QVector< Vector3f > Camera::getFrustumCorners() const
+std::vector< Vector3f > Camera::getFrustumCorners() const
 {
-	QVector< Vector3f > out( 8 );
+	std::vector< Vector3f > out( 8 );
 
 	Vector4f cubePoint( 0.f, 0.f, 0.f, 1.f );
 	Matrix4f invProj = getInverseViewProjectionMatrix();

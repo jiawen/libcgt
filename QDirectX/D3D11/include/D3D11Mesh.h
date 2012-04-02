@@ -1,5 +1,4 @@
-#ifndef D3D11_MESH_H
-#define D3D11_MESH_H
+#pragma once
 
 #include <memory>
 #include <QHash>
@@ -90,5 +89,3 @@ private:
 	QHash< QString, std::shared_ptr< DynamicTexture2D > > m_diffuseTextures;
 
 };
-
-#endif // D3D11_MESH_H

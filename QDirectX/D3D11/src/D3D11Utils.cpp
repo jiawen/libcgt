@@ -10,9 +10,9 @@
 #include "StagingStructuredBuffer.h"
 
 // static
-QVector< IDXGIAdapter* > D3D11Utils::getDXGIAdapters()
+std::vector< IDXGIAdapter* > D3D11Utils::getDXGIAdapters()
 {
-	QVector< IDXGIAdapter* > adapters;
+	std::vector< IDXGIAdapter* > adapters;
 
 	IDXGIFactory1* pFactory;
 	HRESULT hr = CreateDXGIFactory1( __uuidof( IDXGIFactory1 ), ( void** )( &pFactory ) );
@@ -22,7 +22,7 @@ QVector< IDXGIAdapter* > D3D11Utils::getDXGIAdapters()
 		IDXGIAdapter* pAdapter;
 		while( pFactory->EnumAdapters( i, &pAdapter ) != DXGI_ERROR_NOT_FOUND )
 		{ 
-			adapters.append( pAdapter );
+			adapters.push_back( pAdapter );
 			++i; 
 		}
 
@@ -59,7 +59,7 @@ D3D11_VIEWPORT D3D11Utils::createViewport( int topLeftX, int topLeftY, int width
 }
 
 // static
-QVector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normalsPointOutward )
+std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normalsPointOutward )
 {
 	Vector4f positions[ 8 ];
 	for( int i = 0; i < 8; ++i )
@@ -80,120 +80,120 @@ QVector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normals
 
 	Vector2f tc( 0, 0 );
 
-	QVector< VertexPosition4fNormal3fTexture2f > vertexArray;
+	std::vector< VertexPosition4fNormal3fTexture2f > vertexArray;
 	vertexArray.reserve( 36 );	
 
 	if( normalsPointOutward )
 	{
 		// bottom
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 3 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 3 ], tc ) );
 
 		// left
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 1 ], tc ) ); 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 1 ], tc ) ); 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 1 ], tc ) ); 
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 1 ], tc ) ); 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 1 ], tc ) ); 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 1 ], tc ) ); 
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 1 ], tc ) ); 
 
 		// back
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 5 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 5 ], tc ) );
 
 		// front
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 4 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 4 ], tc ) );		
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 4 ], tc ) );		
 
 		// top
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 2 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 2 ], tc ) );		
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 2 ], tc ) );		
 
 		// right
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 0 ], tc ) );
 																				
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 0 ], tc ) );
 	}
 	else
 	{
 		// bottom
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 2 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 2 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 2 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 2 ], tc ) );
 
 		// left
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 0 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 0 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 0 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 0 ], tc ) );
 
 		// back
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 0 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 4 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 4 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 4 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 4 ], tc ) );
 
 		// front
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 5 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 5 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 5 ], tc ) );		
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 4 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 5 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 5 ], tc ) );		
 
 		// top
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 2 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 3 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 3 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 3 ], tc ) );		
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 6 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 3 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 3 ], tc ) );		
 
 		// right
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 1 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 1 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 1 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 1 ], tc ) );
 
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 1 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 1 ], tc ) );
-		vertexArray.append( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 3 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 5 ], normals[ 1 ], tc ) );
+		vertexArray.push_back( VertexPosition4fNormal3fTexture2f( positions[ 7 ], normals[ 1 ], tc ) );
 	}
 
 	return vertexArray;
@@ -201,7 +201,7 @@ QVector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normals
 
 // static
 DynamicVertexBuffer* D3D11Utils::createFrustum( ID3D11Device* pDevice,
-	const Vector3f& eye, QVector< Vector3f > frustumCorners,
+	const Vector3f& eye, std::vector< Vector3f > frustumCorners,
 	const Vector4f& color )
 {
 	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() );
@@ -214,7 +214,7 @@ DynamicVertexBuffer* D3D11Utils::createFrustum( ID3D11Device* pDevice,
 }
 
 // static
-void D3D11Utils::writeFrustum( const Vector3f& eye, QVector< Vector3f > frustumCorners, const Vector4f& color,
+void D3D11Utils::writeFrustum( const Vector3f& eye, std::vector< Vector3f > frustumCorners, const Vector4f& color,
 	VertexPosition4fColor4f* vertexArray )
 {
 	// 4 lines from eye to each far corner

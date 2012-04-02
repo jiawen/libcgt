@@ -43,14 +43,14 @@ Matrix3f DirectionalLight::lightBasis() const
 // virtual
 Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3f& sceneBoundingBox )
 {
-    const float feather = 1.01;
+    const float feather = 1.01f;
 
 	Matrix3f lightLinear = lightBasis();
 	Vector3f eye = camera.getEye();
 
 	// get the corners of the view frustum in light coordinates
 	// with the z = 0 plane at the eye
-	QVector< Vector3f > frustumCorners = camera.getFrustumCorners();
+	std::vector< Vector3f > frustumCorners = camera.getFrustumCorners();
 
     BoundingBox3f frustumBB;
     for( int i = 0; i < frustumCorners.size(); ++i )
@@ -58,8 +58,8 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
 
     BoundingBox3f sceneAndFrustum =  BoundingBox3f::intersect(frustumBB, sceneBoundingBox);
 
-    QVector< Vector3f > sceneCorners = sceneBoundingBox.corners();
-	QVector< Vector3f > sceneAndFrustumCorners = sceneAndFrustum.corners();
+    std::vector< Vector3f > sceneCorners = sceneBoundingBox.corners();
+	std::vector< Vector3f > sceneAndFrustumCorners = sceneAndFrustum.corners();
 
 	for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
 	{
