@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <math/Arithmetic.h>
 #include <math/MathUtils.h>
 #include <vecmath/Quat4f.h>
 
@@ -10,123 +11,120 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-PerspectiveCamera::PerspectiveCamera( const Vector3f& vEye,
-										 const Vector3f& vCenter,
-										 const Vector3f& vUp,
-										 float fFovY, float fAspect,
-										 float fZNear, float fZFar,
-										 bool bIsInfinite )
+PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
+	float fovY, float aspect,
+	float zNear, float zFar,
+	bool zFarIsInfinite )
 {
-	setPerspective( fFovY, fAspect, fZNear, fZFar, bIsInfinite );
-	setLookAt( vEye, vCenter, vUp );
+	setPerspective( fovY, aspect, zNear, zFar, zFarIsInfinite );
+	setLookAt( eye, center, up );
 }
 
-// virtual
-//PerspectiveCamera::~PerspectiveCamera()
-//{
-
-//}
-
 void PerspectiveCamera::getPerspective( float* pfFovY, float* pfAspect,
-										 float* pfZNear, float* pfZFar,
-										 bool* pbZFarIsInfinite )
+	float* pfZNear, float* pfZFar, bool* pbZFarIsInfinite )
 {
-	*pfFovY = m_fFovY;
-	*pfAspect = m_fAspect;
+	*pfFovY = m_fovY;
+	*pfAspect = m_aspect;
 
-	*pfZNear = m_fZNear;
-	*pfZFar = m_fZFar;
+	*pfZNear = m_zNear;
+	*pfZFar = m_zFar;
 
-	if( pbZFarIsInfinite != NULL )
+	if( pbZFarIsInfinite != nullptr )
 	{
-		*pbZFarIsInfinite = m_bZFarIsInfinite;
+		*pbZFarIsInfinite = m_zFarIsInfinite;
 	}
 }
 
-void PerspectiveCamera::setPerspective( float fFovY, float fAspect,
-	float fZNear, float fZFar,
-	bool bIsInfinite )
+void PerspectiveCamera::setPerspective( float fovY, float aspect,
+	float zNear, float zFar, bool zFarIsInfinite )
 {
-	m_fFovY = fFovY;
-	m_fAspect = fAspect;
+	// store fov and aspect ratio parameters
+	m_fovY = fovY;
+	m_aspect = aspect;
 
 	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( fFovY / 2.0f );
+	float halfFovY = MathUtils::degreesToRadians( 0.5f * fovY );
 	float tanHalfFovY = tan( halfFovY );
 
-	float top = fZNear * tanHalfFovY;
+	float top = zNear * tanHalfFovY;
 	float bottom = -top;
 
 	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = fAspect * top;
+	float right = aspect * top;
 	float left = -right;
 
-	setFrustum( left, right, bottom, top, fZNear, fZFar, bIsInfinite );
+	setFrustum( left, right, bottom, top, zNear, zFar, zFarIsInfinite );
 }
 
 float PerspectiveCamera::aspect() const
 {
-	return m_fAspect;
+	return m_aspect;
 }
 
-void PerspectiveCamera::setAspect( float fAspect )
+void PerspectiveCamera::setAspect( float aspect )
 {
-	m_fAspect = fAspect;
+	m_aspect = aspect;
 
-	// HACK
+	// HACK: internally using degrees
 
 	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( m_fFovY / 2.0f );
+	float halfFovY = MathUtils::degreesToRadians( 0.5f * m_fovY );
 	float tanHalfFovY = tan( halfFovY );
 
-	float top = m_fZNear * tanHalfFovY;
+	float top = m_zNear * tanHalfFovY;
 	float bottom = -top;
 
 	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = fAspect * top;
+	float right = aspect * top;
 	float left = -right;
 
-	setFrustum( left, right, bottom, top, m_fZNear, m_fZFar, m_bZFarIsInfinite );
+	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
+}
+
+void PerspectiveCamera::setAspect( int width, int height )
+{
+	setAspect( Arithmetic::divideIntsToFloat( width, height ) );
 }
 
 float PerspectiveCamera::fovYDegrees() const
 {
-	return m_fFovY;
+	return m_fovY;
 }
 
 void PerspectiveCamera::setFovYDegrees( float fovY )
 {
-	m_fFovY = fovY;
-	// HACK
+	m_fovY = fovY;
+
+	// HACK: internally using degrees
 
 	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( m_fFovY / 2.0f );
+	float halfFovY = MathUtils::degreesToRadians( 0.5f * fovY );
 	float tanHalfFovY = tan( halfFovY );
 
-	float top = m_fZNear * tanHalfFovY;
+	float top = m_zNear * tanHalfFovY;
 	float bottom = -top;
 
 	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = m_fAspect * top;
+	float right = m_aspect * top;
 	float left = -right;
 
-	setFrustum( left, right, bottom, top, m_fZNear, m_fZFar, m_bZFarIsInfinite );
+	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
 }
 
 // virtual
 Matrix4f PerspectiveCamera::projectionMatrix() const
 {
-	if( m_bZFarIsInfinite )
+	if( m_zFarIsInfinite )
 	{
 		return Matrix4f::infinitePerspectiveProjection( m_left, m_right,
 			m_bottom, m_top,
-            m_fZNear, m_bDirectX );
+			m_zNear, m_directX );
 	}
 	else
 	{
 		return Matrix4f::perspectiveProjection( m_left, m_right,
 			m_bottom, m_top,
-			m_fZNear, m_fZFar, m_bDirectX );
+			m_zNear, m_zFar, m_zFarIsInfinite );
 	}
 }
 
@@ -192,15 +190,15 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	QTextStream outputTextStream( &outputFile );
 	outputTextStream.setCodec( "UTF-8" );
 
-	outputTextStream << "eye " << m_vEye[ 0 ] << " " << m_vEye[ 1 ] << " " << m_vEye[ 2 ] << "\n";
-	outputTextStream << "center " << m_vCenter[ 0 ] << " " << m_vCenter[ 1 ] << " " << m_vCenter[ 2 ] << "\n";
-	outputTextStream << "up " << m_vUp[ 0 ] << " " << m_vUp[ 1 ] << " " << m_vUp[ 2 ] << "\n";
-	outputTextStream << "zNear " << m_fZNear << "\n";
-	outputTextStream << "zFar " << m_fZFar << "\n";
-	outputTextStream << "zFarInfinite " << static_cast< int >( m_bZFarIsInfinite ) << "\n";
-	outputTextStream << "fovY " << m_fFovY << "\n";
-	outputTextStream << "aspect " << m_fAspect << "\n";
-	outputTextStream << "isDirectX " << static_cast< int >( m_bDirectX ) << "\n";
+	outputTextStream << "eye " << m_eye[ 0 ] << " " << m_eye[ 1 ] << " " << m_eye[ 2 ] << "\n";
+	outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
+	outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
+	outputTextStream << "zNear " << m_zNear << "\n";
+	outputTextStream << "zFar " << m_zFar << "\n";
+	outputTextStream << "zFarInfinite " << static_cast< int >( m_zFarIsInfinite ) << "\n";
+	outputTextStream << "fovY " << m_fovY << "\n";
+	outputTextStream << "aspect " << m_aspect << "\n";
+	outputTextStream << "isDirectX " << static_cast< int >( m_directX ) << "\n";
 
 	outputFile.close();
 	return true;
@@ -209,21 +207,21 @@ bool PerspectiveCamera::saveTXT( QString filename )
 // static
 PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t )
 {
-	float fov = MathUtils::cubicInterpolate( c0.m_fFovY, c1.m_fFovY, c2.m_fFovY, c3.m_fFovY, t );
-	float aspect = MathUtils::cubicInterpolate( c0.m_fAspect, c1.m_fAspect, c2.m_fAspect, c3.m_fAspect, t );
+	float fov = MathUtils::cubicInterpolate( c0.m_fovY, c1.m_fovY, c2.m_fovY, c3.m_fovY, t );
+	float aspect = MathUtils::cubicInterpolate( c0.m_aspect, c1.m_aspect, c2.m_aspect, c3.m_aspect, t );
 
-	float zNear = MathUtils::cubicInterpolate( c0.m_fZNear, c1.m_fZNear, c2.m_fZNear, c3.m_fZNear, t );
-	float zFar = MathUtils::cubicInterpolate( c0.m_fZFar, c1.m_fZFar, c2.m_fZFar, c3.m_fZFar, t );
+	float zNear = MathUtils::cubicInterpolate( c0.m_zNear, c1.m_zNear, c2.m_zNear, c3.m_zNear, t );
+	float zFar = MathUtils::cubicInterpolate( c0.m_zFar, c1.m_zFar, c2.m_zFar, c3.m_zFar, t );
 
-	bool farIsInfinite = c0.m_bZFarIsInfinite;
-	bool isDirectX = c0.m_bDirectX;
+	bool farIsInfinite = c0.m_zFarIsInfinite;
+	bool isDirectX = c0.m_directX;
 
-	Vector3f position = Vector3f::cubicInterpolate( c0.m_vEye, c1.m_vEye, c2.m_vEye, c3.m_vEye, t );
+	Vector3f position = Vector3f::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
 
-	Quat4f q0 = Quat4f::fromRotatedBasis( c0.getRight(), c0.getUp(), -( c0.getForward() ) );	
-	Quat4f q1 = Quat4f::fromRotatedBasis( c1.getRight(), c1.getUp(), -( c1.getForward() ) );	
-	Quat4f q2 = Quat4f::fromRotatedBasis( c2.getRight(), c2.getUp(), -( c2.getForward() ) );	
-	Quat4f q3 = Quat4f::fromRotatedBasis( c3.getRight(), c3.getUp(), -( c3.getForward() ) );	
+	Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );	
+	Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );	
+	Quat4f q2 = Quat4f::fromRotatedBasis( c2.right(), c2.up(), -( c2.forward() ) );	
+	Quat4f q3 = Quat4f::fromRotatedBasis( c3.right(), c3.up(), -( c3.forward() ) );	
 
 	Quat4f q = Quat4f::cubicInterpolate( q0, q1, q2, q3, t );
 
@@ -239,7 +237,7 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 		fov, aspect,
 		zNear, zFar, farIsInfinite
 	);
-	camera.m_bDirectX = isDirectX;
+	camera.m_directX = isDirectX;
 
 	return camera;
 }

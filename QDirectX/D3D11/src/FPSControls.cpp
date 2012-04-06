@@ -217,10 +217,10 @@ void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad )
 
 void FPSControls::applyTranslation( float dx, float dy, float dz )
 {
-	Vector3f eye = m_pCamera->getEye();
-	Vector3f x = m_pCamera->getRight();
-	Vector3f y = m_pCamera->getUp();
-	Vector3f z = m_pCamera->getForward();
+	Vector3f eye = m_pCamera->eye();
+	Vector3f x = m_pCamera->right();
+	Vector3f y = m_pCamera->up();
+	Vector3f z = m_pCamera->forward();
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;
@@ -239,14 +239,14 @@ void FPSControls::applyTranslation( float dx, float dy, float dz )
 
 void FPSControls::applyRotation( float yaw, float pitch )
 {
-	Matrix3f worldToCamera = m_pCamera->getViewMatrix().getSubmatrix3x3( 0, 0 );
-	Matrix3f cameraToWorld = m_pCamera->getInverseViewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f worldToCamera = m_pCamera->viewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f cameraToWorld = m_pCamera->inverseViewMatrix().getSubmatrix3x3( 0, 0 );
 
-	Vector3f eye = m_pCamera->getEye();
-	Vector3f y = m_pCamera->getUp();
-	Vector3f z = -( m_pCamera->getForward() );
+	Vector3f eye = m_pCamera->eye();
+	Vector3f y = m_pCamera->up();
+	Vector3f z = -( m_pCamera->forward() );
 
-	auto x = m_pCamera->getRight();
+	auto x = m_pCamera->right();
 
 	// pitch around the local x axis		
 	Matrix3f pitchMatrix = Matrix3f::rotateX( pitch );		
@@ -261,5 +261,5 @@ void FPSControls::applyRotation( float yaw, float pitch )
 
 	m_pCamera->setLookAt( eye, eye - z, y );
 
-	auto z2 = -( m_pCamera->getForward() );
+	auto z2 = -( m_pCamera->forward() );
 }

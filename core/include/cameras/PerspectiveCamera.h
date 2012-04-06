@@ -9,31 +9,30 @@ class PerspectiveCamera : public Camera
 {
 public:
 
-	// fFovY: field of view angle in the y direction
-	// fAspect: aspect ratio in width over height (i.e. x over y)
-	PerspectiveCamera( const Vector3f& vEye = Vector3f( 0, 0, 5 ),
-		const Vector3f& vCenter = Vector3f( 0, 0, 0 ),
-		const Vector3f& vUp = Vector3f( 0, 1, 0 ),
-		float fFovY = 50.0f, float fAspect = 1.0f,
-		float fZNear = 1.0f, float fZFar = 100.0f,
-		bool bIsInfinite = false );
+	// fovY: field of view angle in the y direction, in degrees
+	// aspect: aspect ratio in width over height (i.e. x over y)
+	PerspectiveCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
+		const Vector3f& center = Vector3f( 0, 0, 0 ),
+		const Vector3f& up = Vector3f( 0, 1, 0 ),
+		float fovY = 50.0f, float aspect = 1.0f,
+		float zNear = 1.0f, float zFar = 100.0f,
+		bool zFarIsInfinite = false );
 
-	//virtual ~GLPerspectiveCamera();
-	
 	// gets the parameters used to set this perspective camera
 	// note that these are simply the cached values
 	// the state can become *inconsistent* if GLCamera::setFrustum()
 	// calls are made
 	void getPerspective( float* pfFovY, float* pfAspect,
 		float* pfZNear, float* pfZFar,
-		bool* pbZFarIsInfinite = NULL );
+		bool* pbZFarIsInfinite = nullptr );
 
-	void setPerspective( float fFovY = 45.0f, float fAspect = 1.0f,
-		float fZNear = 1.0f, float fZFar = 100.0f,
-		bool bIsInfinite = false );
+	void setPerspective( float fovY = 50.0f, float aspect = 1.0f,
+		float zNear = 1.0f, float zFar = 100.0f,
+		bool zFarIsInfinite = false );
 
 	float aspect() const;
-	void setAspect( float fAspect );
+	void setAspect( float aspect );
+	void setAspect( int width, int height );
 
 	// TODO: switch to storing radians internally
 	//float fovYRadians() const;
@@ -51,8 +50,8 @@ public:
 
 private:
 
-	float m_fFovY;
-	float m_fAspect;
+	float m_fovY;
+	float m_aspect;
 
 };
 

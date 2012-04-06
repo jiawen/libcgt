@@ -14,98 +14,96 @@ class Camera
 public:
 
 	// Initializes to a camera at (0, 0, 5) looking at (0, 0, 0)
-	// with zNear = 1, zFar = 100, an FOV of 50 degrees and an aspect ratio
-	// of 50 degrees
-	Camera( const Vector3f& vEye = Vector3f( 0, 0, 5 ),
-		const Vector3f& vCenter = Vector3f( 0, 0, 0 ),
-		const Vector3f& vUp = Vector3f( 0, 1, 0 ),
-		float fLeft = -0.46630767, float fRight = 0.46630767,
-		float fBottom = -0.46630767, float fTop = 0.46630767,
-		float fZNear = 1.0f, float fZFar = 100.0f,
-		bool bIsInfinite = false );
+	// with zNear = 1, zFar = 100, an FoV of 50 degrees and an aspect ratio	of 1:1
+	Camera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
+		const Vector3f& center = Vector3f( 0, 0, 0 ),
+		const Vector3f& up = Vector3f( 0, 1, 0 ),
+		float left = -0.46630767f, float right = 0.46630767f,
+		float bottom = -0.46630767f, float top = 0.46630767f,
+		float zNear = 1.0f, float zFar = 100.0f, bool zFarIsInfinite = false );
 
     void setDirectX( bool directX );
 
 	void getFrustum( float* pfLeft, float* pfRight,
 		float* pfBottom, float* pfTop,
 		float* pfZNear, float* pfZFar,
-		bool* pbZFarIsInfinite = NULL ) const;
+		bool* pbZFarIsInfinite = nullptr ) const;
 
-	std::vector< Vector3f > getFrustumCorners() const;
+	// return the 8 corners of the camera frustum
+	std::vector< Vector3f > frustumCorners() const;
 
 	bool isZFarInfinite();
 
 	void setFrustum( float left, float right,
 		float bottom, float top,
 		float zNear, float zFar,
-		bool bZFarIsInfinite = false );
+		bool zFarIsInfinite = false );
 
-	void getLookAt( Vector3f* pvEye, Vector3f* pvCenter, Vector3f* pvUp ) const;
+	void getLookAt( Vector3f* pEye, Vector3f* pCenter, Vector3f* pUp ) const;
 
-	void setLookAt( const Vector3f& vEye,
-		const Vector3f& vCenter,
-		const Vector3f& vUp );
+	// up should be of unit length
+	void setLookAt( const Vector3f& eye,
+		const Vector3f& center,
+		const Vector3f& up );
 
-    Vector3f getEye() const { return m_vEye; }
-	Vector3f getCenter() const { return m_vCenter; }
+    Vector3f eye() const { return m_eye; }
+	void setEye( const Vector3f& eye );
 
-	void setEye( const Vector3f& vEye );
-	void setCenter( const Vector3f& vCenter );
-	void setUp( const Vector3f& vUp );
-
-	void setForward( const Vector3f& forward );
+	Vector3f center() const { return m_center; }
+	void setCenter( const Vector3f& center );
 
 	// return the "up" unit vector
-	// "up" is recomputed to guarantee that up, right, and forward
-	// form an orthonormal basis
-	Vector3f getUp() const;
-
-	// return the "right" unit vector
-	Vector3f getRight() const;
+	Vector3f up() const;
+	void setUp( const Vector3f& up );
 
 	// return the "forward" unit vector
-	Vector3f getForward() const;
+	Vector3f forward() const;
+	void setForward( const Vector3f& forward );
+
+	// return the "right" unit vector (forward cross up)
+	Vector3f right() const;	
 	
-	float getZNear() const;
+	float zNear() const;
 	void setZNear( float zNear );
 
-	float getZFar() const;
+	float zFar() const;
 	void setZFar( float zFar );
 
 	virtual Matrix4f projectionMatrix() const = 0;
 
 	// returns the projection matrix P such that
-	// the plane at a distance fFocusZ in front of the center of the lens
+	// the plane at a distance focusZ in front of the center of the lens
 	// is kept constant while the eye has been moved
-	// by (fEyeX, fEyeY) *in the plane of the lens*
-	// i.e. fEyeX is in the direction of getRight()
-	// and fEyeY is in the direction of getUp()
-	Matrix4f getJitteredProjectionMatrix( float fEyeX, float fEyeY, float fFocusZ ) const;
+	// by (eyeX, eyeY) *in the plane of the lens*
+	// i.e. eyeX is in the direction of right()
+	// and eyeY is in the direction of up()
+	Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
 
-	Matrix4f getViewMatrix() const;
+	Matrix4f viewMatrix() const;
 
 	// returns the view matrix V such that
 	// the eye has been moved by (fEyeX, fEyeY)
 	// *in the plane of the lens*
-	// i.e. fEyeX is in the direction of getRight()
-	// and fEyeY is in the direction of getUp()
-	Matrix4f getJitteredViewMatrix( float fEyeX, float fEyeY ) const;
+	// i.e. eyeX is in the direction of getRight()
+	// and eyeY is in the direction of getUp()
+	Matrix4f jitteredViewMatrix( float eyeX, float eyeY ) const;
 
-	Matrix4f getViewProjectionMatrix() const;
+	// equivalent to viewMatrix() * projectionMatrix()
+	Matrix4f viewProjectionMatrix() const;
 	
-	// equivalent to getJitteredProjectionMatrix() * getJitteredViewMatrix()
-	Matrix4f getJitteredViewProjectionMatrix( float fEyeX, float fEyeY, float fFocusZ ) const;
+	// equivalent to jitteredProjectionMatrix() * jitteredViewMatrix()
+	Matrix4f jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
 
-	Matrix4f getInverseProjectionMatrix() const;
-	Matrix4f getInverseViewMatrix() const;
-	Matrix4f getInverseViewProjectionMatrix() const;
+	Matrix4f inverseProjectionMatrix() const;
+	Matrix4f inverseViewMatrix() const;
+	Matrix4f inverseViewProjectionMatrix() const;
 
 	//static Camera lerp( const Camera& a, const Camera& b, float t );
 	//static Camera cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t );
 
 	// given a 2D pixel (x,y) on a screen of size screenSize
 	// returns a 3D ray direction
-	// (call getEye() to get the ray origin)
+	// (call eye() to get the ray origin)
 	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize );
 
 	// Given a point in the world and a screen of size screenSize
@@ -120,13 +118,13 @@ protected:
 	float m_top;
 	float m_bottom;
 
-	float m_fZNear;
-	float m_fZFar;
-	bool m_bZFarIsInfinite;
+	float m_zNear;
+	float m_zFar;
+	bool m_zFarIsInfinite;
 
-	Vector3f m_vEye;
-	Vector3f m_vCenter;
-	Vector3f m_vUp;
+	Vector3f m_eye;
+	Vector3f m_center;
+	Vector3f m_up;
 
-    bool m_bDirectX; // if the matrices are constructed for DirectX or OpenGL
+    bool m_directX; // if the matrices are constructed for DirectX or OpenGL
 };

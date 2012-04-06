@@ -190,13 +190,13 @@ void QD3D11MultiViewportViewer::mouseMoveEvent( QMouseEvent* event )
 	const float panSpeed = 0.005f;
 	const float walkSpeed = -0.005f;
 
-	Matrix3f worldToCamera = m_perspectiveCamera.getViewMatrix().getSubmatrix3x3( 0, 0 );
-	Matrix3f cameraToWorld = m_perspectiveCamera.getInverseViewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f worldToCamera = m_perspectiveCamera.viewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f cameraToWorld = m_perspectiveCamera.inverseViewMatrix().getSubmatrix3x3( 0, 0 );
 	
-	Vector3f eye = m_perspectiveCamera.getEye();
-	Vector3f x = m_perspectiveCamera.getRight();
-	Vector3f y = m_perspectiveCamera.getUp();
-	Vector3f z = m_perspectiveCamera.getForward();
+	Vector3f eye = m_perspectiveCamera.eye();
+	Vector3f x = m_perspectiveCamera.right();
+	Vector3f y = m_perspectiveCamera.up();
+	Vector3f z = m_perspectiveCamera.forward();
 
 	// rotate
 	if( event->buttons() == Qt::LeftButton )
@@ -311,10 +311,10 @@ void QD3D11MultiViewportViewer::resizeD3D( int width, int height )
 
 void QD3D11MultiViewportViewer::translate( float dx, float dy, float dz )
 {
-	Vector3f eye = m_perspectiveCamera.getEye();
-	Vector3f x = m_perspectiveCamera.getRight();
-	Vector3f y = m_perspectiveCamera.getUp();
-	Vector3f z = m_perspectiveCamera.getForward();
+	Vector3f eye = m_perspectiveCamera.eye();
+	Vector3f x = m_perspectiveCamera.right();
+	Vector3f y = m_perspectiveCamera.up();
+	Vector3f z = m_perspectiveCamera.forward();
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;

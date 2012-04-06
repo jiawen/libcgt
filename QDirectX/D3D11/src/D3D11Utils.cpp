@@ -64,9 +64,9 @@ std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool nor
 	Vector4f positions[ 8 ];
 	for( int i = 0; i < 8; ++i )
 	{
-		positions[ i ][ 0 ] = ( i & 0x1 )? 1 : 0;
-		positions[ i ][ 1 ] = ( i & 0x2 )? 1 : 0;
-		positions[ i ][ 2 ] = ( i & 0x4 )? 1 : 0;
+		positions[ i ][ 0 ] = ( i & 0x1 ) ? 1 : 0;
+		positions[ i ][ 1 ] = ( i & 0x2 ) ? 1 : 0;
+		positions[ i ][ 2 ] = ( i & 0x4 ) ? 1 : 0;
 		positions[ i ][ 3 ] = 1;
 	}
 

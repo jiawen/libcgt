@@ -27,8 +27,8 @@ void OrthographicCamera::getOrtho( float* pLeft, float* pRight, float* pBottom, 
 	*pRight = m_right;
 	*pBottom = m_bottom;
 	*pTop = m_top;
-	*pZNear = m_fZNear;
-	*pZFar = m_fZFar;
+	*pZNear = m_zNear;
+	*pZFar = m_zFar;
 }
 
 void OrthographicCamera::setOrtho( float left, float right, float bottom, float top, float zNear, float zFar )
@@ -43,8 +43,8 @@ Matrix4f OrthographicCamera::projectionMatrix() const
 	(
 		m_left, m_right,
 		m_bottom, m_top,
-		m_fZNear, m_fZFar,
-		m_bDirectX
+		m_zNear, m_zFar,
+		m_directX
 	);
 }
 
@@ -61,15 +61,15 @@ bool OrthographicCamera::saveTXT( QString filename )
 	QTextStream outputTextStream( &outputFile );
 	outputTextStream.setCodec( "UTF-8" );
 
-	outputTextStream << "eye " << m_vEye[ 0 ] << " " << m_vEye[ 1 ] << " " << m_vEye[ 2 ] << "\n";
-	outputTextStream << "center " << m_vCenter[ 0 ] << " " << m_vCenter[ 1 ] << " " << m_vCenter[ 2 ] << "\n";
-	outputTextStream << "up " << m_vUp[ 0 ] << " " << m_vUp[ 1 ] << " " << m_vUp[ 2 ] << "\n";
+	outputTextStream << "eye " << m_eye[ 0 ] << " " << m_eye[ 1 ] << " " << m_eye[ 2 ] << "\n";
+	outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
+	outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
 	outputTextStream << "left " << m_left << "\n";
 	outputTextStream << "right " << m_right << "\n";
 	outputTextStream << "bottom " << m_bottom << "\n";
 	outputTextStream << "top " << m_top << "\n";
-	outputTextStream << "zNear " << m_fZNear << "\n";
-	outputTextStream << "zFar " << m_fZFar << "\n";	
+	outputTextStream << "zNear " << m_zNear << "\n";
+	outputTextStream << "zFar " << m_zFar << "\n";	
 
 	outputFile.close();
 	return true;

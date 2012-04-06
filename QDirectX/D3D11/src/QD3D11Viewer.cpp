@@ -182,13 +182,13 @@ void QD3D11Viewer::mouseMoveEvent( QMouseEvent* event )
 	const float panSpeed = 0.005f;
 	const float walkSpeed = -0.005f;
 
-	Matrix3f worldToCamera = m_camera.getViewMatrix().getSubmatrix3x3( 0, 0 );
-	Matrix3f cameraToWorld = m_camera.getInverseViewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f worldToCamera = m_camera.viewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f cameraToWorld = m_camera.inverseViewMatrix().getSubmatrix3x3( 0, 0 );
 	
-	Vector3f eye = m_camera.getEye();
-	Vector3f x = m_camera.getRight();
-	Vector3f y = m_camera.getUp();
-	Vector3f z = m_camera.getForward();
+	Vector3f eye = m_camera.eye();
+	Vector3f x = m_camera.right();
+	Vector3f y = m_camera.up();
+	Vector3f z = m_camera.forward();
 
 	// rotate
 	if( event->buttons() == Qt::LeftButton )
@@ -297,10 +297,10 @@ void QD3D11Viewer::resizeD3D( int width, int height )
 
 void QD3D11Viewer::translate( float dx, float dy, float dz )
 {
-	Vector3f eye = m_camera.getEye();
-	Vector3f x = m_camera.getRight();
-	Vector3f y = m_camera.getUp();
-	Vector3f z = m_camera.getForward();
+	Vector3f eye = m_camera.eye();
+	Vector3f x = m_camera.right();
+	Vector3f y = m_camera.up();
+	Vector3f z = m_camera.forward();
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;

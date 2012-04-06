@@ -33,7 +33,7 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fColor4fText
 {
 	m_pDevice->AddRef();
 
-	memcpy( &( m_vertexArray[ 0 ] ), vertexArray, capacity * VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() );
+	memcpy( m_vertexArray.data(), vertexArray, capacity * VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() );
 	updateGPUBuffer();
 	updateBoundingBox();
 }
