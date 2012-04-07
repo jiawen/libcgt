@@ -16,15 +16,23 @@ public:
 	OBJData();
 	virtual ~OBJData();
 
+	// Data cleanup
+	void removeEmptyGroups();
+
+	// TODO: consolidateNormalsWithPositions (to use a single index buffer)
+
 	QVector< Vector3f >* getPositions();
 	QVector< Vector2f >* getTextureCoordinates();
-	QVector< Vector3f >* getNormals();
+	QVector< Vector3f >* getNormals();	
 
 	QVector< OBJGroup* >* getGroups();
 	QHash< QString, OBJGroup* >* getGroupsByName();
 
 	// adds a group and returns a pointer to the group
 	OBJGroup* addGroup( QString groupName );
+
+	// removes the i-th group
+	void removeGroupByIndex( int i );
 
 	// returns a pointer to the group if it exists
 	// returns nullptr otherwise

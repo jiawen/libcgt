@@ -131,7 +131,7 @@ bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 
 		++lineNumber;
 		line = inputTextStream.readLine();
-	}
+	}	
 
 	return true;
 }

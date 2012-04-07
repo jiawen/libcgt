@@ -42,6 +42,28 @@ QVector< OBJGroup* >* OBJData::getGroups()
 	return &m_groups;
 }
 
+void OBJData::removeEmptyGroups()
+{
+	QVector< OBJGroup* >* pGroups = getGroups();
+	QVector< int > removeList;
+	for( int i = 0; i < pGroups->size(); ++i )
+	{
+		if( pGroups->at( i )->numFaces() == 0 )
+		{
+			removeList.append( i );
+		}
+	}
+
+	// count how many were shifted over
+	int nRemoved = 0;
+	for( int i = 0; i < removeList.size(); ++i )
+	{
+		int groupIndex = removeList[i];
+		int offsetGroupIndex = groupIndex - nRemoved;
+		removeGroupByIndex( offsetGroupIndex );
+	}
+}
+
 QHash< QString, OBJGroup* >* OBJData::getGroupsByName()
 {
 	return &m_groupsByName;
@@ -56,6 +78,17 @@ OBJGroup* OBJData::addGroup( QString name )
 	}
 
 	return m_groupsByName[ name ];
+}
+
+void OBJData::removeGroupByIndex( int i )
+{
+	if( i < m_groups.size() )
+	{
+		OBJGroup* pGroup = m_groups[i];		
+		m_groups.remove( i );
+		m_groupsByName.remove( pGroup->name() );
+		delete pGroup;
+	}
 }
 
 OBJGroup* OBJData::getGroupByName( QString name )

@@ -1,5 +1,4 @@
-#ifndef QUAT4F_H
-#define QUAT4F_H
+#pragma once
 
 class Vector3f;
 class Vector4f;
@@ -70,10 +69,12 @@ public:
 	// spherical linear interpolation
 	static Quat4f slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip = true );
 	
-	// spherical quadratic interoplation between a and b at point t
+	// spherical quadratic interpolation between a and b at point t
 	// given quaternion tangents tanA and tanB (can be computed using squadTangent)	
 	static Quat4f squad( const Quat4f& a, const Quat4f& tanA, const Quat4f& tanB, const Quat4f& b, float t );
 
+	// spherical cubic interpolation: given control points q[i] and parameter t
+	// computes the interpolated quaternion
 	static Quat4f cubicInterpolate( const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3, float t );
 
 	// Log-difference between a and b, used for squadTangent
@@ -84,8 +85,12 @@ public:
 	// Useful for squad()
 	static Quat4f squadTangent( const Quat4f& before, const Quat4f& center, const Quat4f& after );		
 
+	// Given a rotation matrix m, returns its unit quaternion representation
 	static Quat4f fromRotationMatrix( const Matrix3f& m );
 
+	// Given an orthonormal basis of R^3 x, y, and z = x cross y
+	// Converts it into the rotation matrix m = [ x y z ]
+	// and returns its unit quaternion representation
 	static Quat4f fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vector3f& z );
 
 	// returns a unit quaternion that's a uniformly distributed rotation
@@ -117,5 +122,3 @@ Quat4f operator - ( const Quat4f& q0, const Quat4f& q1 );
 Quat4f operator * ( const Quat4f& q0, const Quat4f& q1 );
 Quat4f operator * ( float f, const Quat4f& q );
 Quat4f operator * ( const Quat4f& q, float f );
-
-#endif // QUAT4F_H
