@@ -231,10 +231,10 @@ Matrix4f Camera::viewProjectionMatrix() const
 Matrix4f Camera::jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
 {
 	return
-		(
-			jitteredProjectionMatrix( eyeX, eyeY, focusZ ) *
-			jitteredViewMatrix( eyeX, eyeY )
-		);
+	(
+		jitteredProjectionMatrix( eyeX, eyeY, focusZ ) *
+		jitteredViewMatrix( eyeX, eyeY )
+	);
 }
 
 Matrix4f Camera::inverseProjectionMatrix() const
@@ -275,89 +275,12 @@ Vector3f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenS
 	float sx = screenSize.x * 0.5f * ( ndc.x + 1.0f );
 	float sy = screenSize.y * 0.5f * ( ndc.y + 1.0f );
 
-	// OpenGL:
-	// float sz = 0.5f * ( ndc.z + 1.0f );
+	// TODO: if( directX )
+	//	float sz = ndc.z
+	// else // OpenGL:
+	//	float sz = 0.5f * ( ndc.z + 1.0f );
 	float sz = ndc.z;
 	// float w = clip.w?
 
 	return Vector3f( sx, sy, sz );
 }
-
-#if 0
-// static
-Camera Camera::lerp( const Camera& a, const Camera& b, float t )
-{
-	float left = MathUtils::lerp( a.m_left, b.m_left, t );
-	float right = MathUtils::lerp( a.m_right, b.m_right, t );
-
-	float top = MathUtils::lerp( a.m_top, b.m_top, t );
-	float bottom = MathUtils::lerp( a.m_bottom, b.m_bottom, t );
-
-	float zNear = MathUtils::lerp( a.m_zNear, b.m_zNear, t );
-	float zFar = MathUtils::lerp( a.m_zFar, b.m_zFar, t );
-
-	bool farIsInfinite = a.m_zFarIsInfinite;
-	bool isDirectX = a.m_directX;
-
-	Vector3f position = Vector3f::lerp( a.m_eye, b.m_eye, t );
-	
-	Quat4f qA = Quat4f::fromRotatedBasis( a.right(), a.up(), -( a.forward() ) );
-	Quat4f qB = Quat4f::fromRotatedBasis( b.right(), b.up(), -( b.forward() ) );
-	Quat4f q = Quat4f::slerp( qA, qB, t );
-
-	Vector3f x = q.rotateVector( Vector3f::RIGHT );
-	Vector3f y = q.rotateVector( Vector3f::UP );
-	Vector3f z = q.rotateVector( -Vector3f::FORWARD );
-
-	Vector3f center = position - z;
-
-	Camera camera
-	(
-		position, center, y,
-		left, right, bottom, top, zNear, zFar, farIsInfinite
-	);
-	camera.m_directX = isDirectX;
-
-	return camera;
-}
-
-// static
-Camera Camera::cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t )
-{
-	float left = MathUtils::cubicInterpolate( c0.m_left, c1.m_left, c2.m_left, c3.m_left, t );
-	float right = MathUtils::cubicInterpolate( c0.m_right, c1.m_right, c2.m_right, c3.m_right, t );
-
-	float top = MathUtils::cubicInterpolate( c0.m_top, c1.m_top, c2.m_top, c3.m_top, t );
-	float bottom = MathUtils::cubicInterpolate( c0.m_bottom, c1.m_bottom, c2.m_bottom, c3.m_bottom, t );
-
-	float zNear = MathUtils::cubicInterpolate( c0.m_zNear, c1.m_zNear, c2.m_zNear, c3.m_zNear, t );
-	float zFar = MathUtils::cubicInterpolate( c0.m_zFar, c1.m_zFar, c2.m_zFar, c3.m_zFar, t );
-
-	bool farIsInfinite = c0.m_zFarIsInfinite;
-	bool isDirectX = c0.m_directX;
-
-	Vector3f position = Vector3f::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
-
-	Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );	
-	Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );	
-	Quat4f q2 = Quat4f::fromRotatedBasis( c2.right(), c2.up(), -( c2.forward() ) );	
-	Quat4f q3 = Quat4f::fromRotatedBasis( c3.right(), c3.up(), -( c3.forward() ) );	
-
-	Quat4f q = Quat4f::cubicInterpolate( q0, q1, q2, q3, t );
-
-	Vector3f x = q.rotateVector( Vector3f::RIGHT );
-	Vector3f y = q.rotateVector( Vector3f::UP );
-	Vector3f z = q.rotateVector( -Vector3f::FORWARD );
-
-	Vector3f center = position - z;
-
-	Camera camera
-	(
-		position, center, y,
-		left, right, bottom, top, zNear, zFar, farIsInfinite
-	);
-	camera.m_directX = isDirectX;
-
-	return camera;
-}
-#endif

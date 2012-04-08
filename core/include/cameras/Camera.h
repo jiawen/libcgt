@@ -98,9 +98,6 @@ public:
 	Matrix4f inverseViewMatrix() const;
 	Matrix4f inverseViewProjectionMatrix() const;
 
-	//static Camera lerp( const Camera& a, const Camera& b, float t );
-	//static Camera cubicInterpolate( const Camera& c0, const Camera& c1, const Camera& c2, const Camera& c3, float t );
-
 	// given a 2D pixel (x,y) on a screen of size screenSize
 	// returns a 3D ray direction
 	// (call eye() to get the ray origin)

@@ -205,6 +205,42 @@ bool PerspectiveCamera::saveTXT( QString filename )
 }
 
 // static
+PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t )
+{
+	float fov = MathUtils::lerp( c0.m_fovY, c1.m_fovY, t );
+	float aspect = MathUtils::lerp( c0.m_aspect, c1.m_aspect, t );
+
+	float zNear = MathUtils::lerp( c0.m_zNear, c1.m_zNear, t );
+	float zFar = MathUtils::lerp( c0.m_zFar, c1.m_zFar, t );
+
+	bool farIsInfinite = c0.m_zFarIsInfinite;
+	bool isDirectX = c0.m_directX;
+
+	Vector3f position = Vector3f::lerp( c0.m_eye, c1.m_eye, t );
+
+	Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );	
+	Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );	
+	Quat4f q = Quat4f::slerp( q0, q1, t );
+
+	Vector3f x = q.rotateVector( Vector3f::RIGHT );
+	Vector3f y = q.rotateVector( Vector3f::UP );
+	Vector3f z = q.rotateVector( -Vector3f::FORWARD );
+
+	Vector3f center = position - z;
+
+	PerspectiveCamera camera
+	(
+		position, center, y,
+		fov, aspect,
+		zNear, zFar, farIsInfinite
+	);
+	camera.m_directX = isDirectX;
+
+	return camera;
+}
+
+
+// static
 PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t )
 {
 	float fov = MathUtils::cubicInterpolate( c0.m_fovY, c1.m_fovY, c2.m_fovY, c3.m_fovY, t );

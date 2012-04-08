@@ -39,7 +39,6 @@ public:
 	// a [snorm] float in [-1,1]
 	static float signedByteToFloatNormalized( sbyte sb );
 
-	// TODO: rename these linearRemap
 	static float rescaleFloatToFloat( float value,
 		float inputMin, float inputMax,
 		float outputMin, float outputMax );
@@ -57,7 +56,7 @@ public:
 		int outMin, int outMax );
 	
 	template< typename T >
-	static T lerp( T x, T y, float t )
+	static T lerp( const T& x, const T& y, float t )
 	{
 		return( x + t * ( y - x ) );
 	}
@@ -71,14 +70,6 @@ public:
 	// 1/x, returns 0 if x=0
 	static inline float oo_0( float x );
 	static inline double oo_0( double x );
-
-#if 0
-	template< typename T >
-	static inline T min( T a, T b ) { return a < b ? a : b; }
-
-	template< typename T >
-	static inline T max( T a, T b ) { return a < b ? b : a; }
-#endif
 
 private:
 
