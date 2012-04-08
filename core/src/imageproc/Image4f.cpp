@@ -75,16 +75,6 @@ Image4f::Image4f( const Image4f& copy ) :
 
 }
 
-Image4f::Image4f( Reference< Image4f > copy ) :
-
-	m_width( copy->m_width ),
-	m_height( copy->m_height ),
-	m_data( copy->m_data )
-
-{
-
-}
-
 bool Image4f::isNull() const
 {
 	return( m_width <= 0 || m_height <= 0 );
@@ -105,14 +95,24 @@ Vector2i Image4f::size() const
 	return Vector2i( m_width, m_height );
 }
 
+const float* Image4f::pixels() const
+{
+	return m_data;
+}
+
 float* Image4f::pixels()
 {
-	return m_data.getRowPointer( 0 );
+	return m_data;
 }
 
 Vector4f* Image4f::pixelsVector4f()
 {
 	return reinterpret_cast< Vector4f* >( pixels() );
+}
+
+float* Image4f::rowPointer( int y )
+{
+	return m_data.getRowPointer( y );
 }
 
 Vector4f Image4f::pixel( int x, int y ) const

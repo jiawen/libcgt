@@ -32,7 +32,8 @@ public:
 
 	T* getRowPointer( int y ) const;
 
-	operator T* () const;
+	operator T* ();
+	operator const T* () const;
 
 	T operator () ( int k ) const; // read
 	T& operator () ( int k ); // write
@@ -189,7 +190,13 @@ T* Array2D< T >::getRowPointer( int y ) const
 }
 
 template< typename T >
-Array2D< T >::operator T* () const
+Array2D< T >::operator T* ()
+{
+	return m_array;
+}
+
+template< typename T >
+Array2D< T >::operator const T* () const
 {
 	return m_array;
 }

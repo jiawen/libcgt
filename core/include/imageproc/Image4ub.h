@@ -6,7 +6,7 @@
 #include <QtGlobal>
 #include <QVector>
 
-#include "common/Reference.h"
+#include "common/BasicTypes.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector4i.h"
 
@@ -28,7 +28,6 @@ public:
 	Image4ub( const Vector2i& size, const Vector4i& fill = Vector4i( 0, 0, 0, 0 ) );
 
 	Image4ub( const Image4ub& copy );
-	Image4ub( Reference< Image4ub > copy );
 
 	bool isNull() const;
 
@@ -36,13 +35,13 @@ public:
 	int height() const;
 	Vector2i size() const;
 
-	const quint8* pixels() const;
-	quint8* pixels();
-	quint8* rowPointer( int y );	
+	const ubyte* pixels() const;
+	ubyte* pixels();
+	ubyte* rowPointer( int y );	
 
 	// fill the channel-th channel with value
 	// channel is 0, 1, 2 or 3
-	void fillChannel( int channel, quint8 value );
+	void fillChannel( int channel, ubyte value );
 
 	Vector4i pixel( int x, int y ) const;
 	Vector4i pixel( const Vector2i& xy ) const;

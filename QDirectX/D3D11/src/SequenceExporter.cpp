@@ -83,8 +83,11 @@ void SequenceExporter::endFrame()
 	{
 		int yy = m_height - y - 1;
 
-		ubyte* sourceRow = &( sourceData[ y * mt.RowPitch ] );
+		ubyte* srcRow = &( sourceData[ y * mt.RowPitch ] );
+		ubyte* dstRow = m_image.rowPointer( yy );
+		memcpy( dstRow, srcRow, 4 * m_width );
 
+		/*
 		for( int x = 0; x < m_width; ++x )
 		{
 			ubyte r = sourceRow[ 4 * x ];
@@ -93,6 +96,7 @@ void SequenceExporter::endFrame()
 			ubyte a = sourceRow[ 4 * x + 3 ];
 			m_image.setPixel( x, yy, Vector4i( r, g, b, a ) );
 		}
+		*/
 	}
 	m_pStagingTexture->unmap();
 

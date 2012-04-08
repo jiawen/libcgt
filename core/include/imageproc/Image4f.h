@@ -5,7 +5,6 @@
 #include <QString>
 #include <QVector>
 
-#include <common/Reference.h>
 #include <common/Array2D.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector2f.h>
@@ -25,8 +24,7 @@ public:
 	Image4f( int width, int height, const Vector4f& fill = Vector4f( 0, 0, 0, 0 ) );
 	Image4f( const Vector2i& size, const Vector4f& fill = Vector4f( 0, 0, 0, 0 ) );
 	
-	Image4f( const Image4f& copy );
-	Image4f( Reference< Image4f > copy );
+	Image4f( const Image4f& copy );	
 
 	bool isNull() const;
 
@@ -34,8 +32,11 @@ public:
 	int height() const;
 	Vector2i size() const;
 
+	const float* pixels() const;
 	float* pixels();
 	Vector4f* pixelsVector4f();
+
+	float* rowPointer( int y );
 
 	Vector4f pixel( int x, int y ) const;
 	Vector4f pixel( const Vector2i& xy ) const;

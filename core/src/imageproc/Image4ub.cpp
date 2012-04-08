@@ -77,16 +77,6 @@ Image4ub::Image4ub( const Image4ub& copy ) :
 
 }
 
-Image4ub::Image4ub( Reference< Image4ub > copy ) :
-
-	m_width( copy->m_width ),
-	m_height( copy->m_height ),
-	m_data( copy->m_data )
-
-{
-
-}
-
 bool Image4ub::isNull() const
 {
 	return( m_width <= 0 || m_height <= 0 );
@@ -107,28 +97,29 @@ Vector2i Image4ub::size() const
 	return Vector2i( m_width, m_height );
 }
 
-const quint8* Image4ub::pixels() const
+const ubyte* Image4ub::pixels() const
 {
 	return m_data.constData();
 }
 
-quint8* Image4ub::pixels()
+ubyte* Image4ub::pixels()
 {
 	return m_data.data();
 }
 
-quint8* Image4ub::rowPointer( int y )
+ubyte* Image4ub::rowPointer( int y )
 {
-	quint8* p = m_data.data();
-	quint8* pRowPointer = &( p[ 4 * y * m_width ] );
+	ubyte* p = m_data.data();
+	ubyte* pRowPointer = &( p[ 4 * y * m_width ] );
 	return pRowPointer;
 }
 
-void Image4ub::fillChannel( int channel, quint8 value )
+void Image4ub::fillChannel( int channel, ubyte value )
 {
 	quint8* p = m_data.data();
 	int nBytes = 4 * m_width * m_height;
 
+	// TODO: use memset()
 	for( int k = channel; k < nBytes; k += 4 )
 	{
 		p[k] = value;
