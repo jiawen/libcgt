@@ -33,11 +33,12 @@ public:
 
 	static D3D11_VIEWPORT createViewport( int width, int height );
 	static D3D11_VIEWPORT createViewport( const Vector2i& wh );
-	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin, float zMax );
+	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin = 0, float zMax = 1 );
 
 	// creates a unit box [0,1]^3
 	static std::vector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
 
+	// TODO: move these into its own class
 	template< typename T >
 	static ID3D11InputLayout* createInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
 	{
@@ -46,6 +47,39 @@ public:
 		D3DX11_PASS_DESC passDesc;
 		pPass->GetDesc( &passDesc );
 		HRESULT hr = pDevice->CreateInputLayout( T::s_layout, T::numElements(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
+		if( SUCCEEDED( hr ) )
+		{
+			return pInputLayout;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+	
+	template< typename TVertex, typename TInstance >
+	static ID3D11InputLayout* createInstancedInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
+	{
+		ID3D11InputLayout* pInputLayout;
+
+		D3DX11_PASS_DESC passDesc;
+		pPass->GetDesc( &passDesc );
+
+		// merge the input layouts
+		int nVertexElements = TVertex::numElements();
+		int nInstanceElements = TInstance::numElements();
+
+		std::vector< D3D11_INPUT_ELEMENT_DESC > layout( nVertexElements + nInstanceElements );
+		for( int i = 0; i < nVertexElements; ++i )
+		{
+			layout[i] = TVertex::s_layout[i];
+		}
+		for( int j = 0; j < nInstanceElements; ++j )
+		{
+			layout[ nVertexElements + j ] = TInstance::s_defaultInstanceLayout[j];
+		}
+
+		HRESULT hr = pDevice->CreateInputLayout( layout.data(), layout.size(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
 		if( SUCCEEDED( hr ) )
 		{
 			return pInputLayout;

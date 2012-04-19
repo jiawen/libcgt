@@ -6,6 +6,7 @@
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix4f.h>
+#include <vecmath/Rect2f.h>
 
 class BoundingBox3f;
 
@@ -20,7 +21,8 @@ public:
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
 		float left = -0.46630767f, float right = 0.46630767f,
 		float bottom = -0.46630767f, float top = 0.46630767f,
-		float zNear = 1.0f, float zFar = 100.0f, bool zFarIsInfinite = false );
+		float zNear = 1.0f, float zFar = 100.0f, bool zFarIsInfinite = false,
+		bool isDirectX = true );
 
     void setDirectX( bool directX );
 
@@ -102,6 +104,9 @@ public:
 	// returns a 3D ray direction
 	// (call eye() to get the ray origin)
 	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize );
+
+	// xy and viewport are in pixel coordinates
+	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport );
 
 	// Given a point in the world and a screen of size screenSize
 	// returns the 2D pixel coordinate (along with the nonlinear Z)

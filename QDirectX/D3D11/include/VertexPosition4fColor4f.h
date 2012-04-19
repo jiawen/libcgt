@@ -1,5 +1,4 @@
-#ifndef VERTEX_POSITION4F_COLOR4F_H
-#define VERTEX_POSITION4F_COLOR4F_H
+#pragma once
 
 #include <D3D11.h>
 #include <vecmath/Vector3f.h>
@@ -18,7 +17,5 @@ struct VertexPosition4fColor4f
 
 	static int numElements();
 	static int sizeInBytes();
-	static D3D11_INPUT_ELEMENT_DESC s_layout[];
+	static const D3D11_INPUT_ELEMENT_DESC s_layout[];
 };
-
-#endif // VERTEX_POSITION4F_COLOR4F_H

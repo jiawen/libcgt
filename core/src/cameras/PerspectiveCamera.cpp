@@ -14,10 +14,12 @@
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
 	float fovY, float aspect,
 	float zNear, float zFar,
-	bool zFarIsInfinite )
+	bool zFarIsInfinite,
+	bool isDirectX )
 {
 	setPerspective( fovY, aspect, zNear, zFar, zFarIsInfinite );
 	setLookAt( eye, center, up );
+	setDirectX( isDirectX );
 }
 
 void PerspectiveCamera::getPerspective( float* pfFovY, float* pfAspect,

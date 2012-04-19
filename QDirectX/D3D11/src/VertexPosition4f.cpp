@@ -30,7 +30,13 @@ int VertexPosition4f::sizeInBytes()
 }
 
 // static
-D3D11_INPUT_ELEMENT_DESC VertexPosition4f::s_layout[] =
+const D3D11_INPUT_ELEMENT_DESC VertexPosition4f::s_layout[] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+};
+
+// static
+const D3D11_INPUT_ELEMENT_DESC VertexPosition4f::s_defaultInstanceLayout[] =
+{
+	{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
 };

@@ -12,6 +12,7 @@
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector4f.h"
+#include "vecmath/Rect2f.h"
 
 Matrix4f::Matrix4f()
 {
@@ -674,6 +675,51 @@ Matrix4f Matrix4f::infinitePerspectiveProjection( float fLeft, float fRight,
 	}
 
 	return projection;
+}
+
+// static
+Matrix4f Matrix4f::viewport( float x0, float y0, float width, float height,
+	bool directX )
+{
+	// input NDC x (and resp. y), is in [-1,1]
+	// x + 1: [0,2]
+	// 0.5 * ( x + 1 ): [0,1]
+	// width * 0.5f * ( x + 1 ): [0,width]
+	// x0 + width * 0.5f * ( x + 1 ): [x0,x0+width]
+	// = x0 + width * 0.5f * x + width * 0.5f
+	// = width * 0.5f * x + (x0 + width * 0.5f)
+	
+	Matrix4f output;
+
+	output.m00 = 0.5f * width;
+	output.m03 = x0 + 0.5f * width;
+
+	output.m11 = 0.5f * height;
+	output.m13 = y0 + 0.5f * height;
+
+	// in OpenGL: input NDC z is in [-1,1], rescale to [0,1]
+	// z_viewport = 0.5f * z_ndc + 1
+	// in DirectX, input NDC z is in [0,1]	
+	if( directX )
+	{
+		output.m22 = 1;
+	}
+	else
+	{
+		output.m22 = 0.5f;
+		output.m23 = 1;
+	}
+	
+	// in both cases, input NDC w = 1?
+	output.m33 = 1;
+
+	return output;
+}
+
+// static
+Matrix4f Matrix4f::viewport( const Rect2f& rect, bool directX )
+{
+	return Matrix4f::viewport( rect.origin().x, rect.origin().y, rect.width(), rect.height(), directX );
 }
 
 //////////////////////////////////////////////////////////////////////////

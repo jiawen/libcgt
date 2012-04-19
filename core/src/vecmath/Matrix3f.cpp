@@ -234,7 +234,10 @@ Matrix3f Matrix3f::transposed() const
 	return out;
 }
 
-// ---- Utility ----
+Matrix3f::operator const float* () const
+{
+	return m_elements;
+}
 
 Matrix3f::operator float* ()
 {

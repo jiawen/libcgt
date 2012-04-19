@@ -1,5 +1,4 @@
-#ifndef MATRIX3F_H
-#define MATRIX3F_H
+#pragma once
 
 #include <cstdio>
 
@@ -49,8 +48,9 @@ public:
 	void transpose();
 	Matrix3f transposed() const;
 
-	// ---- Utility ----
-	operator float* (); // automatic type conversion for GL
+	// implicit cast
+	operator const float* () const;
+	operator float* ();
 	void print();
 
 	static float determinant3x3( float m00, float m01, float m02,
@@ -97,5 +97,3 @@ Vector3f operator * ( const Matrix3f& m, const Vector3f& v );
 
 // Matrix-Matrix multiplication
 Matrix3f operator * ( const Matrix3f& x, const Matrix3f& y );
-
-#endif // MATRIX3F_H

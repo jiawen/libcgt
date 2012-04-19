@@ -7,6 +7,7 @@ class Matrix3f;
 class Quat4f;
 class Vector3f;
 class Vector4f;
+class Rect2f;
 
 // 4x4 Matrix, stored in column major order (OpenGL style)
 class Matrix4f
@@ -83,12 +84,23 @@ public:
 	static Matrix4f scaling( float sx, float sy, float sz );
 	static Matrix4f scaling( const Vector3f& xyz );
 	static Matrix4f uniformScaling( float s );
+	
 	static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
+	
 	static Matrix4f orthographicProjection( float width, float height, float zNear, float zFar, bool directX );
 	static Matrix4f orthographicProjection( float left, float right, float bottom, float top, float zNear, float zFar, bool directX );
 	static Matrix4f perspectiveProjection( float fLeft, float fRight, float fBottom, float fTop, float fZNear, float fZFar, bool directX );
 	static Matrix4f perspectiveProjection( float fovYRadians, float aspect, float zNear, float zFar, bool directX );
 	static Matrix4f infinitePerspectiveProjection( float fLeft, float fRight, float fBottom, float fTop, float fZNear, bool directX );
+	
+	// Same as viewport( 0, 0, width, height, directX )
+	static Matrix4f viewport( float width, float height, bool directX );
+
+	// Constructs the matrix mapping NDC coordinates
+	// (OpenGL: [-1,1]^3, Direct3D: [-1,1]^2 x [0,1])
+	// to window coordinates [x0, x0 + width), [y0, y0 + height)
+	static Matrix4f viewport( float x0, float y0, float width, float height, bool directX );
+	static Matrix4f viewport( const Rect2f& rect, bool directX );
 
 	// Returns the rotation matrix represented by a quaternion
 	// uses a normalized version of q

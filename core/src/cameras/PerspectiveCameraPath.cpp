@@ -32,8 +32,6 @@ void PerspectiveCameraPath::removeLastKeyframe()
 	}
 }
 
-// gets the camera at a time t
-// t is in seconds
 PerspectiveCamera PerspectiveCameraPath::getCamera( float t )
 {
 	int nKeyFrames = m_keyFrames.size();

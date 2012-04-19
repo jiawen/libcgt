@@ -1,5 +1,4 @@
-#ifndef D3D11UTILS_BOX_H
-#define D3D11UTILS_BOX_H
+#pragma once
 
 #include <common/BasicTypes.h>
 #include <geometry/BoundingBox3f.h>
@@ -44,6 +43,7 @@ public:
 	// writes the 36 vertices of a triangle list
 	// (3 vertices per triangle * 2 triangles per face * 6 faces)
 	// tesselating a 3D box into vertexArray
+	// TODO: normals
 	template< typename T >
 	static void writeAxisAlignedSolidBox( float x, float y, float z, float width, float height, float depth, T* vertexArray )
 	{
@@ -163,5 +163,3 @@ public:
 		vertexArray[ 23 ].position = Vector4f( x, y + height, z + depth, 1 );		
 	}
 };
-
-#endif // D3D11UTILS_BOX_H

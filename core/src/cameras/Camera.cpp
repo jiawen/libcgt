@@ -16,7 +16,8 @@
 Camera::Camera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
 	float left, float right,
 	float bottom, float top,
-	float zNear, float zFar, bool zFarIsInfinite )
+	float zNear, float zFar, bool zFarIsInfinite,
+	bool isDirectX )
 {
 	setLookAt( eye, center, up );
 	setFrustum
@@ -25,6 +26,7 @@ Camera::Camera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
 		bottom, top,
 		zNear, zFar, zFarIsInfinite
 	);
+	setDirectX( isDirectX );
 }
 
 void Camera::setDirectX( bool directX )
@@ -254,14 +256,19 @@ Matrix4f Camera::inverseViewProjectionMatrix() const
 
 Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2i& screenSize )
 {
+	return pixelToDirection( xy, Rect2f( screenSize.x, screenSize.y ) );
+}
+
+Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport )
+{
 	// convert from screen coordinates to NDC
-	float ndcX = 2 * xy.x / screenSize.x - 1;
-	float ndcY = 2 * xy.y / screenSize.y - 1;
+	float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
+	float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
 
 	Vector4f clip( ndcX, ndcY, 0, 1 );
 	Vector4f eye = inverseProjectionMatrix() * clip;
 	Vector4f world = inverseViewMatrix() * eye;
-	
+
 	Vector3f pointOnNearPlane = world.homogenized().xyz();
 
 	return ( pointOnNearPlane - m_eye ).normalized();

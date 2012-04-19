@@ -16,7 +16,8 @@ public:
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
 		float fovY = 50.0f, float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
-		bool zFarIsInfinite = false );
+		bool zFarIsInfinite = false,
+		bool isDirectX = true );
 
 	// gets the parameters used to set this perspective camera
 	// note that these are simply the cached values

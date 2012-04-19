@@ -11,9 +11,9 @@ class Vector4d;
 class Vector4f
 {
 public:
-
-	Vector4f();
-	Vector4f( float f );
+	
+	Vector4f(); // initialized to 0
+	Vector4f( float f ); // initialized to (f, f, f, f )
 	Vector4f( float fx, float fy, float fz, float fw );
 	Vector4f( float buffer[ 4 ] );
 

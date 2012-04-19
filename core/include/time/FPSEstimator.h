@@ -1,7 +1,6 @@
-#ifndef FPS_ESTIMATOR_H
-#define FPS_ESTIMATOR_H
+#pragma once
 
-#include <common/ReferenceCountedArray.h>
+#include <vector>
 #include <time/Clock.h>
 
 // A simple frames-per-second estimator
@@ -29,8 +28,6 @@ private:
 	int64 m_lastUpdateTime;
 	int m_nextSampleIndex;
 	int m_nActualSamples;
-	ReferenceCountedArray< int64 > m_frameTimeSamples;
+	std::vector< int64 > m_frameTimeSamples;
 
 };
-
-#endif // FPS_ESTIMATOR_H

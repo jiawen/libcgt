@@ -37,8 +37,9 @@ public:
 	void transpose();
 	Matrix2f transposed() const;
 
-	// ---- Utility ----
-	operator float* (); // automatic type conversion for GL
+	// implicit cast
+	operator const float* () const;
+	operator float* ();
 	void print(); // TODO: toString()?
 
 	static float determinant2x2( float m00, float m01,
