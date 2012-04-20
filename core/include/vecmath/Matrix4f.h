@@ -87,11 +87,19 @@ public:
 	
 	static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 	
+	// orthographicProjection from (0,0) to (width,height), zNear = -1, zFar = 1
+	static Matrix4f orthographicProjection( float width, float height, bool directX );
+	// orthographicProjection from (0,0) to (width,height)
 	static Matrix4f orthographicProjection( float width, float height, float zNear, float zFar, bool directX );
+	// orthographicProjection from (left, bottom) to (right, top)
 	static Matrix4f orthographicProjection( float left, float right, float bottom, float top, float zNear, float zFar, bool directX );
-	static Matrix4f perspectiveProjection( float fLeft, float fRight, float fBottom, float fTop, float fZNear, float fZFar, bool directX );
+
+	// [potentially] skewed perspective projection matrix defined by 4 points on the near plane, zNear and zFar
+	static Matrix4f perspectiveProjection( float left, float right, float bottom, float top, float zNear, float zFar, bool directX );
+	// non-skewed perspective projection matrix defined by a field of view, aspect ratio, zNear, and zFar
 	static Matrix4f perspectiveProjection( float fovYRadians, float aspect, float zNear, float zFar, bool directX );
-	static Matrix4f infinitePerspectiveProjection( float fLeft, float fRight, float fBottom, float fTop, float fZNear, bool directX );
+	// [potentially] skewed perspective projection matrix defined by 4 points on the near plane, zNear, and zFar at positive infinity
+	static Matrix4f infinitePerspectiveProjection( float left, float right, float bottom, float top, float zNear, bool directX );
 	
 	// Same as viewport( 0, 0, width, height, directX )
 	static Matrix4f viewport( float width, float height, bool directX );

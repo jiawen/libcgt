@@ -1,5 +1,4 @@
-#ifndef ORTHOGRAPHIC_CAMERA_H
-#define ORTHOGRAPHIC_CAMERA_H
+#pragma once
 
 #include <QString>
 
@@ -36,5 +35,3 @@ public:
 private:
 
 };
-
-#endif // ORTHOGRAPHIC_CAMERA_H

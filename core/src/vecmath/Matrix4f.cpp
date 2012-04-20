@@ -543,6 +543,12 @@ Matrix4f Matrix4f::lookAt( const Vector3f& eye, const Vector3f& center, const Ve
 }
 
 // static
+Matrix4f Matrix4f::orthographicProjection( float width, float height, bool directX )
+{
+	return orthographicProjection( width, height, -1, 1, directX );
+}
+
+// static
 Matrix4f Matrix4f::orthographicProjection( float width, float height, float zNear, float zFar, bool directX )
 {
 	Matrix4f m;
@@ -595,28 +601,28 @@ Matrix4f Matrix4f::orthographicProjection( float left, float right, float bottom
 }
 
 // static
-Matrix4f Matrix4f::perspectiveProjection( float fLeft, float fRight,
-										 float fBottom, float fTop,
-										 float fZNear, float fZFar,
+Matrix4f Matrix4f::perspectiveProjection( float left, float right,
+										 float bottom, float top,
+										 float zNear, float zFar,
 										 bool directX )
 {
 	Matrix4f projection; // zero matrix
 
-	projection( 0, 0 ) = ( 2.0f * fZNear ) / ( fRight - fLeft );
-	projection( 1, 1 ) = ( 2.0f * fZNear ) / ( fTop - fBottom );
-	projection( 0, 2 ) = ( fRight + fLeft ) / ( fRight - fLeft );
-	projection( 1, 2 ) = ( fTop + fBottom ) / ( fTop - fBottom );
+	projection( 0, 0 ) = ( 2.0f * zNear ) / ( right - left );
+	projection( 1, 1 ) = ( 2.0f * zNear ) / ( top - bottom );
+	projection( 0, 2 ) = ( right + left ) / ( right - left );
+	projection( 1, 2 ) = ( top + bottom ) / ( top - bottom );
 	projection( 3, 2 ) = -1;
 
 	if( directX )
 	{
-		projection( 2, 2 ) = fZFar / ( fZNear - fZFar);
-		projection( 2, 3 ) = ( fZNear * fZFar ) / ( fZNear - fZFar );
+		projection( 2, 2 ) = zFar / ( zNear - zFar );
+		projection( 2, 3 ) = ( zNear * zFar ) / ( zNear - zFar );
 	}
 	else
 	{
-		projection( 2, 2 ) = ( fZNear + fZFar ) / ( fZNear - fZFar );
-		projection( 2, 3 ) = ( 2.0f * fZNear * fZFar ) / ( fZNear - fZFar );
+		projection( 2, 2 ) = ( zNear + zFar ) / ( zNear - zFar );
+		projection( 2, 3 ) = ( 2.0f * zNear * zFar ) / ( zNear - zFar );
 	}
 
 	return projection;
@@ -649,16 +655,16 @@ Matrix4f Matrix4f::perspectiveProjection( float fovYRadians, float aspect, float
 }
 
 // static
-Matrix4f Matrix4f::infinitePerspectiveProjection( float fLeft, float fRight,
-												 float fBottom, float fTop,
-												 float fZNear, bool directX )
+Matrix4f Matrix4f::infinitePerspectiveProjection( float left, float right,
+												 float bottom, float top,
+												 float zNear, bool directX )
 {
 	Matrix4f projection;
 
-	projection( 0, 0 ) = ( 2.0f * fZNear ) / ( fRight - fLeft );
-	projection( 1, 1 ) = ( 2.0f * fZNear ) / ( fTop - fBottom );
-	projection( 0, 2 ) = ( fRight + fLeft ) / ( fRight - fLeft );
-	projection( 1, 2 ) = ( fTop + fBottom ) / ( fTop - fBottom );
+	projection( 0, 0 ) = ( 2.0f * zNear ) / ( right - left );
+	projection( 1, 1 ) = ( 2.0f * zNear ) / ( top - bottom );
+	projection( 0, 2 ) = ( right + left ) / ( right - left );
+	projection( 1, 2 ) = ( top + bottom ) / ( top - bottom );
 	projection( 3, 2 ) = -1;
 
 	// infinite view frustum
@@ -666,12 +672,12 @@ Matrix4f Matrix4f::infinitePerspectiveProjection( float fLeft, float fRight,
 	if( directX )
 	{
 		projection( 2, 2 ) = -1.0f;
-		projection( 2, 3 ) = -fZNear;		
+		projection( 2, 3 ) = -zNear;		
 	}
 	else
 	{
 		projection( 2, 2 ) = -1.0f;
-		projection( 2, 3 ) = -2.0f * fZNear;
+		projection( 2, 3 ) = -2.0f * zNear;
 	}
 
 	return projection;

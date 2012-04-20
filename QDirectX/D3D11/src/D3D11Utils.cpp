@@ -291,39 +291,61 @@ void D3D11Utils::writeAxes( VertexPosition4fColor4f* vertexArray )
 }
 
 // static
-std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device* pDevice )
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFullScreenQuad( ID3D11Device* pDevice, bool uv00AtTopLeft )
 {
-	std::shared_ptr< DynamicVertexBuffer > buffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4f::sizeInBytes() ) );
+	std::shared_ptr< DynamicVertexBuffer > pBuffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() ) );
 
-	VertexPosition4f* vertexArray = reinterpret_cast< VertexPosition4f* >( buffer->mapForWriteDiscard().pData );
-	writeFullScreenQuad( vertexArray );
-	buffer->unmap();
+	VertexPosition4fTexture2f* vertexArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fTexture2f >();
+	writeFullScreenQuad( vertexArray, uv00AtTopLeft );
+	pBuffer->unmap();
 
-	return buffer;
+	return pBuffer;
 }
 
 // static
-std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice )
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice,
+	bool uv00AtTopLeft )
 {
-	std::shared_ptr< DynamicVertexBuffer > buffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() ) );
+	std::shared_ptr< DynamicVertexBuffer > pBuffer( new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() ) );
 
-	VertexPosition4fTexture2f* vertexArray = reinterpret_cast< VertexPosition4fTexture2f* >( buffer->mapForWriteDiscard().pData );
-	writeScreenAlignedQuad( x, y, width, height, vertexArray );
-	buffer->unmap();
+	VertexPosition4fTexture2f* vertexArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fTexture2f >();
+	writeScreenAlignedQuad( x, y, width, height, vertexArray, uv00AtTopLeft );
+	pBuffer->unmap();
 
-	return buffer;
+	return pBuffer;
 }
 
 // static
-void D3D11Utils::writeFullScreenQuad( VertexPosition4f* vertexArray )
+void D3D11Utils::writeFullScreenQuad( VertexPosition4fTexture2f* vertexArray, bool uv00AtTopLeft )
 {
-	vertexArray[ 0 ] = VertexPosition4f( -1, -1, 0, 1 );
-	vertexArray[ 1 ] = VertexPosition4f( 1, -1, 0, 1 );
-	vertexArray[ 2 ] = VertexPosition4f( -1, 1, 0, 1 );
+	vertexArray[ 0 ].position = Vector4f( -1, -1, 0, 1 );	
+	vertexArray[ 1 ].position = Vector4f( 1, -1, 0, 1 );
+	vertexArray[ 2 ].position = Vector4f( -1, 1, 0, 1 );
 
-	vertexArray[ 3 ] = VertexPosition4f( -1, 1, 0, 1 );
-	vertexArray[ 4 ] = VertexPosition4f( 1, -1, 0, 1 );
-	vertexArray[ 5 ] = VertexPosition4f( 1, 1, 0, 1 );
+	vertexArray[ 3 ].position = Vector4f( -1, 1, 0, 1 );
+	vertexArray[ 4 ].position = Vector4f( 1, -1, 0, 1 );
+	vertexArray[ 5 ].position = Vector4f( 1, 1, 0, 1 );
+
+	if( uv00AtTopLeft )
+	{
+		vertexArray[ 0 ].texture = Vector2f( 0, 1 );
+		vertexArray[ 1 ].texture = Vector2f( 1, 1 );
+		vertexArray[ 2 ].texture = Vector2f( 0, 0 );
+
+		vertexArray[ 3 ].texture = Vector2f( 0, 0 );
+		vertexArray[ 4 ].texture = Vector2f( 1, 1 );
+		vertexArray[ 5 ].texture = Vector2f( 1, 0 );
+	}
+	else
+	{
+		vertexArray[ 0 ].texture = Vector2f( 0, 0 );
+		vertexArray[ 1 ].texture = Vector2f( 1, 0 );
+		vertexArray[ 2 ].texture = Vector2f( 0, 1 );
+
+		vertexArray[ 3 ].texture = Vector2f( 0, 1 );
+		vertexArray[ 4 ].texture = Vector2f( 1, 0 );
+		vertexArray[ 5 ].texture = Vector2f( 1, 1 );
+	}
 }
 
 // static
@@ -339,9 +361,9 @@ void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float he
 }
 
 // static
-void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool flipUV )
+void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool uv00AtTopLeft )
 {
-	if( flipUV )
+	if( uv00AtTopLeft )
 	{
 		vertexArray[ 0 ] = VertexPosition4fTexture2f( x, y, 0, 1, 0, 1 );
 		vertexArray[ 1 ] = VertexPosition4fTexture2f( x + width, y, 0, 1, 1, 1 );
