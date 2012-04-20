@@ -1,7 +1,7 @@
 #include "DynamicIndexBuffer.h"
 
 // static
-DXGI_FORMAT DynamicIndexBuffer::s_format = DXGI_FORMAT_R32_UINT;
+const DXGI_FORMAT DynamicIndexBuffer::s_format = DXGI_FORMAT_R32_UINT;
 
 DynamicIndexBuffer::DynamicIndexBuffer( ID3D11Device* pDevice, int capacity ) :
 

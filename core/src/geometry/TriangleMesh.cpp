@@ -53,19 +53,33 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 		for( int f = 0; f < pFaces->size(); ++f )
 		{
 			auto pFace = pFaces->at( f );
-			int p0 = pFace.getPositionIndices()->at( 0 );
-			int p1 = pFace.getPositionIndices()->at( 1 );
-			int p2 = pFace.getPositionIndices()->at( 2 );
+			int nVerticesInFace = pFace.numVertices();
 
-			m_faces.push_back( Vector3i( p0, p1, p2 ) );
-
-			if( pGroup->hasNormals() )
+			// ignore degenerate faces
+			if( nVerticesInFace < 3 )
 			{
+				fprintf( stderr, "Degenerate face detected: nVertices = %d\n", nVerticesInFace );
+			}
+			else
+			{
+				int p0 = pFace.getPositionIndices()->at( 0 );
 				int n0 = pFace.getNormalIndices()->at( 0 );
-				int n1 = pFace.getNormalIndices()->at( 1 );
-				int n2 = pFace.getNormalIndices()->at( 2 );
 
-				normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+				for( int i = 2; i < nVerticesInFace; ++i )
+				{
+					int p1 = pFace.getPositionIndices()->at( i - 1 );
+					int p2 = pFace.getPositionIndices()->at( i );
+
+					m_faces.push_back( Vector3i( p0, p1, p2 ) );
+
+					if( pGroup->hasNormals() )
+					{						
+						int n1 = pFace.getNormalIndices()->at( i - 1 );
+						int n2 = pFace.getNormalIndices()->at( i );
+
+						normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+					}
+				}				
 			}
 		}
 	}
@@ -147,6 +161,36 @@ int TriangleMesh::numVertices() const
 int TriangleMesh::numFaces() const
 {
 	return m_faces.size();
+}
+
+const std::vector< Vector3f >& TriangleMesh::positions() const
+{
+	return m_positions;
+}
+
+std::vector< Vector3f >& TriangleMesh::positions()
+{
+	return m_positions;
+}
+
+const std::vector< Vector3f >& TriangleMesh::normals() const
+{
+	return m_normals;
+}
+
+std::vector< Vector3f >& TriangleMesh::normals()
+{
+	return m_normals;
+}
+
+const std::vector< Vector3i >& TriangleMesh::faces() const
+{
+	return m_faces;
+}
+
+std::vector< Vector3i >& TriangleMesh::faces()
+{
+	return m_faces;
 }
 
 int TriangleMesh::vertexOppositeEdge( int i, int j ) const
@@ -518,6 +562,11 @@ void TriangleMesh::buildAdjacency()
 			m_oneRingIsClosed[ v ] = true;
 		}
 	}
+}
+
+void TriangleMesh::invalidateAdjancency()
+{
+	m_adjacencyIsDirty = true;
 }
 
 void TriangleMesh::computeConnectedComponents()

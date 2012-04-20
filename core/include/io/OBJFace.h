@@ -13,6 +13,8 @@ public:
 	bool hasTextureCoordinates() const;
 	bool hasNormals() const;
 
+	int numVertices() const;
+
 	QVector< int >* getPositionIndices();
 	QVector< int >* getTextureCoordinateIndices();
 	QVector< int >* getNormalIndices();

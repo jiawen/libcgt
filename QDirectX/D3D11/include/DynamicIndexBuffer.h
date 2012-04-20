@@ -1,5 +1,4 @@
-#ifndef DYNAMIC_INDEX_BUFFER_H
-#define DYNAMIC_INDEX_BUFFER_H
+#pragma once
 
 #include <D3D11.h>
 #include <common/BasicTypes.h>
@@ -10,7 +9,7 @@ public:
 
 	// Indices are always unsigned 32-bit integers
 	// (D3D also allows 16-bit ones)
-	static DXGI_FORMAT s_format;
+	const static DXGI_FORMAT s_format;
 	
 	DynamicIndexBuffer( ID3D11Device* pDevice, int capacity );
 	virtual ~DynamicIndexBuffer();
@@ -30,5 +29,3 @@ private:
 	ID3D11DeviceContext* m_pContext;
 
 };
-
-#endif // DYNAMIC_INDEX_BUFFER_H

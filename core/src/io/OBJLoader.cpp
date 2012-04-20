@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename )
+std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename, bool removeEmptyGroups )
 {
 	int lineNumber = 0;
 	QString line = "";
@@ -29,6 +29,11 @@ std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename )
 	{
 		// return null
 		pOBJData.reset();
+	}
+
+	if( removeEmptyGroups )
+	{
+		pOBJData->removeEmptyGroups();
 	}
 
 	return pOBJData;
@@ -89,7 +94,7 @@ bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 					}
 					else
 					{
-						newGroupName = tokens[ 1 ];
+						newGroupName = line.mid( 2 );
 					}
 
 					if( newGroupName != pCurrentGroup->name() )

@@ -32,6 +32,11 @@ bool OBJFace::hasNormals() const
 	return m_bHasNormals;
 }
 
+int OBJFace::numVertices() const
+{
+	return m_qvPositionIndices.size();
+}
+
 QVector< int >* OBJFace::getPositionIndices()
 {
 	return &m_qvPositionIndices;

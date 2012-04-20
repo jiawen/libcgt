@@ -1,5 +1,4 @@
-#ifndef OBJ_LOADER_H
-#define OBJ_LOADER_H
+#pragma once
 
 #include <memory>
 #include <QString>
@@ -11,7 +10,7 @@ class OBJLoader
 {
 public:
 
-	static std::shared_ptr< OBJData > loadFile( QString objFilename );
+	static std::shared_ptr< OBJData > loadFile( QString objFilename, bool removeEmptyGroups = true );
 
 private:
 
@@ -56,5 +55,3 @@ private:
 	static bool getVertexAttributes( QString objFaceVertexToken,
 		int* pPositionIndex, int* pTextureCoordinateIndex, int* pNormalIndex );
 };
-
-#endif // OBJ_LOADER_H

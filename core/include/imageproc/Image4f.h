@@ -1,5 +1,4 @@
-#ifndef IMAGE_4F_H
-#define IMAGE_4F_H
+#pragma once
 
 #include <QImage>
 #include <QString>
@@ -85,5 +84,3 @@ private:
 	Array2D< float > m_data;
 
 };
-
-#endif // IMAGE_4F_H

@@ -1,8 +1,6 @@
-#ifndef PORTABLE_PIXEL_MAP_IO_H
-#define PORTABLE_PIXEL_MAP_IO_H
+#pragma once
 
 #include <common/BasicTypes.h>
-#include <vecmath/MatrixT.h>
 
 class Vector3f;
 class QString;
@@ -35,5 +33,3 @@ public:
 		int width, int height,		
 		bool yAxisPointsUp = false );
 };
-
-#endif // PORTABLE_PIXEL_MAP_IO_H

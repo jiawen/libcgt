@@ -19,12 +19,34 @@ class TriangleMesh
 {
 public:
 
+	// make an empty triangle mesh
 	TriangleMesh();
+	
+	// make a triangle mesh out of data from an OBJ file
+	// all groups are merged such that:
+	//   all positions are in one array
+	//   all normals are in one array, consolidated to be the same size as positions
+	//      (extra normals are discarded)
+	//   all faces are triangulated and re-indexed to point to the same array	
+	// TODO: generate normals per face (need a separate array to keep track of additional normals)
 	TriangleMesh( std::shared_ptr< OBJData > pData );
+
+	// make a triangle mesh out of data from an OBJ file
+	// (one particular group)
+	// TODO: also triangulate face
 	TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent = true );
 
 	int numVertices() const;
 	int numFaces() const;
+
+	const std::vector< Vector3f >& positions() const;
+	std::vector< Vector3f >& positions();
+
+	const std::vector< Vector3f >& normals() const;
+	std::vector< Vector3f >& normals();
+
+	const std::vector< Vector3i >& faces() const;
+	std::vector< Vector3i >& faces();
 
 	// returns -1 if edge i --> j is not on a face
 	int vertexOppositeEdge( int i, int j ) const;
@@ -56,7 +78,7 @@ public:
 	int pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace );	
 
 	void buildAdjacency();
-
+	void invalidateAdjancency();
 
 
 	void computeConnectedComponents();
@@ -105,7 +127,6 @@ public:
 
 private:
 
-	// TODO: invalidate()
 	bool m_adjacencyIsDirty; // marks whether the cached adjacency data structures are dirty	
 
 	// the input data might have different number of normals vs vertices

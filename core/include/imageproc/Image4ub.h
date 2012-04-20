@@ -1,5 +1,4 @@
-#ifndef IMAGE_4UB_H
-#define IMAGE_4UB_H
+#pragma once
 
 #include <QImage>
 #include <QString>
@@ -72,5 +71,3 @@ private:
 	QVector< quint8 > m_data;
 
 };
-
-#endif // IMAGE_4UB_H
