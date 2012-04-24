@@ -43,13 +43,13 @@ ID3D11DeviceContext* QD3D11Widget::immediateContext() const
 	return m_pImmediateContext;
 }
 
-void QD3D11Widget::clearBackBuffer( float* rgba, float depth )
+void QD3D11Widget::clearBackBuffer( const Vector4f& rgba, float depth )
 {
 	clearBackBufferColor( rgba );
 	clearBackBufferDepth( depth );
 }
 
-void QD3D11Widget::clearBackBufferColor( float* rgba )
+void QD3D11Widget::clearBackBufferColor( const Vector4f& rgba )
 {
 	m_pImmediateContext->ClearRenderTargetView( m_pBackBufferRenderTargetView, rgba );
 }

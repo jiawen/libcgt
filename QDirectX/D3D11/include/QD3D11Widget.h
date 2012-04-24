@@ -1,11 +1,12 @@
-#ifndef QD3D11WIDGET_H
-#define QD3D11WIDGET_H
+#pragma once
 
 #include <D3D11.h>
 #include <d3dx11.h>
 
 #include <QWidget>
 #include <QStack>
+
+#include <vecmath/Vector4f.h>
 
 class QD3D11Widget : public QWidget
 {
@@ -22,11 +23,11 @@ public:
 	ID3D11Device* device() const;
 	ID3D11DeviceContext* immediateContext() const;
 
-	void clearBackBuffer( float* rgba, float depth = 1 );
+	void clearBackBuffer( const Vector4f& rgba = Vector4f(), float depth = 1 );
 
-	void clearBackBufferColor( float* rgba );
+	void clearBackBufferColor( const Vector4f& rgba = Vector4f() );
 	void clearBackBufferDepth( float depth = 1 );
-	void clearBackBufferDepthStencil( float depth, UINT8 stencil );
+	void clearBackBufferDepthStencil( float depth = 1, UINT8 stencil = 0 );
 
 	// set output buffers to the internal back buffer (color and depth-stencil)
 	void restoreBackBuffer();
@@ -77,5 +78,3 @@ private:
 	HRESULT resizeDepthStencilBuffer( int width, int height );
 
 };
-
-#endif // QD3D11WIDGET_H

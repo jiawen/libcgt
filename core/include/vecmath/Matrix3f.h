@@ -6,12 +6,11 @@ class Matrix2f;
 class Quat4f;
 class Vector3f;
 
-// 3x3 Matrix, stored in column major order (OpenGL style)
+// 3x3 Matrix, stored in column major order (FORTRAN / OpenGL style)
 class Matrix3f
 {
 public:
 
-	// TODO: do the rest
 	Matrix3f( float fill = 0.f );
 	Matrix3f( float m00, float m01, float m02,
 		float m10, float m11, float m12,

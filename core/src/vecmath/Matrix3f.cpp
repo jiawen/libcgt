@@ -13,6 +13,7 @@
 
 Matrix3f::Matrix3f( float fill )
 {
+	// TODO: use memset, cast float to int?
 	for( int i = 0; i < 9; ++i )
 	{
 		m_elements[ i ] = fill;

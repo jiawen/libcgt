@@ -9,13 +9,17 @@ class Vector3f;
 class Vector4f;
 class Rect2f;
 
-// 4x4 Matrix, stored in column major order (OpenGL style)
+// 4x4 matrix, stored in column major order (FORTRAN / OpenGL style)
 class Matrix4f
 {
 public:
 
 	// 4x4 zero matrix
 	Matrix4f();
+
+	// Construct 4x4 matrix directly from elements
+	// elements are written in row-major order for human-readability
+	// (and stored column major, as usual)
 	Matrix4f( float m00, float m01, float m02, float m03,
 		float m10, float m11, float m12, float m13,
 		float m20, float m21, float m22, float m23,
