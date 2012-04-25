@@ -21,7 +21,7 @@ std::vector< IDXGIAdapter* > D3D11Utils::getDXGIAdapters()
 		uint i = 0;
 		IDXGIAdapter* pAdapter;
 		while( pFactory->EnumAdapters( i, &pAdapter ) != DXGI_ERROR_NOT_FOUND )
-		{ 
+		{
 			adapters.push_back( pAdapter );
 			++i; 
 		}

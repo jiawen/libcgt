@@ -15,15 +15,10 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-QD3D11Viewer::QD3D11Viewer( bool flipMouseUpDown,
-						   float keyWalkSpeed,
-						   float mousePitchSpeed,
+QD3D11Viewer::QD3D11Viewer( float keyWalkSpeed,
 						   QWidget* parent ) :
 
-	m_flipMouseUpDown( flipMouseUpDown ),
-
 	m_keyWalkSpeed( keyWalkSpeed ),
-	m_mousePitchSpeed( mousePitchSpeed ),
 
 	m_fpsControls( &m_camera ),	
 
@@ -36,31 +31,6 @@ QD3D11Viewer::QD3D11Viewer( bool flipMouseUpDown,
 	m_camera.setPerspective( 50.f, 1.f, 0.01f, 10.0f );
 
 	m_pXboxController0 = new XboxController( 0, this );
-
-	setUpVector( Vector3f( 0, 1, 0 ) );
-}
-
-Vector3f QD3D11Viewer::upVector() const
-{
-	return m_groundPlaneToWorld.getCol( 1 );
-}
-
-void QD3D11Viewer::setUpVector( const Vector3f& y )
-{
-	Vector3f x;
-	Vector3f z;
-	GeometryUtils::getBasis( y, &x, &z );
-	m_groundPlaneToWorld = Matrix3f( x, y, z );
-	m_worldToGroundPlane = m_groundPlaneToWorld.inverse();
-
-	// TODO: snap camera to face up when you change the up vector to something new
-	//   rotate along current lookat direction?
-	// TODO: reset camera
-}
-
-bool QD3D11Viewer::flipMouseUpDown() const
-{
-	return m_flipMouseUpDown;
 }
 
 float QD3D11Viewer::keyWalkSpeed() const
@@ -71,16 +41,6 @@ float QD3D11Viewer::keyWalkSpeed() const
 void QD3D11Viewer::setKeyWalkSpeed( float speed )
 {
 	m_keyWalkSpeed = speed;
-}
-
-float QD3D11Viewer::mousePitchSpeed() const
-{
-	return m_mousePitchSpeed;
-}
-
-void QD3D11Viewer::setMousePitchSpeed( float speed )
-{
-	m_mousePitchSpeed = speed;
 }
 
 PerspectiveCamera& QD3D11Viewer::camera()
@@ -96,15 +56,6 @@ void QD3D11Viewer::setCamera( const PerspectiveCamera& camera )
 XboxController* QD3D11Viewer::xboxController0()
 {
 	return m_pXboxController0;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Public Slots
-//////////////////////////////////////////////////////////////////////////
-
-void QD3D11Viewer::setFlipMouseUpDown( bool flip )
-{
-	m_flipMouseUpDown = flip;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -165,68 +116,19 @@ void QD3D11Viewer::keyPressEvent( QKeyEvent* event )
 	update();
 }
 
-void QD3D11Viewer::mousePressEvent( QMouseEvent * event )
+void QD3D11Viewer::mousePressEvent( QMouseEvent* event )
 {
-	m_prevPos = Vector2i( event->x(), event->y() );
+	m_fpsControls.handleMousePressEvent( event );
 }
 
 void QD3D11Viewer::mouseMoveEvent( QMouseEvent* event )
 {
-	Vector2i curPos( event->x(), event->y() );
-	Vector2f delta = curPos - m_prevPos;
-
 #if 1
 
-	float pitchSpeed = m_flipMouseUpDown ? m_mousePitchSpeed : -m_mousePitchSpeed;
-	const float yawSpeed = 0.005f;
-	const float panSpeed = 0.005f;
-	const float walkSpeed = -0.005f;
-
-	Matrix3f worldToCamera = m_camera.viewMatrix().getSubmatrix3x3( 0, 0 );
-	Matrix3f cameraToWorld = m_camera.inverseViewMatrix().getSubmatrix3x3( 0, 0 );
-	
-	Vector3f eye = m_camera.eye();
-	Vector3f x = m_camera.right();
-	Vector3f y = m_camera.up();
-	Vector3f z = m_camera.forward();
-
-	// rotate
-	if( event->buttons() == Qt::LeftButton )
-	{
-		// pitch around the local x axis		
-		float pitch = pitchSpeed * delta.y;
-
-		Matrix3f pitchMatrix = Matrix3f::rotateX( pitch );		
-
-		y = cameraToWorld * pitchMatrix * worldToCamera * y;
-		z = cameraToWorld * pitchMatrix * worldToCamera * z;
-
-		// yaw around the world up vector
-		float yaw = yawSpeed * delta.x;
-
-		Matrix3f yawMatrix = m_groundPlaneToWorld * Matrix3f::rotateY( yaw ) * m_worldToGroundPlane;
-
-		x = yawMatrix * x;
-		y = yawMatrix * y;
-		z = yawMatrix * z;		
-
-		m_camera.setLookAt( eye, eye + z, y );
-	}
-	else if( event->buttons() == Qt::RightButton )
-	{
-		float dx = panSpeed * delta.x;
-		float dz = walkSpeed * delta.y;
-
-		translate( dx, 0, dz );
-	}
-	else if( event->buttons() & Qt::LeftButton &&
-		event->buttons() & Qt::RightButton )
-	{
-		float dy = -panSpeed * delta.y;
-		translate( 0, dy, 0 );
-	}
+	m_fpsControls.handleMouseMoveEvent( event );
 
 #else
+	// this is a trackball: refactor into its own controls class
 
 	if(event->buttons() & Qt::RightButton) //rotate
 	{
@@ -256,13 +158,12 @@ void QD3D11Viewer::mouseMoveEvent( QMouseEvent* event )
 	}
 #endif
 
-	m_prevPos = curPos;
 	update();
 }
 
-void QD3D11Viewer::mouseReleaseEvent( QMouseEvent * )
+void QD3D11Viewer::mouseReleaseEvent( QMouseEvent* event )
 {
-	m_prevPos = Vector2i( -1, -1 );
+	m_fpsControls.handleMouseReleaseEvent( event );
 }
 
 void QD3D11Viewer::wheelEvent( QWheelEvent * event )
@@ -284,11 +185,7 @@ void QD3D11Viewer::wheelEvent( QWheelEvent * event )
 
 void QD3D11Viewer::resizeD3D( int width, int height )
 {
-    float fovY, aspect, zNear, zFar;
-    m_camera.getPerspective( &fovY, &aspect, &zNear, &zFar);
-
-    aspect = static_cast< float >( width ) / height;
-	m_camera.setPerspective( fovY, aspect, zNear, zFar);
+	m_camera.setAspect( width, height );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -300,7 +197,7 @@ void QD3D11Viewer::translate( float dx, float dy, float dz )
 	Vector3f eye = m_camera.eye();
 	Vector3f x = m_camera.right();
 	Vector3f y = m_camera.up();
-	Vector3f z = m_camera.forward();
+	Vector3f z = -( m_camera.forward() );
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;
@@ -310,6 +207,6 @@ void QD3D11Viewer::translate( float dx, float dy, float dz )
 
 	// TODO: switch Camera over to have just a forward vector?
 	// center is kinda stupid
-	eye = eye + dx * x + dy * upVector() + dz * z;
-	m_camera.setLookAt( eye, eye + z, y );
+	eye = eye + dx * x + dy * m_fpsControls.upVector() + dz * z;
+	m_camera.setLookAt( eye, eye - z, y );
 }

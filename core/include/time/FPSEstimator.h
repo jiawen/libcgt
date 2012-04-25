@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <time/Clock.h>
+#include <QString>
 
 // A simple frames-per-second estimator
 // based on sampling the last N frame times
@@ -15,10 +16,16 @@ public:
 
 	FPSEstimator( int nSamples );
 
+	void update();
+
 	float framePeriodMilliseconds() const;
 	float framesPerSecond() const;
 
-	void update();
+	// Returns the average frame period, rounded to the nearest millisecond, as a QString
+	QString framePeriodMillisecondsString() const;
+
+	// Returns the average framerate, rounded to the nearest Hz, as a QString
+	QString framesPerSecondString() const;	
 
 private:
 

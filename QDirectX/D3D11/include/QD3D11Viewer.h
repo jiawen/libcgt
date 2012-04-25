@@ -14,20 +14,12 @@ class QD3D11Viewer : public QD3D11Widget
 
 public:
 
-	QD3D11Viewer( bool flipMouseUpDown = true,
-		float keyWalkSpeed = 0.15f,
-		float mousePitchSpeed = 0.005f,
+	QD3D11Viewer( float keyWalkSpeed = 0.15f,
 		QWidget* parent = nullptr );
-
-	bool flipMouseUpDown() const;
 
 	// world units per key press
 	float keyWalkSpeed() const;
 	void setKeyWalkSpeed( float speed );
-
-	// radians per pixel
-	float mousePitchSpeed() const;
-	void setMousePitchSpeed( float p );
 
 	PerspectiveCamera& camera();
 	void setCamera( const PerspectiveCamera& camera );
@@ -36,10 +28,6 @@ public:
 
 	Vector3f upVector() const;
 	void setUpVector( const Vector3f& y );
-
-public slots:
-
-	void setFlipMouseUpDown( bool flip );
 
 protected:
 
@@ -67,17 +55,7 @@ private:
 
 	void translate( float dx, float dy, float dz );
 
-	// user controls
-	bool m_flipMouseUpDown;
-
-	// speed parameters
-	float m_keyWalkSpeed;
-	float m_mousePitchSpeed;
-
-	Matrix3f m_groundPlaneToWorld; // goes from a coordinate system where the specified up vector is (0,1,0) to the world
-	Matrix3f m_worldToGroundPlane;
-
-	Vector2i m_prevPos;
-
 	PerspectiveCamera m_camera;
+
+	float m_keyWalkSpeed;
 };

@@ -13,6 +13,29 @@ FPSEstimator::FPSEstimator( int nSamples ) :
 
 }
 
+void FPSEstimator::update()
+{
+	if( m_isFirstUpdate )
+	{
+		m_lastUpdateTime = m_clock.getCounterValue();
+		m_isFirstUpdate = false;
+	}
+	else
+	{
+		int64 now = m_clock.getCounterValue();
+		int64 dt = now - m_lastUpdateTime;
+
+		int n = m_frameTimeSamples.size();
+		m_nActualSamples = MathUtils::clampToRangeInt( m_nActualSamples + 1, 0, n + 1 );
+
+		m_frameTimeSamples[ m_nextSampleIndex ] = dt;
+
+		m_nextSampleIndex = ( m_nextSampleIndex + 1 ) % n;
+
+		m_lastUpdateTime = m_clock.getCounterValue();
+	}	
+}
+
 float FPSEstimator::framePeriodMilliseconds() const
 {
 	if( m_nActualSamples > 0 )
@@ -42,25 +65,14 @@ float FPSEstimator::framesPerSecond() const
 	}
 }
 
-void FPSEstimator::update()
+QString FPSEstimator::framePeriodMillisecondsString() const
 {
-	if( m_isFirstUpdate )
-	{
-		m_lastUpdateTime = m_clock.getCounterValue();
-		m_isFirstUpdate = false;
-	}
-	else
-	{
-		int64 now = m_clock.getCounterValue();
-		int64 dt = now - m_lastUpdateTime;
+	float dt = framePeriodMilliseconds();
+	return QString( "%1" ).arg( dt, 0, 'f', 1 );
+}
 
-		int n = m_frameTimeSamples.size();
-		m_nActualSamples = MathUtils::clampToRangeInt( m_nActualSamples + 1, 0, n + 1 );
-
-		m_frameTimeSamples[ m_nextSampleIndex ] = dt;
-
-		m_nextSampleIndex = ( m_nextSampleIndex + 1 ) % n;
-
-		m_lastUpdateTime = m_clock.getCounterValue();
-	}	
+QString FPSEstimator::framesPerSecondString() const
+{
+	float fps = framesPerSecond();
+	return QString( "%1" ).arg( fps, 0, 'f', 1 );
 }

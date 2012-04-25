@@ -1,5 +1,4 @@
-#ifndef D3D11UTILS_H
-#define D3D11UTILS_H
+#pragma once
 
 #include <D3D11.h>
 #include <D3DX11.h>
@@ -27,7 +26,7 @@ class D3D11Utils
 {
 public:
 
-	// Returns a QVector of DXGI adapter on this machine
+	// Returns a std::vector of DXGI adapter on this machine
 	// Be sure to release the pointers
 	static std::vector< IDXGIAdapter* > getDXGIAdapters();
 
@@ -165,6 +164,3 @@ public:
 	}
 
 };
-
-
-#endif // D3D11UTILS_H

@@ -1,16 +1,25 @@
 #include "FPSControls.h"
 
+#include <QMouseEvent>
+
 #include <cassert>
+#include <cameras/PerspectiveCamera.h>
 #include <geometry/GeometryUtils.h>
 
 FPSMouseParameters::FPSMouseParameters( bool invertX, bool invertY,
 	const Vector3f& translationPerPixel,
-	float rotationRadiansPerPixel, float fovRadiansPerMouseWheelDelta ) :
+	float yawRadiansPerPixel,
+	float pitchRadiansPerPixel,
+	float fovRadiansPerMouseWheelDelta ) :
 
 	invertX( invertX ),
 	invertY( invertY ),
+
 	translationPerPixel( translationPerPixel ),
-	rotationRadiansPerPixel( rotationRadiansPerPixel ),
+
+	yawRadiansPerPixel( yawRadiansPerPixel ),
+	pitchRadiansPerPixel( pitchRadiansPerPixel ),
+
 	fovRadiansPerMouseWheelDelta( fovRadiansPerMouseWheelDelta )
 
 {
@@ -101,6 +110,55 @@ void FPSControls::handleXboxController( XboxController* pXboxController )
     }
 }
 
+void FPSControls::handleMousePressEvent( QMouseEvent* event )
+{
+	m_previousMouseXY.x = event->x();
+	m_previousMouseXY.y = event->y();
+	m_mouseIsDown = true;
+}
+
+void FPSControls::handleMouseMoveEvent( QMouseEvent* event )
+{
+	Vector2i currentMouseXY( event->x(), event->y() );
+	Vector2f delta = currentMouseXY - m_previousMouseXY;
+
+	computeMouseRotation( event->buttons(), delta );
+	computeMouseTranslation( event->buttons(), delta );
+
+	m_previousMouseXY = currentMouseXY;
+}
+
+void FPSControls::handleMouseReleaseEvent( QMouseEvent* event )
+{
+	m_mouseIsDown = false;
+}
+
+void FPSControls::computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta )
+{
+	if( buttons == Qt::LeftButton )
+	{
+		float yawSpeed = m_mouseParameters.invertX ? m_mouseParameters.yawRadiansPerPixel : -m_mouseParameters.yawRadiansPerPixel;
+		float pitchSpeed = m_mouseParameters.invertY ? m_mouseParameters.pitchRadiansPerPixel : -m_mouseParameters.pitchRadiansPerPixel;
+
+		applyRotation( yawSpeed * delta.x, pitchSpeed * delta.y );
+	}
+}
+
+void FPSControls::computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta )
+{
+	if( buttons == Qt::RightButton )
+	{
+		float x = m_mouseParameters.translationPerPixel.x * delta.x;
+		float z = m_mouseParameters.translationPerPixel.y * delta.y;
+		applyTranslation( x, 0, z );
+	}
+	else if( buttons & Qt::LeftButton && buttons & Qt::RightButton )
+	{
+		float y = -m_mouseParameters.translationPerPixel.y * delta.y;
+		applyTranslation( 0, y, 0 );
+	}
+}
+
 void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad )
 {
 	int lx = pGamepad->sThumbLX;
@@ -114,12 +172,14 @@ void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad )
 	// left stick: move
 	if( abs( lx ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  )
 	{
+		// stick right --> move right
 		moveX = lx * m_xboxGamepadParameters.translationPerTick;
 		move = true;
 	}
 	if( abs( ly ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
 	{
-		moveZ = ly * m_xboxGamepadParameters.translationPerTick;
+		// stick up --> move forward
+		moveZ = -ly * m_xboxGamepadParameters.translationPerTick;
 		move = true;
 	}
 
@@ -220,7 +280,7 @@ void FPSControls::applyTranslation( float dx, float dy, float dz )
 	Vector3f eye = m_pCamera->eye();
 	Vector3f x = m_pCamera->right();
 	Vector3f y = m_pCamera->up();
-	Vector3f z = m_pCamera->forward();
+	Vector3f z = -( m_pCamera->forward() );
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;
@@ -228,13 +288,8 @@ void FPSControls::applyTranslation( float dx, float dy, float dz )
 	//zp = m_groundPlaneToWorld * zp;
 	//zp.normalize();
 
-	// TODO: switch Camera over to have just a forward vector?
-	// center is kinda stupid
 	eye = eye + dx * x + dy * upVector() + dz * z;
-	m_pCamera->setLookAt( eye, eye + z, y );
-
-
-	//Vector3f translation( moveX * ProjectedRight + moveY * GroundPlaneUp + moveZ * ProjectedForward )
+	m_pCamera->setLookAt( eye, eye - z, y );
 }
 
 void FPSControls::applyRotation( float yaw, float pitch )
