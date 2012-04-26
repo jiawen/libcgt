@@ -5,6 +5,8 @@ class Vector4f;
 
 #include "Matrix3f.h"
 
+// q = w + x * i + y * j + z * k
+// with i^2 = j^2 = k^2 = -1
 class Quat4f
 {
 public:
@@ -12,9 +14,7 @@ public:
 	static const Quat4f ZERO;
 	static const Quat4f IDENTITY;
 
-	Quat4f();
-
-	// q = w + x * i + y * j + z * k
+	Quat4f();	
 	Quat4f( float w, float x, float y, float z );
 		
 	Quat4f( const Quat4f& rq ); // copy constructor
@@ -34,8 +34,8 @@ public:
 	Vector3f xyz() const;
 	Vector4f wxyz() const;
 
-	float abs() const;
-	float absSquared() const;
+	float norm() const;
+	float normSquared() const;
 	void normalize();
 	Quat4f normalized() const;
 
@@ -50,10 +50,24 @@ public:
 	Quat4f exp() const;
 	
 	// returns unit vector for rotation and radians about the unit vector
-	Vector3f getAxisAngle( float* radiansOut );
+	// The angle is guaranteed to be in [0,pi]
+	// Returns axis = (0,0,0) and angle = 0 for the identity quaternion (1,0,0,0)
+	Vector3f getAxisAngle( float* radiansOut ) const;
 
-	// sets this quaternion to be a rotation of fRadians about v = < fx, fy, fz >, v need not necessarily be unit length
+	// returns a Vector4f, with xyz = axis, and w = angle
+	// axis is a unit vector, angle is in radians
+	// The angle is guaranteed to be in [0,pi]
+	// Returns axis = (0,0,0) and angle = 0 for the identity quaternion (1,0,0,0)
+	Vector4f getAxisAngle() const;
+
+	// sets this quaternion to be a rotation of radians about axis
+	// axis need not be unit length
 	void setAxisAngle( float radians, const Vector3f& axis );
+
+	// sets this quaternion to be a rotation of axisAngle.w radians
+	// about the axisAngle.xyz axis
+	// axisAngle.xyz need not be unit length
+	void setAxisAngle( const Vector4f& axisAngle );
 
 	Vector3f rotateVector( const Vector3f& v );
 

@@ -438,3 +438,49 @@ Matrix3f operator * ( const Matrix3f& x, const Matrix3f& y )
 
 	return product;
 }
+
+#if 0
+// TODO: port to a new module
+
+// static
+void GMatrixd::homography( QVector< Vector3f > from,
+	QVector< Vector3f > to, GMatrixd& output )
+{
+	output.resize( 3, 3 );
+	GMatrixd m( 8, 9 );
+
+	for( int i = 0; i < 4; ++i )
+	{
+		m(2*i,0) = from[i].x() * to[i].z();
+		m(2*i,1) = from[i].y() * to[i].z();
+		m(2*i,2) = from[i].z() * to[i].z();
+		m(2*i,6) = -from[i].x() * to[i].x();
+		m(2*i,7) = -from[i].y() * to[i].x();
+		m(2*i,8) = -from[i].z() * to[i].x();
+
+		m(2*i+1,3) = from[i].x() * to[i].z();
+		m(2*i+1,4) = from[i].y() * to[i].z();
+		m(2*i+1,5) = from[i].z() * to[i].z();
+		m(2*i+1,6) = -from[i].x() * to[i].y();
+		m(2*i+1,7) = -from[i].y() * to[i].y();
+		m(2*i+1,8) = -from[i].z() * to[i].y();
+	}
+
+	QVector< QVector< double > > eigenvectors;
+	QVector< double > eigenvalues;
+
+	GMatrixd mt( 9, 8 );
+	m.transpose( mt );
+
+	GMatrixd mtm( 9, 9 );
+	GMatrixd::times( mt, m, mtm );
+
+	mtm.eigenvalueDecomposition( &eigenvectors, &eigenvalues );
+
+	for( int i=0;i<3;i++){
+		for( int j=0;j<3;j++){
+			output( i, j ) = eigenvectors[0][3*i+j];
+		}
+	}
+}
+#endif

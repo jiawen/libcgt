@@ -39,7 +39,7 @@ public:
 	Vector4f getRow( int i ) const;
 	void setRow( int i, const Vector4f& v );
 
-	// get column j (mod 4)
+	// get column j
 	Vector4f getCol( int j ) const;
 	void setCol( int j, const Vector4f& v );
 

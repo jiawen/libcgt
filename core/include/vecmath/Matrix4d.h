@@ -37,7 +37,7 @@ public:
 	Vector4d getRow( int i ) const;
 	void setRow( int i, const Vector4d& v );
 
-	// get column j (mod 4)
+	// get column j
 	Vector4d getCol( int j ) const;
 	void setCol( int j, const Vector4d& v );
 

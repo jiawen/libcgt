@@ -17,56 +17,73 @@ const Quat4f Quat4f::ZERO = Quat4f( 0, 0, 0, 0 );
 // static
 const Quat4f Quat4f::IDENTITY = Quat4f( 1, 0, 0, 0 );
 
-Quat4f::Quat4f()
+Quat4f::Quat4f() :
+
+	w( 0 ),
+	x( 0 ),
+	y( 0 ),
+	z( 0 )
+
 {
-	m_elements[ 0 ] = 0;
-	m_elements[ 1 ] = 0;
-	m_elements[ 2 ] = 0;
-	m_elements[ 3 ] = 0;
+	w = 0;
+	x = 0;
+	y = 0;
+	z = 0;
 }
 
-Quat4f::Quat4f( float w, float x, float y, float z )
+Quat4f::Quat4f( float w, float x, float y, float z ) :
+	
+	w( w ),
+	x( x ),
+	y( y ),
+	z( z )
 {
-	m_elements[ 0 ] = w;
-	m_elements[ 1 ] = x;
-	m_elements[ 2 ] = y;
-	m_elements[ 3 ] = z;
+
 }
 
-Quat4f::Quat4f( const Quat4f& rq )
+Quat4f::Quat4f( const Quat4f& rq ) :
+
+	w( rq.w ),
+	x( rq.x ),
+	y( rq.y ),
+	z( rq.z )
+
 {
-	m_elements[ 0 ] = rq.m_elements[ 0 ];
-	m_elements[ 1 ] = rq.m_elements[ 1 ];
-	m_elements[ 2 ] = rq.m_elements[ 2 ];
-	m_elements[ 3 ] = rq.m_elements[ 3 ];
+
 }
 
 Quat4f& Quat4f::operator = ( const Quat4f& rq )
 {
 	if( this != ( &rq ) )
 	{
-		m_elements[ 0 ] = rq.m_elements[ 0 ];
-		m_elements[ 1 ] = rq.m_elements[ 1 ];
-		m_elements[ 2 ] = rq.m_elements[ 2 ];
-		m_elements[ 3 ] = rq.m_elements[ 3 ];
+		w = rq.w;
+		x = rq.x;
+		y = rq.y;
+		z = rq.z;
 	}
     return( *this );
 }
 
-Quat4f::Quat4f( const Vector3f& v )
+Quat4f::Quat4f( const Vector3f& v ) :
+
+	w( 0 ),
+	x( v.x ),
+	y( v.y ),
+	z( v.z )
+
 {
-	m_elements[ 0 ] = 0;
-	m_elements[ 1 ] = v[ 0 ];
-	m_elements[ 2 ] = v[ 1 ];
-	m_elements[ 3 ] = v[ 2 ];
+
 }
 
-Quat4f::Quat4f( const Vector4f& v )
+Quat4f::Quat4f( const Vector4f& v ) :
+
+	w( v.x ),
+	x( v.y ),
+	y( v.z ),
+	z( v.w )
+
 {
-	m_elements[ 0 ] = v[ 0 ];
-	m_elements[ 1 ] = v[ 1 ];
-	m_elements[ 2 ] = v[ 2 ];
-	m_elements[ 3 ] = v[ 3 ];
+
 }
 
 const float& Quat4f::operator [] ( int i ) const
@@ -83,9 +100,9 @@ Vector3f Quat4f::xyz() const
 {
 	return Vector3f
 	(
-		m_elements[ 1 ],
-		m_elements[ 2 ],
-		m_elements[ 3 ]
+		x,
+		y,
+		z
 	);
 }
 
@@ -93,37 +110,37 @@ Vector4f Quat4f::wxyz() const
 {
 	return Vector4f
 	(
-		m_elements[ 0 ],
-		m_elements[ 1 ],
-		m_elements[ 2 ],
-		m_elements[ 3 ]
+		w,
+		x,
+		y,
+		z
 	);
 }
 
-float Quat4f::abs() const
+float Quat4f::norm() const
 {
-	return sqrt( absSquared() );	
+	return sqrt( normSquared() );	
 }
 
-float Quat4f::absSquared() const
+float Quat4f::normSquared() const
 {
 	return
 	(
-		m_elements[ 0 ] * m_elements[ 0 ] +
-		m_elements[ 1 ] * m_elements[ 1 ] +
-		m_elements[ 2 ] * m_elements[ 2 ] +
-		m_elements[ 3 ] * m_elements[ 3 ]
+		w * w +
+		x * x +
+		y * y +
+		z * z
 	);
 }
 
 void Quat4f::normalize()
 {
-	float reciprocalAbs = 1.f / abs();
+	float reciprocalNorm = 1.f / norm();
 
-	m_elements[ 0 ] *= reciprocalAbs;
-	m_elements[ 1 ] *= reciprocalAbs;
-	m_elements[ 2 ] *= reciprocalAbs;
-	m_elements[ 3 ] *= reciprocalAbs;
+	w *= reciprocalNorm;
+	x *= reciprocalNorm;
+	y *= reciprocalNorm;
+	z *= reciprocalNorm;
 }
 
 Quat4f Quat4f::normalized() const
@@ -135,35 +152,35 @@ Quat4f Quat4f::normalized() const
 
 void Quat4f::conjugate()
 {
-	m_elements[ 1 ] = -m_elements[ 1 ];
-	m_elements[ 2 ] = -m_elements[ 2 ];
-	m_elements[ 3 ] = -m_elements[ 3 ];
+	x = -x;
+	y = -y;
+	z = -z;
 }
 
 Quat4f Quat4f::conjugated() const
 {
 	return Quat4f
 	(
-		 m_elements[ 0 ],
-		-m_elements[ 1 ],
-		-m_elements[ 2 ],
-		-m_elements[ 3 ]
+		 w,
+		-x,
+		-y,
+		-z
 	);
 }
 
 void Quat4f::invert()
 {
-	Quat4f inverse = conjugated() * ( 1.0f / absSquared() );
+	Quat4f inverse = conjugated() * ( 1.0f / normSquared() );
 
-	m_elements[ 0 ] = inverse.m_elements[ 0 ];
-	m_elements[ 1 ] = inverse.m_elements[ 1 ];
-	m_elements[ 2 ] = inverse.m_elements[ 2 ];
-	m_elements[ 3 ] = inverse.m_elements[ 3 ];
+	w = inverse.w;
+	x = inverse.x;
+	y = inverse.y;
+	z = inverse.z;
 }
 
 Quat4f Quat4f::inverse() const
 {
-	return conjugated() * ( 1.0f / absSquared() );
+	return conjugated() * ( 1.0f / normSquared() );
 }
 
 
@@ -172,19 +189,19 @@ Quat4f Quat4f::log() const
 	float len =
 		sqrt
 		(
-			m_elements[ 1 ] * m_elements[ 1 ] +
-			m_elements[ 2 ] * m_elements[ 2 ] +
-			m_elements[ 3 ] * m_elements[ 3 ]
+			x * x +
+			y * y +
+			z * z
 		);
 
 	if( len < 1e-6 )
 	{
-		return Quat4f( 0, m_elements[ 1 ], m_elements[ 2 ], m_elements[ 3 ] );
+		return Quat4f( 0, x, y, z );
 	}
 	else
 	{
-		float coeff = acos( m_elements[ 0 ] ) / len;
-		return Quat4f( 0, m_elements[ 1 ] * coeff, m_elements[ 2 ] * coeff, m_elements[ 3 ] * coeff );
+		float coeff = acos( w ) / len;
+		return Quat4f( 0, x * coeff, y * coeff, z * coeff );
 	}
 }
 
@@ -193,54 +210,75 @@ Quat4f Quat4f::exp() const
 	float theta =
 		sqrt
 		(
-			m_elements[ 1 ] * m_elements[ 1 ] +
-			m_elements[ 2 ] * m_elements[ 2 ] +
-			m_elements[ 3 ] * m_elements[ 3 ]
+			x * x +
+			y * y +
+			z * z
 		);
 
 	if( theta < 1e-6 )
 	{
-		return Quat4f( cos( theta ), m_elements[ 1 ], m_elements[ 2 ], m_elements[ 3 ] );
+		return Quat4f( cos( theta ), x, y, z );
 	}
 	else
 	{
 		float coeff = sin( theta ) / theta;
-		return Quat4f( cos( theta ), m_elements[ 1 ] * coeff, m_elements[ 2 ] * coeff, m_elements[ 3 ] * coeff );		
+		return Quat4f( cos( theta ), x * coeff, y * coeff, z * coeff );		
 	}
 }
 
-Vector3f Quat4f::getAxisAngle( float* radiansOut )
+Vector3f Quat4f::getAxisAngle( float* radiansOut ) const
+{
+	Vector4f axisAngle = getAxisAngle();
+	*radiansOut = axisAngle.w;
+	return axisAngle.xyz();
+}
+
+Vector4f Quat4f::getAxisAngle() const
 {
 	float theta = acos( w ) * 2;
-	float vectorNorm = sqrt( x * x + y * y + z * z );
-	float reciprocalVectorNorm = 1.f / vectorNorm;
 
-	*radiansOut = theta;
-	return Vector3f
-	(
-		x * reciprocalVectorNorm,
-		y * reciprocalVectorNorm,
-		z * reciprocalVectorNorm
-	);
+	float vectorNormSquared = x * x + y * y + z * z;
+	if( vectorNormSquared > 0 )
+	{
+		float vectorNorm = sqrt( vectorNormSquared );
+		float reciprocalVectorNorm = 1.f / vectorNorm;
+
+		return Vector4f
+		(
+			x * reciprocalVectorNorm,
+			y * reciprocalVectorNorm,
+			z * reciprocalVectorNorm,
+			theta
+		);
+	}
+	else
+	{
+		return Vector4f( 0, 0, 0, 0 );
+	}
 }
 
 void Quat4f::setAxisAngle( float radians, const Vector3f& axis )
 {
-	m_elements[ 0 ] = cos( radians / 2 );
+	w = cos( radians / 2 );
 
 	float sinHalfTheta = sin( radians / 2 );
 	float vectorNorm = axis.abs();
 	float reciprocalVectorNorm = 1.f / vectorNorm;
 
-	m_elements[ 1 ] = axis.x * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 2 ] = axis.y * sinHalfTheta * reciprocalVectorNorm;
-	m_elements[ 3 ] = axis.z * sinHalfTheta * reciprocalVectorNorm;
+	x = axis.x * sinHalfTheta * reciprocalVectorNorm;
+	y = axis.y * sinHalfTheta * reciprocalVectorNorm;
+	z = axis.z * sinHalfTheta * reciprocalVectorNorm;
+}
+
+void Quat4f::setAxisAngle( const Vector4f& axisAngle )
+{
+	setAxisAngle( axisAngle.w, axisAngle.xyz() );
 }
 
 void Quat4f::print()
 {
 	printf( "< %.2f + %.2f i + %.2f j + %.2f k >\n",
-		m_elements[ 0 ], m_elements[ 1 ], m_elements[ 2 ], m_elements[ 3 ] );
+		w, x, y, z );
 }
 
 // static
