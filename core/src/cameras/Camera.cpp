@@ -149,11 +149,6 @@ Vector3f Camera::forward() const
 	return ( m_center - m_eye ).normalized();
 }
 
-void Camera::setForward( const Vector3f& forward )
-{
-	m_center = m_eye - forward;
-}
-
 Vector3f Camera::right() const
 {
 	return Vector3f::cross( forward(), m_up );
@@ -274,20 +269,63 @@ Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport )
 	return ( pointOnNearPlane - m_eye ).normalized();
 }
 
-Vector3f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenSize )
+Vector4f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenSize )
 {
 	Vector4f clip = viewProjectionMatrix() * world;
 	Vector4f ndc = clip.homogenized();
 
 	float sx = screenSize.x * 0.5f * ( ndc.x + 1.0f );
 	float sy = screenSize.y * 0.5f * ( ndc.y + 1.0f );
+	float sz;
 
-	// TODO: if( directX )
-	//	float sz = ndc.z
-	// else // OpenGL:
-	//	float sz = 0.5f * ( ndc.z + 1.0f );
-	float sz = ndc.z;
-	// float w = clip.w?
+	if( m_directX )
+	{
+		sz = ndc.z;
+	}
+	else
+	{
+		sz = 0.5f * ( ndc.z + 1.0f );
+	}
+	
+	float sw = clip.w;
 
-	return Vector3f( sx, sy, sz );
+	return Vector4f( sx, sy, sz, sw );
+}
+
+Vector2f Camera::pixelToNDC( const Vector2f& xy, const Vector2i& screenSize )
+{
+	// convert from screen coordinates to NDC
+	float ndcX = 2 * xy.x / screenSize.x - 1;
+	float ndcY = 2 * xy.y / screenSize.y - 1;
+
+	return Vector2f( ndcX, ndcY );
+}
+
+Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize )
+{
+	Vector2f ndcXY = pixelToNDC( xy, screenSize );
+
+	// depth = -zEye
+	// xClip = xEye * ( 2 * zNear ) / ( right - left ) + zEye * ( right + left ) / ( right - left )
+	// wClip = -zEye
+	// xNDC = xClip = wClip = xClip / -zEye = xClip / depth
+	//	
+	// -->
+	// xNDC = xClip / depth
+	// xEye = ( xClip + depth * ( right + left ) / ( right - left ) ) * ( right - left ) / ( 2 * zNear )
+
+	float xClip = ndcXY.x * depth;
+	float yClip = ndcXY.y * depth;
+
+	float xEye = ( xClip + depth * ( m_right + m_left ) / ( m_right - m_left ) ) * ( m_right - m_left ) / ( 2 * m_zNear );
+	float yEye = ( yClip + depth * ( m_top + m_bottom ) / ( m_top - m_bottom ) ) * ( m_top - m_bottom ) / ( 2 * m_zNear );	
+	float zEye = -depth;
+
+	return Vector4f( xEye, yEye, zEye, 1 );
+}
+
+Vector4f Camera::pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize )
+{
+	Vector4f eye = pixelToEye( xy, depth, screenSize );
+	return inverseViewMatrix() * eye;
 }

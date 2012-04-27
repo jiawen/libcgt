@@ -632,9 +632,9 @@ Matrix4f Matrix4f::orthographicProjection( float left, float right, float bottom
 
 // static
 Matrix4f Matrix4f::perspectiveProjection( float left, float right,
-										 float bottom, float top,
-										 float zNear, float zFar,
-										 bool directX )
+	float bottom, float top,
+	float zNear, float zFar,
+	bool directX )
 {
 	Matrix4f projection; // zero matrix
 
@@ -686,8 +686,8 @@ Matrix4f Matrix4f::perspectiveProjection( float fovYRadians, float aspect, float
 
 // static
 Matrix4f Matrix4f::infinitePerspectiveProjection( float left, float right,
-												 float bottom, float top,
-												 float zNear, bool directX )
+	float bottom, float top,
+	float zNear, bool directX )
 {
 	Matrix4f projection;
 
@@ -695,6 +695,34 @@ Matrix4f Matrix4f::infinitePerspectiveProjection( float left, float right,
 	projection( 1, 1 ) = ( 2.0f * zNear ) / ( top - bottom );
 	projection( 0, 2 ) = ( right + left ) / ( right - left );
 	projection( 1, 2 ) = ( top + bottom ) / ( top - bottom );
+	projection( 3, 2 ) = -1;
+
+	// infinite view frustum
+	// just take the limit as far --> inf of the regular frustum
+	if( directX )
+	{
+		projection( 2, 2 ) = -1.0f;
+		projection( 2, 3 ) = -zNear;		
+	}
+	else
+	{
+		projection( 2, 2 ) = -1.0f;
+		projection( 2, 3 ) = -2.0f * zNear;
+	}
+
+	return projection;
+}
+
+// static
+Matrix4f Matrix4f::infinitePerspectiveProjection( float fovYRadians, float aspect, float zNear, bool directX )
+{
+	Matrix4f projection; // zero matrix
+
+	float yScale = MathUtils::cot( 0.5f * fovYRadians );
+	float xScale = yScale / aspect;
+
+	projection( 0, 0 ) = xScale;
+	projection( 1, 1 ) = yScale;	
 	projection( 3, 2 ) = -1;
 
 	// infinite view frustum

@@ -5,6 +5,7 @@
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
+#include <vecmath/Vector4f.h>
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Rect2f.h>
 
@@ -60,7 +61,6 @@ public:
 
 	// return the "forward" unit vector
 	Vector3f forward() const;
-	void setForward( const Vector3f& forward );
 
 	// return the "right" unit vector (forward cross up)
 	Vector3f right() const;	
@@ -100,17 +100,42 @@ public:
 	Matrix4f inverseViewMatrix() const;
 	Matrix4f inverseViewProjectionMatrix() const;
 
+	// Given a point in the world and a screen of size screenSize
+	// returns (x,y,z,w) where:
+	// (x,y) is the 2D pixel coordinate on the screen (outside [0,width),[0,height) is clipped)
+	// z is the nonlinear screen-space z,
+	//   where [zNear,zFar] is mapped to [0,1] (outside this range is clipped)
+	// w is z-coordinate (not radial distance) in eye space (farther things are positive)
+	// This is what comes out as the float4 SV_POSITION in an HLSL pixel shader
+	Vector4f projectToScreen( const Vector4f& world, const Vector2i& screenSize );
+
+	// TODO: write unprojectToWorld(), that takes in the useless zScreen value
+	// just for completeness
+	// pixelToEye and pixelToWorld are much more useful.
+	// In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye), zEye = -depth
+
 	// given a 2D pixel (x,y) on a screen of size screenSize
 	// returns a 3D ray direction
 	// (call eye() to get the ray origin)
 	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize );
 
 	// xy and viewport are in pixel coordinates
-	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport );
+	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport );	
 
-	// Given a point in the world and a screen of size screenSize
-	// returns the 2D pixel coordinate (along with the nonlinear Z)
-	Vector3f projectToScreen( const Vector4f& world, const Vector2i& screenSize );
+	// TODO: support viewports
+	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
+	// returns its NDC in [-1,1]^2
+	Vector2f pixelToNDC( const Vector2f& xy, const Vector2i& screenSize );	
+
+	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
+	// and an actual depth value (\in [0, +inf)), not distance along ray,
+	// returns its eye space coordinates (right handed, output z will be negative), output.w = 1
+	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize );
+
+	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
+	// and an actual depth value (\in [0, +inf)), not distance along ray,
+	// returns its world space coordinates, output.w = 1
+	Vector4f pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize );		
 
 protected:
 
@@ -128,5 +153,9 @@ protected:
 	Vector3f m_center;
 	Vector3f m_up;
 
-    bool m_directX; // if the matrices are constructed for DirectX or OpenGL
+	// if the projection matrix is for DirectX or OpenGL
+	// the view matrix is always right handed
+	// the only difference in the projection matrix is whether
+	// [zNear, zFar] gets mapped to [0,1] (DirectX) or [-1,1] (OpenGL) in NDC	
+    bool m_directX;
 };

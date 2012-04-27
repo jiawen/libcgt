@@ -108,15 +108,19 @@ public:
 	static Matrix4f perspectiveProjection( float left, float right, float bottom, float top, float zNear, float zFar, bool directX );
 	// non-skewed perspective projection matrix defined by a field of view, aspect ratio, zNear, and zFar
 	static Matrix4f perspectiveProjection( float fovYRadians, float aspect, float zNear, float zFar, bool directX );
+
 	// [potentially] skewed perspective projection matrix defined by 4 points on the near plane, zNear, and zFar at positive infinity
 	static Matrix4f infinitePerspectiveProjection( float left, float right, float bottom, float top, float zNear, bool directX );
+	// non-skewed perspective projection matrix defined by a field of view, aspect ratio, zNear, and zFar at positive infinity
+	static Matrix4f infinitePerspectiveProjection( float fovYRadians, float aspect, float zNear, bool directX );
 	
 	// Same as viewport( 0, 0, width, height, directX )
 	static Matrix4f viewport( float width, float height, bool directX );
 
 	// Constructs the matrix mapping NDC coordinates
 	// (OpenGL: [-1,1]^3, Direct3D: [-1,1]^2 x [0,1])
-	// to window coordinates [x0, x0 + width), [y0, y0 + height)
+	// to window coordinates: [x0, x0 + width), [y0, y0 + height), [0,1]
+	// TODO: OpenGL has glDepthRange, (default to [0,1]) for window coordinates' z as well
 	static Matrix4f viewport( float x0, float y0, float width, float height, bool directX );
 	static Matrix4f viewport( const Rect2f& rect, bool directX );
 

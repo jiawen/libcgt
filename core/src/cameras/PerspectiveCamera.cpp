@@ -44,18 +44,11 @@ void PerspectiveCamera::setPerspective( float fovY, float aspect,
 	m_fovY = fovY;
 	m_aspect = aspect;
 
-	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( 0.5f * fovY );
-	float tanHalfFovY = tan( halfFovY );
+	m_zNear = zNear;
+	m_zFar = zFar;
+	m_zFarIsInfinite = zFarIsInfinite;
 
-	float top = zNear * tanHalfFovY;
-	float bottom = -top;
-
-	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = aspect * top;
-	float left = -right;
-
-	setFrustum( left, right, bottom, top, zNear, zFar, zFarIsInfinite );
+	updateFrustum();	
 }
 
 float PerspectiveCamera::aspect() const
@@ -66,26 +59,33 @@ float PerspectiveCamera::aspect() const
 void PerspectiveCamera::setAspect( float aspect )
 {
 	m_aspect = aspect;
-
-	// HACK: internally using degrees
-
-	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( 0.5f * m_fovY );
-	float tanHalfFovY = tan( halfFovY );
-
-	float top = m_zNear * tanHalfFovY;
-	float bottom = -top;
-
-	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = aspect * top;
-	float left = -right;
-
-	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
+	updateFrustum();
 }
 
 void PerspectiveCamera::setAspect( int width, int height )
 {
 	setAspect( Arithmetic::divideIntsToFloat( width, height ) );
+}
+
+float PerspectiveCamera::fovYRadians() const
+{
+	return MathUtils::degreesToRadians( m_fovY );
+}
+
+void PerspectiveCamera::setFovYRadians( float fovY )
+{
+	m_fovY = MathUtils::radiansToDegrees( fovY );
+	updateFrustum();
+}
+
+float PerspectiveCamera::halfFovYRadians() const
+{
+	return 0.5f * fovYRadians();
+}
+
+float PerspectiveCamera::tanHalfFovY() const
+{
+	return tan( halfFovYRadians() );
 }
 
 float PerspectiveCamera::fovYDegrees() const
@@ -97,20 +97,7 @@ void PerspectiveCamera::setFovYDegrees( float fovY )
 {
 	m_fovY = fovY;
 
-	// HACK: internally using degrees
-
-	// tan( theta / 2 ) = up / zNear
-	float halfFovY = MathUtils::degreesToRadians( 0.5f * fovY );
-	float tanHalfFovY = tan( halfFovY );
-
-	float top = m_zNear * tanHalfFovY;
-	float bottom = -top;
-
-	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = m_aspect * top;
-	float left = -right;
-
-	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
+	updateFrustum();
 }
 
 // virtual
@@ -128,6 +115,20 @@ Matrix4f PerspectiveCamera::projectionMatrix() const
 			m_bottom, m_top,
 			m_zNear, m_zFar, m_zFarIsInfinite );
 	}
+}
+
+Vector4f PerspectiveCamera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize )
+{
+	Vector2f ndcXY = pixelToNDC( xy, screenSize );
+	float t = tanHalfFovY();
+	// x_ndc = x_eye / tan( theta/2 ) / depth / aspect
+	// y_ndc = y_eye / tan( theta/2 ) / depth
+	
+	float xEye = ndcXY.x * t * aspect() * depth;
+	float yEye = ndcXY.y * t * depth;
+	float zEye = -depth; // right handed, z points toward viewer
+
+	return Vector4f( xEye, yEye, zEye, 1 );
 }
 
 // static
@@ -278,4 +279,17 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	camera.m_directX = isDirectX;
 
 	return camera;
+}
+
+void PerspectiveCamera::updateFrustum()
+{
+	// tan( theta / 2 ) = up / zNear
+	float top = m_zNear * tanHalfFovY();
+	float bottom = -top;
+
+	// aspect = width / height = ( right - left ) / ( top - bottom )
+	float right = m_aspect * top;
+	float left = -right;
+
+	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
 }

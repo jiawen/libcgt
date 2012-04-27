@@ -154,7 +154,7 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 
 int D3D11Mesh::capacity() const
 {
-	return m_vertexArray.size();
+	return static_cast< int >( m_vertexArray.size() );
 }
 
 std::vector< Vector2i >& D3D11Mesh::vertexRanges()
