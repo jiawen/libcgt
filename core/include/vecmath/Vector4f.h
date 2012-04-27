@@ -60,8 +60,13 @@ public:
 
 	// TODO: swizzle all the vec4s
 
+	// TODO: these are deprecated, use norm() and normSquared()
 	float abs() const;
 	float absSquared() const;
+
+	float norm() const;
+	float normSquared() const;
+
 	void normalize();
 	Vector4f normalized() const;
 

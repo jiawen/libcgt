@@ -278,7 +278,7 @@ Matrix4d Matrix4d::inverse( bool* pbIsSingular, double epsilon ) const
 
 	double determinant = m00 * cofactor00 + m01 * cofactor01 + m02 * cofactor02 + m03 * cofactor03;
 
-	bool isSingular = ( fabs( determinant ) < epsilon );
+	bool isSingular = ( abs( determinant ) < epsilon );
 	if( isSingular )
 	{
 		if( pbIsSingular != NULL )

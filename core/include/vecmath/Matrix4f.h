@@ -36,42 +36,48 @@ public:
 	const float& operator () ( int i, int j ) const;
 	float& operator () ( int i, int j );
 
+	// get/set row i
 	Vector4f getRow( int i ) const;
 	void setRow( int i, const Vector4f& v );
 
-	// get column j
+	// get/set column j
 	Vector4f getCol( int j ) const;
 	void setCol( int j, const Vector4f& v );
 
-	// gets the 2x2 submatrix of this matrix to m
+	// gets/sets the 2x2 submatrix
 	// starting with upper left corner at (i0, j0)
-	Matrix2f getSubmatrix2x2( int i0, int j0 ) const;
-
-	// gets the 3x3 submatrix of this matrix to m
-	// starting with upper left corner at (i0, j0)
-	Matrix3f getSubmatrix3x3( int i0, int j0 ) const;
-
-	// sets a 2x2 submatrix of this matrix to m
-	// starting with upper left corner at (i0, j0)
+	Matrix2f getSubmatrix2x2( int i0 = 0, int j0 = 0 ) const;
 	void setSubmatrix2x2( int i0, int j0, const Matrix2f& m );
 
-	// sets a 3x3 submatrix of this matrix to m
+	// gets/sets the 3x3 submatrix
 	// starting with upper left corner at (i0, j0)
+	Matrix3f getSubmatrix3x3( int i0 = 0, int j0 = 0 ) const;	
 	void setSubmatrix3x3( int i0, int j0, const Matrix3f& m );
 
 	float determinant() const;
-	Matrix4f inverse( bool* pbIsSingular = NULL, float epsilon = 0.f ) const; // TODO: invert(), inverted()?
+	Matrix4f inverse( bool* pbIsSingular = nullptr, float epsilon = 0.f ) const; // TODO: invert(), inverted()?
 
 	void transpose();
 	Matrix4f transposed() const;
 
+	// ----- Decompositions -----
 	// inverse transpose of top left 3x3 submatrix
 	Matrix3f normalMatrix() const;
 	
-	// inverse transpose of top left 3x3 submatrix on top left
-	// 0 elsewhere
+	// inverse transpose of top left 3x3 submatrix on top left, 0 elsewhere
 	Matrix4f normalMatrix4x4() const;
 
+	// *assuming* this matrix is a composition of a rotation and a translation
+	// and *no scaling*
+	// decomposes it into its components
+	void decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation );
+	void decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation );
+
+	// *assuming* this matrix is a composition of a rotation, a scaling, and a translation
+	// decomposes it into its components
+	void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation );
+
+	// ---- Utility ----
 	// implicit cast
 	operator const float* () const;
 	operator float* ();

@@ -55,10 +55,15 @@ public:
 	// returns ( -y, x )
 	Vector2f normal() const { return Vector2f( -y, x ); }
 
-    float abs() const { return sqrt(absSquared()); }
-    float absSquared() const { return m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1]; }
-    void normalize() { float norm = abs(); m_elements[0] /= norm; m_elements[1] /= norm; }
-    Vector2f normalized() const { float norm = abs(); return Vector2f( m_elements[0] / norm, m_elements[1] / norm ); }
+	// TODO: these are deprecated
+    float abs() const { return norm(); }
+	float absSquared() const { return normSquared(); }
+
+	float norm() const { return sqrt( normSquared() ); }
+	float normSquared() const { return x * x + y * y; }
+
+    void normalize() { float n = abs(); x /= n; y /= n; }
+    Vector2f normalized() const { float n = norm(); return Vector2f( x / n, y / n); }
 
     void negate() { m_elements[0] = -m_elements[0]; m_elements[1] = -m_elements[1]; }
 

@@ -197,13 +197,22 @@ Vector3f Vector4f::wxz() const
 
 float Vector4f::abs() const
 {
-	return sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
+	return norm();
 }
 
 float Vector4f::absSquared() const
 {
+	return normSquared();
+}
+
+float Vector4f::norm() const
+{
+	return sqrt( normSquared() );
+}
+
+float Vector4f::normSquared() const
+{
 	return x * x + y * y + z * z + w * w;
-	//return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
 }
 
 void Vector4f::normalize()

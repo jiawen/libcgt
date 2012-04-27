@@ -99,9 +99,9 @@ Vector3f Vector3f::zxy() const
 	return Vector3f( m_elements[2], m_elements[0], m_elements[1] );
 }
 
-float Vector3f::abs() const
+float Vector3f::norm() const
 {
-	return sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] );
+	return sqrt( normSquared() );
 }
 
 void Vector3f::normalize()

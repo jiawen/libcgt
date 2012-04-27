@@ -48,8 +48,12 @@ public:
 	Vector3f zxy() const;
 	// TODO: all the other combinations
 
-	float abs() const;
-    float absSquared() const { return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] ); }
+	// TODO: these are deprecated, use norm() and normSquared()
+	float abs() const { return norm(); }
+	float absSquared() const { return normSquared(); }
+
+	float norm() const;
+	float normSquared() const { return( x * x + y * y + z * z ); }
 
 	void normalize();
 	Vector3f normalized() const;
@@ -78,7 +82,7 @@ public:
 	// returns v0 * ( 1 - alpha ) * v1 * alpha
 	static Vector3f lerp( const Vector3f& v0, const Vector3f& v1, float alpha );
 
-	// catmull-rom interpolation
+	// Catmull-Rom interpolation
 	static Vector3f cubicInterpolate( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2, const Vector3f& p3, float t );
 
 	inline Vector3f& operator += ( const Vector3f& v );

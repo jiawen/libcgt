@@ -255,7 +255,7 @@ Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 
 	float determinant = m00 * cofactor00 + m01 * cofactor01 + m02 * cofactor02 + m03 * cofactor03;
 
-	bool isSingular = ( fabs( determinant ) < epsilon );
+	bool isSingular = ( abs( determinant ) < epsilon );
 	if( isSingular )
 	{
 		if( pbIsSingular != NULL )
@@ -314,15 +314,45 @@ Matrix4f Matrix4f::transposed() const
 
 Matrix3f Matrix4f::normalMatrix() const
 {
-	return getSubmatrix3x3( 0, 0 ).inverse().transposed();
+	return getSubmatrix3x3().inverse().transposed();
 }
 
 Matrix4f Matrix4f::normalMatrix4x4() const
 {
-	Matrix3f n = getSubmatrix3x3( 0, 0 ).inverse().transposed();
+	Matrix3f n = getSubmatrix3x3().inverse().transposed();
 	Matrix4f n4;
 	n4.setSubmatrix3x3( 0, 0, n );
 	return n4;
+}
+
+void Matrix4f::decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation )
+{
+	Matrix3f r;
+	decomposeRotationTranslation( r, translation );
+	rotation = Quat4f::fromRotationMatrix( r );
+}
+
+void Matrix4f::decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation )
+{
+	rotation = getSubmatrix3x3();
+	translation = getCol( 3 ).xyz();
+}
+
+void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation )
+{
+	Matrix3f r = getSubmatrix3x3();
+	
+	scaling.x = r.getRow( 0 ).norm();
+	scaling.y = r.getRow( 1 ).norm();
+	scaling.z = r.getRow( 2 ).norm();
+
+	r.m00 /= scaling.x;
+	r.m11 /= scaling.y;
+	r.m22 /= scaling.z;
+
+	translation = getCol( 3 ).xyz();
+
+	rotation = Quat4f::fromRotationMatrix( r );
 }
 
 Matrix4f::operator const float* () const

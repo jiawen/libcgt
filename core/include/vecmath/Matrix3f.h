@@ -35,7 +35,7 @@ public:
 
 	// gets the 2x2 submatrix of this matrix to m
 	// starting with upper left corner at (i0, j0)
-	Matrix2f getSubmatrix2x2( int i0, int j0 ) const;
+	Matrix2f getSubmatrix2x2( int i0 = 0, int j0 = 0 ) const;
 
 	// sets a 2x2 submatrix of this matrix to m
 	// starting with upper left corner at (i0, j0)
