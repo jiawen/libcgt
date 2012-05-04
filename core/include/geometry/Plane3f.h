@@ -1,5 +1,4 @@
-#ifndef PLANE_3F_H
-#define PLANE_3F_H
+#pragma once
 
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Vector3f.h>
@@ -43,6 +42,7 @@ public:
     Vector3f closestPointOnPlane( const Vector3f& p ) const;
 
     // Returns the *signed* shortest distance between p and the plane.
+	// distance is positive on the same side as the normal
     float distance( const Vector3f& p ) const;
 
     // Returns the point on the plane closest to the origin
@@ -81,5 +81,3 @@ public:
 	float c;
 	float d;    
 };
-
-#endif // PLANE_3F_H

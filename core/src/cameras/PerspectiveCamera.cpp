@@ -113,7 +113,7 @@ Matrix4f PerspectiveCamera::projectionMatrix() const
 	{
 		return Matrix4f::perspectiveProjection( m_left, m_right,
 			m_bottom, m_top,
-			m_zNear, m_zFar, m_zFarIsInfinite );
+			m_zNear, m_zFar, m_directX );
 	}
 }
 

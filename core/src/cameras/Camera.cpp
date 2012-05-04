@@ -56,23 +56,49 @@ void Camera::getFrustum( float* pfLeft, float* pfRight,
 
 std::vector< Vector3f > Camera::frustumCorners() const
 {
-	std::vector< Vector3f > out( 8 );
+	std::vector< Vector3f > corners( 8 );
 
 	Vector4f cubePoint( 0.f, 0.f, 0.f, 1.f );
-	Matrix4f invProj = inverseViewProjectionMatrix();
+	Matrix4f invViewProj = inverseViewProjectionMatrix();
 
 	// take the NDC cube and unproject it
 	for( int i = 0; i < 8; ++i )
 	{
+		// so vertices go around in order counterclockwise
+		cubePoint[0] = ( ( i & 1 ) ^ ( ( i & 2 ) >> 1 ) ? 1.f : -1.f );
 		cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
-		cubePoint[0] = ( ( i & 1 ) ? 1.f : -1.f ) * cubePoint[1]; // so vertices go around in order
-		// cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f );
-		cubePoint[2] = ( i & 4 ) ? 1.f : 0;
+		cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
 
-		out[ i ] = ( invProj * cubePoint ).homogenized().xyz();
+		// this would be the hypercube ordering
+		// cubePoint[0] = ( i & 1 ) ? 1.f : -1.f;
+		// cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
+		// cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]		
+
+		corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz();
 	}
 
-	return out;
+	return corners;
+}
+
+std::vector< Plane3f > Camera::frustumPlanes() const
+{
+	auto corners = frustumCorners();
+	std::vector< Plane3f > planes( 6 );
+
+	// left
+	planes[ 0 ] = Plane3f( corners[ 0 ], corners[ 3 ], corners[ 4 ] );
+	// bottom
+	planes[ 1 ] = Plane3f( corners[ 1 ], corners[ 0 ], corners[ 4 ] );
+	// right
+	planes[ 2 ] = Plane3f( corners[ 2 ], corners[ 1 ], corners[ 5 ] );
+	// top
+	planes[ 3 ] = Plane3f( corners[ 3 ], corners[ 2 ], corners[ 6 ] );
+	// near
+	planes[ 4 ] = Plane3f( corners[ 0 ], corners[ 1 ], corners[ 2 ] );
+	// far
+	planes[ 5 ] = Plane3f( corners[ 5 ], corners[ 4 ], corners[ 6 ] );
+
+	return planes;
 }
 
 bool Camera::isZFarInfinite()

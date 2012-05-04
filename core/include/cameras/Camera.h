@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include <geometry/Plane3f.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
@@ -33,7 +34,14 @@ public:
 		bool* pbZFarIsInfinite = nullptr ) const;
 
 	// return the 8 corners of the camera frustum
+	// 0-3 are the near plane, in ccw order
+	// 4-7 are the far plane, in ccw order
 	std::vector< Vector3f > frustumCorners() const;
+
+	// return the 6 planes of the camera frustum
+	// in the order: left, bottom, right, top, near, far
+	// all the planes have normals pointing outward	
+	std::vector< Plane3f > frustumPlanes() const;
 
 	bool isZFarInfinite();
 

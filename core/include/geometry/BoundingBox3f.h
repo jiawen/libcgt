@@ -46,6 +46,8 @@ public:
 	// returns the maximum of the lengths of the 3 sides of this box
 	float longestSideLength() const;
 
+	// returns the 8 corners of the bounding box
+	// in the hypercube ordering (x changes most frequently, y next, then z)
 	std::vector< Vector3f > corners() const;
 
 	// enlarges the box if p is outside it
