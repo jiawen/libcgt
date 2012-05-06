@@ -356,13 +356,12 @@ Matrix3f Matrix3f::uniformScaling( float s )
 }
 
 // static
-Matrix3f Matrix3f::rotation( const Vector3f& rDirection, float degrees )
+Matrix3f Matrix3f::rotation( const Vector3f& axis, float radians )
 {
-	Vector3f normalizedDirection = rDirection.normalized();
+	Vector3f normalizedDirection = axis.normalized();
 	
-	float theta = MathUtils::degreesToRadians( degrees );
-	float cosTheta = cos( theta );
-	float sinTheta = sin( theta );
+	float cosTheta = cos( radians );
+	float sinTheta = sin( radians );
 
 	float x = normalizedDirection.x;
 	float y = normalizedDirection.y;

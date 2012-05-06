@@ -90,7 +90,7 @@ public:
 	static Matrix4f rotateX( float radians );
 	static Matrix4f rotateY( float radians );
 	static Matrix4f rotateZ( float radians );
-	static Matrix4f rotation( const Vector3f& direction, float radians );
+	static Matrix4f rotation( const Vector3f& axis, float radians );
 	static Matrix4f scaling( float sx, float sy, float sz );
 	static Matrix4f scaling( const Vector3f& xyz );
 	static Matrix4f uniformScaling( float s );

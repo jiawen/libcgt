@@ -139,6 +139,9 @@ public:
     // lineDirs don't have to be normalized
 	static float lineToLineDistance( const Vector3f& linePoint1, const Vector3f& lineDir1, const Vector3f& linePoint2, const Vector3f& lineDir2 );
 
+	static bool raySphereIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
+		const Vector3f& sphereCenter, float sphereRadius, float* t );
+
 #if 0
 	// TODO: make this non-nasty
 	static void tripleSphereIntersection( Vector3f* c0, float r0,

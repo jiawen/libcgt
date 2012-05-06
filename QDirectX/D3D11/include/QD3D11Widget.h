@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QStack>
 
+#include <vecmath/Vector2i.h>
 #include <vecmath/Vector4f.h>
 
 class QD3D11Widget : public QWidget
@@ -38,7 +39,8 @@ public:
 	ID3D11Texture2D* backBufferDepthStencil();
 	ID3D11DepthStencilView* backBufferDepthStencilView();
 
-	D3D11_VIEWPORT fullWindowViewport();
+	Vector2i screenSize() const;
+	D3D11_VIEWPORT fullWindowViewport() const;
 
 protected:
 

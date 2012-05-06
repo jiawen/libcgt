@@ -89,7 +89,12 @@ ID3D11DepthStencilView* QD3D11Widget::backBufferDepthStencilView()
 	return m_pDepthStencilView;
 }
 
-D3D11_VIEWPORT QD3D11Widget::fullWindowViewport()
+Vector2i QD3D11Widget::screenSize() const
+{
+	return Vector2i( width(), height() );
+}
+
+D3D11_VIEWPORT QD3D11Widget::fullWindowViewport() const
 {
 	return m_fullWindowViewport;
 }

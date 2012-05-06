@@ -469,9 +469,9 @@ Matrix4f Matrix4f::rotateZ( float radians )
 }
 
 // static
-Matrix4f Matrix4f::rotation( const Vector3f& direction, float radians )
+Matrix4f Matrix4f::rotation( const Vector3f& axis, float radians )
 {
-	Vector3f normalizedDirection = direction.normalized();
+	Vector3f normalizedDirection = axis.normalized();
 		
 	float cosTheta = cos( radians );
 	float sinTheta = sin( radians );

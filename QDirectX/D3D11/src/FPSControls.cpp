@@ -50,19 +50,17 @@ FPSXboxGamepadParameters::FPSXboxGamepadParameters( bool invertX, bool invertY,
 
 }
 
-FPSControls::FPSControls( PerspectiveCamera* pCamera,
+FPSControls::FPSControls( const Vector3f& upVector,
 	const FPSMouseParameters& mouseParameters,
 	const FPSKeyboardParameters& keyboardParameters,
-	const FPSXboxGamepadParameters& xboxGamepadParameters ) :
-
-	m_pCamera( pCamera ),
+	const FPSXboxGamepadParameters& xboxGamepadParameters ) :	
 
 	m_mouseParameters( mouseParameters ),
 	m_keyboardParameters( keyboardParameters ),
 	m_xboxGamepadParameters( xboxGamepadParameters )
 
 {
-	setUpVector( Vector3f( 0, 1, 0 ) );
+	setUpVector( upVector );
 }
 
 Vector3f FPSControls::upVector() const
@@ -84,6 +82,43 @@ void FPSControls::setUpVector( const Vector3f& y )
 	// TODO: reset camera
 }
 
+void FPSControls::handleKeyboard( PerspectiveCamera& camera )
+{
+	Vector3f delta;
+
+	if( ( GetAsyncKeyState( 'W' ) & 0x8000 ) != 0 )
+	{
+		delta.z -= m_keyboardParameters.translationPerKeyPress;
+	}
+
+	if( ( GetAsyncKeyState( 'S' ) & 0x8000 ) != 0 )
+	{
+		delta.z += m_keyboardParameters.translationPerKeyPress;
+	}
+
+	if( ( GetAsyncKeyState( 'A' ) & 0x8000 ) != 0 )
+	{
+		delta.x -= m_keyboardParameters.translationPerKeyPress;
+	}
+
+	if( ( GetAsyncKeyState( 'D' ) & 0x8000 ) != 0 )
+	{
+		delta.x += m_keyboardParameters.translationPerKeyPress;
+	}
+
+	if( ( GetAsyncKeyState( 'R' ) & 0x8000 ) != 0 )
+	{
+		delta.y += m_keyboardParameters.translationPerKeyPress;
+	}
+
+	if( ( GetAsyncKeyState( 'F' ) & 0x8000 ) != 0 )
+	{
+		delta.y -= m_keyboardParameters.translationPerKeyPress;
+	}
+
+	applyTranslation( delta.x, delta.y, delta.z, camera );
+}
+
 FPSMouseParameters& FPSControls::mouseParameters()
 {
 	return m_mouseParameters;
@@ -99,14 +134,14 @@ FPSXboxGamepadParameters& FPSControls::xboxGamepadParameters()
 	return m_xboxGamepadParameters;
 }
 
-void FPSControls::handleXboxController( XboxController* pXboxController )
+void FPSControls::handleXboxController( XboxController* pXboxController, PerspectiveCamera& camera )
 {
-	if( pXboxController->isConnected() && m_pCamera != nullptr )
+	if( pXboxController->isConnected() )
     {
 		XINPUT_STATE state = pXboxController->getState();
-        computeXboxTranslation( &state.Gamepad );
-        computeXboxRotation( &state.Gamepad );
-        computeXboxFoV( &state.Gamepad );
+        computeXboxTranslation( &state.Gamepad, camera );
+        computeXboxRotation( &state.Gamepad, camera );
+        computeXboxFoV( &state.Gamepad, camera );
     }
 }
 
@@ -117,13 +152,13 @@ void FPSControls::handleMousePressEvent( QMouseEvent* event )
 	m_mouseIsDown = true;
 }
 
-void FPSControls::handleMouseMoveEvent( QMouseEvent* event )
+void FPSControls::handleMouseMoveEvent( QMouseEvent* event, PerspectiveCamera& camera )
 {
 	Vector2i currentMouseXY( event->x(), event->y() );
 	Vector2f delta = currentMouseXY - m_previousMouseXY;
 
-	computeMouseRotation( event->buttons(), delta );
-	computeMouseTranslation( event->buttons(), delta );
+	computeMouseRotation( event->buttons(), delta, camera );
+	computeMouseTranslation( event->buttons(), delta, camera );
 
 	m_previousMouseXY = currentMouseXY;
 }
@@ -133,33 +168,33 @@ void FPSControls::handleMouseReleaseEvent( QMouseEvent* event )
 	m_mouseIsDown = false;
 }
 
-void FPSControls::computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta )
+void FPSControls::computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera )
 {
 	if( buttons == Qt::LeftButton )
 	{
 		float yawSpeed = m_mouseParameters.invertX ? m_mouseParameters.yawRadiansPerPixel : -m_mouseParameters.yawRadiansPerPixel;
 		float pitchSpeed = m_mouseParameters.invertY ? m_mouseParameters.pitchRadiansPerPixel : -m_mouseParameters.pitchRadiansPerPixel;
 
-		applyRotation( yawSpeed * delta.x, pitchSpeed * delta.y );
+		applyRotation( yawSpeed * delta.x, pitchSpeed * delta.y, camera );
 	}
 }
 
-void FPSControls::computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta )
+void FPSControls::computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera )
 {
 	if( buttons == Qt::RightButton )
 	{
 		float x = m_mouseParameters.translationPerPixel.x * delta.x;
 		float z = m_mouseParameters.translationPerPixel.y * delta.y;
-		applyTranslation( x, 0, z );
+		applyTranslation( x, 0, z, camera );
 	}
 	else if( buttons & Qt::LeftButton && buttons & Qt::RightButton )
 	{
 		float y = -m_mouseParameters.translationPerPixel.y * delta.y;
-		applyTranslation( 0, y, 0 );
+		applyTranslation( 0, y, 0, camera );
 	}
 }
 
-void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad )
+void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera )
 {
 	int lx = pGamepad->sThumbLX;
 	int ly = pGamepad->sThumbLY;
@@ -199,11 +234,11 @@ void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad )
 
 	if( move )
 	{
-		applyTranslation( moveX, moveY, moveZ );
+		applyTranslation( moveX, moveY, moveZ, camera );
 	}
 }
 
-void FPSControls::computeXboxRotation( XINPUT_GAMEPAD* pGamepad )
+void FPSControls::computeXboxRotation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera )
 {
 	bool doRotate = false;
     float yaw = 0;
@@ -234,17 +269,12 @@ void FPSControls::computeXboxRotation( XINPUT_GAMEPAD* pGamepad )
 			pitch = -pitch;
 		}
 
-		applyRotation( yaw, pitch );
+		applyRotation( yaw, pitch, camera );
 	}
 }
 
-void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad )
+void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera )
 {
-    if( m_pCamera == nullptr )
-    {
-        return;
-    }
-
     ubyte lt = pGamepad->bLeftTrigger;
     ubyte rt = pGamepad->bRightTrigger;
 
@@ -254,7 +284,7 @@ void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad )
         return;
     }
             
-    float fov = MathUtils::degreesToRadians( m_pCamera->fovYDegrees() );
+    float fov = camera.fovYRadians();
 
     // left trigger: zoom out
     if( lt > 0 )
@@ -270,17 +300,16 @@ void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad )
 	float fovMin = MathUtils::degreesToRadians( 1.0f );
 	float fovMax = MathUtils::degreesToRadians( 179.0f );
     fov = MathUtils::clampToRangeFloat( fov, fovMin, fovMax );
-    
-	float fovDegrees = MathUtils::radiansToDegrees( fov );
-	m_pCamera->setFovYDegrees( fovDegrees );
+    	
+	camera.setFovYRadians( fov );
 }
 
-void FPSControls::applyTranslation( float dx, float dy, float dz )
+void FPSControls::applyTranslation( float dx, float dy, float dz, PerspectiveCamera& camera )
 {
-	Vector3f eye = m_pCamera->eye();
-	Vector3f x = m_pCamera->right();
-	Vector3f y = m_pCamera->up();
-	Vector3f z = -( m_pCamera->forward() );
+	Vector3f eye = camera.eye();
+	Vector3f x = camera.right();
+	Vector3f y = camera.up();
+	Vector3f z = -( camera.forward() );
 
 	// project the y axis onto the ground plane
 	//Vector3f zp = m_worldToGroundPlane * z;
@@ -289,19 +318,19 @@ void FPSControls::applyTranslation( float dx, float dy, float dz )
 	//zp.normalize();
 
 	eye = eye + dx * x + dy * upVector() + dz * z;
-	m_pCamera->setLookAt( eye, eye - z, y );
+	camera.setLookAt( eye, eye - z, y );
 }
 
-void FPSControls::applyRotation( float yaw, float pitch )
+void FPSControls::applyRotation( float yaw, float pitch, PerspectiveCamera& camera )
 {
-	Matrix3f worldToCamera = m_pCamera->viewMatrix().getSubmatrix3x3( 0, 0 );
-	Matrix3f cameraToWorld = m_pCamera->inverseViewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f worldToCamera = camera.viewMatrix().getSubmatrix3x3( 0, 0 );
+	Matrix3f cameraToWorld = camera.inverseViewMatrix().getSubmatrix3x3( 0, 0 );
 
-	Vector3f eye = m_pCamera->eye();
-	Vector3f y = m_pCamera->up();
-	Vector3f z = -( m_pCamera->forward() );
+	Vector3f eye = camera.eye();
+	Vector3f y = camera.up();
+	Vector3f z = -( camera.forward() );
 
-	auto x = m_pCamera->right();
+	auto x = camera.right();
 
 	// pitch around the local x axis		
 	Matrix3f pitchMatrix = Matrix3f::rotateX( pitch );		
@@ -314,7 +343,7 @@ void FPSControls::applyRotation( float yaw, float pitch )
 	y = yawMatrix * y;
 	z = yawMatrix * z;	
 
-	m_pCamera->setLookAt( eye, eye - z, y );
+	camera.setLookAt( eye, eye - z, y );
 
-	auto z2 = -( m_pCamera->forward() );
+	auto z2 = -( camera.forward() );
 }

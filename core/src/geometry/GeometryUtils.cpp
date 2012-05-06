@@ -782,6 +782,47 @@ float GeometryUtils::lineToLineDistance( const Vector3f& linePoint1, const Vecto
     return fabs(Vector3f::dot(linePoint2 - linePoint1, dirCross) / crossLength);
 }
 
+// static
+bool GeometryUtils::raySphereIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
+	const Vector3f& sphereCenter, float sphereRadius, float* t )
+{
+	Vector3f deltaOrigin = rayOrigin - sphereCenter;
+
+	float a = rayDirection.normSquared();
+	float b = 2 * Vector3f::dot( rayDirection, deltaOrigin );
+	float c = deltaOrigin.normSquared() - sphereRadius * sphereRadius;
+
+	// compute discriminant
+	// if discriminant < 0, no real roots --> ray misses
+	float discriminant = b * b - 4 * a * c;	
+	if( discriminant < 0 )
+	{
+		return false;
+	}
+
+	float sqrtDiscriminant = sqrt( discriminant );
+	float oneOverHalfA = 0.5f / a;
+
+	float t0 = ( -b + sqrtDiscriminant ) * oneOverHalfA;
+	float t1 = ( -b - sqrtDiscriminant ) * oneOverHalfA;
+
+	// make sure t0 < t1
+	if( t0 > t1 )
+	{
+		swap( t0, t1 );
+	}
+
+	if( t0 > 0 )
+	{
+		*t = t0;
+	}
+	else
+	{
+		*t = t1;
+	}
+
+	return true;
+}
 
 #if 0
 // static

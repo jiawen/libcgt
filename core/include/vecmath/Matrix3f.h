@@ -63,7 +63,7 @@ public:
 	static Matrix3f rotateZ( float radians );
 	static Matrix3f scaling( float sx, float sy, float sz );
 	static Matrix3f uniformScaling( float s );
-	static Matrix3f rotation( const Vector3f& rDirection, float degrees );
+	static Matrix3f rotation( const Vector3f& axis, float radians );
 
 	// Returns the rotation matrix represented by a unit quaternion
 	// if q is not normalized, it it normalized first

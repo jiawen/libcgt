@@ -1,5 +1,4 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
 #include <vector>
 
@@ -26,5 +25,3 @@ public:
 	float radius;
 
 };
-
-#endif // SPHERE_H

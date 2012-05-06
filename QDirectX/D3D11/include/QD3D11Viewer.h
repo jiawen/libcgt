@@ -7,6 +7,17 @@
 
 #include "QD3D11Widget.h"
 #include "FPSControls.h"
+#include "TrackballControls.h"
+
+// TODO: mouse wheel for zoom
+// TODO: trackball:
+//    move in/out with right mouse button
+//    change up vector with middle mouse button
+//    zoom in/out with wheel
+//    deal with switching modes: when the camera isn't nicely facing the scene center
+// TODO: add a camera path
+// TODO: add effect manager built in (maybe to the widget itself)
+// TODO: fitCameraToScene
 
 class QD3D11Viewer : public QD3D11Widget
 {
@@ -14,20 +25,25 @@ class QD3D11Viewer : public QD3D11Widget
 
 public:
 
-	QD3D11Viewer( float keyWalkSpeed = 0.15f,
-		QWidget* parent = nullptr );
+	QD3D11Viewer( QWidget* parent = nullptr,
+		bool useTrackballMode = true,
+		const Vector3f& sceneCenter = Vector3f( 0, 0, 0 ),
+		const Vector3f& sceneUpVector = Vector3f( 0, 1, 0 ) );
 
-	// world units per key press
-	float keyWalkSpeed() const;
-	void setKeyWalkSpeed( float speed );
+	bool useTrackballMode() const;
+	void setUseTrackballMode( bool b );
 
 	PerspectiveCamera& camera();
 	void setCamera( const PerspectiveCamera& camera );
 
-	XboxController* xboxController0();
+	FPSControls& fpsControls();
+	TrackballControls& trackballControls();
 
-	Vector3f upVector() const;
-	void setUpVector( const Vector3f& y );
+	// TODO: make fpscontrols and trackballcontrols not hold a pointer to camera
+	// but pass it in whenever there's a handle*?
+	
+	// TODO: xboxController and upVector goes into FPSControls
+	XboxController* xboxController0();
 
 protected:
 
@@ -47,15 +63,15 @@ protected:
 
 	// sample xbox controller state (i.e. move the camera with thumbsticks)
 	virtual void updateXboxController();
-
-	FPSControls m_fpsControls;
+	
 	XboxController* m_pXboxController0;
 
 private:
 
-	void translate( float dx, float dy, float dz );
-
 	PerspectiveCamera m_camera;
 
-	float m_keyWalkSpeed;
+	bool m_useTrackballMode;
+
+	FPSControls m_fpsControls;
+	TrackballControls m_trackballControls;
 };

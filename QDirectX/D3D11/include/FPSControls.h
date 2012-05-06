@@ -64,7 +64,7 @@ class FPSControls
 {
 public:
 
-	FPSControls( PerspectiveCamera* pCamera,
+	FPSControls( const Vector3f& upVector = Vector3f( 0, 1, 0 ),
 		const FPSMouseParameters& mouseParameters = FPSMouseParameters(),
 		const FPSKeyboardParameters& keyboardParameters = FPSKeyboardParameters(),
 		const FPSXboxGamepadParameters& xboxGamepadParameters = FPSXboxGamepadParameters() );
@@ -76,26 +76,25 @@ public:
 	Vector3f upVector() const;
 	void setUpVector( const Vector3f& y );
  
-	void handleXboxController( XboxController* pXboxController );
+	void handleKeyboard( PerspectiveCamera& camera );
+	void handleXboxController( XboxController* pXboxController, PerspectiveCamera& camera );
 
 	void handleMousePressEvent( QMouseEvent* event );
-	void handleMouseMoveEvent( QMouseEvent* event );
+	void handleMouseMoveEvent( QMouseEvent* event, PerspectiveCamera& camera );
 	void handleMouseReleaseEvent( QMouseEvent* event );
 
 private:
 
-	void computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta );
-	void computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta );
+	void computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera );
+	void computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera );
 
-	void computeXboxTranslation( XINPUT_GAMEPAD* pGamepad );
-	void computeXboxRotation( XINPUT_GAMEPAD* pGamepad );
+	void computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
+	void computeXboxRotation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
 	// TODO: put an exponential curve on the fov, so it approaches but never gets to 0 or 180
-	void computeXboxFoV( XINPUT_GAMEPAD* pGamepad );
+	void computeXboxFoV( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
 
-	void applyTranslation( float dx, float dy, float dz );
-	void applyRotation( float yaw, float pitch );
-
-	PerspectiveCamera* m_pCamera;
+	void applyTranslation( float dx, float dy, float dz, PerspectiveCamera& camera );
+	void applyRotation( float yaw, float pitch, PerspectiveCamera& camera );
 
 	FPSMouseParameters m_mouseParameters;
 	FPSKeyboardParameters m_keyboardParameters;
