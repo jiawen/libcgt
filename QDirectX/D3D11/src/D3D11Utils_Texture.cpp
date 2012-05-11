@@ -154,14 +154,21 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 	if( desc.Format == DXGI_FORMAT_R32_FLOAT )
 	{
 		pST->copyFrom( pTexture );
-		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
-		float* sourceData = reinterpret_cast< float* >( mt.pData );
+		D3D11_MAPPED_SUBRESOURCE mapping = pST->mapForReadWrite();
+		ubyte* sourceDataBytes = reinterpret_cast< ubyte* >( mapping.pData );
 
-		for( int y = 0; y < height; ++y )
+		if( mapping.RowPitch == width * sizeof( float ) )
 		{
-			float* sourceRow = reinterpret_cast< float* >( &( sourceData[ y * mt.RowPitch ] ) );
-			float* destinationRow = im.rowPointer( y );
-			memcpy( destinationRow, sourceRow, width * sizeof( float ) );
+			memcpy( im.pixels(), sourceDataBytes, width * height * sizeof( float ) );
+		}
+		else
+		{
+			for( int y = 0; y < height; ++y )
+			{
+				float* sourceRow = reinterpret_cast< float* >( &( sourceDataBytes[ y * mapping.RowPitch ] ) );
+				float* destinationRow = im.rowPointer( y );
+				memcpy( destinationRow, sourceRow, width * sizeof( float ) );
+			}
 		}
 
 		pST->unmap();
@@ -196,13 +203,14 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 		desc.Format == DXGI_FORMAT_R16_UINT )
 	{
 		pST->copyFrom( pTexture );
-		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
-		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+		D3D11_MAPPED_SUBRESOURCE mapping = pST->mapForReadWrite();
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mapping.pData );
 
 		for( int y = 0; y < height; ++y )
 		{
-			// TODO: memcpy to destination->rowPointer()
-			ushort* sourceRow = reinterpret_cast< ushort* >( &( sourceData[ y * mt.RowPitch ] ) );
+			// TODO: memcpy to destination->rowPointer() on int
+			// stuck with swizzling for shorts
+			ushort* sourceRow = reinterpret_cast< ushort* >( &( sourceData[ y * mapping.RowPitch ] ) );
 			for( int x = 0; x < width; ++x )
 			{
 				ushort r = sourceRow[ x ];
@@ -236,14 +244,21 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 	if( desc.Format == DXGI_FORMAT_R8G8B8A8_UNORM )
 	{
 		pST->copyFrom( pTexture );
-		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
-		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+		D3D11_MAPPED_SUBRESOURCE mapping = pST->mapForReadWrite();
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mapping.pData );
 
-		for( int y = 0; y < height; ++y )
+		if( mapping.RowPitch == 4 * width )
 		{
-			ubyte* sourceRow = &( sourceData[ y * mt.RowPitch ] );
-			ubyte* destinationRow = im.rowPointer( y );
-			memcpy( destinationRow, sourceRow, 4 * width );			
+			memcpy( im.pixels(), sourceData, 4 * width * height );
+		}
+		else
+		{
+			for( int y = 0; y < height; ++y )
+			{
+				ubyte* sourceRow = &( sourceData[ y * mapping.RowPitch ] );
+				ubyte* destinationRow = im.rowPointer( y );
+				memcpy( destinationRow, sourceRow, 4 * width );
+			}
 		}
 		pST->unmap();
 	}
@@ -294,14 +309,21 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 	else if( desc.Format == DXGI_FORMAT_R32G32B32A32_FLOAT )
 	{
 		pST->copyFrom( pTexture );
-		D3D11_MAPPED_SUBRESOURCE mt = pST->mapForReadWrite();
-		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+		D3D11_MAPPED_SUBRESOURCE mapping = pST->mapForReadWrite();
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mapping.pData );
 
-		for( int y = 0; y < height; ++y )
+		if( mapping.RowPitch == 4 * width * sizeof( float ) )
 		{
-			float* sourceRow = reinterpret_cast< float* >( &( sourceData[ y * mt.RowPitch ] ) );
-			float* destinationRow = im.rowPointer( y );
-			memcpy( destinationRow, sourceRow, 4 * width * sizeof( float ) );			
+			memcpy( im.pixels(), sourceData, 4 * width * height * sizeof( float ) );
+		}
+		else
+		{
+			for( int y = 0; y < height; ++y )
+			{
+				float* sourceRow = reinterpret_cast< float* >( &( sourceData[ y * mapping.RowPitch ] ) );
+				float* destinationRow = im.rowPointer( y );
+				memcpy( destinationRow, sourceRow, 4 * width * sizeof( float ) );
+			}
 		}
 		pST->unmap();
 	}

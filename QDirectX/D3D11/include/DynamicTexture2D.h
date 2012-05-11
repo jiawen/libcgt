@@ -23,11 +23,16 @@ public:
 	int height();
 	Vector2i size();
 
+	// implicit cast to ID3D11Texture2D*
+	operator ID3D11Texture2D* ();
+
 	ID3D11Texture2D* texture();	
 	ID3D11ShaderResourceView* shaderResourceView();	
 
 	D3D11_MAPPED_SUBRESOURCE mapForWriteDiscard();
 	void unmap();
+
+	D3D11_TEXTURE2D_DESC description();
 
 private:
 

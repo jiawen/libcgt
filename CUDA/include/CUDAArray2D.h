@@ -1,10 +1,12 @@
-#ifndef CUDA_ARRAY_2D_H
-#define CUDA_ARRAY_2D_H
+#pragma once
 
 #include <cuda_runtime.h>
 #include <cutil.h>
 
 #include "Array2D.h"
+
+// TODO: create a D3D11CUDAInterop version
+// that exposes a CUDAArray2D interface
 
 // Basic 2D array interface around CUDA global memory
 // Wraps around cudaMallocArray() (CUDA Array, can only be used as textures)
@@ -164,5 +166,3 @@ cudaArray* CUDAArray2D< T >::deviceArray() const
 {
 	return m_deviceArray;
 }
-
-#endif // CUDA_ARRAY_2D_H

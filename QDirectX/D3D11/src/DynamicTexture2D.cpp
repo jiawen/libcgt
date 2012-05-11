@@ -82,6 +82,11 @@ Vector2i DynamicTexture2D::size()
 	return Vector2i( m_width, m_height );
 }
 
+DynamicTexture2D::operator ID3D11Texture2D* ()
+{
+	return texture();
+}
+
 ID3D11Texture2D* DynamicTexture2D::texture()
 {
 	return m_pTexture;
@@ -102,6 +107,13 @@ D3D11_MAPPED_SUBRESOURCE DynamicTexture2D::mapForWriteDiscard()
 void DynamicTexture2D::unmap()
 {
 	m_pContext->Unmap( m_pTexture, 0 );
+}
+
+D3D11_TEXTURE2D_DESC DynamicTexture2D::description()
+{
+	D3D11_TEXTURE2D_DESC td;
+	m_pTexture->GetDesc( &td );
+	return td;
 }
 
 // static

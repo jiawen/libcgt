@@ -117,7 +117,7 @@ float4 nextRandomFloat4()
 // computes the minimum number of bins needed
 // to cover all arraySize elements
 // (the last bin may not be full)
-__host__ __device__ __inline
+static __inline__ __host__ __device__
 int numBins( int arraySize, int binSize )
 {
 	float nf = ceil( static_cast< float >( arraySize ) / binSize );
@@ -127,12 +127,37 @@ int numBins( int arraySize, int binSize )
 	//return( ( arraySize + binSize - 1 ) / binSize );
 }
 
+// same as numBins, but in 2D
+// output.z = 1
+static __inline__ __host__ __device__
+dim3 numBins2D( int inputWidth, int inputHeight, dim3 blockSize )
+{
+	return dim3
+	(
+		numBins( inputWidth, blockSize.x ),
+		numBins( inputHeight, blockSize.y ),
+		1
+	);
+}
+
+// same as numBins, but in 3D
+static __inline__ __host__ __device__
+dim3 numBins( dim3 inputSize, dim3 blockSize )
+{
+	return dim3
+	(
+		numBins( inputSize.x, blockSize.x ),
+		numBins( inputSize.y, blockSize.y ),
+		numBins( inputSize.z, blockSize.z )
+	);
+}
+
 // given the index of a bin "binIndex"
 // where bins are size "binSize"
 // and where there's a total number n in the array
 // tells you how many elements are in the "binIndex"-th bin
 // (will be binSize for all but the last bin)
-__host__ __device__ __inline
+static __inline__ __host__ __device__
 int numElementsInBin( int binIndex, int binSize, int n )
 {
 	// if it's not the last bin, then it's just binSize
