@@ -17,6 +17,7 @@ Vector4f::Vector4f()
 }
 
 // TODO: do the same for vec2 and 3 and double
+// TODO: switch to constructor initializer
 Vector4f::Vector4f( float f )
 {
 	m_elements[ 0 ] = f;
@@ -137,62 +138,62 @@ float& Vector4f::operator [] ( int i )
 
 Vector2f Vector4f::xy() const
 {
-	return Vector2f( m_elements[0], m_elements[1] );
+	return Vector2f( x, y );
 }
 
 Vector2f Vector4f::yz() const
 {
-	return Vector2f( m_elements[1], m_elements[2] );
+	return Vector2f( y, z );
 }
 
 Vector2f Vector4f::zw() const
 {
-	return Vector2f( m_elements[2], m_elements[3] );
+	return Vector2f( z, w );
 }
 
 Vector2f Vector4f::wx() const
 {
-	return Vector2f( m_elements[3], m_elements[0] );
+	return Vector2f( w, x );
 }
 
 Vector3f Vector4f::xyz() const
 {
-	return Vector3f( m_elements[0], m_elements[1], m_elements[2] );
+	return Vector3f( x, y, z );
 }
 
 Vector3f Vector4f::yzw() const
 {
-	return Vector3f( m_elements[1], m_elements[2], m_elements[3] );
+	return Vector3f( y, z, w );
 }
 
 Vector3f Vector4f::zwx() const
 {
-	return Vector3f( m_elements[2], m_elements[3], m_elements[0] );
+	return Vector3f( z, w, x );
 }
 
 Vector3f Vector4f::wxy() const
 {
-	return Vector3f( m_elements[3], m_elements[0], m_elements[1] );
+	return Vector3f( w, x, y );
 }
 
 Vector3f Vector4f::xyw() const
 {
-	return Vector3f( m_elements[0], m_elements[1], m_elements[3] );
+	return Vector3f( x, y, w );
 }
 
 Vector3f Vector4f::yzx() const
 {
-	return Vector3f( m_elements[1], m_elements[2], m_elements[0] );
+	return Vector3f( y, z, x );
 }
 
 Vector3f Vector4f::zwy() const
 {
-	return Vector3f( m_elements[2], m_elements[3], m_elements[1] );
+	return Vector3f( z, w, y );
 }
 
 Vector3f Vector4f::wxz() const
 {
-	return Vector3f( m_elements[3], m_elements[0], m_elements[2] );
+	return Vector3f( w, x, z );
 }
 
 float Vector4f::abs() const
@@ -217,66 +218,56 @@ float Vector4f::normSquared() const
 
 void Vector4f::normalize()
 {
-	float norm = sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
-	m_elements[0] = m_elements[0] / norm;
-	m_elements[1] = m_elements[1] / norm;
-	m_elements[2] = m_elements[2] / norm;
-	m_elements[3] = m_elements[3] / norm;
+	float rcpNorm = 1.0f / norm();
+	x *= rcpNorm;
+	y *= rcpNorm;
+	z *= rcpNorm;
+	w *= rcpNorm;
 }
 
 Vector4f Vector4f::normalized() const
 {
-	float length = abs();
+	float rcpNorm = 1.0f / norm();
 	return Vector4f
-		(
-			m_elements[0] / length,
-			m_elements[1] / length,
-			m_elements[2] / length,
-			m_elements[3] / length
-		);
+	(
+		x * rcpNorm, 
+		y * rcpNorm, 
+		z * rcpNorm, 
+		w * rcpNorm
+	);
 }
 
 void Vector4f::homogenize()
 {
-	if( m_elements[3] != 0 )
+	if( w != 0 )
 	{
-		m_elements[0] /= m_elements[3];
-		m_elements[1] /= m_elements[3];
-		m_elements[2] /= m_elements[3];
-		m_elements[3] = 1;
+		float rcpW = 1.0f / w;
+		x *= rcpW;
+		y *= rcpW;
+		z *= rcpW;
+		w = 1;
 	}
 }
 
 Vector4f Vector4f::homogenized() const
 {
-	if( m_elements[3] != 0 )
+	if( w != 0 )
 	{
-		return Vector4f
-			(
-				m_elements[0] / m_elements[3],
-				m_elements[1] / m_elements[3],
-				m_elements[2] / m_elements[3],
-				1
-			);
+		float rcpW = 1.0f / w;
+		return Vector4f( rcpW * x, rcpW * y, rcpW * z, 1 );
 	}
 	else
 	{
-		return Vector4f
-			(
-				m_elements[0],
-				m_elements[1],
-				m_elements[2],
-				m_elements[3]
-			);
+		return Vector4f( x, y, z, w );
 	}
 }
 
 void Vector4f::negate()
 {
-	m_elements[0] = -m_elements[0];
-	m_elements[1] = -m_elements[1];
-	m_elements[2] = -m_elements[2];
-	m_elements[3] = -m_elements[3];
+	x = -x;
+	y = -y;
+	z = -z;
+	w = -w;
 }
 
 Vector4f::operator const float* () const

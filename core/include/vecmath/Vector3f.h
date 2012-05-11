@@ -58,7 +58,8 @@ public:
 	void normalize();
 	Vector3f normalized() const;
 
-	Vector2f homogenized() const;
+	void homogenize();
+	Vector3f homogenized() const;
 
 	void negate();
 

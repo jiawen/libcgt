@@ -163,7 +163,7 @@ QImage Image1i::toQImage()
 		{
 			qint32 pi = pixel( x, y );
 			QRgb rgba = qRgba( pi, pi, pi, 255 );
-			q.setPixel( x, m_height - y - 1, rgba );
+			q.setPixel( x, y, rgba );
 		}
 	}
 

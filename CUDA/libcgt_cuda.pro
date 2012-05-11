@@ -8,8 +8,6 @@ INCLUDEPATH += $(NVSDKCOMPUTE_ROOT)/C/common/inc
 INCLUDEPATH += "./include"
 INCLUDEPATH += "../core/include"
 
-LIBPATH += $(CUDA_LIB_PATH)
-
 CONFIG( debug, debug|release ) {
   TARGET = libcgt_cudad
 } else {
@@ -19,6 +17,8 @@ CONFIG( debug, debug|release ) {
 
 QMAKE_CXXFLAGS += -MP4
 DEFINES += _CRT_SECURE_NO_WARNINGS
+# For PhysX
+DEFINES += _ITERATOR_DEBUG_LEVEL=0
 
 HEADERS += include/*.h
 SOURCES += src/*.cpp

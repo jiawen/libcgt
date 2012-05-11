@@ -17,8 +17,7 @@
 Image1f::Image1f() :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 
@@ -27,8 +26,7 @@ Image1f::Image1f() :
 Image1f::Image1f( QString filename ) :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 	load( filename );
@@ -38,20 +36,28 @@ Image1f::Image1f( int width, int height, float fill ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_data( m_width * m_height, fill )
+	m_data( m_width, m_height )
 
 {
-
+	int nPixels = m_width * m_height;
+	for( int i = 0; i < nPixels; ++i )
+	{
+		m_data[ i ] = fill;
+	}
 }
 
 Image1f::Image1f( const Vector2i& size, float fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( m_width * m_height, fill )
+	m_data( m_width, m_height )
 
 {
-
+	int nPixels = m_width * m_height;
+	for( int i = 0; i < nPixels; ++i )
+	{
+		m_data[ i ] = fill;
+	}
 }
 
 Image1f::Image1f( const Image1f& copy ) :
@@ -59,16 +65,6 @@ Image1f::Image1f( const Image1f& copy ) :
 	m_width( copy.m_width ),
 	m_height( copy.m_height ),
 	m_data( copy.m_data )
-
-{
-
-}
-
-Image1f::Image1f( Reference< Image1f > copy ) :
-
-	m_width( copy->m_width ),
-	m_height( copy->m_height ),
-	m_data( copy->m_data )
 
 {
 
@@ -94,9 +90,19 @@ Vector2i Image1f::size() const
 	return Vector2i( m_width, m_height );
 }
 
+const float* Image1f::pixels() const
+{
+	return m_data;
+}
+
 float* Image1f::pixels()
 {
-	return m_data.data();
+	return m_data;
+}
+
+float* Image1f::rowPointer( int y )
+{
+	return m_data.getRowPointer( y );
 }
 
 float Image1f::pixel( int x, int y ) const
@@ -195,7 +201,7 @@ QImage Image1f::toQImage()
 			float pf = pixel( x, y );
 			int pi = ColorUtils::floatToInt( pf );
 			QRgb rgba = qRgba( pi, pi, pi, 255 );
-			q.setPixel( x, m_height - y - 1, rgba );
+			q.setPixel( x, y, rgba );
 		}
 	}
 
@@ -287,16 +293,11 @@ bool Image1f::loadPFM( QString filename )
 	QDataStream inputDataStream( &inputFile );
 	inputDataStream.skipRawData( headerLength );
 
-	QVector< float > data( width * height, 1.f );
+	Array2D< float > data( width, height );
 	int status;
-
-	for( int y = 0; y < height; ++y )
-	{
-		int yy = height - y - 1;
-		
-		char* bufferPointer = reinterpret_cast< char* >( &( data[ yy * width ] ) );
-		status = inputDataStream.readRawData( bufferPointer, width * sizeof( float ) );
-	}
+	
+	status = inputDataStream.readRawData( reinterpret_cast< char* >( data.getRowPointer( 0 ) ), width * height * sizeof( float ) );
+	// TOD: check status
 
 	inputFile.close();
 
@@ -365,8 +366,7 @@ bool Image1f::savePFM( QString filename )
 	// write data
 	for( int y = 0; y < h; ++y )
 	{
-		int yy = h - y - 1;
-		float* row = &( m_data[ yy * w ] );
+		float* row = &( m_data[ y * w ] );
 		fwrite( row, w * sizeof( float ), 1, fp );
 	}
 

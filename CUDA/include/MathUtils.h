@@ -1,5 +1,4 @@
-#ifndef MATH_UTIL_H
-#define MATH_UTIL_H
+#pragma once
 
 #include <common/BasicTypes.h>
 
@@ -360,5 +359,3 @@ int convertToSignedInt( ushort x )
 
 	return r;
 }
-
-#endif // MATH_UTIL_H

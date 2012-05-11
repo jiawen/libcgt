@@ -15,6 +15,12 @@
 //    change up vector with middle mouse button
 //    zoom in/out with wheel
 //    deal with switching modes: when the camera isn't nicely facing the scene center
+// 
+//    keep moving when the mouse move point leaves the sphere
+//      - keep previous rotation around
+//      - switch to accumulating rotations?
+//
+//    spin around view direction when initial point is outside sphere
 // TODO: add a camera path
 // TODO: add effect manager built in (maybe to the widget itself)
 // TODO: fitCameraToScene

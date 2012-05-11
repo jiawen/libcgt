@@ -219,7 +219,7 @@ QImage Image4ub::toQImage()
 		{
 			Vector4i pi = pixel( x, y );
 			QRgb rgba = qRgba( pi.x, pi.y, pi.z, pi.w );
-			q.setPixel( x, m_height - y - 1, rgba );
+			q.setPixel( x, y, rgba );
 		}
 	}
 
@@ -242,7 +242,7 @@ bool Image4ub::load( QString filename )
 	{
 		for( int x = 0; x < m_width; ++x )
 		{
-			QRgb p = q.pixel( x, m_height - y - 1 );
+			QRgb p = q.pixel( x, y );
 			Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
 			setPixel( x, y, vi );
 		}

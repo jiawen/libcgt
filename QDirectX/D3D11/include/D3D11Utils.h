@@ -7,7 +7,6 @@
 #include <vector>
 #include <DXGI.h>
 
-#include <common/Reference.h>
 #include <cameras/Camera.h>
 #include <imageproc/Image1i.h>
 #include <imageproc/Image1f.h>
@@ -33,6 +32,7 @@ public:
 	static D3D11_VIEWPORT createViewport( int width, int height );
 	static D3D11_VIEWPORT createViewport( const Vector2i& wh );
 	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin = 0, float zMax = 1 );
+	static D3D11_VIEWPORT createViewport( const Rect2f& rect, float zMin = 0, float zMax = 1 );
 
 	// creates a unit box [0,1]^3
 	static std::vector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
@@ -146,10 +146,8 @@ public:
 	// if uv00AtTopLeft is true (default), the texture coordinates are flipped upside down ((0,0) at the top left corner)
 	static void writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool uv00AtTopLeft = true );
 
-
-
-	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticDataBuffer > pBuffer, QString filename );
-	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename );	
+	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename );
+	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename );	
 
 	// HACK
 	template< typename T >

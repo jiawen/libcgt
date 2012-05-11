@@ -1,7 +1,8 @@
-#ifndef ARRAY_2D_H
-#define ARRAY_2D_H
+#pragma once
 
 #include <cstdio>
+
+// TODO: move constructor and assignment operator
 
 // A simple 2D array class (with row-major storage)
 template< typename T >
@@ -276,5 +277,3 @@ bool Array2D< T >::save( const char* filename )
 
 	return true;
 }
-
-#endif // ARRAY_2D_H

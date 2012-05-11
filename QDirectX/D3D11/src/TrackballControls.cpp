@@ -37,6 +37,7 @@ void TrackballControls::handleMousePressEvent( QMouseEvent* event, const Vector2
 	{
 		m_mouseIsDown = true;
 		m_mouseMovePoint = eye + t * dir;
+		m_mouseDownCamera = camera;
 	}
 }
 
@@ -66,8 +67,10 @@ void TrackballControls::handleMouseReleaseEvent( QMouseEvent* event )
 
 float TrackballControls::sphereRadius()
 {
+	// TODO: check width and height and pick the smaller one
+
 	float d = ( sceneCenter() - m_mouseDownCamera.eye() ).norm();
-	return d * tan( m_mouseDownCamera.halfFovYRadians() );	
+	return d * sin( m_mouseDownCamera.halfFovYRadians() );	
 }
 
 void TrackballControls::applyRotation( PerspectiveCamera& camera )

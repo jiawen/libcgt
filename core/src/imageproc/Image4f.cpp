@@ -308,7 +308,7 @@ bool Image4f::loadQImage( QString filename )
 	{
 		for( int x = 0; x < m_width; ++x )
 		{
-			QRgb p = q.pixel( x, m_height - y - 1 );
+			QRgb p = q.pixel( x, y );
 			Vector4i vi( qRed( p ), qGreen( p ), qBlue( p ), qAlpha( p ) );
 			Vector4f vf = ColorUtils::intToFloat( vi );
 			setPixel( x, y, vf );
@@ -371,16 +371,14 @@ bool Image4f::loadPFM( QString filename )
 	QDataStream inputDataStream( &inputFile );
 	inputDataStream.skipRawData( headerLength );
 
-	Array2D< float > data( 4 * width * height, 1.f );
+	Array2D< float > data( 4 * width, height );
 	int status;
 
 	for( int y = 0; y < height; ++y )
 	{
 		for( int x = 0; x < width; ++x )
 		{
-			int yy = height - y - 1;
-
-			char* bufferPointer = reinterpret_cast< char* >( &( data[ 4 * ( yy * width + x ) ] ) );
+			char* bufferPointer = reinterpret_cast< char* >( &( data[ 4 * ( y * width + x ) ] ) );
 			status = inputDataStream.readRawData( bufferPointer, 3 * sizeof( float ) );
 		}
 	}
@@ -452,9 +450,7 @@ bool Image4f::loadPFM4( QString filename )
 
 	for( int y = 0; y < height; ++y )
 	{
-		int yy = height - y - 1;
-
-		char* rowPointer = reinterpret_cast< char* >( &( data[ 4 * yy * width ] ) );
+		char* rowPointer = reinterpret_cast< char* >( &( data[ 4 * y * width ] ) );
 		status = inputDataStream.readRawData( rowPointer, 4 * width * sizeof( float ) );
 	}
 
@@ -528,10 +524,9 @@ bool Image4f::savePFM( QString filename )
 	// write data
 	for( int y = 0; y < h; ++y )
 	{
-		int yy = h - y - 1;
 		for( int x = 0; x < w; ++x )
 		{
-			Vector4f rgba = pixel( x, yy );
+			Vector4f rgba = pixel( x, y );
 			fwrite( &rgba, sizeof( float ), 3, fp );
 		}
 	}
@@ -559,10 +554,9 @@ bool Image4f::savePFM4( QString filename )
 	// write data
 	for( int y = 0; y < h; ++y )
 	{
-		int yy = h - y - 1;
 		for( int x = 0; x < w; ++x )
 		{
-			Vector4f rgba = pixel( x, yy );
+			Vector4f rgba = pixel( x, y );
 			fwrite( &rgba, sizeof( float ), 4, fp );
 		}
 	}

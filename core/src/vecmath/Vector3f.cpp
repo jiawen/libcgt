@@ -71,32 +71,32 @@ Vector3f& Vector3f::operator = ( const Vector3i& rv )
 
 Vector2f Vector3f::xy() const
 {
-	return Vector2f( m_elements[0], m_elements[1] );
+	return Vector2f( x, y );
 }
 
 Vector2f Vector3f::xz() const
 {
-	return Vector2f( m_elements[0], m_elements[2] );
+	return Vector2f( x, z );
 }
 
 Vector2f Vector3f::yz() const
 {
-	return Vector2f( m_elements[1], m_elements[2] );
+	return Vector2f( y, z );
 }
 
 Vector3f Vector3f::xyz() const
 {
-	return Vector3f( m_elements[0], m_elements[1], m_elements[2] );
+	return Vector3f( x, y, z );
 }
 
 Vector3f Vector3f::yzx() const
 {
-	return Vector3f( m_elements[1], m_elements[2], m_elements[0] );
+	return Vector3f( y, z, x );
 }
 
 Vector3f Vector3f::zxy() const
 {
-	return Vector3f( m_elements[2], m_elements[0], m_elements[1] );
+	return Vector3f( z, x, y );
 }
 
 float Vector3f::norm() const
@@ -106,37 +106,52 @@ float Vector3f::norm() const
 
 void Vector3f::normalize()
 {
-	float norm = sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] );
-	m_elements[0] = m_elements[0] / norm;
-	m_elements[1] = m_elements[1] / norm;
-	m_elements[2] = m_elements[2] / norm;
+	float rcpNorm = 1.0f / norm();
+	x *= rcpNorm;
+	y *= rcpNorm;
+	z *= rcpNorm;
 }
 
 Vector3f Vector3f::normalized() const
 {
-	float length = abs();
+	float rcpNorm = 1.0f / norm();
 	return Vector3f
-		(
-			m_elements[0] / length,
-			m_elements[1] / length,
-			m_elements[2] / length
-		);
+	(
+		x * rcpNorm,
+		y * rcpNorm,
+		z * rcpNorm
+	);
 }
 
-Vector2f Vector3f::homogenized() const
+void Vector3f::homogenize()
 {
-	return Vector2f
-		(
-			m_elements[ 0 ] / m_elements[ 2 ],
-			m_elements[ 1 ] / m_elements[ 2 ]
-		);
+	if( z != 0 )
+	{
+		float rcpZ = 1.0f / z;
+		x *= rcpZ;
+		y *= rcpZ;
+		z = 1;
+	}
+}
+
+Vector3f Vector3f::homogenized() const
+{
+	if( z != 0 )
+	{
+		float rcpZ = 1.0f / z;
+		return Vector3f( rcpZ * x, rcpZ * y, 1 );
+	}
+	else
+	{
+		return Vector3f( x, y, z );
+	}
 }
 
 void Vector3f::negate()
 {
-	m_elements[0] = -m_elements[0];
-	m_elements[1] = -m_elements[1];
-	m_elements[2] = -m_elements[2];
+	x = -x;
+	y = -y;
+	z = -z;
 }
 
 QString Vector3f::toString() const

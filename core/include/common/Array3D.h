@@ -1,7 +1,8 @@
-#ifndef ARRAY_3D_H
-#define ARRAY_3D_H
+#pragma once
 
 #include <cstdio>
+
+// TODO: move constructor and assignment operator
 
 // A simple 3D array class (with row-major storage)
 template< typename T >
@@ -282,5 +283,3 @@ bool Array3D< T >::save( const char* filename )
 
 	return true;
 }
-
-#endif // ARRAY_3D_H

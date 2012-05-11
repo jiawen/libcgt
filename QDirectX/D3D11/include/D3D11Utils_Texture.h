@@ -1,5 +1,4 @@
-#ifndef D3D11UTILS_TEXTURE_H
-#define D3D11UTILS_TEXTURE_H
+#pragma once
 
 #include <memory>
 #include <D3D11.h>
@@ -23,21 +22,21 @@ public:
 	// set flipUV to true to flip it up/down
 	static std::shared_ptr< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV = true );
 
-	// TODO: const Image<T>&
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image1f > im, bool flipUV = true );
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, std::shared_ptr< Image4f > im, bool flipUV = true );
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, Image4ub& im, bool flipUV = true );
+	// image (cpu) --> new texture (GPU)
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image1f& im, bool flipUV = true );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4f& im, bool flipUV = true );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4ub& im, bool flipUV = true );
 
 	// image (cpu) --> texture (gpu)
-	static void copyImageToTexture( std::shared_ptr< Image1f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
-	static void copyImageToTexture( std::shared_ptr< Image4f > im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
+	static void copyImageToTexture( const Image1f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
+	static void copyImageToTexture( const Image4f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 	static void copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = true );
 
 	// texture (gpu) --> image (cpu)
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image1f > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image1i > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image4ub > im );
-	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, std::shared_ptr< Image4f > im );
+	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image1f& im );
+	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image1i& im );
+	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image4ub& im );
+	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image4f& im );
 
 	// texture (gpu) --> file (disk)
 	static void saveTextureToPFM( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
@@ -48,5 +47,3 @@ public:
 	// HACK
 	static void saveTextureToBinary( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
 };
-
-#endif // D3D11UTILS_TEXTURE_H

@@ -47,6 +47,7 @@ public:
 
 private:
 
+	// TODO: use Array2D
 	int m_width;
 	int m_height;
 	QVector< qint32 > m_data;

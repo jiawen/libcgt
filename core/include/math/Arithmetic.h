@@ -1,5 +1,4 @@
-#ifndef ARITHMETIC_H
-#define ARITHMETIC_H
+#pragma once
 
 #include <common/BasicTypes.h>
 
@@ -65,5 +64,3 @@ private:
 
 	static const float s_fReciprocalLog2;
 };
-
-#endif // ARITHMETIC_H

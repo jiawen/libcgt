@@ -59,6 +59,20 @@ D3D11_VIEWPORT D3D11Utils::createViewport( int topLeftX, int topLeftY, int width
 }
 
 // static
+D3D11_VIEWPORT D3D11Utils::createViewport( const Rect2f& rect, float zMin, float zMax )
+{
+	D3D11_VIEWPORT vp;
+	vp.TopLeftX = rect.origin().x;
+	vp.TopLeftY = rect.origin().y;
+	vp.Width = rect.width();
+	vp.Height = rect.height();
+	vp.MinDepth = zMin;
+	vp.MaxDepth = zMax;
+
+	return vp;
+}
+
+// static
 std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool normalsPointOutward )
 {
 	Vector4f positions[ 8 ];
@@ -386,13 +400,13 @@ void D3D11Utils::writeScreenAlignedQuad( float x, float y, float width, float he
 }
 
 // static
-bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticDataBuffer > pBuffer, QString filename )
+bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename )
 {
 	int ne = pBuffer->numElements();
 	int esb = pBuffer->elementSizeBytes();
-	Reference< StagingStructuredBuffer > sb = StagingStructuredBuffer::create
+	std::shared_ptr< StagingStructuredBuffer > sb
 	(
-		pDevice, ne, esb
+		StagingStructuredBuffer::create( pDevice, ne, esb )
 	);
 
 	sb->copyFrom( pBuffer->buffer() );
@@ -425,14 +439,14 @@ bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< Static
 }
 
 // static
-bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, Reference< StaticStructuredBuffer > pBuffer, QString filename )
+bool D3D11Utils::saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename )
 {
 	int ne = pBuffer->numElements();
 	int esb = pBuffer->elementSizeBytes();
-	Reference< StagingStructuredBuffer > sb = StagingStructuredBuffer::create
-		(
-			pDevice, ne, esb
-		);
+	std::shared_ptr< StagingStructuredBuffer > sb
+	(
+		StagingStructuredBuffer::create( pDevice, ne, esb )
+	);
 
 	sb->copyFrom( pBuffer->buffer() );
 

@@ -195,7 +195,7 @@ QImage Image3ub::toQImage()
 		{
 			Vector3i pi = pixel( x, y );
 			QRgb rgba = qRgba( pi.x, pi.y, pi.z, 255 );
-			q.setPixel( x, m_height - y - 1, rgba );
+			q.setPixel( x, y, rgba );
 		}
 	}
 

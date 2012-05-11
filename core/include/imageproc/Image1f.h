@@ -1,12 +1,14 @@
-#ifndef IMAGE_1F_H
-#define IMAGE_1F_H
+#pragma once
 
 #include <QImage>
 #include <QString>
-#include <QVector>
 
-#include "common/Reference.h"
+#include "common/Array2D.h"
 #include "vecmath/Vector2i.h"
+
+// TODO: move constructor and assignment operator
+// TODO: images should be "views" on top of Array2Ds
+// with bilinear sampling and saving features
 
 class Image1f
 {
@@ -21,7 +23,6 @@ public:
 	Image1f( const Vector2i& size, float fill = 0.f );
 	
 	Image1f( const Image1f& copy );
-	Image1f( Reference< Image1f > copy );
 
 	bool isNull() const;
 
@@ -29,7 +30,10 @@ public:
 	int height() const;
 	Vector2i size() const;
 
+	const float* pixels() const;
 	float* pixels();
+
+	float* rowPointer( int y );
 
 	float pixel( int x, int y ) const;
 	float pixel( const Vector2i& xy ) const;
@@ -62,8 +66,6 @@ private:
 
 	int m_width;
 	int m_height;
-	QVector< float > m_data;
+	Array2D< float > m_data;
 
 };
-
-#endif // IMAGE_1F_H
