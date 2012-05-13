@@ -1,5 +1,4 @@
-#ifndef LU_FACTORIZATION_H
-#define LU_FACTORIZATION_H
+#pragma once
 
 #include <memory>
 #include "FloatMatrix.h"
@@ -11,6 +10,7 @@ public:
 	static std::shared_ptr< LUFactorization > LU( const FloatMatrix& a );
 
 	// output <- inverse of A
+	// returns whether inverse succeeded
 	bool inverse( FloatMatrix& output );
 
 	//property FloatMatrix^ L { FloatMatrix^ get(); }
@@ -29,5 +29,3 @@ private:
 	FloatMatrix m_l;
 	FloatMatrix m_u;
 };
-
-#endif // LU_FACTORIZATION_H

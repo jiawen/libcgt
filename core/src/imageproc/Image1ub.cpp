@@ -18,41 +18,31 @@ Image1ub::Image1ub() :
 
 }
 
-Image1ub::Image1ub( int width, int height, quint8 fill ) :
+Image1ub::Image1ub( int width, int height, ubyte fill ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_data( width * height, fill )
+	m_data( width, height )
 
 {
-
+	m_data.fill( fill );
 }
 
-Image1ub::Image1ub( const Vector2i& size, quint8 fill ) :
+Image1ub::Image1ub( const Vector2i& size, ubyte fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( m_width * m_height, fill )
+	m_data( m_width, m_height )
 
 {
-
+	m_data.fill( fill );
 }
 
 Image1ub::Image1ub( const Image1ub& copy ) :
 
-m_width( copy.m_width ),
-m_height( copy.m_height ),
-m_data( copy.m_data )
-
-{
-
-}
-
-Image1ub::Image1ub( Reference< Image1ub > copy ) :
-
-m_width( copy->m_width ),
-m_height( copy->m_height ),
-m_data( copy->m_data )
+	m_width( copy.m_width ),
+	m_height( copy.m_height ),
+	m_data( copy.m_data )
 
 {
 
@@ -78,33 +68,33 @@ Vector2i Image1ub::size() const
 	return Vector2i( m_width, m_height );
 }
 
-quint8* Image1ub::pixels()
+ubyte* Image1ub::pixels()
 {
-	return m_data.data();
+	return m_data;
 }
 
-quint8 Image1ub::pixel( int x, int y ) const
+ubyte Image1ub::pixel( int x, int y ) const
 {
-	return m_data[ y * m_width + x ];
+	return m_data( x, y );
 }
 
 
-quint8 Image1ub::pixel( const Vector2i& xy ) const
+ubyte Image1ub::pixel( const Vector2i& xy ) const
 {
 	return pixel( xy.x, xy.y );
 }
 
-void Image1ub::setPixel( int x, int y, quint8 pixel )
+void Image1ub::setPixel( int x, int y, ubyte pixel )
 {
-	m_data[ y * m_width + x ] = pixel;
+	m_data( x, y ) = pixel;
 }
 
-void Image1ub::setPixel( const Vector2i& xy, quint8 pixel )
+void Image1ub::setPixel( const Vector2i& xy, ubyte pixel )
 {
 	setPixel( xy.x, xy.y, pixel );
 }
 
-quint8 Image1ub::bilinearSample( float x, float y ) const
+ubyte Image1ub::bilinearSample( float x, float y ) const
 {
 	x = x - 0.5f;
 	y = y - 0.5f;
@@ -141,7 +131,7 @@ QImage Image1ub::toQImage()
 	{
 		for( int x = 0; x < m_width; ++x )
 		{
-			quint8 pi = pixel( x, y );
+			ubyte pi = pixel( x, y );
 			QRgb rgba = qRgba( pi, pi, pi, 255 );
 			q.setPixel( x, m_height - y - 1, rgba );
 		}

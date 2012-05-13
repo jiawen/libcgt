@@ -1,11 +1,9 @@
-#ifndef IMAGE_1UB_H
-#define IMAGE_1UB_H
+#pragma once
 
-#include <QtGlobal>
 #include <QImage>
-#include <QVector>
 
-#include "common/Reference.h"
+#include "common/BasicTypes.h"
+#include "common/Array2D.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3i.h"
 
@@ -15,10 +13,9 @@ public:
 
 	Image1ub(); // default constructor creates the null image
 
-	Image1ub( int width, int height, quint8 fill = 0 );
-	Image1ub( const Vector2i& size, quint8 fill = 0 );
+	Image1ub( int width, int height, ubyte fill = 0 );
+	Image1ub( const Vector2i& size, ubyte fill = 0 );
 	Image1ub( const Image1ub& copy );
-	Image1ub( Reference< Image1ub > copy );
 
 	bool isNull() const;
 
@@ -26,15 +23,15 @@ public:
 	int height() const;
 	Vector2i size() const;
 
-	quint8* pixels();
+	ubyte* pixels();
 
-	quint8 pixel( int x, int y ) const;
-	quint8 pixel( const Vector2i& xy ) const;
+	ubyte pixel( int x, int y ) const;
+	ubyte pixel( const Vector2i& xy ) const;
 
-	void setPixel( int x, int y, quint8 pixel );
-	void setPixel( const Vector2i& xy, quint8 pixel );
+	void setPixel( int x, int y, ubyte pixel );
+	void setPixel( const Vector2i& xy, ubyte pixel );
 
-	quint8 bilinearSample( float x, float y ) const;
+	ubyte bilinearSample( float x, float y ) const;
 
 	// returns a 4-channel QImage
 	// with rgb = value and alpha = 255
@@ -45,8 +42,6 @@ private:
 
 	int m_width;
 	int m_height;
-	QVector< quint8 > m_data;
+	Array2D< ubyte > m_data;
 
 };
-
-#endif // IMAGE_1UB_H

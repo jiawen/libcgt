@@ -227,19 +227,70 @@ const float* FloatMatrix::constData() const
 	return m_data.data();
 }
 
-FloatMatrix FloatMatrix::inverted() const
+FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
+{
+	// check that this matrix is square
+	int m = m_nRows;
+	int n = m_nCols;
+
+	if( m != n )
+	{
+		fprintf( stderr, "FloatMatrix::solve requires the matrix to be square\n" );
+	}
+
+	int nRHS = rhs.numCols();
+	if( rhs.numRows() != n )
+	{
+		fprintf( stderr, "FloatMatrix::solve: dimension mismatch.  A = %d x %d, rhs = %d x %d\n",
+			m, n, rhs.numRows(), nRHS );
+	}
+
+	// make a copy of this and the right hand side
+	FloatMatrix A( *this );
+	FloatMatrix B( rhs );
+
+	std::vector< int > ipiv( n );
+	int info;
+
+	sgesv( &n, &nRHS, A.data(), &m, ipiv.data(), B.data(), &n,  &info );
+
+	bool succeeded = ( info == 0 );
+
+	if( pSucceeded != nullptr )
+	{
+		*pSucceeded = succeeded;
+	}
+
+	if( info < 0 )
+	{
+		fprintf( stderr, "FloatMatrix::solve(): Illegal parameter value: %d\n", -info );		
+	}
+	else if( info > 0 )
+	{
+		fprintf( stderr, "FloatMatrix::solve(): Matrix is singular.\n" );
+	}
+
+	return B;
+}
+
+FloatMatrix FloatMatrix::inverted( bool* pSucceeded ) const
 {
 	FloatMatrix inv;
 	std::shared_ptr< LUFactorization > lu = LUFactorization::LU( *this );
-	lu->inverse( inv );
+	bool succeeded = lu->inverse( inv );
+
+	if( pSucceeded != nullptr )
+	{
+		*pSucceeded = succeeded;
+	}
 
 	return inv;
 }
 
-void FloatMatrix::inverse( FloatMatrix& inv ) const
+bool FloatMatrix::inverse( FloatMatrix& inv ) const
 {
 	std::shared_ptr< LUFactorization > lu = LUFactorization::LU( *this );
-	lu->inverse( inv );
+	return lu->inverse( inv );
 }
 
 void FloatMatrix::transpose( FloatMatrix& t ) const

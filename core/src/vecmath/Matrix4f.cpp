@@ -258,7 +258,7 @@ Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 	bool isSingular = ( abs( determinant ) < epsilon );
 	if( isSingular )
 	{
-		if( pbIsSingular != NULL )
+		if( pbIsSingular != nullptr )
 		{
 			*pbIsSingular = true;
 		}
@@ -266,7 +266,7 @@ Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 	}
 	else
 	{
-		if( pbIsSingular != NULL )
+		if( pbIsSingular != nullptr )
 		{
 			*pbIsSingular = false;
 		}
@@ -325,20 +325,20 @@ Matrix4f Matrix4f::normalMatrix4x4() const
 	return n4;
 }
 
-void Matrix4f::decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation )
+void Matrix4f::decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation ) const
 {
 	Matrix3f r;
 	decomposeRotationTranslation( r, translation );
 	rotation = Quat4f::fromRotationMatrix( r );
 }
 
-void Matrix4f::decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation )
+void Matrix4f::decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const
 {
 	rotation = getSubmatrix3x3();
 	translation = getCol( 3 ).xyz();
 }
 
-void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation )
+void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const
 {
 	Matrix3f r = getSubmatrix3x3();
 	

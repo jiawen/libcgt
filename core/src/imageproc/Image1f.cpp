@@ -39,25 +39,17 @@ Image1f::Image1f( int width, int height, float fill ) :
 	m_data( m_width, m_height )
 
 {
-	int nPixels = m_width * m_height;
-	for( int i = 0; i < nPixels; ++i )
-	{
-		m_data[ i ] = fill;
-	}
+	m_data.fill( fill );
 }
 
 Image1f::Image1f( const Vector2i& size, float fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( m_width, m_height )
+	m_data( size.x, size.y )
 
 {
-	int nPixels = m_width * m_height;
-	for( int i = 0; i < nPixels; ++i )
-	{
-		m_data[ i ] = fill;
-	}
+	m_data.fill( fill );
 }
 
 Image1f::Image1f( const Image1f& copy ) :
@@ -119,8 +111,7 @@ float Image1f::pixel( const Vector2i& xy ) const
 
 void Image1f::setPixel( int x, int y, float pixel )
 {
-	int index = y * m_width + x;
-	m_data[ index ] = pixel;
+	m_data( x, y ) = pixel;
 }
 
 void Image1f::setPixel( const Vector2i& xy, float pixel )

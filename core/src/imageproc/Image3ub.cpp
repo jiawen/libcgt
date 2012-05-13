@@ -76,16 +76,6 @@ Image3ub::Image3ub( const Image3ub& copy ) :
 
 }
 
-Image3ub::Image3ub( Reference< Image3ub > copy ) :
-
-m_width( copy->m_width ),
-m_height( copy->m_height ),
-m_data( copy->m_data )
-
-{
-
-}
-
 bool Image3ub::isNull() const
 {
 	return( m_width <= 0 || m_height <= 0 );

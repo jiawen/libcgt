@@ -1,11 +1,10 @@
-#ifndef RENDER_TARGET_H
-#define RENDER_TARGET_H
+#pragma once
 
 #include <D3D11.h>
 
-#include <common/Reference.h>
 #include <vecmath/Vector2i.h>
-#include <imageproc/Image4f.h>
+
+class Image4f;
 
 // A RenderTarget is a texture with:
 // Usage = DFEAULT (GPU read/write, no CPU access)
@@ -29,7 +28,8 @@ public:
 	int height();
 	Vector2i size();
 
-	void update( ID3D11DeviceContext* pContext, Reference< Image4f > im );
+	// updates this texture using the contents of im
+	void update( ID3D11DeviceContext* pContext, const Image4f& im );
 
 	ID3D11Texture2D* texture();
 	ID3D11RenderTargetView* renderTargetView();
@@ -52,5 +52,3 @@ private:
 
 
 };
-
-#endif // RENDER_TARGET_H

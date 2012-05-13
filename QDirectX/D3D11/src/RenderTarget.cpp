@@ -1,5 +1,7 @@
 #include "RenderTarget.h"
 
+#include <imageproc/Image4f.h>
+
 // static
 RenderTarget* RenderTarget::createFloat1( ID3D11Device* pDevice, int width, int height )
 {
@@ -83,13 +85,13 @@ Vector2i RenderTarget::size()
 	return Vector2i( m_width, m_height );
 }
 
-void RenderTarget::update( ID3D11DeviceContext* pContext, Reference< Image4f > im )
+void RenderTarget::update( ID3D11DeviceContext* pContext, const Image4f& im )
 {
-	uint rowPitch = im->width() * 4 * sizeof( float );
-	uint depthPitch = im->width() * im->height() * sizeof( float );
+	uint rowPitch = 4 * im.width() * sizeof( float );
+	uint depthPitch = 4 * im.width() * im.height() * sizeof( float );
 
 	pContext->UpdateSubresource( m_pTexture, 0,
-		NULL, im->pixels(), rowPitch, depthPitch );
+		NULL, im.pixels(), rowPitch, depthPitch );
 }
 
 ID3D11Texture2D* RenderTarget::texture()

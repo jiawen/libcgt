@@ -70,12 +70,12 @@ public:
 	// *assuming* this matrix is a composition of a rotation and a translation
 	// and *no scaling*
 	// decomposes it into its components
-	void decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation );
-	void decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation );
+	void decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation ) const;
+	void decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const;
 
 	// *assuming* this matrix is a composition of a rotation, a scaling, and a translation
 	// decomposes it into its components
-	void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation );
+	void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const;
 
 	// ---- Utility ----
 	// implicit cast

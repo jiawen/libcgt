@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector_types.h>
+
 // 4x4 matrix, stored in column major order (FORTRAN / OpenGL style)
 struct float4x4
 {

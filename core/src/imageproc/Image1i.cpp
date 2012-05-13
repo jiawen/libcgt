@@ -14,31 +14,30 @@
 Image1i::Image1i() :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 
 }
 
-Image1i::Image1i( int width, int height, qint32 fill ) :
+Image1i::Image1i( int width, int height, int32 fill ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_data( width * height, fill )
+	m_data( width, height )
 
 {
-
+	m_data.fill( fill );
 }
 
-Image1i::Image1i( const Vector2i& size, qint32 fill ) :
+Image1i::Image1i( const Vector2i& size, int32 fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( m_width * m_height, fill )
+	m_data( size.x, size.y )
 
 {
-
+	m_data.fill( fill );
 }
 
 Image1i::Image1i( const Image1i& copy ) :
@@ -46,16 +45,6 @@ Image1i::Image1i( const Image1i& copy ) :
 	m_width( copy.m_width ),
 	m_height( copy.m_height ),
 	m_data( copy.m_data )
-
-{
-
-}
-
-Image1i::Image1i( Reference< Image1i > copy ) :
-
-	m_width( copy->m_width ),
-	m_height( copy->m_height ),
-	m_data( copy->m_data )
 
 {
 
@@ -81,35 +70,45 @@ Vector2i Image1i::size() const
 	return Vector2i( m_width, m_height );
 }
 
-qint32* Image1i::pixels()
+const int32* Image1i::pixels() const
 {
-	return m_data.data();
+	return m_data;
 }
 
-qint32 Image1i::pixel( int x, int y ) const
+int32* Image1i::pixels()
+{
+	return m_data;
+}
+
+int32* Image1i::rowPointer( int y )
+{
+	return m_data.getRowPointer( y );
+}
+
+int32 Image1i::pixel( int x, int y ) const
 {
 	return m_data[ y * m_width + x ];
 }
 
-
-qint32 Image1i::pixel( const Vector2i& xy ) const
+int32 Image1i::pixel( const Vector2i& xy ) const
 {
 	return pixel( xy.x, xy.y );
 }
 
-void Image1i::setPixel( int x, int y, qint32 pixel )
+void Image1i::setPixel( int x, int y, int32 pixel )
 {
 	m_data[ y * m_width + x ] = pixel;
 }
 
-void Image1i::setPixel( const Vector2i& xy, qint32 pixel )
+void Image1i::setPixel( const Vector2i& xy, int32 pixel )
 {
 	setPixel( xy.x, xy.y, pixel );
 }
 
-Reference< Image1i > Image1i::flipUD()
+Image1i Image1i::flipUD()
 {
-	Reference< Image1i > output = new Image1i( m_width, m_height );
+	// TODO: do memcpy per row
+	Image1i output( m_width, m_height );
 
 	for( int y = 0; y < m_height; ++y )
 	{
@@ -117,14 +116,14 @@ Reference< Image1i > Image1i::flipUD()
 		for( int x = 0; x < m_width; ++x )
 		{
 			int p = pixel( x, yy );
-			output->setPixel( x, y, p );
+			output.setPixel( x, y, p );
 		}
 	}
 
 	return output;
 }
 
-qint32 Image1i::bilinearSample( float x, float y ) const
+int32 Image1i::bilinearSample( float x, float y ) const
 {
 	x = x - 0.5f;
 	y = y - 0.5f;
@@ -161,7 +160,7 @@ QImage Image1i::toQImage()
 	{
 		for( int x = 0; x < m_width; ++x )
 		{
-			qint32 pi = pixel( x, y );
+			int32 pi = pixel( x, y );
 			QRgb rgba = qRgba( pi, pi, pi, 255 );
 			q.setPixel( x, y, rgba );
 		}

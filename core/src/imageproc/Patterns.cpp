@@ -1,10 +1,10 @@
 #include "imageproc/Patterns.h"
 
 // static
-Reference< Image4f > Patterns::createCheckerboard( int width, int height, int checkerSize,
-												  const Vector4f& whiteColor, const Vector4f& blackColor )
+Image4f Patterns::createCheckerboard( int width, int height, int checkerSize,
+	const Vector4f& whiteColor, const Vector4f& blackColor )
 {
-	Reference< Image4f > checkerboard = new Image4f( width, height );
+	Image4f checkerboard( width, height );
 
 	int nBlocksX = 1 + width / checkerSize;
 	int nBlocksY = 1 + height / checkerSize;
@@ -23,11 +23,11 @@ Reference< Image4f > Patterns::createCheckerboard( int width, int height, int ch
 				{
 					if( isWhite )
 					{
-						checkerboard->setPixel( x, y, whiteColor );
+						checkerboard.setPixel( x, y, whiteColor );
 					}
 					else
 					{
-						checkerboard->setPixel( x, y, blackColor );
+						checkerboard.setPixel( x, y, blackColor );
 					}
 				}
 			}
@@ -41,10 +41,10 @@ Reference< Image4f > Patterns::createCheckerboard( int width, int height, int ch
 }
 
 // static
-Reference< Image1f > Patterns::createRandom( int width, int height, Random& random )
+Image1f Patterns::createRandom( int width, int height, Random& random )
 {
-	Reference< Image1f > im = new Image1f( width, height );
-	float* pixels = im->pixels();
+	Image1f im( width, height );
+	float* pixels = im.pixels();
 
 	for( int i = 0; i < width * height; ++i )
 	{
@@ -55,10 +55,10 @@ Reference< Image1f > Patterns::createRandom( int width, int height, Random& rand
 }
 
 // static
-Reference< Image4f > Patterns::createRandomFloat4( int width, int height, Random& random )
+Image4f Patterns::createRandomFloat4( int width, int height, Random& random )
 {
-	Reference< Image4f > im = new Image4f( width, height );
-	float* pixels = im->pixels();
+	Image4f im( width, height );
+	float* pixels = im.pixels();
 
 	for( int i = 0; i < 4 * width * height; ++i )
 	{

@@ -194,9 +194,9 @@ Vector2f Spline2f::closestPointOnSpline( const Vector2f& p, float* closestT, flo
 	return minPoint;
 }
 
-Reference< Spline2f > Spline2f::offsetPath( float distance )
+Spline2f Spline2f::offsetPath( float distance )
 {
-	Reference< Spline2f > offsetSpline = new Spline2f;
+	Spline2f offsetSpline;
 
 	int nControlPoints = numControlPoints();
 	float delta = 1.f / ( nControlPoints - 1 );
@@ -208,7 +208,7 @@ Reference< Spline2f > Spline2f::offsetPath( float distance )
 		Vector2f controlPoint = getControlPoint( i );
 		Vector2f normalAtControlPoint = normalAt( t ).normalized();
 
-		offsetSpline->appendControlPoint( controlPoint + distance * normalAtControlPoint );
+		offsetSpline.appendControlPoint( controlPoint + distance * normalAtControlPoint );
 	}
 
 	return offsetSpline;

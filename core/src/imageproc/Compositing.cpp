@@ -9,21 +9,16 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-Reference< Image4f > Compositing::compositeOver( Reference< Image4f > foreground,
-												Reference< Image4f > background,
-												Reference< Image4f > composite )
+Image4f Compositing::compositeOver( const Image4f& foreground, const Image4f& background )
 {
-	if( composite.isNull() )
-	{
-		composite = new Image4f( foreground->size() );
-	}
+	Image4f composite( foreground.size() );
 
-	for( int y = 0; y < foreground->height(); ++y )
+	for( int y = 0; y < foreground.height(); ++y )
 	{
-		for( int x = 0; x < foreground->width(); ++x )
+		for( int x = 0; x < foreground.width(); ++x )
 		{
-			Vector4f f = foreground->pixel( x, y );
-			Vector4f b = background->pixel( x, y );
+			Vector4f f = foreground.pixel( x, y );
+			Vector4f b = background.pixel( x, y );
 
 			float fa = f.w;
 			float ba = b.w;
@@ -31,7 +26,7 @@ Reference< Image4f > Compositing::compositeOver( Reference< Image4f > foreground
 			Vector3f compositeColor = fa * f.xyz() + ( 1.f - fa ) * ( b.xyz() );
 			float compositeAlpha = fa + ba * ( 1 - fa );
 
-			composite->setPixel( x, y, Vector4f( compositeColor, compositeAlpha ) );
+			composite.setPixel( x, y, Vector4f( compositeColor, compositeAlpha ) );
 		}
 	}
 
@@ -39,14 +34,9 @@ Reference< Image4f > Compositing::compositeOver( Reference< Image4f > foreground
 }
 
 // static
-Reference< Image4f > Compositing::extractBackgroundColor( Reference< Image4f > composite,
-														 Reference< Image4f > foreground,
-														 Reference< Image4f > background )
+Image4f Compositing::extractBackgroundColor( const Image4f& composite, const Image4f& foreground )
 {
-	if( background.isNull() )
-	{
-		background = new Image4f( composite->size() );
-	}
+	Image4f background( composite.size() );
 
 	// red channel:
 	// c_r = f_a * f_r + ( 1 - f_a ) * b_r
@@ -56,15 +46,15 @@ Reference< Image4f > Compositing::extractBackgroundColor( Reference< Image4f > c
 	// c_a = f_a + b_a * ( 1 - f_a )
 	// b_a = ( c_a - f_a ) / ( 1 - f_a )
 
-	for( int y = 0; y < composite->height(); ++y )
+	for( int y = 0; y < composite.height(); ++y )
 	{
-		for( int x = 0; x < composite->width(); ++x )
+		for( int x = 0; x < composite.width(); ++x )
 		{
-			Vector4f cRGBA = composite->pixel( x, y );
-			Vector4f fRGBA = foreground->pixel( x, y );
+			Vector4f cRGBA = composite.pixel( x, y );
+			Vector4f fRGBA = foreground.pixel( x, y );
 			
 			Vector4f bRGBA = extractBackgroundColor( cRGBA, fRGBA );
-			background->setPixel( x, y, bRGBA );
+			background.setPixel( x, y, bRGBA );
 		}
 	}
 
@@ -72,79 +62,21 @@ Reference< Image4f > Compositing::extractBackgroundColor( Reference< Image4f > c
 }
 
 // static
-Reference< Image4f > Compositing::extractBackgroundColor( Reference< Image3ub > composite,
-														 Reference< Image4f > foreground,
-														 Reference< Image4f > background )
+Image4ub Compositing::extractBackgroundColor( const Image4ub& composite, const Image4ub& foreground )
 {
-	if( background.isNull() )
-	{
-		background = new Image4f( composite->size() );
-	}
+	Image4ub background( composite.size() );
 
-	for( int y = 0; y < composite->height(); ++y )
+	for( int y = 0; y < composite.height(); ++y )
 	{
-		for( int x = 0; x < composite->width(); ++x )
+		for( int x = 0; x < composite.width(); ++x )
 		{
-			Vector3i cRGB = composite->pixel( x, y );
-			Vector4f cRGBAFloat = Vector4f( ColorUtils::intToFloat( cRGB ), 1.f );
-			Vector4f fRGBA = foreground->pixel( x, y );			
-
-			Vector4f bRGBA = extractBackgroundColor( cRGBAFloat, fRGBA );
-			background->setPixel( x, y, bRGBA );
-		}
-	}
-
-	return background;
-}
-
-// static
-Reference< Image4ub > Compositing::extractBackgroundColor( Reference< Image4ub > composite,
-														  Reference< Image4ub > foreground,
-														  Reference< Image4ub > background )
-{
-	if( background.isNull() )
-	{
-		background = new Image4ub( composite->size() );
-	}
-
-	for( int y = 0; y < composite->height(); ++y )
-	{
-		for( int x = 0; x < composite->width(); ++x )
-		{
-			Vector4i cRGBA = composite->pixel( x, y );
+			Vector4i cRGBA = composite.pixel( x, y );
 			Vector4f cRGBAFloat = Vector4f( ColorUtils::intToFloat( cRGBA ) );
-			Vector4f fRGBA = ColorUtils::intToFloat( foreground->pixel( x, y ) );
+			Vector4f fRGBA = ColorUtils::intToFloat( foreground.pixel( x, y ) );
 
 			Vector4f bRGBAFloat = extractBackgroundColor( cRGBAFloat, fRGBA );
 			Vector4i bRGBA = ColorUtils::floatToInt( bRGBAFloat );
-			background->setPixel( x, y, bRGBA );
-		}
-	}
-
-	return background;
-}
-
-// static
-Reference< Image4ub > Compositing::extractBackgroundColor( Reference< Image3ub > composite,
-														  Reference< Image4ub > foreground,
-														  Reference< Image4ub > background )
-{
-	if( background.isNull() )
-	{
-		background = new Image4ub( composite->size() );
-	}
-
-	for( int y = 0; y < composite->height(); ++y )
-	{
-		for( int x = 0; x < composite->width(); ++x )
-		{
-			Vector3i cRGB = composite->pixel( x, y );
-			Vector4f cRGBAFloat = Vector4f( ColorUtils::intToFloat( cRGB ), 1.f );
-			Vector4f fRGBA = ColorUtils::intToFloat( foreground->pixel( x, y ) );
-
-			Vector4f bRGBAFloat = extractBackgroundColor( cRGBAFloat, fRGBA );
-			Vector4i bRGBA = ColorUtils::floatToInt( bRGBAFloat );
-			background->setPixel( x, y, bRGBA );
+			background.setPixel( x, y, bRGBA );
 		}
 	}
 

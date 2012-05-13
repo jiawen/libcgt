@@ -7,19 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-ArrayWithLength< float > ArrayUtils::createFloatArray( int length, float fillValue )
-{
-	float* arr = new float[ length ];
-	for( int i = 0; i < length; ++i )
-	{
-		arr[ i ] = fillValue;
-	}
-	
-	return ArrayWithLength< float >( arr, length );
-}
-
-// static
-bool ArrayUtils::saveTXT( const ArrayWithLength< float >& array, const char* filename )
+bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -28,14 +16,15 @@ bool ArrayUtils::saveTXT( const ArrayWithLength< float >& array, const char* fil
 	}
 
 	int retVal;
+	int n = static_cast< int >( array.size() );
 
-	retVal = fprintf( fp, "Size: %d\n", array.length() );
+	retVal = fprintf( fp, "Size: %d\n", n );
 	if( retVal < 0 )
 	{
 		return false;
 	}
 
-	for( int i = 0; i < array.length(); ++i )
+	for( int i = 0; i < n; ++i )
 	{
 		fprintf( fp, "[%d]: %f\n", i, array[ i ] );
 	}
@@ -67,12 +56,16 @@ bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 		return false;
 	}
 
-	for( int y = 0; y < array.height(); ++y )
+	int w = array.width();
+	int h = array.height();
+
+	for( int y = 0; y < h; ++y )
 	{
-		for( int x = 0; x < array.width(); ++x )
+		for( int x = 0; x < w; ++x )
 		{
+			int index = y * w + x;
 			float v = array( x, y );
-			fprintf( fp, "[%d %d]: %f\n", x, y, v );
+			fprintf( fp, "[%d] (%d %d): %f\n", index, x, y, v );
 		}
 	}
 	
@@ -97,20 +90,25 @@ bool ArrayUtils::saveTXT( const Array3D< float >& array, const char* filename )
 		return false;
 	}
 
-	retVal = fprintf( fp, "Format: float2\n" );
+	retVal = fprintf( fp, "Format: float\n" );
 	if( retVal < 0 )
 	{
 		return false;
 	}
 
-	for( int z = 0; z < array.depth(); ++z )
+	int w = array.width();
+	int h = array.height();
+	int d = array.depth();
+
+	for( int z = 0; z < d; ++z )
 	{
-		for( int y = 0; y < array.height(); ++y )
+		for( int y = 0; y < h; ++y )
 		{
-			for( int x = 0; x < array.width(); ++x )
+			for( int x = 0; x < w; ++x )
 			{
+				int index = z * w * h + y * w + x;
 				float v = array( x, y, z );
-				fprintf( fp, "[%d %d %d]: %f\n", x, y, z, v );
+				fprintf( fp, "[%d] (%d %d %d): %f\n", index, x, y, z, v );
 			}
 		}
 	}

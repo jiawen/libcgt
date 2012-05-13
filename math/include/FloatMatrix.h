@@ -63,10 +63,15 @@ public:
 	float* data();
 	const float* constData() const;
 
-	// Returns the inverse of this
-	// using LU factorization
-	FloatMatrix inverted() const;
-	void inverse( FloatMatrix& inv ) const;
+	FloatMatrix solve( const FloatMatrix& rhs, bool* pSucceeded = nullptr ) const;
+
+	// Returns the inverse of this using LU factorization
+	// optional out parameter indicates whether the operation succeeded
+	FloatMatrix inverted( bool* pSucceeded = nullptr ) const;
+
+	// Writes the inverse of this into inv
+	// returns whether the operation succeeded
+	bool inverse( FloatMatrix& inv ) const;
 
 	void transpose( FloatMatrix& t ) const;
 	FloatMatrix transposed() const;

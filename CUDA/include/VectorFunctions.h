@@ -1,5 +1,8 @@
 #pragma once
 
+#include <common/BasicTypes.h>
+
+
 // makes an int2 out of a short2
 static __inline__ __host__ __device__
 int2 make_int2( short2 s )
@@ -37,4 +40,28 @@ static __inline__ __host__ __device__
 float normL1( float3 v )
 {
 	return abs( v.x ) + abs( v.y ) + abs( v.z );
+}
+
+static __inline__ __host__ __device__
+uchar4 float4ToUChar4UnsignedNormalized( float4 rgba )
+{
+	return make_uchar4
+	(
+		static_cast< ubyte >( 255 * rgba.x ),
+		static_cast< ubyte >( 255 * rgba.y ),
+		static_cast< ubyte >( 255 * rgba.z ),
+		static_cast< ubyte >( 255 * rgba.w )
+	);
+}
+
+static __inline__ __host__ __device__
+uchar4 float3ToUChar4UnsignedNormalized( float3 rgb )
+{
+	return make_uchar4
+	(
+		static_cast< ubyte >( 255 * rgb.x ),
+		static_cast< ubyte >( 255 * rgb.y ),
+		static_cast< ubyte >( 255 * rgb.z ),
+		255
+	);
 }

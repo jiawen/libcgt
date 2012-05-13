@@ -1,12 +1,9 @@
-#ifndef IMAGE_3UB_H
-#define IMAGE_3UB_H
+#pragma once
 
 #include <QImage>
 #include <QString>
-#include <QtGlobal>
 #include <QVector>
 
-#include "common/Reference.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3i.h"
 
@@ -22,7 +19,6 @@ public:
 	Image3ub( int width, int height, const Vector3i& fillValue = Vector3i( 0, 0, 0 ) );
 	Image3ub( const Vector2i& size, const Vector3i& fillValue = Vector3i( 0, 0, 0 ) );
 	Image3ub( const Image3ub& copy );
-	Image3ub( Reference< Image3ub > copy );
 
 	bool isNull() const;
 
@@ -54,5 +50,3 @@ private:
 	QVector< quint8 > m_data;
 
 };
-
-#endif // IMAGE_3UB_H

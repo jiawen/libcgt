@@ -1,7 +1,5 @@
-#ifndef SPLINE_2F_H
-#define SPLINE_2F_H
+#pragma once
 
-#include "common/Reference.h"
 #include "vecmath/Vector2f.h"
 
 #include "OpenNaturalCubicSpline.h"
@@ -55,7 +53,7 @@ public:
 	// by evaluating the spline at nPointsToEvaluate
 	Vector2f closestPointOnSpline( const Vector2f& p, float* closestT = NULL, float* closestDistance = NULL );
 
-	Reference< Spline2f > offsetPath( float distance );
+	Spline2f offsetPath( float distance );
 
 private:
 
@@ -70,5 +68,3 @@ private:
 	QVector< Vector2f > m_cache;
 
 };
-
-#endif // SPLINE_2F_H
