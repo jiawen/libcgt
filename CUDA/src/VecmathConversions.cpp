@@ -1,10 +1,17 @@
 #include "VecmathConversions.h"
 
 #include <cstring>
+#include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 #include <vecmath/Matrix4f.h>
 #include <vector_functions.h>
+
+__host__
+Vector2f from_float2( const float2& v )
+{
+	return Vector2f( v.x, v.y );
+}
 
 __host__
 Vector3f from_float3( const float3& v )
@@ -16,6 +23,26 @@ __host__
 Vector4f from_float4( const float4& v )
 {
 	return Vector4f( v.x, v.y, v.z, v.w );
+}
+
+__host__
+Matrix4f from_float4x4( const float4x4& m )
+{
+	Matrix4f output;
+	memcpy( &output, m.m_elements, 16 * sizeof( float ) );
+	return output;
+}
+
+__host__
+float2 make_float2( const Vector2f& v )
+{
+	return make_float2( v.x, v.y );
+}
+
+__host__
+float3 make_float3( const Vector3f& v )
+{
+	return make_float3( v.x, v.y, v.z );
 }
 
 __host__
