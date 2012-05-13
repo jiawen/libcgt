@@ -87,11 +87,11 @@ Vector2i RenderTarget::size()
 
 void RenderTarget::update( ID3D11DeviceContext* pContext, const Image4f& im )
 {
-	uint rowPitch = 4 * im.width() * sizeof( float );
-	uint depthPitch = 4 * im.width() * im.height() * sizeof( float );
+	uint srcRowPitch = 4 * im.width() * sizeof( float );
+	uint srcDepthPitch = 4 * im.width() * im.height() * sizeof( float );
 
 	pContext->UpdateSubresource( m_pTexture, 0,
-		NULL, im.pixels(), rowPitch, depthPitch );
+		NULL, im.pixels(), srcRowPitch, srcDepthPitch );
 }
 
 ID3D11Texture2D* RenderTarget::texture()

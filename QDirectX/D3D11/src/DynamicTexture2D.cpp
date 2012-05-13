@@ -1,5 +1,8 @@
 #include "DynamicTexture2D.h"
 
+#include <imageproc/Image1f.h>
+#include <imageproc/Image4f.h>
+
 // static
 DynamicTexture2D* DynamicTexture2D::createFloat1( ID3D11Device* pDevice, int width, int height )
 {

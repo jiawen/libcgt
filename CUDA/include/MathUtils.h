@@ -190,6 +190,15 @@ uint modPowerOfTwoWithPower( uint x, uint p )
 	return modPowerOfTwoWithDivisor( x, 1 << p );
 }
 
+// converts a float in [0,1] to
+// a byte in [0,255]
+// the behavior for f outside [0,1] is undefined
+__host__ __device__ __inline
+ubyte floatToUByteNormalized( float f )
+{
+	return static_cast< ubyte >( 255 * f );
+}
+
 // converts a float in [-1,1] to
 // a byte in [-127,127]
 // the behavior for f outside [-1,1] is undefined

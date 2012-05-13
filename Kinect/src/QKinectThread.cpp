@@ -5,6 +5,7 @@
 
 #include <time/Clock.h>
 #include <math/Arithmetic.h>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -52,24 +53,25 @@ void QKinectThread::run()
 	Image4ub rgbaFrame( 640, 480 );
 	Array2D< ushort > depthFrame( 640, 480 );
 
+	std::vector< bool > successMask;
+
 	while( m_running )
 	{
-		int eventIndex = m_pKinect->poll( skeletonFrame, rgbaFrame, depthFrame, m_pollingIntervalMS );
-		int64 t1 = clock.getCounterValue();
+		successMask = m_pKinect->poll( skeletonFrame, rgbaFrame, depthFrame, m_pollingIntervalMS );
+		int64 t1 = clock.getCounterValue();		
 
-		if( eventIndex == 0 )
+		if( successMask[ 2 ] )
 		{
 			emit skeletonFrameReady( skeletonFrame ); 
 		}
-		else if( eventIndex == 1 )
+		else if( successMask[ 1 ] )
 		{
 			emit colorFrameReady( rgbaFrame );
 		}
-		else if( eventIndex == 2 )
+		else if( successMask[ 0 ] )
 		{
 			emit depthFrameReady( depthFrame );
 		}
-
 		float dt = clock.convertIntervalToMillis( t1 - t0 );
 		t0 = t1;
 

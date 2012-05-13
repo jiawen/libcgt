@@ -82,7 +82,7 @@ public slots:
 	//   0, if skeleton frame is ready
 	//   1, if rgba frame is ready
 	//   -1, if failed or timeout
-	int poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval = 0 );
+	std::vector< bool > poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval = 0 );
 
 	bool pollSpeech( QString& phrase, float& confidence, int waitInterval = 1000 );
 

@@ -163,44 +163,54 @@ void QKinect::setElevationAngle( int degrees )
 	m_pSensor->NuiCameraElevationSetAngle( degrees );	
 }
 
-int QKinect::poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval )
+std::vector< bool > QKinect::poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval )
 {
 	int nEvents = 3;
-	DWORD waitResult = WaitForMultipleObjects( nEvents, m_events, FALSE, waitInterval );
+	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_events, FALSE, waitInterval );
 
-	// TODO: 
-	// waitResult contains smallest of the indices of the events that signaled
-	// can do WaitForSingleObject( others ) with timeout of 0 to see if any of the others are ready
-	// and return a bitflag
+	std::vector< bool > successMask( 3, false );
 
-	bool succeeded = ( waitResult >= WAIT_OBJECT_0 && waitResult < WAIT_OBJECT_0 + nEvents );
-	if( succeeded )
+	bool anySignaled = ( waitMultipleResult >= WAIT_OBJECT_0 && waitMultipleResult < WAIT_OBJECT_0 + nEvents );
+	if( anySignaled )
 	{
-		int eventIndex = ( waitResult - WAIT_OBJECT_0 );
-		if( eventIndex == 0 )
+		int firstSignaledIndex = ( waitMultipleResult - WAIT_OBJECT_0 );
+		successMask[ firstSignaledIndex ] = true;
+
+		// check the rest of the events to see if they too were signaled
+		// but don't wait at all
+		for( int i = firstSignaledIndex + 1; i < nEvents; ++i )
 		{
-			skeletonFrame = handleGetSkeletonFrame();
-			return eventIndex;
-		}
-		else if( eventIndex == 1 )
-		{
-			succeeded = handleGetColorFrame( rgba );
-			if( succeeded )
+			DWORD waitSingleResult = WaitForSingleObject( m_events[ i ], 0 );
+			bool thisEventSignaled = ( waitSingleResult == WAIT_OBJECT_0 );
+			if( thisEventSignaled )
 			{
-				return eventIndex;
+				successMask[ i ] = true;
 			}
 		}
-		else if( eventIndex == 2 )
+
+		for( int i = 0; i < nEvents; ++i )
 		{
-			succeeded = handleGetDepthFrame( depth );
-			if( succeeded )
+			if( successMask[i] )
 			{
-				return eventIndex;
+				if( i == 2 )
+				{
+					skeletonFrame = handleGetSkeletonFrame();
+				}
+				if( i == 1 )
+				{
+					bool succeeded = handleGetColorFrame( rgba );
+					successMask[ i ] = succeeded;
+				}		
+				if( i == 0 )
+				{
+					bool succeeded = handleGetDepthFrame( depth );
+					successMask[ i ] = succeeded;
+				}
 			}
 		}
 	}
 
-	return -1;
+	return successMask;
 }
 
 bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
@@ -276,6 +286,7 @@ QKinect::QKinect() :
 {
 	m_events[0] = nullptr;
 	m_events[1] = nullptr;
+	m_events[2] = nullptr;
 }
 
 // static
@@ -328,16 +339,18 @@ HRESULT QKinect::initializeSkeletonTracking( QKinect* pKinect )
 
 			if( SUCCEEDED( hr ) )
 			{
+				pKinect->m_hDepthStreamHandle = hDepthStreamHandle;
+				pKinect->m_hNextDepthFrameEvent = hNextDepthFrameEvent;
+				pKinect->m_events[0] = hNextDepthFrameEvent;
+				//pKinect->m_events[2] = hNextDepthFrameEvent;
+
 				pKinect->m_hNextSkeletonEvent = hNextSkeletonEvent;
-				pKinect->m_events[0] = hNextSkeletonEvent;
+				//pKinect->m_events[0] = hNextSkeletonEvent;
+				pKinect->m_events[2] = hNextSkeletonEvent;
 			
 				pKinect->m_hVideoStreamHandle = hVideoStreamHandle;
 				pKinect->m_hNextVideoFrameEvent = hNextVideoFrameEvent;
-				pKinect->m_events[1] = hNextVideoFrameEvent;
-
-				pKinect->m_hDepthStreamHandle = hDepthStreamHandle;
-				pKinect->m_hNextDepthFrameEvent = hNextDepthFrameEvent;
-				pKinect->m_events[2] = hNextDepthFrameEvent;
+				pKinect->m_events[1] = hNextVideoFrameEvent;				
 
 				return hr;
 			}
