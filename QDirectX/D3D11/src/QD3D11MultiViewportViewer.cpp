@@ -269,13 +269,15 @@ void QD3D11MultiViewportViewer::mouseMoveEvent( QMouseEvent* event )
 	update();
 }
 
-void QD3D11MultiViewportViewer::mouseReleaseEvent( QMouseEvent * )
+void QD3D11MultiViewportViewer::mouseReleaseEvent( QMouseEvent* event )
 {
+	Q_UNUSED( event );
 	m_prevPos = Vector2i( -1, -1 );
 }
 
-void QD3D11MultiViewportViewer::wheelEvent( QWheelEvent * event )
+void QD3D11MultiViewportViewer::wheelEvent( QWheelEvent* event )
 {
+	Q_UNUSED( event );
 	//float speed = 0.002f;
 	//float zoom = exp(event->delta() * speed);
 

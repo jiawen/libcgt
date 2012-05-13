@@ -165,6 +165,7 @@ void FPSControls::handleMouseMoveEvent( QMouseEvent* event, PerspectiveCamera& c
 
 void FPSControls::handleMouseReleaseEvent( QMouseEvent* event )
 {
+	Q_UNUSED( event );
 	m_mouseIsDown = false;
 }
 

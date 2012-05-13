@@ -15,7 +15,7 @@ void PerspectiveCameraPath::addKeyframe( const PerspectiveCamera& camera )
 
 int PerspectiveCameraPath::numKeyFrames()
 {
-	return m_keyFrames.size();
+	return static_cast< int >( m_keyFrames.size() );
 }
 
 void PerspectiveCameraPath::clear()
@@ -34,7 +34,7 @@ void PerspectiveCameraPath::removeLastKeyframe()
 
 PerspectiveCamera PerspectiveCameraPath::getCamera( float t )
 {
-	int nKeyFrames = m_keyFrames.size();
+	int nKeyFrames = numKeyFrames();
 
 	// before the first one
 	if( t < 0 )
@@ -85,7 +85,7 @@ void PerspectiveCameraPath::save( const char* filename )
 {
 	FILE* fp = fopen( filename, "wb" );
 
-	int nFrames = m_keyFrames.size();
+	int nFrames = numKeyFrames();
 	fwrite( &nFrames, sizeof( int ), 1, fp );
 
 	for( int i = 0; i < nFrames; ++i )

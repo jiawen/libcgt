@@ -114,7 +114,8 @@ void QD3D11Widget::paintD3D()
 // virtual
 void QD3D11Widget::resizeD3D( int width, int height )
 {
-
+	Q_UNUSED( width );
+	Q_UNUSED( height );
 }
 
 // virtual
@@ -126,6 +127,8 @@ QPaintEngine* QD3D11Widget::paintEngine() const
 // virtual
 void QD3D11Widget::paintEvent( QPaintEvent* e )
 {
+	Q_UNUSED( e );
+
 	if( m_bD3DInitialized )
 	{
 		paintD3D();

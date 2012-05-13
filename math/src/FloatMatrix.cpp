@@ -106,7 +106,7 @@ int FloatMatrix::numCols() const
 
 int FloatMatrix::numElements() const
 {
-	return m_data.size();
+	return static_cast< int >( m_data.size() );
 }
 
 Vector2i FloatMatrix::indexToSubscript( int idx ) const

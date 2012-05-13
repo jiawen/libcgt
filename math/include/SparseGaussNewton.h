@@ -48,7 +48,7 @@ public:
 private:
 
 	std::shared_ptr< SparseEnergy > m_pEnergy;
-	uint m_maxNumIterations;
+	int m_maxNumIterations;
 	float m_epsilon;
 	float m_sqrtEpsilon;
 

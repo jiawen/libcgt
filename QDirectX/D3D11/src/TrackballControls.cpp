@@ -62,7 +62,7 @@ void TrackballControls::handleMouseMoveEvent( QMouseEvent* event, const Vector2i
 
 void TrackballControls::handleMouseReleaseEvent( QMouseEvent* event )
 {
-
+	Q_UNUSED( event );
 }
 
 float TrackballControls::sphereRadius()
