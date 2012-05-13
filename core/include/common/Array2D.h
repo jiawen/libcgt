@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-// TODO: move constructor and assignment operator
+// TODO: switch to using std::vector as underlying representation
 
 // A simple 2D array class (with row-major storage)
 template< typename T >
@@ -14,7 +14,9 @@ public:
 	Array2D( const char* filename );
 	Array2D( int width, int height );
 	Array2D( const Array2D& copy );
+	Array2D( Array2D&& move );
 	Array2D& operator = ( const Array2D& copy );
+	Array2D& operator = ( Array2D&& move );
 	virtual ~Array2D();
 	
 	bool isNull() const;
@@ -27,11 +29,7 @@ public:
 	void fill( const T& val );
 	void resize( int width, int height );
 
-	// this <-- other
-	// this array is automatically resized if sizes are different
-	void copy( const Array2D& other );
-
-	T* getRowPointer( int y ) const;
+	T* rowPointer( int y ) const;
 
 	operator T* ();
 	operator const T* () const;
@@ -58,7 +56,7 @@ Array2D< T >::Array2D() :
 
 	m_width( -1 ),
 	m_height( -1 ),
-	m_array( NULL )
+	m_array( nullptr )
 
 {
 	
@@ -69,7 +67,7 @@ Array2D< T >::Array2D( const char* filename ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
-	m_array( NULL )
+	m_array( nullptr )
 
 {
 	load( filename );
@@ -94,10 +92,26 @@ Array2D< T >::Array2D( const Array2D& copy )
 }
 
 template< typename T >
+Array2D< T >::Array2D( Array2D&& move )
+{
+	m_array = move.m_array;
+	m_width = move.m_width;
+	m_height = move.m_height;
+
+	move.m_array = nullptr;
+	move.m_width = -1;
+	move.m_height = -1;
+}
+
+template< typename T >
 Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 {
 	if( this != &copy )
 	{
+		if( m_array != nullptr )
+		{
+			delete[] m_array;
+		}
 		m_width = copy.m_width;
 		m_height = copy.m_height;
 
@@ -108,10 +122,31 @@ Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 }
 
 template< typename T >
+Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
+{
+	if( this != &move )
+	{
+		if( m_array != nullptr )
+		{
+			delete[] m_array;
+		}
+
+		m_array = move.m_array;
+		m_width = move.m_width;
+		m_height = move.m_height;
+
+		move.m_array = nullptr;
+		move.m_width = -1;
+		move.m_height = -1;
+	}
+	return *this;
+}
+
+template< typename T >
 // virtual
 Array2D< T >::~Array2D()
 {
-	if( m_array != NULL )
+	if( m_array != nullptr )
 	{
 		delete[] m_array;
 	}
@@ -120,13 +155,13 @@ Array2D< T >::~Array2D()
 template< typename T >
 bool Array2D< T >::isNull() const
 {
-	return( m_array == NULL );
+	return( m_array == nullptr );
 }
 
 template< typename T >
 bool Array2D< T >::notNull() const
 {
-	return( m_array != NULL );
+	return( m_array != nullptr );
 }
 
 template< typename T >
@@ -160,17 +195,17 @@ void Array2D< T >::fill( const T& val )
 template< typename T >
 void Array2D< T >::resize( int width, int height )
 {
-	// if either dimension is different...
-	if( m_width != width ||
-		m_height != height )
+	// TODO: check if width or height < 0
+
+	// check if the total number of elements it the same
+	// if it is, don't reallocate
+	if( width * height != m_width * m_height )
 	{
-		// check if the total number of elements it the same
-		// if it is, don't bother
-		if( width * height != m_width * m_height )
+		if( m_array != nullptr )
 		{
 			delete[] m_array;
-			m_array = new T[ width * height ];
 		}
+		m_array = new T[ width * height ];
 	}
 
 	m_width = width;
@@ -178,14 +213,7 @@ void Array2D< T >::resize( int width, int height )
 }
 
 template< typename T >
-void Array2D< T >::copy( const Array2D& other )
-{
-	resize( other.m_width, other.m_height );
-	memcpy( m_array, other.m_array, m_width * m_height * sizeof( T ) );
-}
-
-template< typename T >
-T* Array2D< T >::getRowPointer( int y ) const
+T* Array2D< T >::rowPointer( int y ) const
 {
 	return &( m_array[ y * m_width ] );
 }
@@ -230,7 +258,7 @@ template< typename T >
 bool Array2D< T >::load( const char* filename )
 {
 	FILE* fp = fopen( filename, "rb" );
-	if( fp == NULL )
+	if( fp == nullptr )
 	{
 		return false;
 	}
@@ -239,7 +267,7 @@ bool Array2D< T >::load( const char* filename )
 	// then delete the old array, and swap
 	m_width = -1;
 	m_height = -1;
-	if( m_array != NULL )
+	if( m_array != nullptr )
 	{
 		delete[] m_array;
 	}
@@ -265,7 +293,7 @@ template< typename T >
 bool Array2D< T >::save( const char* filename )
 {
 	FILE* fp = fopen( filename, "wb" );
-	if( fp == NULL )
+	if( fp == nullptr )
 	{
 		return false;
 	}

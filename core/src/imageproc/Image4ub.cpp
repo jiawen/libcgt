@@ -77,6 +77,41 @@ Image4ub::Image4ub( const Image4ub& copy ) :
 
 }
 
+Image4ub::Image4ub( Image4ub&& move )
+{
+	m_width = move.m_width;
+	m_height = move.m_height;
+	m_data = std::move( move.m_data );
+
+	move.m_width = -1;
+	move.m_height = -1;
+}
+
+Image4ub& Image4ub::operator = ( const Image4ub& copy )
+{
+	if( this != &copy )
+	{
+		m_width = copy.m_width;
+		m_height = copy.m_height;
+		m_data = copy.m_data;
+	}
+	return *this;
+}
+
+Image4ub& Image4ub::operator = ( Image4ub&& move )
+{
+	if( this != &move )
+	{
+		m_width = move.m_width;
+		m_height = move.m_height;
+		m_data = std::move( move.m_data );
+
+		move.m_width = -1;
+		move.m_height = -1;
+	}
+	return *this;
+}
+
 bool Image4ub::isNull() const
 {
 	return( m_width <= 0 || m_height <= 0 );

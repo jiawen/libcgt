@@ -94,7 +94,7 @@ float* Image1f::pixels()
 
 float* Image1f::rowPointer( int y )
 {
-	return m_data.getRowPointer( y );
+	return m_data.rowPointer( y );
 }
 
 float Image1f::pixel( int x, int y ) const
@@ -287,7 +287,7 @@ bool Image1f::loadPFM( QString filename )
 	Array2D< float > data( width, height );
 	int status;
 	
-	status = inputDataStream.readRawData( reinterpret_cast< char* >( data.getRowPointer( 0 ) ), width * height * sizeof( float ) );
+	status = inputDataStream.readRawData( reinterpret_cast< char* >( data.rowPointer( 0 ) ), width * height * sizeof( float ) );
 	// TOD: check status
 
 	inputFile.close();

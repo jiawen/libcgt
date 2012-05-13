@@ -53,7 +53,12 @@ FloatMatrix::FloatMatrix( const FloatMatrix& m ) :
 
 FloatMatrix::FloatMatrix( FloatMatrix&& m )
 {
-	*this = std::move( m );
+	m_data = std::move( m.m_data );
+	m_nRows = m.m_nRows;
+	m_nCols = m.m_nCols;
+
+	m.m_nRows = 0;
+	m.m_nCols = 0;
 }
 
 FloatMatrix::FloatMatrix( FloatMatrix* m ) :
@@ -87,9 +92,12 @@ FloatMatrix& FloatMatrix::operator = ( FloatMatrix&& m )
 {
 	if( this != &m )
 	{
+		m_data = std::move( m.m_data );
 		m_nRows = m.m_nRows;
 		m_nCols = m.m_nCols;
-		m_data = std::move( m.m_data );
+
+		m.m_nRows = 0;
+		m.m_nCols = 0;
 	}
 	return *this;
 }

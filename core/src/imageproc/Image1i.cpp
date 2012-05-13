@@ -82,7 +82,7 @@ int32* Image1i::pixels()
 
 int32* Image1i::rowPointer( int y )
 {
-	return m_data.getRowPointer( y );
+	return m_data.rowPointer( y );
 }
 
 int32 Image1i::pixel( int x, int y ) const

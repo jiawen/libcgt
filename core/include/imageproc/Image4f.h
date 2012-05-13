@@ -24,6 +24,10 @@ public:
 	Image4f( const Vector2i& size, const Vector4f& fill = Vector4f( 0, 0, 0, 0 ) );
 	
 	Image4f( const Image4f& copy );	
+	Image4f( Image4f&& move );
+
+	Image4f& operator = ( const Image4f& copy );
+	Image4f& operator = ( Image4f&& move );
 
 	bool isNull() const;
 

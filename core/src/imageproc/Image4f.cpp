@@ -75,6 +75,41 @@ Image4f::Image4f( const Image4f& copy ) :
 
 }
 
+Image4f::Image4f( Image4f&& move )
+{
+	m_width = move.m_width;
+	m_height = move.m_height;
+	m_data = std::move( move.m_data );
+
+	move.m_width = -1;
+	move.m_height = -1;
+}
+
+Image4f& Image4f::operator = ( const Image4f& copy )
+{
+	if( this != &copy )
+	{
+		m_width = copy.m_width;
+		m_height = copy.m_height;
+		m_data = copy.m_data;
+	}
+	return *this;
+}
+
+Image4f& Image4f::operator = ( Image4f&& move )
+{
+	if( this != &move )
+	{
+		m_width = move.m_width;
+		m_height = move.m_height;
+		m_data = std::move( move.m_data );
+
+		move.m_width = -1;
+		move.m_height = -1;
+	}
+	return *this;
+}
+
 bool Image4f::isNull() const
 {
 	return( m_width <= 0 || m_height <= 0 );
@@ -112,7 +147,7 @@ Vector4f* Image4f::pixelsVector4f()
 
 float* Image4f::rowPointer( int y )
 {
-	return m_data.getRowPointer( y );
+	return m_data.rowPointer( y );
 }
 
 Vector4f Image4f::pixel( int x, int y ) const

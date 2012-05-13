@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-// TODO: move constructor and assignment operator
+// TODO: switch to using std::vector as underlying representation
 
 // A simple 3D array class (with row-major storage)
 template< typename T >
@@ -14,7 +14,9 @@ public:
 	Array3D( const char* filename );
 	Array3D( int width, int height, int depth );
 	Array3D( const Array3D& copy );
+	Array3D( Array3D&& move );
 	Array3D& operator = ( const Array3D& copy );
+	Array3D& operator = ( Array3D&& move );
 	virtual ~Array3D();
 	
 	bool isNull() const;
@@ -29,10 +31,10 @@ public:
 	void resize( int width, int height, int depth );
 
 	// Returns a pointer to the beginning of the y-th row of the z-th slice
-	T* getRowPointer( int y, int z ) const;
+	T* rowPointer( int y, int z ) const;
 
 	// Returns a pointer to the beginning of the z-th slice
-	T* getSlicePointer( int z ) const;
+	T* slicePointer( int z ) const;
 
 	operator T* () const;
 
@@ -60,7 +62,7 @@ Array3D< T >::Array3D() :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
-	m_array( NULL )
+	m_array( nullptr )
 
 {
 	
@@ -72,7 +74,7 @@ Array3D< T >::Array3D( const char* filename ) :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
-	m_array( NULL )
+	m_array( nullptr )
 
 {
 	load( filename );
@@ -99,10 +101,29 @@ Array3D< T >::Array3D( const Array3D& copy )
 }
 
 template< typename T >
+Array3D< T >::Array3D( Array3D&& move )
+{
+	m_array = move.m_array;
+	m_width = move.m_width;
+	m_height = move.m_height;
+	m_depth = move.m_depth;
+
+	move.m_array = nullptr;
+	move.m_width = -1;
+	move.m_height = -1;
+	move.m_depth = -1;
+}
+
+template< typename T >
 Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 {
 	if( this != &copy )
 	{
+		if( m_array != nullptr )
+		{
+			delete[] m_array;
+		}
+
 		m_width = copy.m_width;
 		m_height = copy.m_height;
 		m_depth = copy.m_depth;
@@ -114,10 +135,32 @@ Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 }
 
 template< typename T >
+Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
+{
+	if( this != &move )
+	{
+		if( m_array != nullptr )
+		{
+			delete[] m_array;
+		}
+
+		m_width = move.m_width;
+		m_height = move.m_height;
+		m_depth = move.m_depth;
+
+		move.m_array = nullptr;
+		move.m_width = -1;
+		move.m_height = -1;
+		move.m_depth = -1;
+	}
+	return *this;
+}
+
+template< typename T >
 // virtual
 Array3D< T >::~Array3D()
 {
-	if( m_array != NULL )
+	if( m_array != nullptr )
 	{
 		delete[] m_array;
 	}
@@ -126,13 +169,13 @@ Array3D< T >::~Array3D()
 template< typename T >
 bool Array3D< T >::isNull() const
 {
-	return( m_array == NULL );
+	return( m_array == nullptr );
 }
 
 template< typename T >
 bool Array3D< T >::notNull() const
 {
-	return( m_array != NULL );
+	return( m_array != nullptr );
 }
 
 template< typename T >
@@ -172,9 +215,16 @@ void Array3D< T >::fill( const T& val )
 template< typename T >
 void Array3D< T >::resize( int width, int height, int depth )
 {
+	// TODO: check if width or height < 0
+
+	// check if the total number of elements it the same
+	// if it is, don't reallocate
 	if( width * height * depth != m_width * m_height * m_depth )
 	{
-		delete[] m_array;
+		if( m_array != nullptr )
+		{
+			delete[] m_array;
+		}
 		m_array = new T[ width * height * depth ];
 	}
 
@@ -184,13 +234,13 @@ void Array3D< T >::resize( int width, int height, int depth )
 }
 
 template< typename T >
-T* Array3D< T >::getRowPointer( int y, int z ) const
+T* Array3D< T >::rowPointer( int y, int z ) const
 {
 	return &( m_array[ z * m_width * m_height + y * m_width ] );
 }
 
 template< typename T >
-T* Array3D< T >::getSlicePointer( int z ) const
+T* Array3D< T >::slicePointer( int z ) const
 {
 	return &( m_array[ z * m_width * m_height ] );
 }
@@ -231,7 +281,7 @@ template< typename T >
 bool Array3D< T >::load( const char* filename )
 {
 	FILE* fp = fopen( filename, "rb" );
-	if( fp == NULL )
+	if( fp == nullptr )
 	{
 		return false;
 	}
@@ -241,7 +291,7 @@ bool Array3D< T >::load( const char* filename )
 	m_width = -1;
 	m_height = -1;
 	m_depth = -1;
-	if( m_array != NULL )
+	if( m_array != nullptr )
 	{
 		delete[] m_array;
 	}
@@ -270,7 +320,7 @@ template< typename T >
 bool Array3D< T >::save( const char* filename )
 {
 	FILE* fp = fopen( filename, "wb" );
-	if( fp == NULL )
+	if( fp == nullptr )
 	{
 		return false;
 	}

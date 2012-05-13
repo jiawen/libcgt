@@ -27,6 +27,10 @@ public:
 	Image4ub( const Vector2i& size, const Vector4i& fill = Vector4i( 0, 0, 0, 0 ) );
 
 	Image4ub( const Image4ub& copy );
+	Image4ub( Image4ub&& move );
+
+	Image4ub& operator = ( const Image4ub& copy );
+	Image4ub& operator = ( Image4ub&& move );
 
 	bool isNull() const;
 
