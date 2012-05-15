@@ -33,7 +33,7 @@ Vector2f GeometryUtils::triangleCentroid( const Vector2f& v0, const Vector2f& v1
 }
 
 // static
-QVector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
 	BoundingBox2f bbox = triangleBoundingBox( v0, v1, v2 );
 	int xStart = Arithmetic::floorToInt( bbox.minimum().x );
@@ -41,7 +41,9 @@ QVector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const V
 	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
 	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
 
-	QVector< Vector2f > pointsInside;
+	int nPixelsMax = ( yEnd - yStart + 1 ) * ( xEnd - xStart - 1 );
+	std::vector< Vector2f > pointsInside;
+	pointsInside.reserve( nPixelsMax );
 
 	for( int y = yStart; y <= yEnd; ++y )
 	{
@@ -51,7 +53,7 @@ QVector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const V
 
 			if( pointInTriangle( p, v0, v1, v2 ) )
 			{
-				pointsInside.append( p );
+				pointsInside.push_back( p );
 			}
 		}
 	}
@@ -86,7 +88,7 @@ float GeometryUtils::edgeTestConservative( const Vector2f& edgeNormal, const Vec
 }
 
 // static
-QVector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
 	// set up edges
 	Vector2f edge01 = v1 - v0;
@@ -104,7 +106,9 @@ QVector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f&
 	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
 	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
 
-	QVector< Vector2f > pointsInside;
+	int nPixelsMax = ( yEnd - yStart + 1 ) * ( xEnd - xStart - 1 );
+	std::vector< Vector2f > pointsInside;
+	pointsInside.reserve( nPixelsMax );
 
 	for( int y = yStart; y <= yEnd; ++y )
 	{
@@ -120,7 +124,7 @@ QVector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f&
 				( passed12 > 0 ) &&
 				( passed20 > 0 ) )
 			{
-				pointsInside.append( p );
+				pointsInside.push_back( p );
 			}
 		}
 	}

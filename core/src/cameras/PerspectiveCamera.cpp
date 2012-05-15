@@ -12,20 +12,20 @@
 //////////////////////////////////////////////////////////////////////////
 
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
-	float fovY, float aspect,
+	float fovYDegrees, float aspect,
 	float zNear, float zFar,
 	bool zFarIsInfinite,
 	bool isDirectX )
 {
-	setPerspective( fovY, aspect, zNear, zFar, zFarIsInfinite );
+	setPerspective( fovYDegrees, aspect, zNear, zFar, zFarIsInfinite );
 	setLookAt( eye, center, up );
 	setDirectX( isDirectX );
 }
 
-void PerspectiveCamera::getPerspective( float* pfFovY, float* pfAspect,
+void PerspectiveCamera::getPerspective( float* pfFovYDegrees, float* pfAspect,
 	float* pfZNear, float* pfZFar, bool* pbZFarIsInfinite )
 {
-	*pfFovY = m_fovY;
+	*pfFovYDegrees = MathUtils::radiansToDegrees( m_fovYRadians );
 	*pfAspect = m_aspect;
 
 	*pfZNear = m_zNear;
@@ -37,11 +37,11 @@ void PerspectiveCamera::getPerspective( float* pfFovY, float* pfAspect,
 	}
 }
 
-void PerspectiveCamera::setPerspective( float fovY, float aspect,
+void PerspectiveCamera::setPerspective( float fovYDegrees, float aspect,
 	float zNear, float zFar, bool zFarIsInfinite )
 {
 	// store fov and aspect ratio parameters
-	m_fovY = fovY;
+	m_fovYRadians = MathUtils::degreesToRadians( fovYDegrees );
 	m_aspect = aspect;
 
 	m_zNear = zNear;
@@ -67,20 +67,45 @@ void PerspectiveCamera::setAspect( int width, int height )
 	setAspect( Arithmetic::divideIntsToFloat( width, height ) );
 }
 
+float PerspectiveCamera::fovXRadians() const
+{
+	return 2 * halfFovXRadians();	
+}
+
 float PerspectiveCamera::fovYRadians() const
 {
-	return MathUtils::degreesToRadians( m_fovY );
+	return m_fovYRadians;	
 }
 
 void PerspectiveCamera::setFovYRadians( float fovY )
 {
-	m_fovY = MathUtils::radiansToDegrees( fovY );
+	m_fovYRadians = fovY;
 	updateFrustum();
+}
+
+float PerspectiveCamera::halfFovXRadians() const
+{
+	return atan( tanHalfFovX() );
 }
 
 float PerspectiveCamera::halfFovYRadians() const
 {
 	return 0.5f * fovYRadians();
+}
+
+float PerspectiveCamera::tanHalfFovX() const
+{
+	// let phi_x = half fov x
+	// let phi_y = half fov y
+	// then:
+	// tan( phi_x ) = right / zNear
+	// tan( phi_y ) = top / zNear
+	// right / top = aspect
+	// so:
+	// tan( phi_x ) = aspect * top / zNear
+	//              = aspect * tan( phi_y )
+
+	return tanHalfFovY() * aspect();
 }
 
 float PerspectiveCamera::tanHalfFovY() const
@@ -90,12 +115,12 @@ float PerspectiveCamera::tanHalfFovY() const
 
 float PerspectiveCamera::fovYDegrees() const
 {
-	return m_fovY;
+	return MathUtils::radiansToDegrees( m_fovYRadians );
 }
 
 void PerspectiveCamera::setFovYDegrees( float fovY )
 {
-	m_fovY = fovY;
+	m_fovYRadians = MathUtils::degreesToRadians( fovY );
 
 	updateFrustum();
 }
@@ -199,7 +224,7 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	outputTextStream << "zNear " << m_zNear << "\n";
 	outputTextStream << "zFar " << m_zFar << "\n";
 	outputTextStream << "zFarInfinite " << static_cast< int >( m_zFarIsInfinite ) << "\n";
-	outputTextStream << "fovY " << m_fovY << "\n";
+	outputTextStream << "fovYDegrees " << MathUtils::radiansToDegrees( m_fovYRadians ) << "\n";
 	outputTextStream << "aspect " << m_aspect << "\n";
 	outputTextStream << "isDirectX " << static_cast< int >( m_directX ) << "\n";
 
@@ -210,7 +235,7 @@ bool PerspectiveCamera::saveTXT( QString filename )
 // static
 PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t )
 {
-	float fov = MathUtils::lerp( c0.m_fovY, c1.m_fovY, t );
+	float fov = MathUtils::lerp( c0.m_fovYRadians, c1.m_fovYRadians, t );
 	float aspect = MathUtils::lerp( c0.m_aspect, c1.m_aspect, t );
 
 	float zNear = MathUtils::lerp( c0.m_zNear, c1.m_zNear, t );
@@ -246,7 +271,7 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 // static
 PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t )
 {
-	float fov = MathUtils::cubicInterpolate( c0.m_fovY, c1.m_fovY, c2.m_fovY, c3.m_fovY, t );
+	float fov = MathUtils::cubicInterpolate( c0.m_fovYRadians, c1.m_fovYRadians, c2.m_fovYRadians, c3.m_fovYRadians, t );
 	float aspect = MathUtils::cubicInterpolate( c0.m_aspect, c1.m_aspect, c2.m_aspect, c3.m_aspect, t );
 
 	float zNear = MathUtils::cubicInterpolate( c0.m_zNear, c1.m_zNear, c2.m_zNear, c3.m_zNear, t );

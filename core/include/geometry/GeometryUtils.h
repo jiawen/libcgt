@@ -1,9 +1,8 @@
-#ifndef GEOMETRY_UTILS_H
-#define GEOMETRY_UTILS_H
+#pragma once
 
 class Vector3f;
 
-#include <QVector>
+#include <vector>
 
 #include "math/Random.h"
 #include "vecmath/Matrix3f.h"
@@ -25,7 +24,7 @@ public:
 	static Vector2f triangleCentroid( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
 	// pixels are centered at half-integer coordinates
-	static QVector< Vector2f > pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
+	static std::vector< Vector2f > pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
 	// given normal n, origin p, and point to be tested s
 	// return n dot ( s - p )
@@ -38,7 +37,7 @@ public:
 	// conservative rasterization
 	// v0, v1, v2 must be counterclockwise oriented
 	// pixel centers are at half-integer coordinates
-	static QVector< Vector2f > pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
+	static std::vector< Vector2f > pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
 	// returns true if two points (p0, p1) are on the same side of
 	// the line determined by (v0, v1)
@@ -164,5 +163,3 @@ public:
 private:
 
 };
-
-#endif

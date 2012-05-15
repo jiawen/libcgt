@@ -7,13 +7,13 @@
 class PerspectiveCamera : public Camera
 {
 public:
-
+	
 	// fovY: field of view angle in the y direction, in degrees
 	// aspect: aspect ratio in width over height
 	PerspectiveCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
 		const Vector3f& center = Vector3f( 0, 0, 0 ),
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
-		float fovY = 50.0f, float aspect = 1.0f,
+		float fovYDegrees = 50.0f, float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
 		bool zFarIsInfinite = false,
 		bool isDirectX = true );
@@ -22,11 +22,14 @@ public:
 	// note that these are simply the cached values
 	// the state can become *inconsistent* if GLCamera::setFrustum()
 	// calls are made
-	void getPerspective( float* pfFovY, float* pfAspect,
+	//
+	// TODO: maybe a PerspectiveCamera should disallow setting of top, right, etc
+	// a skewed perspective camera for depth of field should return a general camera...
+	void getPerspective( float* pfFovYDegrees, float* pfAspect,
 		float* pfZNear, float* pfZFar,
 		bool* pbZFarIsInfinite = nullptr );
 
-	void setPerspective( float fovY = 50.0f, float aspect = 1.0f,
+	void setPerspective( float fovYDegrees = 50.0f, float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
 		bool zFarIsInfinite = false );
 
@@ -37,17 +40,19 @@ public:
 	void setAspect( int width, int height );
 
 	// get/set the field of view, in radians
+	float fovXRadians() const;
 	float fovYRadians() const;
 	void setFovYRadians( float fovY );
 
 	// returns half the field of view, in radians
 	// very useful in projection math
+	float halfFovXRadians() const;
 	float halfFovYRadians() const;
 
 	// returns tangent of half the field of view
+	float tanHalfFovX() const;
 	float tanHalfFovY() const;
 
-	// TODO: switch to storing radians internally
 	// get/set the field of view, in degree
 	float fovYDegrees() const;
 	void setFovYDegrees( float fovY );
@@ -68,6 +73,8 @@ public:
 	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize );
 
 	bool saveTXT( QString filename );
+	
+	// TODO: careful!  when we serialize in degrees
 	static bool loadTXT( QString filename, PerspectiveCamera& camera );
 
 	static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
@@ -77,7 +84,7 @@ private:
 
 	void updateFrustum();
 
-	float m_fovY;
+	float m_fovYRadians;
 	float m_aspect;
 
 };

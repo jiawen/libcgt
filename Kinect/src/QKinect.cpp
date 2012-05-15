@@ -174,6 +174,26 @@ std::vector< bool > QKinect::poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& 
 	if( anySignaled )
 	{
 		int firstSignaledIndex = ( waitMultipleResult - WAIT_OBJECT_0 );
+		if( firstSignaledIndex == 0 )
+		{
+			successMask[ firstSignaledIndex ] = true;
+			bool succeeded = handleGetDepthFrame( depth );
+			successMask[ firstSignaledIndex ] = succeeded;
+		}
+	}
+
+	return successMask;
+
+#if 0
+	int nEvents = 3;
+	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_events, FALSE, waitInterval );
+
+	std::vector< bool > successMask( 3, false );
+
+	bool anySignaled = ( waitMultipleResult >= WAIT_OBJECT_0 && waitMultipleResult < WAIT_OBJECT_0 + nEvents );
+	if( anySignaled )
+	{
+		int firstSignaledIndex = ( waitMultipleResult - WAIT_OBJECT_0 );
 		successMask[ firstSignaledIndex ] = true;
 
 		// check the rest of the events to see if they too were signaled
@@ -211,6 +231,7 @@ std::vector< bool > QKinect::poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& 
 	}
 
 	return successMask;
+#endif
 }
 
 bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )

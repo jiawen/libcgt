@@ -16,6 +16,8 @@ class Camera
 {
 public:
 
+	// TODO: having a constructor for an abstract class doesn't make sense	
+
 	// Initializes to a camera at (0, 0, 5) looking at (0, 0, 0)
 	// with zNear = 1, zFar = 100, an FoV of 50 degrees and an aspect ratio	of 1:1
 	Camera( const Vector3f& eye = Vector3f( 0, 0, 5 ),

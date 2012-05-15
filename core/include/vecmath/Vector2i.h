@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QHash>
 #include <QString>
 
 class Vector2f;
@@ -111,5 +110,3 @@ inline Vector2i& Vector2i::operator /= ( int s )
 
 	return *this;
 }
-
-uint qHash( const Vector2i& v );
