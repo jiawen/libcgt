@@ -50,28 +50,33 @@ void QKinectThread::run()
 	int64 t0 = clock.getCounterValue();
 
 	NUI_SKELETON_FRAME skeletonFrame;
-	Image4ub rgbaFrame( 640, 480 );
-	Array2D< ushort > depthFrame( 640, 480 );
-
-	std::vector< bool > successMask;
+	Image4ub rgba( 640, 480 );
+	Array2D< ushort > depth( 640, 480 );
 
 	while( m_running )
 	{
-		successMask = m_pKinect->poll( skeletonFrame, rgbaFrame, depthFrame, m_pollingIntervalMS );
+		QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, m_pollingIntervalMS );
 		int64 t1 = clock.getCounterValue();		
 
-		if( successMask[ 2 ] )
+		switch( e )
 		{
-			emit skeletonFrameReady( skeletonFrame ); 
+		case QKinect::QKinect_Event_Skeleton:
+			{
+				emit skeletonFrameReady( skeletonFrame ); 
+				break;
+			}
+		case QKinect::QKinect_Event_RGB:
+			{
+				emit colorFrameReady( rgba );
+				break;
+			}
+		case QKinect::QKinect_Event_Depth:
+			{
+				emit depthFrameReady( depth );
+				break;
+			}
 		}
-		else if( successMask[ 1 ] )
-		{
-			emit colorFrameReady( rgbaFrame );
-		}
-		else if( successMask[ 0 ] )
-		{
-			emit depthFrameReady( depthFrame );
-		}
+
 		float dt = clock.convertIntervalToMillis( t1 - t0 );
 		t0 = t1;
 

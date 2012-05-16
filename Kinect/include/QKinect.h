@@ -36,7 +36,17 @@ class QKinect : public QObject
 public:
 
 	static int numDevices();
-	static std::shared_ptr< QKinect > create( int deviceIndex = 0, QVector< QString > recognizedPhrases = QVector< QString >() );
+
+	// Creates a Kinect device
+	// deviceIndex should be between [0, numDevices()),
+	// nuiFlags is an bit mask combination of NUI_INITIALIZE_FLAG_USES_COLOR, NUI_INITIALIZE_FLAG_USES_DEPTH, NUI_INITIALIZE_FLAG_USES_SKELETON, NUI_INITIALIZE_FLAG_USES_AUDIO
+	// NUI_INITIALIZE_FLAG_USES_AUDIO must be set if you want to recognize any of the phrases in recognizedPhrases
+	static std::shared_ptr< QKinect > create
+	(
+		int deviceIndex = 0,
+		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,
+		QVector< QString > recognizedPhrases = QVector< QString >()
+	);
 
 	// returns a vector of pairs of indices (i,j)
 	// such that within a NUI_SKELETON_FRAME
@@ -45,6 +55,14 @@ public:
 
 	// returns the inverse of jointIndicesForBones
 	static const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& boneIndicesForJoints();
+
+	enum QKinectEvent
+	{
+		QKinect_Event_Timeout,
+		QKinect_Event_Skeleton,
+		QKinect_Event_RGB,
+		QKinect_Event_Depth
+	};
 
 	enum QKinectBone
 	{
@@ -79,37 +97,46 @@ public slots:
 
 	// poll the Kinect for a skeleton and return the results in the output variables
 	// returns:
+	//   -1 if nothing is ready (timed out)
 	//   0, if skeleton frame is ready
 	//   1, if rgba frame is ready
-	//   -1, if failed or timeout
-	std::vector< bool > poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval = 0 );
+	//   2, if depth frame is ready
+	QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval = 0 );
 
+	// poll the Kinect for a voice recognition command and return the results in the output variables
+	// returns false is nothing was recognized
 	bool pollSpeech( QString& phrase, float& confidence, int waitInterval = 1000 );
-
-signals:
 
 private:
 
-	QKinect();
+	QKinect( int deviceIndex );
 
-	static HRESULT initializeSkeletonTracking( QKinect* pKinect );
+	// initialization
+	HRESULT initialize( DWORD nuiFlags, QVector< QString > recognizedPhrases );
+		HRESULT initializeDepthStream();
+		HRESULT initializeRGBStream();
+		HRESULT initializeSkeletonTracking();
 	
-	static HRESULT initializeSpeechRecognition( QKinect* pKinect, QVector< QString > recognizedPhrases );
-		static HRESULT initializeAudio( QKinect* pKinect );
-		static HRESULT initializePhrases( QKinect* pKinect, QVector< QString > recognizedPhrases );
+	HRESULT initializeSpeechRecognition( QVector< QString > recognizedPhrases );
+		HRESULT initializeAudio();
+		HRESULT initializePhrases( QVector< QString > recognizedPhrases );
 
-	NUI_SKELETON_FRAME handleGetSkeletonFrame();
+	// convert data into recognizable formats
+	bool handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton );
 	bool handleGetColorFrame( Image4ub& rgba ); // returns false on an invalid frame from USB
 	bool handleGetDepthFrame( Array2D< ushort >& depth ); // returns false on an invalid frame from USB
 
+	int m_deviceIndex;
 	INuiSensor* m_pSensor;
 	
-	HANDLE m_events[3];
+	std::vector< HANDLE > m_eventHandles;
 	HANDLE m_hNextSkeletonEvent;
-	HANDLE m_hNextVideoFrameEvent;
+	HANDLE m_hNextRGBFrameEvent;
 	HANDLE m_hNextDepthFrameEvent;
 
-	HANDLE m_hVideoStreamHandle;
+	std::vector< QKinectEvent > m_eventEnums;
+
+	HANDLE m_hRGBStreamHandle;
 	HANDLE m_hDepthStreamHandle;
 
 	// speech

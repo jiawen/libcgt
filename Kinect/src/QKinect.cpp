@@ -19,46 +19,22 @@ int QKinect::numDevices()
 }
 
 // static
-std::shared_ptr< QKinect > QKinect::create( int deviceIndex, QVector< QString > recognizedPhrases )
+std::shared_ptr< QKinect > QKinect::create( int deviceIndex, DWORD nuiFlags, QVector< QString > recognizedPhrases )
 {
-	std::shared_ptr< QKinect > pKinect( new QKinect );
+	std::shared_ptr< QKinect > pOutput;
+	QKinect* pKinect = new QKinect( deviceIndex );	
 
-	// create an instance
-	INuiSensor* pSensor;
-	HRESULT hr = NuiCreateSensorByIndex( deviceIndex, &pSensor );
+	HRESULT hr = pKinect->initialize( nuiFlags, recognizedPhrases );
 	if( SUCCEEDED( hr ) )
 	{
-		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR;		
-		nuiFlags |= NUI_INITIALIZE_FLAG_USES_DEPTH;
-		nuiFlags |= NUI_INITIALIZE_FLAG_USES_AUDIO;
-		nuiFlags |= NUI_INITIALIZE_FLAG_USES_SKELETON;
-
-		hr = pSensor->NuiInitialize( nuiFlags );
-		if( SUCCEEDED( hr ) )
-		{
-			pKinect->m_pSensor = pSensor;
-			hr = initializeSkeletonTracking( pKinect.get() );
-			if( SUCCEEDED( hr ) )
-			{
-				hr = initializeSpeechRecognition( pKinect.get(), recognizedPhrases );
-				if( SUCCEEDED( hr ) )
-				{
-					return pKinect;
-				}
-				else
-				{
-					fprintf( stderr, "Unable to initialize speech recognition.\n" );
-				}
-			}
-		}
-
-		if( pSensor != nullptr )
-		{
-			pSensor->NuiShutdown();
-		}
+		pOutput.reset( pKinect );
 	}
-
-	return nullptr;
+	else
+	{
+		delete pKinect;
+	}
+	
+	return pOutput;
 }
 
 // static
@@ -124,6 +100,7 @@ QKinect::~QKinect()
 	SAFE_RELEASE( m_pPS );
 	SAFE_RELEASE( m_pDMO );
 
+	// no need to delete the streams, they are released per frame
 	if( m_hNextDepthFrameEvent != NULL &&
 		m_hNextDepthFrameEvent != INVALID_HANDLE_VALUE )
 	{
@@ -131,11 +108,11 @@ QKinect::~QKinect()
 		m_hNextDepthFrameEvent = NULL;
 	}
 
-	if( m_hNextVideoFrameEvent != NULL &&
-		m_hNextVideoFrameEvent != INVALID_HANDLE_VALUE )
+	if( m_hNextRGBFrameEvent != NULL &&
+		m_hNextRGBFrameEvent != INVALID_HANDLE_VALUE )
 	{
-		CloseHandle( m_hNextVideoFrameEvent );
-		m_hNextVideoFrameEvent = NULL;
+		CloseHandle( m_hNextRGBFrameEvent );
+		m_hNextRGBFrameEvent = NULL;
 	}
 
 	if( m_hNextSkeletonEvent != NULL &&
@@ -163,75 +140,52 @@ void QKinect::setElevationAngle( int degrees )
 	m_pSensor->NuiCameraElevationSetAngle( degrees );	
 }
 
-std::vector< bool > QKinect::poll( NUI_SKELETON_FRAME& skeletonFrame, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval )
+QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval )
 {
-	int nEvents = 3;
-	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_events, FALSE, waitInterval );
+	DWORD nEvents = static_cast< DWORD >( m_eventHandles.size() );
+	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_eventHandles.data(), FALSE, waitInterval );
 
-	std::vector< bool > successMask( 3, false );
-
-	bool anySignaled = ( waitMultipleResult >= WAIT_OBJECT_0 && waitMultipleResult < WAIT_OBJECT_0 + nEvents );
-	if( anySignaled )
+	if( waitMultipleResult == WAIT_TIMEOUT )
 	{
-		int firstSignaledIndex = ( waitMultipleResult - WAIT_OBJECT_0 );
-		if( firstSignaledIndex == 0 )
+		return QKinect_Event_Timeout;
+	}
+
+	int eventIndex = waitMultipleResult - WAIT_OBJECT_0;
+	if( eventIndex >= nEvents )
+	{
+		return QKinect_Event_Timeout;
+	}
+
+	bool succeeded = false;
+
+	QKinectEvent e = m_eventEnums[ eventIndex ];
+	switch( e )
+	{
+	case QKinect_Event_Skeleton:
 		{
-			successMask[ firstSignaledIndex ] = true;
-			bool succeeded = handleGetDepthFrame( depth );
-			successMask[ firstSignaledIndex ] = succeeded;
+			succeeded = handleGetSkeletonFrame( skeleton );
+			break;
+		}
+	case QKinect_Event_RGB:
+		{
+			succeeded = handleGetColorFrame( rgba );
+			break;
+		}
+	case QKinect_Event_Depth:
+		{
+			succeeded = handleGetDepthFrame( depth );
+			break;
 		}
 	}
 
-	return successMask;
-
-#if 0
-	int nEvents = 3;
-	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_events, FALSE, waitInterval );
-
-	std::vector< bool > successMask( 3, false );
-
-	bool anySignaled = ( waitMultipleResult >= WAIT_OBJECT_0 && waitMultipleResult < WAIT_OBJECT_0 + nEvents );
-	if( anySignaled )
+	if( succeeded )
 	{
-		int firstSignaledIndex = ( waitMultipleResult - WAIT_OBJECT_0 );
-		successMask[ firstSignaledIndex ] = true;
-
-		// check the rest of the events to see if they too were signaled
-		// but don't wait at all
-		for( int i = firstSignaledIndex + 1; i < nEvents; ++i )
-		{
-			DWORD waitSingleResult = WaitForSingleObject( m_events[ i ], 0 );
-			bool thisEventSignaled = ( waitSingleResult == WAIT_OBJECT_0 );
-			if( thisEventSignaled )
-			{
-				successMask[ i ] = true;
-			}
-		}
-
-		for( int i = 0; i < nEvents; ++i )
-		{
-			if( successMask[i] )
-			{
-				if( i == 2 )
-				{
-					skeletonFrame = handleGetSkeletonFrame();
-				}
-				if( i == 1 )
-				{
-					bool succeeded = handleGetColorFrame( rgba );
-					successMask[ i ] = succeeded;
-				}		
-				if( i == 0 )
-				{
-					bool succeeded = handleGetDepthFrame( depth );
-					successMask[ i ] = succeeded;
-				}
-			}
-		}
+		return e;
 	}
-
-	return successMask;
-#endif
+	else
+	{
+		return QKinect_Event_Timeout;
+	}
 }
 
 bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
@@ -287,16 +241,21 @@ bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
 	return SUCCEEDED( hr );
 }
 
-QKinect::QKinect() :
+QKinect::QKinect( int deviceIndex ) :
 
+	m_deviceIndex( deviceIndex ),
 	m_pSensor( nullptr ),
 
-	m_hNextSkeletonEvent( nullptr ),
-	m_hNextVideoFrameEvent( nullptr ),
-	m_hVideoStreamHandle( nullptr ),
+	m_hNextSkeletonEvent( NULL ),
+	m_hNextRGBFrameEvent( NULL ),
+	m_hNextDepthFrameEvent( NULL ),
+
+	m_hRGBStreamHandle( NULL ),
+	m_hDepthStreamHandle( NULL ),
 
 	m_pDMO( nullptr ),
 	m_pPS( nullptr ),
+	m_pContext( nullptr ),
 	m_pKS( nullptr ),
 	m_pStream( nullptr ),
 	m_pRecognizer( nullptr ),
@@ -305,109 +264,127 @@ QKinect::QKinect() :
 	m_pGrammar( nullptr )
 
 {
-	m_events[0] = nullptr;
-	m_events[1] = nullptr;
-	m_events[2] = nullptr;
+
 }
 
-// static
-HRESULT QKinect::initializeSkeletonTracking( QKinect* pKinect )
+HRESULT QKinect::initialize( DWORD nuiFlags, QVector< QString > recognizedPhrases )
 {
-	// Enable skeleton tracking	
-	HANDLE hNextSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-
-	DWORD flags; // image frame flags
-	DWORD frameLimit; // how many frames to buffer
-
-	flags = 0; // currently ignored by API
-	HRESULT hr = pKinect->m_pSensor->NuiSkeletonTrackingEnable( hNextSkeletonEvent, flags );
+	// create an instance
+	INuiSensor* pSensor;
+	HRESULT hr = NuiCreateSensorByIndex( m_deviceIndex, &pSensor );
 	if( SUCCEEDED( hr ) )
 	{
-		flags = 0; // currently ignored by the API
-		frameLimit = 2;
-
-		HANDLE hNextVideoFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-		HANDLE hVideoStreamHandle = NULL;
-
-		// Enable color stream
-		hr = pKinect->m_pSensor->NuiImageStreamOpen
-		(
-			NUI_IMAGE_TYPE_COLOR,
-			NUI_IMAGE_RESOLUTION_640x480,
-			flags,
-			frameLimit,
-			hNextVideoFrameEvent,
-			&hVideoStreamHandle
-		);
-				
+		hr = pSensor->NuiInitialize( nuiFlags );
 		if( SUCCEEDED( hr ) )
 		{
-			flags = 0; // currently ignored by the API
-			frameLimit = 2;
-
-			HANDLE hNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-			HANDLE hDepthStreamHandle = NULL;
-
-			hr = pKinect->m_pSensor->NuiImageStreamOpen
-			(
-				NUI_IMAGE_TYPE_DEPTH,
-				NUI_IMAGE_RESOLUTION_640x480,
-				flags,
-				frameLimit,
-				hNextDepthFrameEvent,
-				&hDepthStreamHandle
-			);
-
-			if( SUCCEEDED( hr ) )
-			{
-				pKinect->m_hDepthStreamHandle = hDepthStreamHandle;
-				pKinect->m_hNextDepthFrameEvent = hNextDepthFrameEvent;
-				pKinect->m_events[0] = hNextDepthFrameEvent;
-				//pKinect->m_events[2] = hNextDepthFrameEvent;
-
-				pKinect->m_hNextSkeletonEvent = hNextSkeletonEvent;
-				//pKinect->m_events[0] = hNextSkeletonEvent;
-				pKinect->m_events[2] = hNextSkeletonEvent;
+			m_pSensor = pSensor;
 			
-				pKinect->m_hVideoStreamHandle = hVideoStreamHandle;
-				pKinect->m_hNextVideoFrameEvent = hNextVideoFrameEvent;
-				pKinect->m_events[1] = hNextVideoFrameEvent;				
-
-				return hr;
-			}
-			// Otherwise, close the handle if it's somehow valid
-			if( hNextDepthFrameEvent != NULL &&
-				hNextDepthFrameEvent != INVALID_HANDLE_VALUE )
+			if( SUCCEEDED( hr ) &&
+				( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) )
 			{
-				CloseHandle( hNextDepthFrameEvent );
-				hNextDepthFrameEvent = NULL;
+				hr = initializeDepthStream();
+			}
+
+			if( SUCCEEDED( hr ) &&
+				( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR ) )
+			{
+				hr = initializeRGBStream();
+			}
+		
+			if( SUCCEEDED( hr ) &&
+				( nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON ) )
+			{
+				hr = initializeSkeletonTracking();
+			}
+
+			if( SUCCEEDED( hr ) &&
+				( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO ) )
+			{
+				hr = initializeSpeechRecognition( recognizedPhrases );
 			}
 		}
-
-		// Otherwise, close the handle if it's somehow valid
-		if( hNextVideoFrameEvent != NULL &&
-			hNextVideoFrameEvent != INVALID_HANDLE_VALUE )
-		{
-			CloseHandle( hNextVideoFrameEvent );
-			hNextVideoFrameEvent = NULL;
-		}
-	}
-
-	if( hNextSkeletonEvent != NULL &&
-		hNextSkeletonEvent != INVALID_HANDLE_VALUE )
-	{
-		CloseHandle( hNextSkeletonEvent );
-		hNextSkeletonEvent = NULL;
 	}
 
 	return hr;
 }
 
-// static
-HRESULT QKinect::initializeSpeechRecognition( QKinect* pKinect, QVector< QString > recognizedPhrases )
+HRESULT QKinect::initializeSkeletonTracking()
+{
+	// Enable skeleton tracking	
+	m_hNextSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+
+	DWORD flags; // image frame flags
+
+	flags = 0; // currently ignored by API
+	HRESULT hr = m_pSensor->NuiSkeletonTrackingEnable( m_hNextSkeletonEvent, flags );
+	if( SUCCEEDED( hr ) )
+	{
+		m_eventHandles.push_back( m_hNextSkeletonEvent );
+		m_eventEnums.push_back( QKinect::QKinect_Event_Skeleton );
+	}
+
+	return hr;
+}
+
+HRESULT QKinect::initializeRGBStream()
+{
+	DWORD flags = 0; // currently ignored by the API
+	DWORD frameLimit = 2; // how many frames to buffer
+
+	m_hNextRGBFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+	m_hRGBStreamHandle = NULL;
+
+	// Enable color stream
+	HRESULT hr = m_pSensor->NuiImageStreamOpen
+	(
+		NUI_IMAGE_TYPE_COLOR,
+		NUI_IMAGE_RESOLUTION_640x480,
+		flags,
+		frameLimit,
+		m_hNextRGBFrameEvent,
+		&m_hRGBStreamHandle
+	);
+
+	if( SUCCEEDED( hr ) )
+	{
+		m_eventHandles.push_back( m_hNextRGBFrameEvent );
+		m_eventEnums.push_back( QKinect::QKinect_Event_RGB );
+	}
+
+	return hr;
+}
+
+HRESULT QKinect::initializeDepthStream()
+{
+	DWORD flags = 0; // currently ignored by the API
+	DWORD frameLimit = 2; // how many frames to buffer
+
+	m_hNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+	m_hDepthStreamHandle = NULL;
+
+	HRESULT hr = m_pSensor->NuiImageStreamOpen
+	(
+		NUI_IMAGE_TYPE_DEPTH,
+		NUI_IMAGE_RESOLUTION_640x480,
+		flags,
+		frameLimit,
+		m_hNextDepthFrameEvent,
+		&m_hDepthStreamHandle
+	);
+
+	if( SUCCEEDED( hr ) )
+	{
+		m_eventHandles.push_back( m_hNextDepthFrameEvent );
+		m_eventEnums.push_back( QKinect::QKinect_Event_Depth );
+	}
+
+	return hr;	
+}
+
+HRESULT QKinect::initializeSpeechRecognition( QVector< QString > recognizedPhrases )
 {
 	CoInitialize( NULL );
-	HRESULT hr = initializeAudio( pKinect );
+	HRESULT hr = initializeAudio();
 	if( SUCCEEDED( hr ) )
 	{
 		WAVEFORMATEX wfxOut = { WAVE_FORMAT_PCM, 1, 16000, 32000, 2, 16, 0 };
@@ -425,7 +402,7 @@ HRESULT QKinect::initializeSpeechRecognition( QKinect* pKinect, QVector< QString
 			mt.formattype = FORMAT_WaveFormatEx;	
 			memcpy( mt.pbFormat, &wfxOut, sizeof( WAVEFORMATEX ) );
 
-			hr = pKinect->m_pDMO->SetOutputType( 0, &mt, 0 );
+			hr = m_pDMO->SetOutputType( 0, &mt, 0 );
 			if( SUCCEEDED( hr ) )
 			{
 				MoFreeMediaType( &mt );
@@ -433,48 +410,48 @@ HRESULT QKinect::initializeSpeechRecognition( QKinect* pKinect, QVector< QString
 				// Allocate streaming resources. This step is optional. If it is not called here, it
 				// will be called when first time ProcessInput() is called. However, if you want to 
 				// get the actual frame size being used, it should be called explicitly here.
-				hr = pKinect->m_pDMO->AllocateStreamingResources();
+				hr = m_pDMO->AllocateStreamingResources();
 				if( SUCCEEDED( hr ) )
 				{
 					// Get actually frame size being used in the DMO. (optional, do as you need)
 					int iFrameSize;
 					PROPVARIANT pvFrameSize;
 					PropVariantInit( &pvFrameSize );
-					hr = pKinect->m_pPS->GetValue( MFPKEY_WMAAECMA_FEATR_FRAME_SIZE, &pvFrameSize );
+					hr = m_pPS->GetValue( MFPKEY_WMAAECMA_FEATR_FRAME_SIZE, &pvFrameSize );
 					if( SUCCEEDED( hr ) )
 					{
 						iFrameSize = pvFrameSize.lVal;
 						PropVariantClear( &pvFrameSize );
 
 						// allocate output buffer
-						pKinect->m_pKS = new KinectStream( pKinect->m_pDMO, wfxOut.nSamplesPerSec * wfxOut.nBlockAlign );
-						hr = pKinect->m_pKS->QueryInterface( __uuidof( IStream ), reinterpret_cast< void** >( &( pKinect->m_pStream ) ) );
+						m_pKS = new KinectStream( m_pDMO, wfxOut.nSamplesPerSec * wfxOut.nBlockAlign );
+						hr = m_pKS->QueryInterface( __uuidof( IStream ), reinterpret_cast< void** >( &( m_pStream ) ) );
 
 						// Initialize speech recognition
 						// TODO: check hr
 						// TODO: dynamically change grammar?
-						hr = CoCreateInstance( CLSID_SpInprocRecognizer, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpRecognizer), reinterpret_cast< void** >( &( pKinect->m_pRecognizer ) ) );
-						hr = CoCreateInstance( CLSID_SpStream, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpStream), reinterpret_cast< void** >( &( pKinect->m_pSpStream ) ) );
-						hr = pKinect->m_pSpStream->SetBaseStream( pKinect->m_pStream, SPDFID_WaveFormatEx, &wfxOut );
-						hr = pKinect->m_pRecognizer->SetInput( pKinect->m_pSpStream, FALSE );
-						hr = SpFindBestToken( SPCAT_RECOGNIZERS,L"Language=409;Kinect=True", NULL, &( pKinect->m_pEngineToken ) );
-						hr = pKinect->m_pRecognizer->SetRecognizer( pKinect->m_pEngineToken );
-						hr = pKinect->m_pRecognizer->CreateRecoContext( &( pKinect->m_pContext ) );
-						hr = pKinect->m_pContext->CreateGrammar(1, &( pKinect->m_pGrammar ) );						
+						hr = CoCreateInstance( CLSID_SpInprocRecognizer, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpRecognizer), reinterpret_cast< void** >( &( m_pRecognizer ) ) );
+						hr = CoCreateInstance( CLSID_SpStream, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpStream), reinterpret_cast< void** >( &( m_pSpStream ) ) );
+						hr = m_pSpStream->SetBaseStream( m_pStream, SPDFID_WaveFormatEx, &wfxOut );
+						hr = m_pRecognizer->SetInput( m_pSpStream, FALSE );
+						hr = SpFindBestToken( SPCAT_RECOGNIZERS,L"Language=409;Kinect=True", NULL, &( m_pEngineToken ) );
+						hr = m_pRecognizer->SetRecognizer( m_pEngineToken );
+						hr = m_pRecognizer->CreateRecoContext( &( m_pContext ) );
+						hr = m_pContext->CreateGrammar(1, &( m_pGrammar ) );						
 
 						// Populate recognition grammar
 						// See: http://msdn.microsoft.com/en-us/library/ms717885(v=vs.85).aspx
 						// Using all peers
-						hr = initializePhrases( pKinect, recognizedPhrases );
+						hr = initializePhrases( recognizedPhrases );
 
 						// Start recording
-						hr = pKinect->m_pKS->StartCapture();
+						hr = m_pKS->StartCapture();
 
 						// Start the recognition
-						hr = pKinect->m_pRecognizer->SetRecoState( SPRST_ACTIVE_ALWAYS );
-						hr = pKinect->m_pContext->SetInterest( SPFEI( SPEI_RECOGNITION ) | SPFEI( SPEI_SOUND_START ) | SPFEI( SPEI_SOUND_END ), SPFEI( SPEI_RECOGNITION ) | SPFEI( SPEI_SOUND_START ) | SPFEI( SPEI_SOUND_END ) );
-						hr = pKinect->m_pContext->SetAudioOptions( SPAO_RETAIN_AUDIO, NULL, NULL );
-						hr = pKinect->m_pContext->Resume( 0 );
+						hr = m_pRecognizer->SetRecoState( SPRST_ACTIVE_ALWAYS );
+						hr = m_pContext->SetInterest( SPFEI( SPEI_RECOGNITION ) | SPFEI( SPEI_SOUND_START ) | SPFEI( SPEI_SOUND_END ), SPFEI( SPEI_RECOGNITION ) | SPFEI( SPEI_SOUND_START ) | SPFEI( SPEI_SOUND_END ) );
+						hr = m_pContext->SetAudioOptions( SPAO_RETAIN_AUDIO, NULL, NULL );
+						hr = m_pContext->Resume( 0 );
 					}
 				}
 			}
@@ -488,8 +465,7 @@ HRESULT QKinect::initializeSpeechRecognition( QKinect* pKinect, QVector< QString
 	return hr;
 }
 
-// static
-HRESULT QKinect::initializePhrases( QKinect* pKinect, QVector< QString > recognizedPhrases )
+HRESULT QKinect::initializePhrases( QVector< QString > recognizedPhrases )
 {
 	if( recognizedPhrases.count() < 1 )
 	{
@@ -512,7 +488,7 @@ HRESULT QKinect::initializePhrases( QKinect* pKinect, QVector< QString > recogni
 
 	// create the rule and add
 	SPSTATEHANDLE hTopLevelRule;
-	HRESULT hr = pKinect->m_pGrammar->GetRule( L"TopLevel", 0, SPRAF_TopLevel | SPRAF_Active, TRUE, &hTopLevelRule );
+	HRESULT hr = m_pGrammar->GetRule( L"TopLevel", 0, SPRAF_TopLevel | SPRAF_Active, TRUE, &hTopLevelRule );
 
 	for( int i = 0; i < recognizedPhrases.count(); ++i )
 	{
@@ -520,23 +496,22 @@ HRESULT QKinect::initializePhrases( QKinect* pKinect, QVector< QString > recogni
 		{
 			std::fill( wcArray.begin(), wcArray.end(), 0 );
 			recognizedPhrases[i].toWCharArray( wcArray.data() );
-			hr = pKinect->m_pGrammar->AddWordTransition( hTopLevelRule, NULL, wcArray.data(), L" ", SPWT_LEXICAL, 1.0f, NULL );
+			hr = m_pGrammar->AddWordTransition( hTopLevelRule, NULL, wcArray.data(), L" ", SPWT_LEXICAL, 1.0f, NULL );
 		}
 	}
 
 	if( SUCCEEDED( hr ) )
 	{
-		hr = pKinect->m_pGrammar->Commit( 0 );
+		hr = m_pGrammar->Commit( 0 );
 		if( SUCCEEDED( hr ) )
 		{
-			hr = pKinect->m_pGrammar->SetRuleState( NULL, NULL, SPRS_ACTIVE );
+			hr = m_pGrammar->SetRuleState( NULL, NULL, SPRS_ACTIVE );
 		}
 	}
 	return hr;
 }
 
-// static
-HRESULT QKinect::initializeAudio( QKinect* pKinect )
+HRESULT QKinect::initializeAudio()
 {
 	//LPCWSTR szOutputFile = L"AECout.wav";
 	//TCHAR szOutfileFullName[ MAX_PATH ];
@@ -546,10 +521,10 @@ HRESULT QKinect::initializeAudio( QKinect* pKinect )
 	HRESULT hr = NuiGetAudioSource( &pAudio );
 	if( SUCCEEDED( hr ) )
 	{
-		hr = pAudio->QueryInterface( IID_IMediaObject, reinterpret_cast< void** >( &( pKinect->m_pDMO ) ) );
+		hr = pAudio->QueryInterface( IID_IMediaObject, reinterpret_cast< void** >( &m_pDMO ) );
 		if( SUCCEEDED( hr ) )
 		{
-			hr = pAudio->QueryInterface( IID_IPropertyStore, reinterpret_cast< void** >( &( pKinect->m_pPS ) ) );
+			hr = pAudio->QueryInterface( IID_IPropertyStore, reinterpret_cast< void** >( &m_pPS ) );
 			pAudio->Release();
 
 			PROPVARIANT pvSysMode;
@@ -560,7 +535,7 @@ HRESULT QKinect::initializeAudio( QKinect* pKinect )
 			//   OPTIBEAM_ARRAY_AND_AEC = 4
 			//   SINGLE_CHANNEL_NSAGC = 5
 			pvSysMode.lVal = 4;
-			hr = pKinect->m_pPS->SetValue( MFPKEY_WMAAECMA_SYSTEM_MODE, pvSysMode );
+			hr = m_pPS->SetValue( MFPKEY_WMAAECMA_SYSTEM_MODE, pvSysMode );
 			if( SUCCEEDED( hr ) )
 			{
 				PropVariantClear( &pvSysMode );
@@ -592,17 +567,16 @@ HRESULT QKinect::initializeAudio( QKinect* pKinect )
 	return hr;
 }
 
-NUI_SKELETON_FRAME QKinect::handleGetSkeletonFrame()
+bool QKinect::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
 {
 	bool foundSkeleton = false;
 
-	NUI_SKELETON_FRAME skeletonFrame;
-	HRESULT hr = m_pSensor->NuiSkeletonGetNextFrame( 0, &skeletonFrame );
+	HRESULT hr = m_pSensor->NuiSkeletonGetNextFrame( 0, &skeleton );
 	if( SUCCEEDED( hr ) )
 	{
 		for( int i = 0; i < NUI_SKELETON_COUNT; i++ )
 		{
-			if( skeletonFrame.SkeletonData[i].eTrackingState == NUI_SKELETON_TRACKED )
+			if( skeleton.SkeletonData[i].eTrackingState == NUI_SKELETON_TRACKED )
 			{												
 				foundSkeleton = true;
 			}
@@ -622,12 +596,11 @@ NUI_SKELETON_FRAME QKinect::handleGetSkeletonFrame()
 
 		m_pSensor->NuiTransformSmooth( &skeletonFrame, &smooth );
 #else
-		m_pSensor->NuiTransformSmooth( &skeletonFrame, NULL );
+		m_pSensor->NuiTransformSmooth( &skeleton, NULL );
 #endif
 	}
 
-	//emit skeletonFrameReady( skeletonFrame );
-	return skeletonFrame;
+	return foundSkeleton;
 }
 
 bool QKinect::handleGetColorFrame( Image4ub& rgba )
@@ -636,7 +609,7 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 
 	HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
 	(
-		m_hVideoStreamHandle,
+		m_hRGBStreamHandle,
 		0,
 		&imageFrame
 	);
@@ -683,7 +656,7 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 		}
 	}
 	pTexture->UnlockRect( 0 );
-	m_pSensor->NuiImageStreamReleaseFrame( m_hVideoStreamHandle, &imageFrame );
+	m_pSensor->NuiImageStreamReleaseFrame( m_hRGBStreamHandle, &imageFrame );
 
 	return valid;
 }

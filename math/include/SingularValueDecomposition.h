@@ -4,6 +4,11 @@
 #include <memory>
 #include "FloatMatrix.h"
 
+// TODO: take in const FloatMatrix&
+// TODO: store the values, return const references to u, s, vt
+// TODO: return an inverse
+// TODO: return a pseudoinverse
+
 class SingularValueDecomposition
 {
 public:
