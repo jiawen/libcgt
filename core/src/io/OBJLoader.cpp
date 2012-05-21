@@ -17,13 +17,7 @@
 // static
 std::shared_ptr< OBJData > OBJLoader::loadFile( QString objFilename, bool removeEmptyGroups )
 {
-	int lineNumber = 0;
-	QString line = "";
-	
-	std::shared_ptr< OBJData > pOBJData( new OBJData );
-	OBJMaterial* pCurrentMaterial = pOBJData->addMaterial( "" ); // default material name is the empty string
-	OBJGroup* pCurrentGroup = pOBJData->addGroup( "" ); // default group name is the empty string
-	
+	std::shared_ptr< OBJData > pOBJData( new OBJData );	
 	bool succeeded = parseOBJ( objFilename, pOBJData );
 	if( !succeeded )
 	{
@@ -56,7 +50,8 @@ bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 
 	int lineNumber = 0;
 	QString line = "";	
-	OBJGroup* pCurrentGroup = pOBJData->getGroupByName( "" ); // default group name is the empty string
+	OBJGroup* pCurrentGroup = &( pOBJData->addGroup( "" ) ); // default group name is the empty string
+	pOBJData->addMaterial( "" ); // default material name is the empty string
 
 	QTextStream inputTextStream( &inputFile );
 
@@ -105,7 +100,7 @@ bool OBJLoader::parseOBJ( QString objFilename, std::shared_ptr< OBJData > pOBJDa
 						}
 						else
 						{
-							pCurrentGroup = pOBJData->addGroup( newGroupName );
+							pCurrentGroup = &( pOBJData->addGroup( newGroupName ) );
 						}
 					}
 				}
@@ -153,7 +148,7 @@ bool OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJDa
 
 	int lineNumber = 0;
 	QString line;
-	OBJMaterial* pCurrentMaterial = pOBJData->getMaterial( "" );
+	OBJMaterial* pCurrentMaterial = pOBJData->getMaterialByName( "" );
 
 	QRegExp splitExp( "\\s+" );
 
@@ -189,15 +184,15 @@ bool OBJLoader::parseMTL( QString mtlFilename, std::shared_ptr< OBJData > pOBJDa
 					if( newMaterialName != pCurrentMaterial->name() )
 					{
 						// but if it exists, then just set it as current
-						if( pOBJData->containsGroup( newMaterialName ) )
+						if( pOBJData->containsMaterial( newMaterialName ) )
 						{
-							pCurrentMaterial = pOBJData->getMaterial( newMaterialName );
+							pCurrentMaterial = pOBJData->getMaterialByName( newMaterialName );
 						}
 						// otherwise, make a new one and set it as current
 						else
 						{
-							pCurrentMaterial = pOBJData->addMaterial( newMaterialName );
-						}						
+							pCurrentMaterial = &( pOBJData->addMaterial( newMaterialName ) );
+						}
 					}
 				}
 				else if( commandToken == "Ka" )
@@ -299,7 +294,7 @@ bool OBJLoader::parsePosition( int lineNumber, QString line,
 			return false;
 		}
 
-		pOBJData->getPositions()->append( Vector3f( x, y, z ) );
+		pOBJData->positions().push_back( Vector3f( x, y, z ) );
 
 		return true;
 	}
@@ -335,7 +330,7 @@ bool OBJLoader::parseTextureCoordinate( int lineNumber, QString line,
 			return false;
 		}		
 
-		pOBJData->getTextureCoordinates()->append( Vector2f( s, t ) );
+		pOBJData->textureCoordinates().push_back( Vector2f( s, t ) );
 
 		return true;
 	}
@@ -379,7 +374,7 @@ bool OBJLoader::parseNormal( int lineNumber, QString line,
 			return false;
 		}
 
-		pOBJData->getNormals()->append( Vector3f( nx, ny, nz ) );
+		pOBJData->normals().push_back( Vector3f( nx, ny, nz ) );
 
 		return true;
 	}
@@ -423,7 +418,7 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 		// check how many faces the current group has
 		// if the group has no faces, then the first face sets the group attributes
 
-		if( pCurrentGroup->getFaces()->size() == 0 )
+		if( pCurrentGroup->numFaces() == 0 )
 		{
 			pCurrentGroup->setHasTextureCoordinates( faceHasTextureCoordinates );
 			pCurrentGroup->setHasNormals( faceHasNormals );
@@ -456,15 +451,15 @@ bool OBJLoader::parseFace( int lineNumber, QString line,
 			OBJLoader::getVertexAttributes( tokens[ i ],
 				&vertexPositionIndex, &vertexTextureCoordinateIndex, &vertexNormalIndex );
 
-			face.getPositionIndices()->append( vertexPositionIndex );
+			face.positionIndices().push_back( vertexPositionIndex );
 
 			if( faceHasTextureCoordinates )
 			{
-				face.getTextureCoordinateIndices()->append( vertexTextureCoordinateIndex );
+				face.textureCoordinateIndices().push_back( vertexTextureCoordinateIndex );
 			}
 			if( faceHasNormals )
 			{
-				face.getNormalIndices()->append( vertexNormalIndex );
+				face.normalIndices().push_back( vertexNormalIndex );
 			}
 		}
 

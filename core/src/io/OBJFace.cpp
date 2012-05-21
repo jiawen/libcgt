@@ -34,20 +34,35 @@ bool OBJFace::hasNormals() const
 
 int OBJFace::numVertices() const
 {
-	return m_qvPositionIndices.size();
+	return static_cast< int >( m_positionIndices.size() );
 }
 
-QVector< int >* OBJFace::getPositionIndices()
+const std::vector< int >& OBJFace::positionIndices() const
 {
-	return &m_qvPositionIndices;
+	return m_positionIndices;
 }
 
-QVector< int >* OBJFace::getTextureCoordinateIndices()
+std::vector< int >& OBJFace::positionIndices()
 {
-	return &m_qvTextureCoordinateIndices;
+	return m_positionIndices;
 }
 
-QVector< int >* OBJFace::getNormalIndices()
+std::vector< int >& OBJFace::textureCoordinateIndices()
 {
-	return &m_qvNormalIndices;
+	return m_textureCoordinateIndices;
+}
+
+const std::vector< int >& OBJFace::textureCoordinateIndices() const
+{
+	return m_textureCoordinateIndices;
+}
+
+std::vector< int >& OBJFace::normalIndices()
+{
+	return m_normalIndices;
+}
+
+const std::vector< int >& OBJFace::normalIndices() const
+{
+	return m_normalIndices;
 }

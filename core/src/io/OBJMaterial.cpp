@@ -1,5 +1,21 @@
 #include "io/OBJMaterial.h"
 
+OBJMaterial::OBJMaterial() :
+
+	m_name( "" ),
+	m_illuminationModel( OBJMaterial::ILLUMINATION_MODEL_NONE ),
+
+	m_ka( 0.2f, 0.2f, 0.2f ),
+	m_kd( 0.8f, 0.8f, 0.8f ),
+	m_ks( 1.0f, 1.0f, 1.0f ),
+
+	m_d( 1 ),
+	m_ns( 0 )
+
+{
+
+}
+
 OBJMaterial::OBJMaterial( QString name ) :
 
 	m_name( name ),
@@ -16,9 +32,14 @@ OBJMaterial::OBJMaterial( QString name ) :
 
 }
 
-QString OBJMaterial::name()
+QString OBJMaterial::name() const
 {
 	return m_name;
+}
+
+void OBJMaterial::setName( QString name )
+{
+	m_name = name;
 }
 
 Vector3f OBJMaterial::ambientColor() const

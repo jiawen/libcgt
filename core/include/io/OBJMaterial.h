@@ -16,9 +16,11 @@ public:
 		ILLUMINATION_MODEL_DIFFUSE_AND_SPECULAR = 2
 	};
 
+	OBJMaterial();
 	OBJMaterial( QString name );
 
-	QString name();
+	QString name() const;
+	void setName( QString name );
 	
 	Vector3f ambientColor() const;
 	void setAmbientColor( const Vector3f& color );

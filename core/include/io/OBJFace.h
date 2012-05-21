@@ -1,7 +1,6 @@
-#ifndef OBJ_FACE_H
-#define OBJ_FACE_H
+#pragma once
 
-#include <QVector>
+#include <vector>
 
 class OBJFace
 {
@@ -15,19 +14,22 @@ public:
 
 	int numVertices() const;
 
-	QVector< int >* getPositionIndices();
-	QVector< int >* getTextureCoordinateIndices();
-	QVector< int >* getNormalIndices();
+	const std::vector< int >& positionIndices() const;
+	std::vector< int >& positionIndices();
+
+	const std::vector< int >& textureCoordinateIndices() const;
+	std::vector< int >& textureCoordinateIndices();
+
+	const std::vector< int >& normalIndices() const;
+	std::vector< int >& normalIndices();
 
 private:
 
-	QVector< int > m_qvPositionIndices;
-	QVector< int > m_qvTextureCoordinateIndices;
-	QVector< int > m_qvNormalIndices;
+	std::vector< int > m_positionIndices;
+	std::vector< int > m_textureCoordinateIndices;
+	std::vector< int > m_normalIndices;
 
 	bool m_bHasTextureCoordinates;
 	bool m_bHasNormals;
 
 };
-
-#endif // OBJ_FACE_H

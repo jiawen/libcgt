@@ -12,88 +12,43 @@ OBJData::OBJData()
 // virtual
 OBJData::~OBJData()
 {
-	foreach( OBJMaterial* pMaterial, m_materials )
-	{
-		delete pMaterial;
-	}
-	foreach( OBJGroup* pGroup, m_groups )
-	{
-		delete pGroup;
-	}
+
 }
 
-QVector< Vector3f >* OBJData::getPositions()
+std::vector< Vector3f >& OBJData::positions()
 {
-	return &m_positions;
+	return m_positions;
 }
 
-QVector< Vector2f >* OBJData::getTextureCoordinates()
+std::vector< Vector2f >& OBJData::textureCoordinates()
 {
-	return &m_textureCoordinates;
+	return m_textureCoordinates;
 }
 
-QVector< Vector3f >* OBJData::getNormals()
+std::vector< Vector3f >& OBJData::normals()
 {
-	return &m_normals;
+	return m_normals;
 }
 
-QVector< OBJGroup* >* OBJData::getGroups()
+int OBJData::numGroups()
 {
-	return &m_groups;
+	return static_cast< int >( m_groups.size() );
 }
 
-void OBJData::removeEmptyGroups()
+std::vector< OBJGroup >& OBJData::groups()
 {
-	QVector< OBJGroup* >* pGroups = getGroups();
-	QVector< int > removeList;
-	for( int i = 0; i < pGroups->size(); ++i )
-	{
-		if( pGroups->at( i )->numFaces() == 0 )
-		{
-			removeList.append( i );
-		}
-	}
-
-	// count how many were shifted over
-	int nRemoved = 0;
-	for( int i = 0; i < removeList.size(); ++i )
-	{
-		int groupIndex = removeList[i];
-		int offsetGroupIndex = groupIndex - nRemoved;
-		removeGroupByIndex( offsetGroupIndex );
-	}
+	return m_groups;
 }
 
-QHash< QString, OBJGroup* >* OBJData::getGroupsByName()
-{
-	return &m_groupsByName;
-}
-
-OBJGroup* OBJData::addGroup( QString name )
+OBJGroup& OBJData::addGroup( QString name )
 {
 	if( !( m_groupsByName.contains( name ) ) )
 	{
-		m_groupsByName.insert( name, new OBJGroup( name ) );
-		m_groups.append( m_groupsByName[ name ] );
+		m_groups.push_back( OBJGroup( name ) );
+		m_groupsByName.insert( name, &( m_groups.back() ) );
 	}
 
-	return m_groupsByName[ name ];
-}
-
-void OBJData::removeGroupByIndex( int i )
-{
-	if( i < m_groups.size() )
-	{
-		OBJGroup* pGroup = m_groups[i];		
-		m_groups.remove( i );
-		m_groupsByName.remove( pGroup->name() );
-		delete pGroup;
-	}
-}
-
-OBJGroup* OBJData::getGroupByName( QString name )
-{
-	return m_groupsByName[ name ];
+	return m_groups.back();
 }
 
 bool OBJData::containsGroup( QString name )
@@ -101,24 +56,89 @@ bool OBJData::containsGroup( QString name )
 	return m_groupsByName.contains( name );
 }
 
-OBJMaterial* OBJData::addMaterial( QString name )
+OBJGroup* OBJData::getGroupByName( QString name )
 {
-	if( !( m_materials.contains( name ) ) )
+	if( containsGroup( name ) )
 	{
-		m_materials.insert( name, new OBJMaterial( name ) );
+		return m_groupsByName[ name ];
 	}
-
-	return m_materials[ name ];
+	else
+	{
+		return nullptr;
+	}
 }
 
-OBJMaterial* OBJData::getMaterial( QString name )
+int OBJData::numMaterials()
 {
-	return m_materials[ name ];
+	return static_cast< int >( m_materials.size() );
+}
+
+std::vector< OBJMaterial >& OBJData::materials()
+{
+	return m_materials;
+}
+
+OBJMaterial& OBJData::addMaterial( QString name )
+{
+	if( !containsMaterial( name ) )
+	{
+		m_materials.push_back( OBJMaterial( name ) );
+		m_materialsByName.insert( name, &( m_materials.back() ) );
+	}
+
+	return m_materials.back();
 }
 
 bool OBJData::containsMaterial( QString name )
 {
-	return m_materials.contains( name );
+	return m_materialsByName.contains( name );
+}
+
+OBJMaterial* OBJData::getMaterialByName( QString name )
+{
+	if( containsMaterial( name ) )
+	{
+		return m_materialsByName[ name ];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void OBJData::removeEmptyGroups()
+{
+	std::vector< int > removeList;
+
+	for( int i = 0; i < numGroups(); ++i )
+	{
+		if( m_groups[i].numFaces() == 0 )
+		{
+			removeList.push_back( i );
+		}
+	}
+
+	// count how many were shifted over
+	int nRemoved = 0;
+	for( int i = 0; i < static_cast< int >( removeList.size() ); ++i )
+	{
+		int groupIndex = removeList[i];
+		int offsetGroupIndex = groupIndex - nRemoved;
+		
+		QString groupName = m_groups[i].name();
+		m_groups.erase( m_groups.begin() + offsetGroupIndex );
+		m_groupsByName.remove( groupName );
+	}
+
+	// stuff moved in memory, re-index
+	if( removeList.size() > 0 )
+	{
+		for( int i = 0; i < numGroups(); ++i )
+		{
+			QString groupName = m_groups[i].name();
+			m_groupsByName[ groupName ] = &( m_groups[i] );
+		}
+	}
 }
 
 bool OBJData::save( QString filename )
@@ -143,39 +163,35 @@ bool OBJData::save( QString filename )
 		fprintf( fp, "vn %f %f %f\n", n.x, n.y, n.z );
 	}
 
-	QVector< Vector3f > m_positions;
-	QVector< Vector2f > m_textureCoordinates;
-	QVector< Vector3f > m_normals;
-
-	foreach( OBJGroup* pGroup, m_groups )
+	for( int g = 0; g < numGroups(); ++g )
 	{
-		int materialIndex = 0;
-		QVector< QString >& materials = pGroup->getMaterials();
-		foreach( QString materialName, materials )
+		OBJGroup& group = m_groups[ g ];
+		const auto& groupFaces = group.faces();
+
+		for( int m = 0; m < group.numMaterials(); ++m )
 		{
-			// TODO: skip over materials referenced by no faces
-			QVector< OBJFace >& faces = pGroup->getFacesForMaterial( materialIndex );
-			for( int i = 0; i < faces.size(); ++i )
+			const auto& faceIndices = group.facesForMaterial( m );
+			for( int i = 0; i < static_cast< int >( faceIndices.size() ); ++i )
 			{
-				OBJFace& face = faces[ i ];
+				const OBJFace& face = groupFaces[ faceIndices[ i ] ];
 
-				auto pis = face.getPositionIndices();
-				auto tis = face.getTextureCoordinateIndices();
-				auto nis = face.getNormalIndices();
+				const auto& pis = face.positionIndices();
+				const auto& tis = face.textureCoordinateIndices();
+				const auto& nis = face.normalIndices();
 
-				int nIndices = pis->size();
+				int nIndices = static_cast< int >( pis.size() );
 				fprintf( fp, "f" );
 				for( int j = 0; j < nIndices; ++j )
 				{
-					int pi = pis->at( j ) + 1;
+					int pi = pis[ j ] + 1;
 					fprintf( fp, " %d", pi );
 
-					if( pGroup->hasTextureCoordinates() )
+					if( group.hasTextureCoordinates() )
 					{
-						int ti = tis->at( j ) + 1;
-						if( pGroup->hasNormals() )
+						int ti = tis[ j ] + 1;
+						if( group.hasNormals() )
 						{
-							int ni = nis->at( j ) + 1;
+							int ni = nis[ j ] + 1;
 							fprintf( fp, "/%d/%d", ti, ni );
 						}
 						else
@@ -183,16 +199,14 @@ bool OBJData::save( QString filename )
 							fprintf( fp, "/%d", ti );
 						}
 					}					
-					else if( pGroup->hasNormals() )
+					else if( group.hasNormals() )
 					{
-						int ni = nis->at( j ) + 1;
+						int ni = nis[ j ] + 1;
 						fprintf( fp, "//%d", ni );
 					}
 				}
 				fprintf( fp, "\n" );
 			}
-
-			++materialIndex;
 		}		
 	}
 

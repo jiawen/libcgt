@@ -1,11 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <QString>
-#include <QVector>
+#include <QHash>
 
 #include "OBJFace.h"
-
-// TODO: getFaces(), etc: don't return pointers
 
 class OBJGroup
 {
@@ -13,49 +12,31 @@ public:
 
 	OBJGroup( QString name );
 
-	QString name();
+	QString name() const;
 
-	// add a new material
-	void addMaterial( QString materialName )
-	{
-		m_materials.append( materialName );
-		m_facesByMaterial.append( QVector< OBJFace >() );
-	}
-
-	// TODO: store all faces in a single list
-	// each material has a vertex range
-
-	void addFace( const OBJFace& face )
-	{
-		m_facesByMaterial.last().append( face );
-		m_faces.append( face );
-	}
-
-	QVector< QString >& getMaterials()
-	{
-		return m_materials;
-	}
-
-	QVector< OBJFace >& getFacesForMaterial( int materialIndex )
-	{
-		return m_facesByMaterial[ materialIndex ];
-	}
-	
-	QVector< OBJFace >* getFaces()
-	{
-		return &m_faces;
-	}
-
-	int numFaces()
-	{
-		return m_faces.size();
-	}
-
-	bool hasTextureCoordinates();
+	bool hasTextureCoordinates() const;
 	void setHasTextureCoordinates( bool b );
 
-	bool hasNormals();
+	bool hasNormals() const;
 	void setHasNormals( bool b );
+
+	int numFaces() const;
+	const std::vector< OBJFace >& faces() const;
+	std::vector< OBJFace >& faces();
+
+	// adds a new face to the current material
+	void addFace( const OBJFace& face );
+
+	int numMaterials() const;
+	const std::vector< QString >& materialNames() const;
+	std::vector< QString >& materialNames();
+
+	// add a new material and sets it as current
+	void addMaterial( QString materialName );	
+
+	std::vector< int >& facesForMaterial( QString materialName );
+
+	std::vector< int >& facesForMaterial( int materialIndex );
 
 private:
 
@@ -63,9 +44,9 @@ private:
 	bool m_hasTextureCoordinates;
 	bool m_hasNormals;
 
-	QVector< QString > m_materials;
-	QVector< QVector< OBJFace > > m_facesByMaterial;
+	std::vector< QString > m_materialNames;
+	QHash< QString, std::vector< int > > m_facesByMaterial;
 
-	QVector< OBJFace > m_faces;
+	std::vector< OBJFace > m_faces;
 
 };

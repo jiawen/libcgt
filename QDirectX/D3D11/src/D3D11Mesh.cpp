@@ -47,104 +47,108 @@ D3D11Mesh::D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData
 {
 	m_pDevice->AddRef();
 
-	QVector< Vector3f >* positions = pOBJData->getPositions();
-	QVector< Vector3f >* normals = pOBJData->getNormals();
-	QVector< Vector2f >* texcoords = pOBJData->getTextureCoordinates();
-	QVector< OBJGroup* >* pGroups = pOBJData->getGroups();
+	const auto& positions = pOBJData->positions();
+	const auto& normals = pOBJData->normals();
+	const auto& texcoords = pOBJData->textureCoordinates();
+	auto& groups = pOBJData->groups();
 	
-	int nGroups = pGroups->size();
+	int nGroups = pOBJData->numGroups();
 	int nVerticesTotal = 0;
 	for( int g = 0; g < nGroups; ++g )
 	{
-		OBJGroup* pGroup = pGroups->at( g );
+		OBJGroup& group = groups[ g ];
+		const auto& groupFaces = group.faces();
 
-		const auto& materials = pGroup->getMaterials();
-		for( int m = 0; m < materials.size(); ++m )
+		const auto& groupMaterialNames = group.materialNames();
+		for( int m = 0; m < groupMaterialNames.size(); ++m )
 		{
-			QString materialName = materials[m];
-			OBJMaterial* pBatchMaterial = pOBJData->getMaterial( materialName );
-			auto& faces = pGroup->getFacesForMaterial( m );
+			QString groupMaterialName = groupMaterialNames[m];
+			OBJMaterial* pBatchMaterial = pOBJData->getMaterialByName( groupMaterialName );
+			const auto& faceIndices = group.facesForMaterial( m );
 
 			// 1 batch is 1 material for 1 group
-			int nFacesInBatch = faces.size();
+			int nFacesInBatch = static_cast< int >( faceIndices.size() );
 			int nVerticesInBatch = 3 * nFacesInBatch;
 
-			for( int i = 0; i < nFacesInBatch; ++i )
+			if( nFacesInBatch > 0 )
 			{
-				OBJFace& face = faces[ i ];
-				QVector< int >* positionIndices = face.getPositionIndices();
-				QVector< int >* normalIndices = face.getNormalIndices();
-
-				Vector3f p0 = positions->at( positionIndices->at( 0 ) );
-				Vector3f p1 = positions->at( positionIndices->at( 1 ) );
-				Vector3f p2 = positions->at( positionIndices->at( 2 ) );
-
-				Vector3f n0;
-				Vector3f n1;
-				Vector3f n2;
-
-				Vector2f t0;
-				Vector2f t1;
-				Vector2f t2;
-
-				if( pGroup->hasNormals() )
+				for( int i = 0; i < nFacesInBatch; ++i )
 				{
-					n0 = normals->at( normalIndices->at( 0 ) );
-					n1 = normals->at( normalIndices->at( 1 ) );
-					n2 = normals->at( normalIndices->at( 2 ) );
+					const OBJFace& face = groupFaces[ faceIndices[ i ] ];
+					const auto& positionIndices = face.positionIndices();
+					const auto& normalIndices = face.normalIndices();
+
+					Vector3f p0 = positions[ positionIndices[ 0 ] ];
+					Vector3f p1 = positions[ positionIndices[ 1 ] ];
+					Vector3f p2 = positions[ positionIndices[ 2 ] ];
+
+					Vector3f n0;
+					Vector3f n1;
+					Vector3f n2;
+
+					Vector2f t0;
+					Vector2f t1;
+					Vector2f t2;
+
+					if( group.hasNormals() )
+					{
+						n0 = normals[ normalIndices[ 0 ] ];
+						n1 = normals[ normalIndices[ 1 ] ];
+						n2 = normals[ normalIndices[ 2 ] ];
+					}
+					else if( generatePerFaceNormalsIfNonExistent )
+					{
+						n0 = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
+						n1 = n0;
+						n2 = n0;
+					}
+
+					if( group.hasTextureCoordinates() )
+					{
+						const auto& texcoordIndices = face.textureCoordinateIndices(); 
+						t0 = texcoords[ texcoordIndices[ 0 ] ];
+						t1 = texcoords[ texcoordIndices[ 1 ] ];
+						t2 = texcoords[ texcoordIndices[ 2 ] ];
+					}
+
+					Vector4f color( 1, 1, 1, 1 );
+
+					VertexPosition4fNormal3fColor4fTexture2f v0( Vector4f( p0, 1 ), n0, color, t0 );
+					VertexPosition4fNormal3fColor4fTexture2f v1( Vector4f( p1, 1 ), n1, color, t1 );
+					VertexPosition4fNormal3fColor4fTexture2f v2( Vector4f( p2, 1 ), n2, color, t2 );
+
+					m_vertexArray.push_back( v0 );
+					m_vertexArray.push_back( v1 );
+					m_vertexArray.push_back( v2 );
 				}
-				else if( generatePerFaceNormalsIfNonExistent )
+
+				QString diffuseTextureFilename = pBatchMaterial->diffuseTexture();
+				std::shared_ptr< DynamicTexture2D > diffuseTexture;
+				if( !( diffuseTextureFilename.isNull() ) )
 				{
-					n0 = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
-					n1 = n0;
-					n2 = n0;
+					if( !( m_diffuseTextures.contains( diffuseTextureFilename ) ) )
+					{
+						QString absFilename = texturePath + diffuseTextureFilename;
+						printf( "absFilename = %s\n", qPrintable( absFilename ) );
+						m_diffuseTextures.insert( diffuseTextureFilename, D3D11Utils_Texture::createTextureFromFile( m_pDevice, absFilename ) );
+					}
+					diffuseTexture = m_diffuseTextures[ diffuseTextureFilename ];
 				}
 
-				if( pGroup->hasTextureCoordinates() )
-				{
-					QVector< int >* texcoordIndices = face.getTextureCoordinateIndices(); 
-					t0 = texcoords->at( texcoordIndices->at( 0 ) );
-					t1 = texcoords->at( texcoordIndices->at( 1 ) );
-					t2 = texcoords->at( texcoordIndices->at( 2 ) );
-				}
-
-				Vector4f color( 1, 1, 1, 1 );
-
-				VertexPosition4fNormal3fColor4fTexture2f v0( Vector4f( p0, 1 ), n0, color, t0 );
-				VertexPosition4fNormal3fColor4fTexture2f v1( Vector4f( p1, 1 ), n1, color, t1 );
-				VertexPosition4fNormal3fColor4fTexture2f v2( Vector4f( p2, 1 ), n2, color, t2 );
-
-				m_vertexArray.push_back( v0 );
-				m_vertexArray.push_back( v1 );
-				m_vertexArray.push_back( v2 );
-			}
-
-			QString diffuseTextureFilename = pBatchMaterial->diffuseTexture();
-			std::shared_ptr< DynamicTexture2D > diffuseTexture;
-			if( !( diffuseTextureFilename.isNull() ) )
-			{
-				if( !( m_diffuseTextures.contains( diffuseTextureFilename ) ) )
-				{
-					QString absFilename = texturePath + diffuseTextureFilename;
-					printf( "absFilename = %s\n", qPrintable( absFilename ) );
-					m_diffuseTextures.insert( diffuseTextureFilename, D3D11Utils_Texture::createTextureFromFile( m_pDevice, absFilename ) );
-				}
-				diffuseTexture = m_diffuseTextures[ diffuseTextureFilename ];
-			}
-
-			Vector2i vertexRange( nVerticesTotal, nVerticesInBatch );
-			Vector3f kd = pBatchMaterial->diffuseColor();
-			Vector4f ks = Vector4f( pBatchMaterial->specularColor(), pBatchMaterial->shininess() );
+				Vector2i vertexRange( nVerticesTotal, nVerticesInBatch );
+				Vector3f kd = pBatchMaterial->diffuseColor();
+				Vector4f ks = Vector4f( pBatchMaterial->specularColor(), pBatchMaterial->shininess() );
 			
-			/*
-			printf( "Group %s, material %s, using kd = %s\n",
-				qPrintable( groupName ), qPrintable( materialName ), qPrintable( kd.toString() ) );
-			printf( "Vertex range: [%d, %d]\n", vertexRange.x, vertexRange.y );
-			*/
+				/*
+				printf( "Group %s, material %s, using kd = %s\n",
+					qPrintable( groupName ), qPrintable( materialName ), qPrintable( kd.toString() ) );
+				printf( "Vertex range: [%d, %d]\n", vertexRange.x, vertexRange.y );
+				*/
 
-			addVertexRange( vertexRange, kd, ks, diffuseTexture );
+				addVertexRange( vertexRange, kd, ks, diffuseTexture );
 
-			nVerticesTotal += nVerticesInBatch;
+				nVerticesTotal += nVerticesInBatch;
+			}
 		}
 	}
 

@@ -20,23 +20,15 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 	m_adjacencyIsDirty( true )
 
 {
-	QVector< Vector3f >* pPositions = pData->getPositions();
-	int nVertices = pPositions->size();
-	m_positions = std::vector< Vector3f >( nVertices );
-	for( int v = 0; v < nVertices; ++v )
-	{
-		m_positions[ v ] = pPositions->at( v );
-	}
+	m_positions = pData->positions();
 
-	QVector< Vector3f >* pNormals = pData->getNormals();
-	int nNormals = pNormals->size();
-	if( nNormals > 0 )
+	// check if the incoming data has normals
+	// if it does, then copy
+	// otherwise, reserve as many normals as we have positions
+	const auto& dataNormals = pData->normals();
+	if( dataNormals.size() > 0 )
 	{
-		m_normals = std::vector< Vector3f >( nNormals );
-		for( int n = 0; n < nNormals; ++n )
-		{
-			m_normals[ n ] = pNormals->at( n );
-		}
+		m_normals = pData->normals();
 	}
 	else
 	{
@@ -45,14 +37,16 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 	
 	std::vector< Vector3i > normalIndices;
 
-	QVector< OBJGroup* >* pGroups = pData->getGroups();
-	for( int g = 0; g < pGroups->size(); ++g )
+	int nGroups = pData->numGroups();
+	const auto& groups = pData->groups();
+	for( int g = 0; g < nGroups; ++g )
 	{
-		auto pGroup = pGroups->at( g );
-		auto pFaces = pGroup->getFaces();
-		for( int f = 0; f < pFaces->size(); ++f )
+		const OBJGroup& group = groups[ g ];
+		int nFaces = group.numFaces();
+		const auto& faces = group.faces();
+		for( int f = 0; f < nFaces; ++f )
 		{
-			auto pFace = pFaces->at( f );
+			const OBJFace& pFace = faces[ f ];
 			int nVerticesInFace = pFace.numVertices();
 
 			// ignore degenerate faces
@@ -62,20 +56,20 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 			}
 			else
 			{
-				int p0 = pFace.getPositionIndices()->at( 0 );
-				int n0 = pFace.getNormalIndices()->at( 0 );
+				int p0 = pFace.positionIndices()[ 0 ];
+				int n0 = pFace.normalIndices()[ 0 ];
 
 				for( int i = 2; i < nVerticesInFace; ++i )
 				{
-					int p1 = pFace.getPositionIndices()->at( i - 1 );
-					int p2 = pFace.getPositionIndices()->at( i );
+					int p1 = pFace.positionIndices()[ i - 1 ];
+					int p2 = pFace.positionIndices()[ i ];
 
 					m_faces.push_back( Vector3i( p0, p1, p2 ) );
 
-					if( pGroup->hasNormals() )
+					if( group.hasNormals() )
 					{						
-						int n1 = pFace.getNormalIndices()->at( i - 1 );
-						int n2 = pFace.getNormalIndices()->at( i );
+						int n1 = pFace.normalIndices()[ i - 1 ];
+						int n2 = pFace.normalIndices()[ i ];
 
 						normalIndices.push_back( Vector3i( n0, n1, n2 ) );
 					}
@@ -95,57 +89,45 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bo
 	m_adjacencyIsDirty( true )
 
 {
-	auto pGroup = pData->getGroups()->at( groupIndex );
-
-	QVector< Vector3f >* pPositions = pData->getPositions();
-	int nVertices = pPositions->size();
-	m_positions = std::vector< Vector3f >( nVertices );
-	for( int v = 0; v < nVertices; ++v )
+	m_positions = pData->positions();
+	
+	const OBJGroup& group = pData->groups()[ groupIndex ];
+	if( group.hasNormals() )
 	{
-		m_positions[ v ] = pPositions->at( v );
+		m_normals = pData->normals();
 	}
-
-	if( pGroup->hasNormals() )
-	{
-		QVector< Vector3f >* pNormals = pData->getNormals();
-		int nNormals = pNormals->size();
-		m_normals = std::vector< Vector3f >( nNormals );
-		for( int n = 0; n < nNormals; ++n )
-		{
-			m_normals[ n ] = pNormals->at( n );
-		}
-	}
-
+		
 	std::vector< Vector3i > normalIndices;
 
-	auto pFaces = pGroup->getFaces();
-	for( int f = 0; f < pFaces->size(); ++f )
+	int nFaces = group.numFaces();
+	const auto& faces = group.faces();
+	for( int f = 0; f < nFaces; ++f )
 	{
-		auto pFace = pFaces->at( f );
+		const OBJFace& face = faces[ f ];
 
-		int pi0 = pFace.getPositionIndices()->at( 0 );
-		int pi1 = pFace.getPositionIndices()->at( 1 );
-		int pi2 = pFace.getPositionIndices()->at( 2 );
+		int pi0 = face.positionIndices()[ 0 ];
+		int pi1 = face.positionIndices()[ 1 ];
+		int pi2 = face.positionIndices()[ 2 ];
 
 		m_faces.push_back( Vector3i( pi0, pi1, pi2 ) );
 
-		if( pGroup->hasNormals() )
+		if( group.hasNormals() )
 		{
-			int ni0 = pFace.getNormalIndices()->at( 0 );
-			int ni1 = pFace.getNormalIndices()->at( 1 );
-			int ni2 = pFace.getNormalIndices()->at( 2 );
+			int ni0 = face.normalIndices()[ 0 ];
+			int ni1 = face.normalIndices()[ 1 ];
+			int ni2 = face.normalIndices()[ 2 ];
 
 			normalIndices.push_back( Vector3i( ni0, ni1, ni2 ) );
 		}
 		else if( generatePerFaceNormalsIfNonExistent )
 		{
-			Vector3f p0 = pPositions->at( pi0 );
-			Vector3f p1 = pPositions->at( pi1 );
-			Vector3f p2 = pPositions->at( pi2 );
+			Vector3f p0 = m_positions[ pi0 ];
+			Vector3f p1 = m_positions[ pi1 ];
+			Vector3f p2 = m_positions[ pi2 ];
 
 			Vector3f normal = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
 			m_normals.push_back( normal );
-			int ni = m_normals.size() - 1;
+			int ni = static_cast< int >( m_normals.size() ) - 1;
 			normalIndices.push_back( Vector3i( ni ) );
 		}
 	}
@@ -155,12 +137,12 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bo
 
 int TriangleMesh::numVertices() const
 {
-	return m_positions.size();
+	return static_cast< int >( m_positions.size() );
 }
 
 int TriangleMesh::numFaces() const
 {
-	return m_faces.size();
+	return static_cast< int >( m_faces.size() );
 }
 
 const std::vector< Vector3f >& TriangleMesh::positions() const
@@ -259,12 +241,12 @@ TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedCompo
 {
 	TriangleMesh output;
 
-	int nVertices = m_positions.size();
+	int nVertices = static_cast< int >( m_positions.size() );
 	std::vector< bool > touchedVertices( nVertices, false );
 
 	// walk over all faces in the component
 	// and mark all vertices that are used
-	int nFaces = connectedComponent.size();
+	int nFaces = static_cast< int >( connectedComponent.size() );
 	for( int i = 0; i < nFaces; ++i )
 	{
 		int f = connectedComponent[ i ];
@@ -336,7 +318,7 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
 	//   if it already exists, we have a problem
 	//   and we will throw the face away
 
-	int nFaces = m_faces.size();
+	int nFaces = numFaces();
 	edgeToFace.clear();
 	//edgeToFace.reserve( 3 * nFaces );
 	std::vector< Vector3i > validFaces;
@@ -404,13 +386,14 @@ void TriangleMesh::buildAdjacency()
 {
 	int nPruned = pruneInvalidFaces( m_edgeToFace );
 
+	int nFaces = numFaces();
+
 	// walk over all faces
 	// and build an adjacency map:
 	// edge -> adjacent face
 	// if nothing was pruned, then it's already valid
 	if( nPruned != 0 )
 	{
-		int nFaces = m_faces.size();
 		m_edgeToFace.clear();
 
 		for( int f = 0; f < nFaces; ++f )
@@ -432,7 +415,6 @@ void TriangleMesh::buildAdjacency()
 	//    find 3 edges
 	//    flip edge: if the flipped edge has an adjacent face
 	//       add it as a neighbor of this face
-	int nFaces = m_faces.size();
 	m_faceToFace.clear();
 	m_faceToFace.resize( nFaces );
 	for( int f = 0; f < nFaces; ++f )
@@ -479,7 +461,7 @@ void TriangleMesh::buildAdjacency()
 	}
 
 	// build vertex to outgoing edge adjacency
-	int nVertices = m_positions.size();
+	int nVertices = numVertices();
 	m_vertexToOutgoingEdge.clear();
 	m_vertexToOutgoingEdge.resize( nVertices );
 	for( int f = 0; f < nFaces; ++f )
@@ -575,7 +557,7 @@ void TriangleMesh::computeConnectedComponents()
 
 	// build a bit vector of length nFaces
 	// set them all to true for now
-	int nFaces = m_faces.size();
+	int nFaces = numFaces();
 	std::vector< bool > remainingFaces( nFaces, true );
 
 	// loop until out of faces
@@ -618,7 +600,7 @@ void TriangleMesh::computeConnectedComponents()
 
 void TriangleMesh::computeAreas()
 {
-	int nFaces = m_faces.size();
+	int nFaces = numFaces();
 	m_areas.resize( nFaces );
 
 	for( int f = 0; f < nFaces; ++f )
@@ -659,7 +641,7 @@ void TriangleMesh::consolidateNormalsWithPositions( const std::vector< Vector3i 
 {
 	std::vector< Vector3f > outputNormalIndices( m_positions.size() );
 
-	int nFaces = m_faces.size();
+	int nFaces = numFaces();
 	for( int f = 0; f < nFaces; ++f )
 	{
 		Vector3i pIndices = m_faces[ f ];
