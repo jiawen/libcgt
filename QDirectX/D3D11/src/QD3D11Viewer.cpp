@@ -93,7 +93,10 @@ void QD3D11Viewer::updateKeyboard()
 
 void QD3D11Viewer::updateXboxController()
 {
-	m_pXboxController0->sampleState();
+	if( m_pXboxController0->isConnected() )
+	{
+		m_pXboxController0->sampleState();
+	}
 	m_fpsControls.handleXboxController( m_pXboxController0, m_camera );
 	update();
 }

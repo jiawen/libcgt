@@ -7,9 +7,12 @@
 
 #include "vecmath/Vector2f.h"
 
-Matrix2f::Matrix2f()
+Matrix2f::Matrix2f( float fill )
 {
-	memset( m_elements, 0, 4 * sizeof( float ) );
+	for( int i = 0; i < 4; ++i )
+	{
+		m_elements[ i ] = fill;
+	}
 }
 
 Matrix2f::Matrix2f( float _m00, float _m01,

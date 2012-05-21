@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdio>
-
 class Matrix2f;
 class Matrix3f;
 class Quat4f;
@@ -14,8 +12,8 @@ class Matrix4f
 {
 public:
 
-	// 4x4 zero matrix
-	Matrix4f();
+	// 4x4 matrix defaults to zero
+	Matrix4f( float fill = 0 );
 
 	// Construct 4x4 matrix directly from elements
 	// elements are written in row-major order for human-readability
@@ -94,7 +92,9 @@ public:
 	static Matrix4f scaling( float sx, float sy, float sz );
 	static Matrix4f scaling( const Vector3f& xyz );
 	static Matrix4f uniformScaling( float s );
-	
+	static Matrix4f scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
+		const Vector3f& dstOrigin, const Vector3f& dstSize );
+
 	static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 	
 	// orthographicProjection from (0,0) to (width,height), zNear = -1, zFar = 1

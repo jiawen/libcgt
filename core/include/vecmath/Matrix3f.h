@@ -4,6 +4,7 @@
 
 class Matrix2f;
 class Quat4f;
+class Vector2f;
 class Vector3f;
 
 // 3x3 Matrix, stored in column major order (FORTRAN / OpenGL style)
@@ -57,17 +58,28 @@ public:
 		float m20, float m21, float m22 );
 
 	static Matrix3f ones();
-	static Matrix3f identity();
-	static Matrix3f rotateX( float radians );
-	static Matrix3f rotateY( float radians );
-	static Matrix3f rotateZ( float radians );
-	static Matrix3f scaling( float sx, float sy, float sz );
-	static Matrix3f uniformScaling( float s );
-	static Matrix3f rotation( const Vector3f& axis, float radians );
+	static Matrix3f identity();	
 
+	static Matrix3f rotation( const Vector3f& axis, float radians );
+	
 	// Returns the rotation matrix represented by a unit quaternion
 	// if q is not normalized, it it normalized first
 	static Matrix3f rotation( const Quat4f& rq );
+
+	static Matrix3f rotateX( float radians );
+	static Matrix3f rotateY( float radians );
+	static Matrix3f rotateZ( float radians );
+
+	static Matrix3f scaling( float sx, float sy, float sz );
+	static Matrix3f uniformScaling( float s );
+
+	static Matrix3f translation( float x, float y );
+	static Matrix3f translation( const Vector2f& xy );
+
+	// Returns an 2D affine scale-and-translation matrix mapping the rectangle
+	// [srcOrigin, srcOrigin + srcSize] --> [dstOrigin, dstOrigin + dstSize]
+	static Matrix3f scaleTranslate( const Vector2f& srcOrigin, const Vector2f& srcSize,
+		const Vector2f& dstOrigin, const Vector2f& dstSize );	
 
 	union
 	{

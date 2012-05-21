@@ -14,9 +14,12 @@
 #include "vecmath/Vector4f.h"
 #include "vecmath/Rect2f.h"
 
-Matrix4f::Matrix4f()
+Matrix4f::Matrix4f( float fill )
 {
-	memset( m_elements, 0, 16 * sizeof( float ) );
+	for( int i = 0; i < 16; ++i )
+	{
+		m_elements[ i ] = fill;
+	}
 }
 
 Matrix4f::Matrix4f( float m00, float m01, float m02, float m03,
@@ -183,26 +186,6 @@ void Matrix4f::setSubmatrix3x3( int i0, int j0, const Matrix3f& m )
 
 float Matrix4f::determinant() const
 {
-	float m00 = m_elements[ 0 ];
-	float m10 = m_elements[ 1 ];
-	float m20 = m_elements[ 2 ];
-	float m30 = m_elements[ 3 ];
-
-	float m01 = m_elements[ 4 ];
-	float m11 = m_elements[ 5 ];
-	float m21 = m_elements[ 6 ];
-	float m31 = m_elements[ 7 ];
-
-	float m02 = m_elements[ 8 ];
-	float m12 = m_elements[ 9 ];
-	float m22 = m_elements[ 10 ];
-	float m32 = m_elements[ 11 ];
-
-	float m03 = m_elements[ 12 ];
-	float m13 = m_elements[ 13 ];
-	float m23 = m_elements[ 14 ];
-	float m33 = m_elements[ 15 ];
-
 	float cofactor00 =  Matrix3f::determinant3x3( m11, m12, m13, m21, m22, m23, m31, m32, m33 );
 	float cofactor01 = -Matrix3f::determinant3x3( m12, m13, m10, m22, m23, m20, m32, m33, m30 );
 	float cofactor02 =  Matrix3f::determinant3x3( m13, m10, m11, m23, m20, m21, m33, m30, m31 );
@@ -213,27 +196,7 @@ float Matrix4f::determinant() const
 
 Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 {
-	float m00 = m_elements[ 0 ];
-	float m10 = m_elements[ 1 ];
-	float m20 = m_elements[ 2 ];
-	float m30 = m_elements[ 3 ];
-
-	float m01 = m_elements[ 4 ];
-	float m11 = m_elements[ 5 ];
-	float m21 = m_elements[ 6 ];
-	float m31 = m_elements[ 7 ];
-
-	float m02 = m_elements[ 8 ];
-	float m12 = m_elements[ 9 ];
-	float m22 = m_elements[ 10 ];
-	float m32 = m_elements[ 11 ];
-
-	float m03 = m_elements[ 12 ];
-	float m13 = m_elements[ 13 ];
-	float m23 = m_elements[ 14 ];
-	float m33 = m_elements[ 15 ];
-
-    float cofactor00 =  Matrix3f::determinant3x3( m11, m12, m13, m21, m22, m23, m31, m32, m33 );
+	float cofactor00 =  Matrix3f::determinant3x3( m11, m12, m13, m21, m22, m23, m31, m32, m33 );
     float cofactor01 = -Matrix3f::determinant3x3( m12, m13, m10, m22, m23, m20, m32, m33, m30 );
     float cofactor02 =  Matrix3f::determinant3x3( m13, m10, m11, m23, m20, m21, m33, m30, m31 );
     float cofactor03 = -Matrix3f::determinant3x3( m10, m11, m12, m20, m21, m22, m30, m31, m32 );
@@ -275,10 +238,10 @@ Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 
 		return Matrix4f
 			(
-				cofactor00 * reciprocalDeterminant, cofactor10 * reciprocalDeterminant, cofactor20 * reciprocalDeterminant, cofactor30 * reciprocalDeterminant,
-				cofactor01 * reciprocalDeterminant, cofactor11 * reciprocalDeterminant, cofactor21 * reciprocalDeterminant, cofactor31 * reciprocalDeterminant,
-				cofactor02 * reciprocalDeterminant, cofactor12 * reciprocalDeterminant, cofactor22 * reciprocalDeterminant, cofactor32 * reciprocalDeterminant,
-				cofactor03 * reciprocalDeterminant, cofactor13 * reciprocalDeterminant, cofactor23 * reciprocalDeterminant, cofactor33 * reciprocalDeterminant
+			cofactor00 * reciprocalDeterminant, cofactor10 * reciprocalDeterminant, cofactor20 * reciprocalDeterminant, cofactor30 * reciprocalDeterminant,
+			cofactor01 * reciprocalDeterminant, cofactor11 * reciprocalDeterminant, cofactor21 * reciprocalDeterminant, cofactor31 * reciprocalDeterminant,
+			cofactor02 * reciprocalDeterminant, cofactor12 * reciprocalDeterminant, cofactor22 * reciprocalDeterminant, cofactor32 * reciprocalDeterminant,
+			cofactor03 * reciprocalDeterminant, cofactor13 * reciprocalDeterminant, cofactor23 * reciprocalDeterminant, cofactor33 * reciprocalDeterminant
 			);
 	}
 }
@@ -544,6 +507,22 @@ Matrix4f Matrix4f::uniformScaling( float s )
 		0, 0, s, 0,
 		0, 0, 0, 1
 	);
+}
+
+// static
+Matrix4f Matrix4f::scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
+	const Vector3f& dstOrigin, const Vector3f& dstSize )
+{
+	// translate rectangle to have its origin at (0,0)
+	Matrix4f t0 = Matrix4f::translation( -srcOrigin );
+
+	// scale it to [0,1]^2, then to [0,dstSize]
+	Matrix4f s = Matrix4f::scaling( dstSize.x / srcSize.x, dstSize.y / srcSize.y, dstSize.z / srcSize.z );
+
+	// translate rectangle to dstOrigin
+	Matrix4f t1 = Matrix4f::translation( dstOrigin );
+
+	return t1 * s * t0;
 }
 
 // static

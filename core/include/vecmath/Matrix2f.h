@@ -1,7 +1,4 @@
-#ifndef MATRIX2F_H
-#define MATRIX2F_H
-
-#include <cstdio>
+#pragma once
 
 class Vector2f;
 
@@ -10,7 +7,7 @@ class Matrix2f
 {
 public:
 
-	Matrix2f();
+	Matrix2f( float fill = 0.0f );
 	Matrix2f( float _m00, float _m01,
 		float _m10, float _m11 );
 
@@ -32,7 +29,7 @@ public:
 	void setCol( int j, const Vector2f& v );
 
 	float determinant();
-	Matrix2f inverse( bool* pbIsSingular = NULL, float epsilon = 0.f ); // TODO: in place inverse
+	Matrix2f inverse( bool* pbIsSingular = nullptr, float epsilon = 0.f ); // TODO: in place inverse
 
 	void transpose();
 	Matrix2f transposed() const;
@@ -73,5 +70,3 @@ Vector2f operator * ( const Matrix2f& m, const Vector2f& v );
 
 // Matrix-Matrix multiplication
 Matrix2f operator * ( const Matrix2f& x, const Matrix2f& y );
-
-#endif // MATRIX2F_H
