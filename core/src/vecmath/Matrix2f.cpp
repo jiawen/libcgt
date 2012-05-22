@@ -15,16 +15,13 @@ Matrix2f::Matrix2f( float fill )
 	}
 }
 
-Matrix2f::Matrix2f( float _m00, float _m01,
-				   float _m10, float _m11 ) :
-
-	m00( _m00 ),
-	m01( _m01 ),
-	m10( _m10 ),
-	m11( _m11 )
-
+Matrix2f::Matrix2f( float m00, float m01,
+				   float m10, float m11 )
 {
-
+	m_elements[ 0 ] = m00;
+	m_elements[ 1 ] = m10;
+	m_elements[ 2 ] = m01;
+	m_elements[ 3 ] = m11;
 }
 
 Matrix2f::Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns )
@@ -140,11 +137,11 @@ Matrix2f Matrix2f::inverse( bool* pbIsSingular, float epsilon )
 
 void Matrix2f::transpose()
 {
-	float m01 = ( *this )( 0, 1 );
-	float m10 = ( *this )( 1, 0 );
+	float _m01 = m01;
+	float _m10 = m10;
 
-	( *this )( 0, 1 ) = m10;
-	( *this )( 1, 0 ) = m01;
+	m01 = _m10;
+	m10 = _m01;
 }
 
 Matrix2f Matrix2f::transposed() const
@@ -154,7 +151,6 @@ Matrix2f Matrix2f::transposed() const
 		m00, m10,
 		m01, m11
 	);
-
 }
 
 Matrix2f::operator const float* () const

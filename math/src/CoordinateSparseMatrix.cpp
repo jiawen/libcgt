@@ -94,9 +94,26 @@ void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output 
 	for( uint k = 0; k < nnz; ++k )
 	{
 		const Triplet& t = ijvSorted[k];
-		uint i = t.i;
-		uint j = t.j;
-		structureMap[ std::make_pair( i, j ) ] = k;
+		structureMap[ std::make_pair( t.i, t.j ) ] = k;
+	}
+}
+
+template< typename T >
+void CoordinateSparseMatrix< T >::compress( CompressedSparseMatrix< T >& output, std::vector< int >& indexMap ) const
+{
+	compress( output );
+
+	const auto& structureMap = output.structureMap();
+
+	uint nnz = numNonZeroes();
+	indexMap.resize( nnz );
+	for( uint k = 0; k < nnz; ++k )
+	{
+		const Triplet& t = m_ijv[ k ];
+		auto ij = std::make_pair( t.i, t.j );
+		
+		uint l = structureMap.find( ij )->second;
+		indexMap[ k ] = l;
 	}
 }
 
@@ -127,10 +144,25 @@ void CoordinateSparseMatrix< T >::compressTranspose( CompressedSparseMatrix< T >
 	for( uint k = 0; k < nnz; ++k )
 	{
 		const Triplet& t = ijvSorted[k];
-		// flip
-		uint i = t.j;
-		uint j = t.i;
-		structureMap[ std::make_pair( i, j ) ] = k;
+		structureMap[ std::make_pair( t.i, t.j ) ] = k;
+	}
+}
+
+template< typename T >
+void CoordinateSparseMatrix< T >::compressTranspose( CompressedSparseMatrix< T >& outputAt, std::vector< int >& indexMap ) const
+{
+	compressTranspose( outputAt );
+
+	const auto& structureMap = outputAt.structureMap();
+
+	uint nnz = numNonZeroes();
+	indexMap.resize( nnz );
+	for( uint k = 0; k < nnz; ++k )
+	{
+		const Triplet& t = m_ijv[ k ];
+		auto ji = std::make_pair( t.j, t.i );
+		uint l = structureMap.find( ji )->second;
+		indexMap[ k ] = l;
 	}
 }
 

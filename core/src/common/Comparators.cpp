@@ -1,13 +1,14 @@
 #include "common/Comparators.h"
 
+#include "vecmath/Vector2i.h"
 // static
 bool Comparators::indexAndDistanceLess( const std::pair< int, float >& a, const std::pair< int, float >& b )
 {
 	return a.second < b.second;
 }
 
-#if 0
-bool std::less< Vector2i >::operator () ( const Vector2i& a, const Vector2i& b )
+// static
+bool Comparators::vector2iLexigraphicLess( const Vector2i& a, const Vector2i& b )
 {
 	if( a.x < b.x )
 	{
@@ -22,4 +23,3 @@ bool std::less< Vector2i >::operator () ( const Vector2i& a, const Vector2i& b )
 		return a.y < b.y;
 	}
 }
-#endif

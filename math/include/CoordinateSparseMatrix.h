@@ -23,9 +23,28 @@ public:
 	// reserve memory for at least nnz triplets
 	void reserve( uint nnz );
 
-	// TODO: bool removeDuplicates = false
+	// TODO: int removeDuplicates()
+	// returns number of duplicates removed?
+
 	void compress( CompressedSparseMatrix< T >& output ) const;
 	void compressTranspose( CompressedSparseMatrix< T >& outputAt ) const;
+
+	// The k-th entry (i,j,value) in this sparse matrix
+	// corresponds to the entry output(i,j) at index:
+	//   l = indexMap[k]
+	//   output.values()[ l ]
+	//   output.innerIndices()[ l ]
+	void compress( CompressedSparseMatrix< T >& output, std::vector< int >& indexMap ) const;
+
+	// The k-th entry (i,j,value) in this sparse matrix
+	// corresponds to the entry output(j,i) at index:
+	//   l = indexMap[k]
+	//   output.values()[ l ]
+	//   output.innerIndices()[ l ]
+	void compressTranspose( CompressedSparseMatrix< T >& outputAt, std::vector< int >& indexMap ) const;
+
+	// TODO: multiplyVector with mkl_cspblas_?coogemv
+	// TODO: multiplyMatrix with mkl_?coomm
 
 	bool saveTXT( QString filename );
 

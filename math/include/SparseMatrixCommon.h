@@ -15,8 +15,8 @@ enum MatrixTriangle
 enum MatrixType
 {
 	GENERAL,
-	SYMMETRIC,
-	TRIANGULAR
+	SYMMETRIC, // one triangle equals other half
+	TRIANGULAR // one triangle is zero
 };
 
 typedef std::pair< uint, uint > SparseMatrixKey;

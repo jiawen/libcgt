@@ -39,10 +39,13 @@ public:
 	float epsilon() const;
 	void setEpsilon( float epsilon );
 
+	// use SPQR
 	const FloatMatrix& minimize( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
+	// use CHOLMOD
 	const FloatMatrix& minimize2( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
+	// use PARDISO
 	const FloatMatrix& minimize3( float* pEnergyFound = nullptr, int* pNumIterations = nullptr );
 
 private:

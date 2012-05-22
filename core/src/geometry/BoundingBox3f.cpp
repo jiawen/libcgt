@@ -291,8 +291,11 @@ BoundingBox3f BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingB
     Vector3f newMin( max( b0Min.x, b1Min.x ), max( b0Min.y, b1Min.y ), max( b0Min.z, b1Min.z ) );
     Vector3f newMax( min( b0Max.x, b1Max.x ), min( b0Max.y, b1Max.y ), min( b0Max.z, b1Max.z ) );
 
-    for(int i = 0; i < 3; ++i)
-        newMax[i] = max(newMax[i], newMin[i]);
+	// TODO: hmm
+    for( int i = 0; i < 3; ++i )
+	{
+        newMax[i] = max( newMax[i], newMin[i] );
+	}
 
     return BoundingBox3f( newMin, newMax );
 }

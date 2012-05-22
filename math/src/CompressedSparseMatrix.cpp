@@ -1,10 +1,13 @@
 #include "CompressedSparseMatrix.h"
 
-#include <assert.h>
+#include <cassert>
 #include <mkl_spblas.h>
 
+#include <common/Comparators.h>
 #include "CoordinateSparseMatrix.h"
 #include "FloatMatrix.h"
+
+#include <time/StopWatch.h>
 
 template< typename T >
 CompressedSparseMatrix< T >::CompressedSparseMatrix( MatrixType matrixType,
@@ -117,9 +120,90 @@ std::map< SparseMatrixKey, uint >& CompressedSparseMatrix< T >::structureMap()
 }
 
 template< typename T >
+void CompressedSparseMatrix< T >::transposed( CompressedSparseMatrix< T >& f ) const
+{
+	// TODO: if symmetric... then use MKL!  It's square!
+
+	int m = numRows();
+	int n = numCols();
+	int nnz = numNonZeros();
+
+	f.reset( n, m, nnz );
+
+	// allocate work space
+	// TODO: statically allocate a fairly large amount of work space?
+	std::vector< int > work( m, 0 );
+
+	const auto& aV = values();
+	const auto& aII = innerIndices();
+	const auto& aOIP = outerIndexPointers();
+
+	auto& fV = f.values();
+	auto& fII = f.innerIndices();
+	auto& fOIP = f.outerIndexPointers();
+
+	// count the number of entries in each row of A
+	for( int j = 0 ; j < n; ++j )
+	{
+		int kStart = aOIP[ j ] ;
+		int kEnd = aOIP[ j + 1 ];
+		for( int p = kStart; p < kEnd; ++p )
+		{
+			++( work[ aII[ p ] ] );
+		}
+	}
+
+	// scan to compute row pointers
+	int p = 0;
+	for( int i = 0; i < m; ++i )
+	{
+		fOIP[ i ] = p;
+		p += work[ i ];
+	}
+	fOIP[ m ] = p; // don't forget the last one
+
+	// reset work array to be a copy of the outer index pointers of the output array
+	// (except the last one)
+	for( int i = 0 ; i < m; ++i )
+	{
+		work[ i ] = fOIP[ i ];
+	}
+
+	// populate fII and fV:
+	// sweep through the columns of A
+	for( int j = 0; j < n; ++j )
+	{
+		// the row indices and values for column j are in aII[ kStart ... kEnd - 1 ]
+		int kStart = aOIP[ j ];
+		int kEnd = aOIP[ j + 1 ];
+		for( int p = kStart; p < kEnd; ++p )
+		{
+			// (i,j) is an entry in A
+			int i = aII[ p ];
+
+			// find the next slot row row i and increment it
+			int q = work[ i ];
+			++( work[ i ] );
+
+			fII[ q ] = j;
+			fV[ q ] = aV[ p ];
+		}
+	}
+
+	// setup output structure map
+	for( auto itr = m_structureMap.begin(); itr != m_structureMap.end(); ++itr )
+	{
+		auto ij = itr->first;
+		auto k = itr->second;
+		auto ji = std::make_pair( ij.second, ij.first );
+		f.m_structureMap[ ji ] = k;
+	}
+}
+
+template< typename T >
 void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y )
 {
-	assert( matrixType() == GENERAL );
+	assert( matrixType() != TRIANGULAR );
 
 	int m = numRows();
 	int n = numCols();
@@ -146,6 +230,12 @@ void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y
 			x.data(),
 			y.data()
 		);
+	}
+	else if( matrixType() == SYMMETRIC )
+	{
+		// mkl_cspblas_scsrsymv assumes CSR storage
+		// since we use CSC, transpose it
+		printf( "IMPLEMENT ME!\n" );
 	}
 }
 
@@ -325,7 +415,7 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 
 	std::vector< bool > flags( m );
 
-	// iterate over columns of b/c
+	// iterate over columns of B (or C)
 	for( uint j = 0; j < p; ++j )
 	{
 		// clear flag array
@@ -350,7 +440,10 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 				
 				// A[ ai, bi ] is a non-zero element
 				// and will contribute to the product
-				// (but don't double count)
+				//
+				// count it if the output matrix is general (not symmetric)
+				// if it's symmetric, if it's in the lower triangle
+				// and don't double count: check the flag and set it				
 				if( ( productType == GENERAL ) ||
 					( ai >= j ) &&
 					!( flags[ ai ] ) )
@@ -382,7 +475,8 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	nnzC = 0;
 	std::vector< T > work( m, 0 );
 
-	// iterate over columns of b/c
+	// iterate over columns of B (or C) again
+	// this time actually accumulating the product
 	for( uint j = 0; j < p; ++j )
 	{
 		// clear flag array
@@ -411,7 +505,10 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 
 				// A[ ai, bi ] is a non-zero element
 				// and will contribute to the product
-				// (but don't double count)
+				//
+				// count it if the output matrix is general (not symmetric)
+				// if it's symmetric, if it's in the lower triangle
+				// and don't double count: check the flag and set it
 				if( ( productType == GENERAL ) ||
 					( ai >= j ) &&
 					!( flags[ ai ] ) )
@@ -444,6 +541,10 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	// fill out outer index
 	cOIP[ p ] = nnzC;
 
+	StopWatch sw;
+	std::vector< std::pair< int, T > > work2;
+	// TODO: how do I sort 2 parallel arrays using the first?
+
 	// sort columns of output
 	// i.e., ensure that the row indices within each column are ascending
 	// and that the values match
@@ -451,7 +552,22 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	{
 		uint k = cOIP[ j ];
 		uint kEnd = cOIP[ j + 1 ];
+				
+		int n = kEnd - k;
+		work2.resize( n );
+		for( int kk = 0; kk < n; ++kk )
+		{
+			work2[ kk ] = std::make_pair( cII[ k + kk ], cV[ k + kk ] );
+		}
+		std::sort( work2.begin(), work2.end(), Comparators::pairFirstElementLess< int, T > );
+
+		for( int kk = 0; kk < n; ++kk )
+		{
+			cII[ k + kk ] = work2[ kk ].first;
+			cV[ k + kk ] = work2[ kk ].second;
+		}
 	}
+	printf( "sorting took %f ms\n", sw.millisecondsElapsed() );
 }
 
 // instantiate

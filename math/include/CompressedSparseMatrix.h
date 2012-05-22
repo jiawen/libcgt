@@ -23,7 +23,8 @@ public:
 	uint numRows() const;
 	uint numCols() const;
 
-	// only valid where the structure is already defined	
+	// only valid where the structure is already defined
+	// get and put takes O( log( nnz ) ) since it requires a binary search tree lookup
 	T get( uint i, uint j ) const;
 	void put( uint i, uint j, const T& value );
 
@@ -47,10 +48,12 @@ public:
 	//   outerIndexPointers[numCols()] = numNonZeroes()
 	std::vector< uint >& outerIndexPointers();
 	const std::vector< uint >& outerIndexPointers() const;
-
+	
 	// returns a data structure mapping indices (i,j)
 	// to indices in values() and innerIndices()
 	SparseMatrixStructureTreeMap& structureMap();
+
+	void transposed( CompressedSparseMatrix< T >& f ) const;
 
 	// sparse-dense vector product
 	// y <-- Ax
@@ -84,9 +87,13 @@ public:
 	// TODO: if output format is full, do the copy
 	void multiplyTranspose( CompressedSparseMatrix< T >& product ) const;	
 
+	// TODO: multiply sparse * dense using: mkl_?cscmm
+
 	// product <- a * b
 	// if product.matrixType() == GENERAL, then the full sparse matrix is stored
 	// else, then the lower triangle is stored
+	// (set the product.matrixType() to SYMMETRIC only if you know it's going to be symmetric)
+	// TODO: implement general --> symmetric that correctly drops?
 	static void multiply( const CompressedSparseMatrix< T >& a, const CompressedSparseMatrix< T >& b,
 		CompressedSparseMatrix< T >& product );
 

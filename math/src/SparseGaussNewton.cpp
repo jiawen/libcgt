@@ -609,7 +609,6 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 	StopWatch sw;
 	float tCompress0 = 0;
 	float tSSMult0 = 0;
-	float tCompress1 = 0;
 	float tSVMult = 0;
 	float tSSMult = 0;
 	float tFactorize = 0;
@@ -642,15 +641,7 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 	printf( "compress0 took %f ms\n", tCompress0 );
 	printf( "ssmult0 took %f ms\n", tSSMult0 );
 
-	exit( 0 );
-
-#if TIMING
-	sw.reset();
-#endif
-	m_coordJtJ.compress( m_cscJtJ );
-#if TIMING
-	tCompress1 += sw.millisecondsElapsed();
-#endif
+	//exit( 0 );
 
 	float prevEnergy;
 	float currEnergy = FloatMatrix::dot( m_r, m_r );
@@ -681,7 +672,17 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 #if TIMING
 		sw.reset();
 #endif
+
+		// TODO: use my own multiply
+		// TODO: how do I transpose j?
+		// TODO: look in cholmod_transpose.c
+		//   they have a transpose_unsym and transpose_sym
+		// TODO: or use the structure hash table...
+
 		m_cscJ.multiplyTranspose( m_cscJtJ );
+
+		//CompressedSparseMatrix< float >::multiply( m_cscJt, m_cscJ, m_cscJtJ );
+
 #if TIMING
 		tSSMult += sw.millisecondsElapsed();
 #endif		
@@ -734,11 +735,10 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 
 #if TIMING
 
-	printf( "J'J is %d x %d\n", m_coordJtJ.numRows(), m_coordJtJ.numCols() );
+	printf( "J'J is %d x %d\n", m_cscJtJ.numRows(), m_cscJtJ.numCols() );
 
 	printf( "compress0 took %f ms\n", tCompress0 );
 	printf( "ssmult0 took %f ms\n", tSSMult0 );
-	printf( "compress1 took %f ms\n", tCompress1 );
 	printf( "svMult took %f ms\n", tSVMult );
 
 	printf( "sparse * sparse took %f ms\n", tSSMult );
