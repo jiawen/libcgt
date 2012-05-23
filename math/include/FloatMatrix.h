@@ -60,8 +60,8 @@ public:
 	// nCols = 0 means j1 to end
 	void assign( const FloatMatrix& m, int i0 = 0, int j0 = 0, int i1 = 0, int j1 = 0, int nRows = 0, int nCols = 0 );
 
+	const float* data() const;
 	float* data();
-	const float* constData() const;
 
 	FloatMatrix solve( const FloatMatrix& rhs, bool* pSucceeded = nullptr ) const;
 
@@ -77,7 +77,16 @@ public:
 	FloatMatrix transposed() const;
 
 	// Returns the sum of the square of each element
-	//float frobeniusNormSquared() const;
+	float frobeniusNorm() const;
+
+	// returns the maximum row sum
+	float infinityNorm() const;
+
+	// returns the maximum column sum
+	float l1Norm() const;
+
+	// Returns the element with largest absolute value
+	float maximumNorm() const;
 
 	FloatMatrix& operator += ( const FloatMatrix& x );
 	FloatMatrix& operator -= ( const FloatMatrix& x );
@@ -88,16 +97,21 @@ public:
 	// a and b must be of the same length
 	static float dot( const FloatMatrix& a, const FloatMatrix& b );
 
-	// TODO: call scaledMultiplyAdd
+	// TODO: call scaledAdd?
 	static void add( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
-	// TODO: call scaledMultiplyAdd
+	// TODO: call scaledAdd
 	static void subtract( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );
 
 	// y <-- alpha * x + y
-	static void scaledMultiplyAdd( float alpha, const FloatMatrix& x, FloatMatrix& y );
+	// (x and y should be vectors)
+	// y is not resized if it's the wrong size
+	static void scaledAdd( float alpha, const FloatMatrix& x, FloatMatrix& y );
 
-	// TODO: call sgemm
 	static void multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& c );	
+
+	// c <-- alpha * a * b + beta * c
+	// c gets resized if it's the wrong size (and contents lost)
+	static void scaledMultiplyAdd( float alpha, const FloatMatrix& a, const FloatMatrix& b, float beta, FloatMatrix& c );
 
 	/*
 	void eigenvalueDecomposition( QVector< QVector< float > >* eigen_vector,
@@ -109,10 +123,20 @@ public:
 	float minimum() const;
 	float maximum() const;
 
+	bool loadTXT( QString filename );
+	bool saveTXT( QString filename );
+
 	void print( const char* prefix = nullptr, const char* suffix = nullptr );
 	QString toString();	
 
 private:
+
+	// calls MKL's ?lange to compute a norm
+	// whichNorm can be:
+	// 'm' for maximum absolute value
+	// 'o' for the 1-norm (maximum column sum), or
+	// 'f' for the Frobenius norm (sqrt of sum of squares)	
+	float norm( char whichNorm ) const;
 
 	int m_nRows;
 	int m_nCols;

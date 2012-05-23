@@ -21,6 +21,14 @@ enum MatrixType
 
 typedef std::pair< uint, uint > SparseMatrixKey;
 
+template< typename T >
+struct SparseMatrixTriplet
+{
+	uint i;
+	uint j;
+	T value;
+};
+
 // compare j first, then i
 struct SparseMatrixKeyColMajorLess
 {

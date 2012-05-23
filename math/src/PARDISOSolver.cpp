@@ -6,43 +6,59 @@
 #include "FloatMatrix.h"
 
 template<>
-PARDISOSolver< float, true >::PARDISOSolver()
+PARDISOSolver< float, true >::PARDISOSolver() :
+
+	m_nRowsA( -1 ),
+	m_nColsA( -1 )
+
 {
 	int options = MKL_DSS_DEFAULTS;
 	options += MKL_DSS_SINGLE_PRECISION;
 	options += MKL_DSS_ZERO_BASED_INDEXING;
 	int retval = dss_create( m_handle, options );
 	assert( retval == MKL_DSS_SUCCESS );
-	(void)retval;
+	( void )retval;
 }
 
 template<>
-PARDISOSolver< float, false >::PARDISOSolver()
+PARDISOSolver< float, false >::PARDISOSolver() :
+
+	m_nRowsA( -1 ),
+	m_nColsA( -1 )
+
 {
 	int options = MKL_DSS_DEFAULTS;
 	options += MKL_DSS_SINGLE_PRECISION;
 	int retval = dss_create( m_handle, options );
 	assert( retval == MKL_DSS_SUCCESS );
-	(void)retval;
+	( void )retval;
 }
 
 template<>
-PARDISOSolver< double, true >::PARDISOSolver()
+PARDISOSolver< double, true >::PARDISOSolver() :
+
+	m_nRowsA( -1 ),
+	m_nColsA( -1 )
+
 {
 	int options = MKL_DSS_DEFAULTS;
 	options += MKL_DSS_ZERO_BASED_INDEXING;
 	int retval = dss_create( m_handle, options );
 	assert( retval == MKL_DSS_SUCCESS );
-	(void)retval;
+	( void )retval;
 }
 
 template<>
-PARDISOSolver< double, false >::PARDISOSolver()
+PARDISOSolver< double, false >::PARDISOSolver() :
+
+	m_nRowsA( -1 ),
+	m_nColsA( -1 )
+
 {
 	int options = MKL_DSS_DEFAULTS;
 	int retval = dss_create( m_handle, options );
 	assert( retval == MKL_DSS_SUCCESS );
-	(void)retval;
+	( void )retval;
 }
 
 // virtual
@@ -63,8 +79,10 @@ bool PARDISOSolver< valueType, zeroBased >::analyzePattern( int m, int n, int* r
 
 	if( succeeded )
 	{
-		int reorderOptions = MKL_DSS_DEFAULTS;
-		//int reorderOptions = MKL_DSS_AUTO_ORDER;
+		m_nRowsA = m;
+		m_nColsA = n;
+
+		int reorderOptions = MKL_DSS_AUTO_ORDER;
 		retval = dss_reorder( m_handle, reorderOptions, NULL );
 		succeeded = ( retval == MKL_DSS_SUCCESS );
 		assert( succeeded );
@@ -98,6 +116,8 @@ template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::factorize( CompressedSparseMatrix< valueType >& A )
 {
 	assert( A.matrixType() == SYMMETRIC );
+	assert( A.numRows() == m_nRowsA );
+	assert( A.numCols() == m_nColsA );
 
 	return factorize( A.values().data() );
 }
@@ -117,7 +137,10 @@ bool PARDISOSolver< valueType, zeroBased >::solve( const valueType* rhs, valueTy
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::solve( const FloatMatrix& rhs, FloatMatrix& solution )
 {
-	return solve( rhs.constData(), solution.data() );
+	assert( rhs.numRows() == m_nColsA );
+
+	solution.resize( m_nRowsA, 1 );
+	return solve( rhs.data(), solution.data() );
 }
 
 // instantiate

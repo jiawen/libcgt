@@ -74,8 +74,9 @@ private:
 	CoordinateSparseMatrix< float > m_coordJ;
 	CompressedSparseMatrix< float > m_cscJ;
 	CompressedSparseMatrix< float > m_cscJt;
+	std::vector< int > m_jIndexMap;
+	std::vector< int > m_jtIndexMap;
 
-	CoordinateSparseMatrix< float > m_coordJtJ;
 	CompressedSparseMatrix< float > m_cscJtJ;
 	FloatMatrix m_jtr;
 

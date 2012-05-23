@@ -10,6 +10,10 @@
 
 #include "LUFactorization.h"
 
+//////////////////////////////////////////////////////////////////////////
+// Public
+//////////////////////////////////////////////////////////////////////////
+
 // static
 FloatMatrix FloatMatrix::zeroes( int m, int n )
 {
@@ -225,12 +229,12 @@ void FloatMatrix::assign( const FloatMatrix& m, int i0, int j0, int i1, int j1, 
 	}
 }
 
-float* FloatMatrix::data()
+const float* FloatMatrix::data() const
 {
 	return m_data.data();
 }
 
-const float* FloatMatrix::constData() const
+float* FloatMatrix::data()
 {
 	return m_data.data();
 }
@@ -324,15 +328,51 @@ FloatMatrix FloatMatrix::transposed() const
 	return t;
 }
 
+float FloatMatrix::frobeniusNorm() const
+{
+	return norm( 'f' );
+}
+
+// returns the maximum row sum
+float FloatMatrix::infinityNorm() const
+{
+	char whichNorm = 'i';
+	int m = numRows();
+	int n = numCols();
+
+	std::vector< float > work( m );
+
+	return slange
+	(
+		&whichNorm,
+		&m, &n,
+		data(),
+		&m,
+		work.data()
+	);
+}
+
+// returns the maximum column sum
+float FloatMatrix::l1Norm() const
+{
+	return norm( 'o' );
+}
+
+// Returns the element with largest absolute value
+float FloatMatrix::maximumNorm() const
+{
+	return norm( 'm' );
+}
+
 FloatMatrix& FloatMatrix::operator += ( const FloatMatrix& x )
 {
-	scaledMultiplyAdd( 1.0f, x, *this );
+	scaledAdd( 1.0f, x, *this );
 	return( *this );
 }
 
 FloatMatrix& FloatMatrix::operator -= ( const FloatMatrix& x )
 {
-	scaledMultiplyAdd( -1.0f, x, *this );
+	scaledAdd( -1.0f, x, *this );
 	return( *this );
 }
 
@@ -345,7 +385,7 @@ float FloatMatrix::dot( const FloatMatrix& a, const FloatMatrix& b )
 
 	int m = a.numElements();
 	int inc = 1;
-	return sdot( &m, a.constData(), &inc, b.constData(), &inc );
+	return sdot( &m, a.data(), &inc, b.data(), &inc );
 }
 
 // static
@@ -353,6 +393,11 @@ void FloatMatrix::add( const FloatMatrix& a, const FloatMatrix& b, FloatMatrix& 
 {
 	assert( a.numRows() == b.numRows() );
 	assert( a.numCols() == b.numCols() );
+
+	// TODO: is this any faster?
+	// copy c <-- b
+	// c = b;
+	// scaledAdd( 1, a, c );
 
 	c.resize( a.numRows(), a.numCols() );
 
@@ -370,6 +415,7 @@ void FloatMatrix::subtract( const FloatMatrix& a, const FloatMatrix& b, FloatMat
 
 	c.resize( a.numRows(), a.numCols() );
 
+	// TODO: use MKL
 	for( int k = 0; k < a.numElements(); ++k )
 	{
 		c[k] = a[k] - b[k];
@@ -383,34 +429,43 @@ void FloatMatrix::multiply( const FloatMatrix& a, const FloatMatrix& b, FloatMat
 
 	c.resize( a.numRows(), b.numCols() );
 
-	for( int i = 0; i < a.numRows(); ++i )
-	{
-		for( int k = 0; k < b.numCols(); ++k )
-		{
-			c( i, k ) = 0;
-		}
-	}
-
-	for( int i = 0; i < a.numRows(); ++i )
-	{
-		for( int j = 0; j < a.numCols(); ++j )
-		{
-			for( int k = 0; k < b.numCols(); ++k )
-			{
-				c( i, k ) += a( i, j ) * b( j, k );
-			}
-		}
-	}
+	scaledMultiplyAdd( 1, a, b, 0, c );
 }
 
 // static
-void FloatMatrix::scaledMultiplyAdd( float alpha, const FloatMatrix& x, FloatMatrix& y )
+void FloatMatrix::scaledAdd( float alpha, const FloatMatrix& x, FloatMatrix& y )
 {	
 	int n = x.numElements();
 	assert( n == y.numElements() );
 	int inc = 1;
 
-	saxpy( &n, &alpha, x.constData(), &inc, y.data(), &inc );
+	saxpy( &n, &alpha, x.data(), &inc, y.data(), &inc );
+}
+
+// static
+void FloatMatrix::scaledMultiplyAdd( float alpha, const FloatMatrix& a, const FloatMatrix& b, float beta, FloatMatrix& c )
+{
+	int m = a.numRows();
+	int n = a.numCols();
+	
+	assert( n = b.numRows() );
+	int p = b.numCols();
+
+	c.resize( m, p );
+
+	char transa = 'n';
+	char transb = 'n';
+	
+	sgemm
+	(
+		&transa, &transb,
+		&m, &p, &n,
+		&alpha,
+		a.data(), &m,
+		b.data(), &n,
+		&beta,
+		c.data(), &m
+	);
 }
 
 #if 0
@@ -514,6 +569,55 @@ float FloatMatrix::maximum() const
 	return *( std::max_element( m_data.begin(), m_data.end() ) );
 }
 
+bool FloatMatrix::loadTXT( QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "r" );
+	bool succeeded = ( fp != NULL );
+
+	if( succeeded )
+	{
+		int m = -1;
+		int n = -1;
+		fscanf( fp, "%d %d\n", &m, &n );
+		
+		succeeded = ( m >= 0 && m >= 0 );
+		if( succeeded )
+		{
+			m_nRows = m;
+			m_nCols = n;
+			m_data.resize( m * n );
+
+			for( size_t k = 0; k < m * n; ++k )
+			{
+				fscanf( fp, "%f\n", &( m_data[ k ] ) );
+			}
+
+			fclose( fp );
+		}
+	}
+
+	return succeeded;
+}
+
+bool FloatMatrix::saveTXT( QString filename )
+{
+	FILE* fp = fopen( qPrintable( filename ), "w" );
+	bool succeeded = ( fp != NULL );
+
+	if( succeeded )
+	{
+		fprintf( fp, "%d %d\n", m_nRows, m_nCols );
+		for( size_t k = 0; k < m_data.size(); ++k )
+		{
+			fprintf( fp, "%f\n", m_data[ k ] );
+		}
+
+		fclose( fp );
+	}
+	
+	return succeeded;
+}
+
 void FloatMatrix::print( const char* prefix, const char* suffix )
 {
 	if( prefix != nullptr )
@@ -559,6 +663,25 @@ QString FloatMatrix::toString()
 	return out;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+float FloatMatrix::norm( char whichNorm ) const
+{
+	int m = numRows();
+	int n = numCols();
+
+	return slange
+	(
+		&whichNorm,
+		&m, &n,
+		data(),
+		&m,
+		nullptr
+	);
+}
+
 FloatMatrix operator + ( const FloatMatrix& a, const FloatMatrix& b )
 {
 	FloatMatrix c;
@@ -586,7 +709,7 @@ FloatMatrix operator - ( const FloatMatrix& a )
 
 FloatMatrix operator * ( const FloatMatrix& a, const FloatMatrix& b )
 {
-	FloatMatrix c( a.numRows(), b.numCols() );
+	FloatMatrix c;
 	FloatMatrix::multiply( a, b, c );
 	return c;
 }

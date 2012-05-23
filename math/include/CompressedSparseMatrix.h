@@ -9,12 +9,14 @@ class CoordinateSparseMatrix;
 
 class FloatMatrix;
 
+// TODO: debug this by serializing to disk in coordinate format
+
+// Compressed Sparse Column (CSC) sparse matrix
 template< typename T >
 class CompressedSparseMatrix
 {
 public:	
 
-	// nOuterIndices = nRows for CSR, nCols for CSC
 	CompressedSparseMatrix( MatrixType matrixType = GENERAL, uint nRows = 0, uint nCols = 0, uint nnz = 0 );
 
 	void reset( uint nRows, uint nCols, uint nnz );
@@ -86,6 +88,9 @@ public:
 	// TODO: if output format is compressed sparse col, store the lower triangle
 	// TODO: if output format is full, do the copy
 	void multiplyTranspose( CompressedSparseMatrix< T >& product ) const;	
+
+	// copy data from the same matrix in coordinate format given index map
+	void gather( const CoordinateSparseMatrix< T >& coord, const std::vector< int >& indexMap );
 
 	// TODO: multiply sparse * dense using: mkl_?cscmm
 

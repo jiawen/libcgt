@@ -167,10 +167,8 @@ void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 	// try PARDISO
 	m_alreadySetup = false;
 	m_coordJ.clear();
-	m_coordJtJ.clear();
 	// HACK
 	m_coordJ.reserve( m * n );
-	m_coordJtJ.reserve( n * n );
 	m_jtr.resize( n, 1 );
 }
 
@@ -617,15 +615,14 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 
 	m_pEnergy->evaluateInitialGuess( m_currBeta );
 
-	// TODO: if not already set up, then call it with coordinate
-	// otherwise, call it with csc
-	// compute transpose...
+	// TODO: only need to compress once and store index map
 	m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_coordJ );
 #if TIMING
 	sw.reset();
-#endif
-	m_coordJ.compress( m_cscJ );
-	m_coordJ.compressTranspose( m_cscJt );
+#endif	
+
+	m_coordJ.compress( m_cscJ, m_jIndexMap );
+	m_coordJ.compressTranspose( m_cscJt, m_jtIndexMap );
 #if TIMING
 	tCompress0 += sw.millisecondsElapsed();
 #endif
@@ -637,11 +634,6 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 #if TIMING
 	tSSMult0 += sw.millisecondsElapsed();
 #endif
-
-	printf( "compress0 took %f ms\n", tCompress0 );
-	printf( "ssmult0 took %f ms\n", tSSMult0 );
-
-	//exit( 0 );
 
 	float prevEnergy;
 	float currEnergy = FloatMatrix::dot( m_r, m_r );
@@ -673,19 +665,18 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 		sw.reset();
 #endif
 
-		// TODO: use my own multiply
-		// TODO: how do I transpose j?
-		// TODO: look in cholmod_transpose.c
-		//   they have a transpose_unsym and transpose_sym
-		// TODO: or use the structure hash table...
-
-		m_cscJ.multiplyTranspose( m_cscJtJ );
+		//m_r.saveTXT( QString( "c:/tmp/r_%1.txt" ).arg( nIterations ) );
+		//m_coordJ.saveTXT( QString( "c:/tmp/coordJ_%1.txt" ).arg( nIterations ) );
+		
+		CompressedSparseMatrix< float >::multiply( m_cscJt, m_cscJ, m_cscJtJ );
 
 		//CompressedSparseMatrix< float >::multiply( m_cscJt, m_cscJ, m_cscJtJ );
 
 #if TIMING
 		tSSMult += sw.millisecondsElapsed();
-#endif		
+#endif
+
+
 
 		// analyze
 		if( !m_alreadySetup )
@@ -712,7 +703,11 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 
 		m_currBeta -= m_delta;
 		// update energy
-		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_cscJ );
+		m_pEnergy->evaluateResidualAndJacobian( m_currBeta, m_r, m_coordJ );
+
+		// TODO: can save one set of gathers if we do this at the top of the loop?
+		m_cscJ.gather( m_coordJ, m_jIndexMap );
+		m_cscJt.gather( m_coordJ, m_jtIndexMap );
 
 		currEnergy = FloatMatrix::dot( m_r, m_r );
 		deltaEnergy = fabs( currEnergy - prevEnergy );

@@ -1,13 +1,16 @@
 #include "CompressedSparseMatrix.h"
 
 #include <cassert>
+#include <algorithm>
+
 #include <mkl_spblas.h>
 
 #include <common/Comparators.h>
+#include <time/StopWatch.h>
+
 #include "CoordinateSparseMatrix.h"
 #include "FloatMatrix.h"
 
-#include <time/StopWatch.h>
 
 template< typename T >
 CompressedSparseMatrix< T >::CompressedSparseMatrix( MatrixType matrixType,
@@ -143,9 +146,9 @@ void CompressedSparseMatrix< T >::transposed( CompressedSparseMatrix< T >& f ) c
 	auto& fOIP = f.outerIndexPointers();
 
 	// count the number of entries in each row of A
-	for( int j = 0 ; j < n; ++j )
+	for( int j = 0; j < n; ++j )
 	{
-		int kStart = aOIP[ j ] ;
+		int kStart = aOIP[ j ];
 		int kEnd = aOIP[ j + 1 ];
 		for( int p = kStart; p < kEnd; ++p )
 		{
@@ -164,7 +167,7 @@ void CompressedSparseMatrix< T >::transposed( CompressedSparseMatrix< T >& f ) c
 
 	// reset work array to be a copy of the outer index pointers of the output array
 	// (except the last one)
-	for( int i = 0 ; i < m; ++i )
+	for( int i = 0; i < m; ++i )
 	{
 		work[ i ] = fOIP[ i ];
 	}
@@ -210,21 +213,21 @@ void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y
 
 	assert( x.numRows() == n );
 	assert( x.numCols() == 1 );
-	assert( y.numRows() == m );
-	assert( y.numCols() == 1 );
+
+	y.resize( m, 1 );
 
 	if( matrixType() == GENERAL )
 	{
 		// mkl_cspblas_scsrgemv assumes CSR storage
-		// since we use CSC, transpose it
+		// since we use CSC, call it transposed (set transa to 't')
 
 		char transa = 't';
 
 		mkl_cspblas_scsrgemv
 		(
 			&transa,
-			&n,
-			reinterpret_cast< float* >( m_values.data() ), // HACK: templateize FloatMatrix
+			&m,
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templatize FloatMatrix
 			reinterpret_cast< int* >( m_outerIndexPointers.data() ),
 			reinterpret_cast< int* >( m_innerIndices.data() ),
 			x.data(),
@@ -249,8 +252,8 @@ void CompressedSparseMatrix< T >::multiplyTransposeVector( FloatMatrix& x, Float
 
 	assert( x.numRows() == m );
 	assert( x.numCols() == 1 );
-	assert( y.numRows() == n );
-	assert( y.numCols() == 1 );
+
+	y.resize( n, 1 );
 
 	if( matrixType() == GENERAL )
 	{
@@ -263,12 +266,18 @@ void CompressedSparseMatrix< T >::multiplyTransposeVector( FloatMatrix& x, Float
 		(
 			&transa,
 			&n,
-			reinterpret_cast< float* >( m_values.data() ), // HACK: templateize FloatMatrix
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templatize FloatMatrix
 			reinterpret_cast< int* >( m_outerIndexPointers.data() ),
 			reinterpret_cast< int* >( m_innerIndices.data() ),
 			x.data(),
 			y.data()
 		);
+	}
+	else if( matrixType() == SYMMETRIC )
+	{
+		// mkl_cspblas_scsrsymv assumes CSR storage
+		// since we use CSC, transpose it
+		printf( "IMPLEMENT ME!\n" );
 	}
 }
 
@@ -326,6 +335,18 @@ void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >
 				product.append( i, j, sum );
 			}
 		}
+	}
+}
+
+template< typename T >
+void CompressedSparseMatrix< T >::gather( const CoordinateSparseMatrix< T >& coord, const std::vector< int >& indexMap )
+{
+	uint nnz = numNonZeros();
+	for( uint k = 0; k < nnz; ++k )
+	{
+		int l = indexMap[ k ];
+		auto ijk = coord.get( l );
+		m_values[ k ] = ijk.value;
 	}
 }
 
@@ -469,6 +490,7 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	// and C = (A*B)'' takes 2 * cnz time
 	bool swapAndTranspose = ( ( a.numNonZeros() + b.numNonZeros() ) < nnzC );
 	(void)swapAndTranspose;
+	// TODO: if it's symmetric, then don't have to transpose in the end
 
 	//printf( "annz = %d, bnnz = %d, cnnz = %d, swapAndTranspose = %d\n", a.numNonZeros(), b.numNonZeros(), nnzC, (int)swapAndTranspose );
 
@@ -568,6 +590,7 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 		}
 	}
 	printf( "sorting took %f ms\n", sw.millisecondsElapsed() );
+	// TODO: update structure matrix?
 }
 
 // instantiate

@@ -29,7 +29,7 @@ public:
 	bool analyzePattern( CompressedSparseMatrix< valueType >& A );
 
 	// factorize: take in the values, which has the same ordering as setup
-	// if sparsity structure has changed, call setup again
+	// if sparsity structure has changed, then you need to call analyzePattern again
 	bool factorize( valueType* values );
 
 	bool factorize( CompressedSparseMatrix< valueType >& A );
@@ -37,10 +37,13 @@ public:
 	// actually solve
 	bool solve( const valueType* rhs, valueType* solution );
 
+	// solution is automatically resized to A.numRows() x 1
 	bool solve( const FloatMatrix& rhs, FloatMatrix& solution );
 
 private:
 
+	int m_nRowsA;
+	int m_nColsA;
 	_MKL_DSS_HANDLE_t m_handle;
 
 };
