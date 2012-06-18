@@ -1,5 +1,4 @@
-#ifndef LINEAR_LEAST_SQUARES_SOLVERS
-#define LINEAR_LEAST_SQUARES_SOLVERS
+#pragma once
 
 #include "FloatMatrix.h"
 
@@ -23,8 +22,9 @@ public:
 	static bool QRFullRankInPlace( FloatMatrix& a, FloatMatrix& b );
 	
 	// Solve for Ax ~ b
-	// for a *potentially* rank-deficient matrix A
-	// (simultaneously find x that minimizes ||b-Ax||^2 and ||x||^2)
+	// for a *potentially* rank-deficient matrix A:
+	//   simultaneously find x that minimizes ||b-Ax||^2 and ||x||^2
+	//   works in more situations than QRFullRank but is not as fast)
 	// rCond specifies a reciprocal condition number threshold such that
 	// singular values s[i] <= rCond * s[0] are considered zeroed out
 	// rCond = -1 --> defaults to machine precision
@@ -40,5 +40,3 @@ public:
 	static void SVDRankDeficientInPlace( FloatMatrix& a, FloatMatrix& b, float rCond );
 
 };
-
-#endif // LINEAR_LEAST_SQUARES_SOLVERS

@@ -218,6 +218,7 @@ void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y
 
 	if( matrixType() == GENERAL )
 	{
+#if 0
 		// mkl_cspblas_scsrgemv assumes CSR storage
 		// since we use CSC, call it transposed (set transa to 't')
 
@@ -233,6 +234,36 @@ void CompressedSparseMatrix< T >::multiplyVector( FloatMatrix& x, FloatMatrix& y
 			x.data(),
 			y.data()
 		);
+#endif
+
+		char transa = 'n';
+		float alpha = 1;
+		float beta = 0;
+		char matdescra[6] =
+		{
+			'G', // general
+			'X', // lower/upper (ignored)
+			'X', // main diagonal type (ignored)
+			'C', // zero-based indexing ('F' for one-based)
+			'X', // ignored
+			'X', // ignored
+		};
+
+		mkl_scscmv
+		(
+			&transa,
+			&m, &n,
+			&alpha,
+			matdescra,
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templatize FloatMatrix
+			reinterpret_cast< int* >( m_innerIndices.data() ),
+			reinterpret_cast< int* >( m_outerIndexPointers.data() ),
+			reinterpret_cast< int* >( &( m_outerIndexPointers[1] ) ),
+			x.data(),
+			&beta,
+			y.data()
+		);
+
 	}
 	else if( matrixType() == SYMMETRIC )
 	{
@@ -257,6 +288,7 @@ void CompressedSparseMatrix< T >::multiplyTransposeVector( FloatMatrix& x, Float
 
 	if( matrixType() == GENERAL )
 	{
+#if 0
 		// mkl_cspblas_scsrgemv assumes CSR storage
 		// since this is the transposed version, don't transpose
 	
@@ -272,11 +304,41 @@ void CompressedSparseMatrix< T >::multiplyTransposeVector( FloatMatrix& x, Float
 			x.data(),
 			y.data()
 		);
+#endif
+
+		char transa = 't';
+		float alpha = 1;
+		float beta = 0;
+		char matdescra[6] =
+		{
+			'G', // general
+			'X', // lower/upper (ignored)
+			'X', // main diagonal type (ignored)
+			'C', // zero-based indexing ('F' for one-based)
+			'X', // ignored
+			'X', // ignored
+		};
+
+		mkl_scscmv
+		(
+			&transa,
+			&m, &n,
+			&alpha,
+			matdescra,
+			reinterpret_cast< float* >( m_values.data() ), // HACK: templatize FloatMatrix
+			reinterpret_cast< int* >( m_innerIndices.data() ),
+			reinterpret_cast< int* >( m_outerIndexPointers.data() ),
+			reinterpret_cast< int* >( &( m_outerIndexPointers[1] ) ),
+			x.data(),
+			&beta,
+			y.data()
+		);
 	}
 	else if( matrixType() == SYMMETRIC )
 	{
 		// mkl_cspblas_scsrsymv assumes CSR storage
 		// since we use CSC, transpose it
+		// careful with the up/lo
 		printf( "IMPLEMENT ME!\n" );
 	}
 }

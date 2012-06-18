@@ -242,13 +242,13 @@ Vector4f Image4f::bilinearSample( float x, float y ) const
 	y = y - 0.5f;
 
 	// clamp to edge
-	x = MathUtils::clampToRangeFloat( x, 0, m_width );
-	y = MathUtils::clampToRangeFloat( y, 0, m_height );
+	x = MathUtils::clampToRange( x, 0, m_width );
+	y = MathUtils::clampToRange( y, 0, m_height );
 
-	int x0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( x ), 0, m_width );
-	int x1 = MathUtils::clampToRangeInt( x0 + 1, 0, m_width );
-	int y0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( y ), 0, m_height );
-	int y1 = MathUtils::clampToRangeInt( y0 + 1, 0, m_height );
+	int x0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( x ), 0, m_width );
+	int x1 = MathUtils::clampToRangeExclusive( x0 + 1, 0, m_width );
+	int y0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( y ), 0, m_height );
+	int y1 = MathUtils::clampToRangeExclusive( y0 + 1, 0, m_height );
 
 	float xf = x - x0;
 	float yf = y - y0;

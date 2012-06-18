@@ -1,36 +1,42 @@
 #include "LUFactorization.h"
 
+#include <algorithm>
 #include <mkl.h>
-#include <QtGlobal>
 
-// static
-std::shared_ptr< LUFactorization > LUFactorization::LU( const FloatMatrix& a )
+LUFactorization::LUFactorization( const FloatMatrix& a ) :
+
+	m_nRowsA( a.numRows() ),
+	m_nColsA( a.numCols() ),
+
+	m_y( a ),
+	m_ipiv( std::min( a.numRows(), a.numCols() ) )
+
 {
 	int m = a.numRows();
 	int n = a.numCols();
 
-	std::shared_ptr< LUFactorization > result( nullptr );
-	LUFactorization* plu = new LUFactorization( a );
-
-	float* py = plu->m_y.data();
-	int* pipiv = &( plu->m_ipiv[0] );
 	int info;
-				
-	sgetrf( &m, &n, py, &m, pipiv, &info );
+	sgetrf( &m, &n, m_y.data(), &m, m_ipiv.data(), &info );
 	if( info < 0 )
 	{
 		fprintf( stderr, "LUFactorization::LU: Illegal parameter value.\n" );		
 	}
-	else
-	{
-		result.reset( plu );
-	}
 
-	return result;
+	m_valid = ( info == 0 );
+}
+
+bool LUFactorization::isValid() const
+{
+	return m_valid;
 }
 
 bool LUFactorization::inverse( FloatMatrix& output )
 {
+	if( !isValid() )
+	{
+		return false;
+	}
+
 	int m = m_nRowsA;
 	int n = m_nColsA;
 
@@ -110,15 +116,3 @@ bool LUFactorization::inverse( FloatMatrix& output )
 
 			
 #endif
-
-LUFactorization::LUFactorization( const FloatMatrix& a ) :
-
-	m_nRowsA( a.numRows() ),
-	m_nColsA( a.numCols() ),
-
-	m_y( a ),
-	m_ipiv( qMin( a.numRows(), a.numCols() ) )
-
-{
-
-}

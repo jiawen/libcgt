@@ -2,7 +2,6 @@
 
 #include <QImage>
 #include <QString>
-#include <QtGlobal>
 #include <QVector>
 
 #include "common/BasicTypes.h"
@@ -64,6 +63,7 @@ public:
 	// Saves this image to depending on filename extension:
 	//   ".png": portable network graphics (PNG) (4-component, 8 bits per channel)
 	//   ".txt": human-readable TXT
+	// TODO: re-expose savePNG, saveTXT
 	bool save( QString filename );
 
 private:

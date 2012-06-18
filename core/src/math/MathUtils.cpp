@@ -80,45 +80,60 @@ double MathUtils::radiansToDegrees( double radians )
 }
 
 // static
-int MathUtils::clampToRangeInt( int x, int min, int max )
+int MathUtils::clampToRangeExclusive( int x, int lo, int hi )
 {
-	if( x >= max )
+	if( x >= hi )
 	{
-		x = max - 1;
+		x = hi - 1;
 	}
-	if( x < min )
+	if( x < lo )
 	{
-		x = min;
+		x = lo;
 	}
 
 	return x;
 }
 
 // static
-float MathUtils::clampToRangeFloat( float x, float min, float max )
+int MathUtils::clampToRangeInclusive( int x, int lo, int hi )
 {
-	if( x > max )
+	if( x > hi )
 	{
-		x = max;
+		x = hi;
 	}
-	if( x < min )
+	if( x < lo )
 	{
-		x = min;
+		x = lo;
+	}
+
+	return x;
+}
+
+// static
+float MathUtils::clampToRange( float x, float lo, float hi )
+{
+	if( x > hi )
+	{
+		x = hi;
+	}
+	if( x < lo )
+	{
+		x = lo;
 	}
 	
 	return x;
 }
 
 // static
-double MathUtils::clampToRangeDouble( double x, double min, double max )
+double MathUtils::clampToRange( double x, double lo, double hi )
 {
-	if( x > max )
+	if( x > hi )
 	{
-		x = max;
+		x = hi;
 	}
-	if( x < min )
+	if( x < lo )
 	{
-		x = min;
+		x = lo;
 	}
 
 	return x;

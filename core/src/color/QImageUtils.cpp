@@ -19,8 +19,8 @@ Vector4f QImageUtils::sample( QImage* q, float x, float y )
 	int h = q->height();
 
 	// clamp to edge
-	x = MathUtils::clampToRangeFloat( x, 0, w );
-	y = MathUtils::clampToRangeFloat( y, 0, h );
+	x = MathUtils::clampToRange( x, 0, w );
+	y = MathUtils::clampToRange( y, 0, h );
 
 	int x0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( x ), 0, w );
 	int x1 = MathUtils::clampToRangeInt( x0 + 1, 0, w );
@@ -55,8 +55,8 @@ double QImageUtils::sample( const GMatrixd& a, double i, double j )
 	int n = a.numCols();
 
 	// clamp to edge
-	i = MathUtils::clampToRangeDouble( i, 0, m );
-	j = MathUtils::clampToRangeDouble( j, 0, n );
+	i = MathUtils::clampToRange( i, 0, m );
+	j = MathUtils::clampToRange( j, 0, n );
 
 	int i0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( i ), 0, m );
 	int i1 = MathUtils::clampToRangeInt( i0 + 1, 0, m );

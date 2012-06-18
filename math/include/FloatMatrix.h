@@ -67,13 +67,18 @@ public:
 
 	// Returns the inverse of this using LU factorization
 	// optional out parameter indicates whether the operation succeeded
+	// this matrix must be square
 	FloatMatrix inverted( bool* pSucceeded = nullptr ) const;
 
 	// Writes the inverse of this into inv
 	// returns whether the operation succeeded
-	bool inverse( FloatMatrix& inv ) const;
+	// this matrix must be square
+	bool inverted( FloatMatrix& inv ) const;
 
-	void transpose( FloatMatrix& t ) const;
+	// TODO: in-place transpose, using mkl_simatcopy
+	
+	// TODO: out-of-place transpose, using mkl_somatcopy
+	void transposed( FloatMatrix& t ) const;
 	FloatMatrix transposed() const;
 
 	// Returns the sum of the square of each element

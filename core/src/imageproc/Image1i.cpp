@@ -129,13 +129,13 @@ int32 Image1i::bilinearSample( float x, float y ) const
 	y = y - 0.5f;
 
 	// clamp to edge
-	x = MathUtils::clampToRangeFloat( x, 0, m_width );
-	y = MathUtils::clampToRangeFloat( y, 0, m_height );
+	x = MathUtils::clampToRange( x, 0, m_width );
+	y = MathUtils::clampToRange( y, 0, m_height );
 
-	int x0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( x ), 0, m_width );
-	int x1 = MathUtils::clampToRangeInt( x0 + 1, 0, m_width );
-	int y0 = MathUtils::clampToRangeInt( Arithmetic::floorToInt( y ), 0, m_height );
-	int y1 = MathUtils::clampToRangeInt( y0 + 1, 0, m_height );
+	int x0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( x ), 0, m_width );
+	int x1 = MathUtils::clampToRangeExclusive( x0 + 1, 0, m_width );
+	int y0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( y ), 0, m_height );
+	int y1 = MathUtils::clampToRangeExclusive( y0 + 1, 0, m_height );
 
 	float xf = x - x0;
 	float yf = y - y0;
@@ -149,7 +149,7 @@ int32 Image1i::bilinearSample( float x, float y ) const
 	float v1 = MathUtils::lerp( v10, v11, yf ); // x = 1
 
 	float vf = MathUtils::lerp( v0, v1, xf );
-	return static_cast< quint32 >( ColorUtils::floatToInt( vf ) );
+	return static_cast< int32 >( ColorUtils::floatToInt( vf ) );
 }
 
 QImage Image1i::toQImage()

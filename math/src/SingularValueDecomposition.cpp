@@ -1,24 +1,20 @@
 #include "SingularValueDecomposition.h"
 
+#include <algorithm>
 #include <mkl.h>
 
 // static
-bool SingularValueDecomposition::SVD( FloatMatrix* a, FloatMatrix* u, FloatMatrix* s, FloatMatrix* vt )
+bool SingularValueDecomposition::SVD( const FloatMatrix& a, FloatMatrix& u, FloatMatrix& s, FloatMatrix& vt )
 {
-	int m = a->numRows();
-	int n = a->numCols();
+	int m = a.numRows();
+	int n = a.numCols();
 
-	if( u->numRows() != m || u->numCols() != m ||
-		s->numRows() != qMin( m, n ) ||
-		vt->numRows() != n || vt->numRows() != n )
-	{
-		printf( "For m x n input a, u must be m x m, s must be min( m, n ) x 1, and vt must be n x n" );
-		return false;
-	}
+	u.resize( m, m );
+	s.resize( std::min( m, n ), 1 );
+	vt.resize( n, n );
 				
 	// make a copy of A
-	std::shared_ptr< FloatMatrix > b( new FloatMatrix( a ) );
-	float* pb = b->data();
+	FloatMatrix b( a );
 
 	char jobu = 'A';
 	char jobvt = 'A';
@@ -27,67 +23,56 @@ bool SingularValueDecomposition::SVD( FloatMatrix* a, FloatMatrix* u, FloatMatri
 	int ldu = m;
 	int ldvt = n;
 				
-	float* pu = u->data();
-	float* pvt = vt->data();
-	float* ps = s->data();
-
 	float workQuery;
-	int lwork = -1;
+	int lWork = -1;
 	int info;
 
 	// do workspace query
-	sgesvd( &jobu, &jobvt, &m, &n, pb, &lda, ps, pu, &ldu, pvt, &ldvt, &workQuery, &lwork, &info );
+	sgesvd( &jobu, &jobvt, &m, &n, b.data(), &lda, s.data(), u.data(), &ldu, vt.data(), &ldvt, &workQuery, &lWork, &info );
 
-	lwork = static_cast< int >( workQuery );
-	float* pwork = new float[ lwork ];	
+	lWork = static_cast< int >( workQuery );
+	std::vector< float > work( lWork );
 
-	sgesvd( &jobu, &jobvt, &m, &n, pb, &lda, ps, pu, &ldu, pvt, &ldvt, pwork, &lwork, &info );
-
-	delete[] pwork;
-
-	// TODO: check info for error
-
-	return true;
-}
-
-// static
-std::shared_ptr< SingularValueDecomposition > SingularValueDecomposition::SVD( FloatMatrix* a )
-{
-	int m = a->numRows();
-	int n = a->numCols();
-
-	std::shared_ptr< FloatMatrix > u( new FloatMatrix( m, m ) );
-	std::shared_ptr< FloatMatrix > s( new FloatMatrix( qMin( m, n ), 1 ) );
-	std::shared_ptr< FloatMatrix > vt( new FloatMatrix( n, n ) );
-
-	SingularValueDecomposition* pResult = nullptr;
-	if( SVD( a, u.get(), s.get(), vt.get() ) )
+	sgesvd( &jobu, &jobvt, &m, &n, b.data(), &lda, s.data(), u.data(), &ldu, vt.data(), &ldvt, work.data(), &lWork, &info );
+	if( info < 0 )
 	{
-		pResult = new SingularValueDecomposition( u, s, vt );
+		fprintf( stderr, "SVD: Illegal parameter value.\n" );
 	}
-	
-	return std::shared_ptr< SingularValueDecomposition >( pResult );
+	else if( info > 0 )
+	{
+		fprintf( stderr, "SVD: did not converge.\n" );
+	}
+
+	bool succeeded = ( info == 0 );
+	return succeeded;
 }
 
-std::shared_ptr< FloatMatrix > SingularValueDecomposition::u()
+SingularValueDecomposition::SingularValueDecomposition( const FloatMatrix& a ) :
+
+	m_u( a.numRows(), a.numRows() ),
+	m_s( std::min( a.numRows(), a.numCols() ), 1 ),
+	m_vt( a.numCols(), a.numCols() )
+
+{
+	m_valid = SingularValueDecomposition::SVD( a, m_u, m_s, m_vt );
+}
+
+bool SingularValueDecomposition::isValid() const
+{
+	return m_valid;
+}
+
+const FloatMatrix& SingularValueDecomposition::u() const
 {
 	return m_u;
 }
 
-std::shared_ptr< FloatMatrix > SingularValueDecomposition::s()
+const FloatMatrix& SingularValueDecomposition::s() const
 {
 	return m_s;
 }
 
-std::shared_ptr< FloatMatrix > SingularValueDecomposition::vt()
+const FloatMatrix& SingularValueDecomposition::vt() const
 {
 	return m_vt;
-}
-
-SingularValueDecomposition::SingularValueDecomposition( std::shared_ptr< FloatMatrix > u, std::shared_ptr< FloatMatrix > s, std::shared_ptr< FloatMatrix > vt ) :
-	m_u( u ),
-	m_s( s ),
-	m_vt( vt )
-{
-
 }

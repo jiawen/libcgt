@@ -41,9 +41,9 @@ void saveVector( const FloatMatrix& x, QString filename )
 	fclose( fp );
 }
 
-#define TIMING 1
-#define FACTORIZE 0
-#define SPLIT_FACTORIZATION 0
+#define TIMING 0
+#define FACTORIZE 0 // spqr only
+#define SPLIT_FACTORIZATION 0 // spqr only
 
 #if TIMING
 #include <time/StopWatch.h>

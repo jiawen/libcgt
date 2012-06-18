@@ -50,9 +50,9 @@ PerspectiveCamera PerspectiveCameraPath::getCamera( float t )
 	int p1Index = Arithmetic::floorToInt( t );
 	float u = t - p1Index;
 
-	int p0Index = MathUtils::clampToRangeInt( p1Index - 1, 0, nKeyFrames );
-	int p2Index = MathUtils::clampToRangeInt( p1Index + 1, 0, nKeyFrames );
-	int p3Index = MathUtils::clampToRangeInt( p1Index + 2, 0, nKeyFrames );
+	int p0Index = MathUtils::clampToRangeExclusive( p1Index - 1, 0, nKeyFrames );
+	int p2Index = MathUtils::clampToRangeExclusive( p1Index + 1, 0, nKeyFrames );
+	int p3Index = MathUtils::clampToRangeExclusive( p1Index + 2, 0, nKeyFrames );
 
 	PerspectiveCamera c0 = m_keyFrames[ p0Index ];
 	PerspectiveCamera c1 = m_keyFrames[ p1Index ];

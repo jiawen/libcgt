@@ -288,8 +288,8 @@ FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
 FloatMatrix FloatMatrix::inverted( bool* pSucceeded ) const
 {
 	FloatMatrix inv;
-	std::shared_ptr< LUFactorization > lu = LUFactorization::LU( *this );
-	bool succeeded = lu->inverse( inv );
+	LUFactorization lu( *this );
+	bool succeeded = lu.inverse( inv );
 
 	if( pSucceeded != nullptr )
 	{
@@ -299,13 +299,13 @@ FloatMatrix FloatMatrix::inverted( bool* pSucceeded ) const
 	return inv;
 }
 
-bool FloatMatrix::inverse( FloatMatrix& inv ) const
+bool FloatMatrix::inverted( FloatMatrix& inv ) const
 {
-	std::shared_ptr< LUFactorization > lu = LUFactorization::LU( *this );
-	return lu->inverse( inv );
+	LUFactorization lu( *this );
+	return lu.inverse( inv );
 }
 
-void FloatMatrix::transpose( FloatMatrix& t ) const
+void FloatMatrix::transposed( FloatMatrix& t ) const
 {
 	int M = m_nRows;
 	int N = m_nCols;
@@ -324,7 +324,7 @@ void FloatMatrix::transpose( FloatMatrix& t ) const
 FloatMatrix FloatMatrix::transposed() const
 {
 	FloatMatrix t( m_nCols, m_nRows );
-	transpose( t );
+	transposed( t );
 	return t;
 }
 

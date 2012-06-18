@@ -24,12 +24,15 @@ public:
 	
 	// analyzePattern: take in matrix sparsity structure
 	// and perform fill-reducing ordering (symbolic factorization)
+	// TODO: make this private, take in whether it's symmetric or not
 	bool analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
 
 	bool analyzePattern( CompressedSparseMatrix< valueType >& A );
 
 	// factorize: take in the values, which has the same ordering as setup
 	// if sparsity structure has changed, then you need to call analyzePattern again
+	// TODO: make this private and take in whether or not it's positive definite
+	// pass in indefinite?
 	bool factorize( valueType* values );
 
 	bool factorize( CompressedSparseMatrix< valueType >& A );

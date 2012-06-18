@@ -1,13 +1,15 @@
-#ifndef SINGULAR_VALUE_DECOMPOSITION_H
-#define SINGULAR_VALUE_DECOMPOSITION_H
+#pragma once
 
-#include <memory>
 #include "FloatMatrix.h"
 
-// TODO: take in const FloatMatrix&
-// TODO: store the values, return const references to u, s, vt
-// TODO: return an inverse
+// TODO: return an inverse (requires FloatMatrix::( diag ) )
 // TODO: return a pseudoinverse
+//
+// TODO: economy sized svd?
+// TODO: MATLAB's svds
+//
+// TODO: eigenvalue decomposition using ssyev
+// TODO: selected eigenvalues using ssyevx
 
 class SingularValueDecomposition
 {
@@ -16,24 +18,24 @@ public:
 	// Computes the SVD of A:
 	// A = U S V^T
 	// For A: m x n
-	// U needs to be m x m
-	// S is min( m, n ) x 1
-	// VT is n x n		
-	static bool SVD( FloatMatrix* a, FloatMatrix* u, FloatMatrix* s, FloatMatrix* vt );
+	// U will be resized to m x m
+	// S will be resized to min( m, n ) x 1
+	// Vt will be resized to n x n
+	static bool SVD( const FloatMatrix& a, FloatMatrix& u, FloatMatrix& s, FloatMatrix& vt );
 				
-	static std::shared_ptr< SingularValueDecomposition > SVD( FloatMatrix* a );
+	SingularValueDecomposition( const FloatMatrix& a );
 
-	std::shared_ptr< FloatMatrix > u();
-	std::shared_ptr< FloatMatrix > s();
-	std::shared_ptr< FloatMatrix > vt();
+	bool isValid() const;
+
+	const FloatMatrix& u() const;
+	const FloatMatrix& s() const;
+	const FloatMatrix& vt() const;
 
 private:
 
-	SingularValueDecomposition( std::shared_ptr< FloatMatrix > u, std::shared_ptr< FloatMatrix > s, std::shared_ptr< FloatMatrix > vt );
+	FloatMatrix m_u;
+	FloatMatrix m_s;
+	FloatMatrix m_vt;
 
-	std::shared_ptr< FloatMatrix > m_u;
-	std::shared_ptr< FloatMatrix > m_s;
-	std::shared_ptr< FloatMatrix > m_vt;
+	bool m_valid;
 };
-
-#endif // SINGULAR_VALUE_DECOMPOSITION_H

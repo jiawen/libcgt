@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QtGlobal>
 #include <QImage>
 
 #include "common/Array2D.h"

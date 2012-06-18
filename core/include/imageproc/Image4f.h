@@ -70,6 +70,7 @@ public:
 	//   little-endian PFM (3-component PFM with header "PF", 32 bits per channel alpha is dropped)
 	//   *non-standard* little-endian PFM4 (4-component PFM with header "PF4", 32 bits per channel)
 	//   human-readable TXT
+	// TODO: re-expose savePNG, saveTXT
 	bool save( QString filename );	
 
 private:

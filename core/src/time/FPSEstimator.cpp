@@ -25,8 +25,8 @@ void FPSEstimator::update()
 		int64 now = m_clock.getCounterValue();
 		int64 dt = now - m_lastUpdateTime;
 
-		int n = m_frameTimeSamples.size();
-		m_nActualSamples = MathUtils::clampToRangeInt( m_nActualSamples + 1, 0, n + 1 );
+		int n = static_cast< int >( m_frameTimeSamples.size() );
+		m_nActualSamples = MathUtils::clampToRangeExclusive( m_nActualSamples + 1, 0, n + 1 );
 
 		m_frameTimeSamples[ m_nextSampleIndex ] = dt;
 

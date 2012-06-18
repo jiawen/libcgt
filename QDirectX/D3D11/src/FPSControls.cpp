@@ -300,7 +300,7 @@ void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& c
 	 
 	float fovMin = MathUtils::degreesToRadians( 1.0f );
 	float fovMax = MathUtils::degreesToRadians( 179.0f );
-    fov = MathUtils::clampToRangeFloat( fov, fovMin, fovMax );
+    fov = MathUtils::clampToRange( fov, fovMin, fovMax );
     	
 	camera.setFovYRadians( fov );
 }

@@ -10,7 +10,9 @@ class LUFactorization
 {
 public:
 	
-	static std::shared_ptr< LUFactorization > LU( const FloatMatrix& a );
+	LUFactorization( const FloatMatrix& a );
+
+	bool isValid() const;
 
 	// output <- inverse of A
 	// returns whether inverse succeeded
@@ -33,13 +35,13 @@ public:
 
 private:
 
-	LUFactorization( const FloatMatrix& a );
-
 	int m_nRowsA;
 	int m_nColsA;
 
 	FloatMatrix m_y;
 	std::vector< int > m_ipiv;
+
+	bool m_valid;
 
 	FloatMatrix m_l;
 	FloatMatrix m_u;

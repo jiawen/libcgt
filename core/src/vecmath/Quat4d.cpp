@@ -236,7 +236,7 @@ Quat4d Quat4d::slerp( const Quat4d& q0, const Quat4d& q1, double alpha, double c
 	}
 	else
 	{
-		cosOmega = MathUtils::clampToRangeDouble( cosOmega, -1, 1 );
+		cosOmega = MathUtils::clampToRange( cosOmega, -1, 1 );
 		if( cosOmega < -1 )
 		{
 			cosOmega = -1;

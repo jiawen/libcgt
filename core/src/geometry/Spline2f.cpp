@@ -71,7 +71,7 @@ int Spline2f::insertControlPoint( const Vector2f& p )
 		controlPointIndex = Arithmetic::roundToInt( t * numControlPoints() );
 	}
 
-	controlPointIndex = MathUtils::clampToRangeInt( controlPointIndex, 0, numControlPoints() );
+	controlPointIndex = MathUtils::clampToRangeExclusive( controlPointIndex, 0, numControlPoints() );
 
 	printf( "closest t = %f, controlPointIndex = %d\n", t, controlPointIndex );
 

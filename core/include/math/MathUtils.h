@@ -1,5 +1,4 @@
-#ifndef MATH_UTILS_H
-#define MATH_UTILS_H
+#pragma once
 
 #include "common/BasicTypes.h"
 
@@ -25,10 +24,15 @@ public:
 	static float radiansToDegrees( float radians );
 	static double radiansToDegrees( double radians );
 
-	// clamps x to between min (inclusive) and max (exclusive)
-	static int clampToRangeInt( int x, int min, int max );
-	static float clampToRangeFloat( float x, float min, float max );
-	static double clampToRangeDouble( double x, double min, double max );
+	// clamps x to [lo, hi)
+	static int clampToRangeExclusive( int x, int lo, int hi );
+
+	// clamps x to [lo, hi]
+	static int clampToRangeInclusive( int x, int lo, int hi );
+
+	// clamps x to between min (inclusive) and max (includisve)
+	static float clampToRange( float x, float lo, float hi );
+	static double clampToRange( double x, double lo, double hi );
 
 	// converts a float in [-1,1] to
 	// a signed byte in [-127,127]
@@ -56,10 +60,7 @@ public:
 		int outMin, int outMax );
 	
 	template< typename T >
-	static T lerp( const T& x, const T& y, float t )
-	{
-		return( x + t * ( y - x ) );
-	}
+	static T lerp( const T& x, const T& y, float t );
 
 	static float cubicInterpolate( float p0, float p1, float p2, float p3, float t );
 
@@ -74,19 +75,5 @@ public:
 private:
 
 };
-// --------------------------------------------------------------------------
 
-inline float MathUtils::oo_0( float x )
-{
-	return x != 0 ? 1.0f / x : 0.0f;
-}
-// --------------------------------------------------------------------------
-
-inline double MathUtils::oo_0( double x )
-{
-	return x != 0 ? 1.0 / x : 0.0;
-}
-// --------------------------------------------------------------------------
-
-
-#endif
+#include "MathUtils.inl"
