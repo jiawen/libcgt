@@ -204,7 +204,7 @@ Vector3f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
 // static
 void GeometryUtils::getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 )
 {
-    if( n.absSquared() < 1e-8f )
+    if( n.normSquared() < 1e-8f )
 	{
         if( b1 != nullptr )
 		{
@@ -284,15 +284,14 @@ void GeometryUtils::getBasisWithPreferredUp( const Vector3f& z, const Vector3f& 
 }
 
 // static
-bool GeometryUtils::pointInBox( const Vector3f& crPoint, const BoundingBox3f& bbox )
+bool GeometryUtils::pointInBox( const Vector3f& p, const BoundingBox3f& bbox )
 {
-	float x = crPoint.x;
-	float y = crPoint.y;
-	float z = crPoint.z;
-
-	return( ( x > bbox.minimum().x ) && ( x < bbox.maximum().x ) &&
-		( y > bbox.minimum().y ) && ( y < bbox.maximum().y ) &&
-		( z > bbox.minimum().z ) && ( z < bbox.maximum().z ) );
+	return
+	(
+		( p.x > bbox.minimum().x ) && ( p.x < bbox.maximum().x ) &&
+		( p.y > bbox.minimum().y ) && ( p.y < bbox.maximum().y ) &&
+		( p.z > bbox.minimum().z ) && ( p.z < bbox.maximum().z )
+	);
 }
 
 // static
@@ -300,7 +299,7 @@ bool GeometryUtils::pointInsideSphere( const Vector3f& crPoint,
 									  const Vector3f& crSphereCenter, float sphereRadius )
 {
 	Vector3f diff = crPoint - crSphereCenter;
-	return( diff.absSquared() < ( sphereRadius * sphereRadius ) );
+	return( diff.normSquared() < ( sphereRadius * sphereRadius ) );
 }
 
 
@@ -310,7 +309,7 @@ Vector2f GeometryUtils::closestPointOnSegment( const Vector2f& p, const Vector2f
 	Vector2f v01 = v1 - v0;
 	float d = Vector2f::dot( v01, p - v0 );
 
-	float t = d / v01.absSquared();
+	float t = d / v01.normSquared();
 	if( t < 0.f )
 	{
 		t = 0.f;
@@ -329,7 +328,7 @@ Vector3f GeometryUtils::closestPointOnSegment( const Vector3f& p, const Vector3f
 	Vector3f v01 = v1 - v0;
 	float d = Vector3f::dot( v01, p - v0 );
 
-	float t = d / v01.absSquared();
+	float t = d / v01.normSquared();
 	if( t < 0.f )
 	{
 		t = 0.f;
@@ -349,9 +348,9 @@ Vector2f GeometryUtils::closestPointOnTriangle( const Vector2f& p, const Vector2
 	Vector2f closest1 = closestPointOnSegment( p, v1, v2 );
 	Vector2f closest2 = closestPointOnSegment( p, v2, v0 );
 
-	float d0Squared = ( closest0 - p ).absSquared();
-	float d1Squared = ( closest1 - p ).absSquared();
-	float d2Squared = ( closest2 - p ).absSquared();
+	float d0Squared = ( closest0 - p ).normSquared();
+	float d1Squared = ( closest1 - p ).normSquared();
+	float d2Squared = ( closest2 - p ).normSquared();
 
 	// yuck
 
@@ -403,7 +402,7 @@ bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector
                                                  const Vector2f& p1, const Vector2f& p2, Vector2f &outIntersection)
 {
     Vector2f segDir = (p2 - p1);
-    float segDirLen = segDir.abs();
+    float segDirLen = segDir.norm();
     if(segDirLen < EPSILON)
         return false;
     segDir = segDir / segDirLen;
@@ -715,7 +714,7 @@ float GeometryUtils::pointToLineDistanceSquared( const Vector3f& point, const Ve
 {
     Vector3f diff = point - linePoint;
     float dot = Vector3f::dot( diff, lineDir ); // assumes lineDir is normalized
-    float distanceSquared = diff.absSquared() - dot * dot;
+    float distanceSquared = diff.normSquared() - dot * dot;
 
 	if( pClosestPoint != nullptr )
 	{
@@ -738,7 +737,7 @@ float GeometryUtils::pointToLineSegmentDistanceSquared( const Vector3f& p, const
 		{
 			*pClosestPoint = s0;
 		}
-		return dirs1.absSquared();
+		return dirs1.normSquared();
 	}
 
 	// test if vector s0 --> p points in the opposite of direction of dir, if so, s0 is closer	
@@ -750,7 +749,7 @@ float GeometryUtils::pointToLineSegmentDistanceSquared( const Vector3f& p, const
 		{
 			*pClosestPoint = s1;
 		}
-		return dirs0.absSquared();
+		return dirs0.normSquared();
 	}
 
 	// dot = dirs0 dot dir
@@ -764,15 +763,15 @@ float GeometryUtils::pointToLineSegmentDistanceSquared( const Vector3f& p, const
 	// closest approach distance is given by Pythagoras:
 	// ( length of projection )^2 + ( closest approach )^2 = |dirs0|^2
 
-	float rcpDirAbsSquared = 1.0f / dir.absSquared();
+	float rcpDirnormSquared = 1.0f / dir.normSquared();
 
 	if( pClosestPoint != nullptr )
 	{
-		*pClosestPoint = dot * rcpDirAbsSquared;
+		*pClosestPoint = dot * rcpDirnormSquared;
 	}
 	
 	// clamp to 0 just in case
-	return std::max( 0.f, dirs0.absSquared() - dot * dot * rcpDirAbsSquared );
+	return std::max( 0.f, dirs0.normSquared() - dot * dot * rcpDirnormSquared );
 }
 
 // static
@@ -780,7 +779,7 @@ float GeometryUtils::lineToLineDistance( const Vector3f& linePoint1, const Vecto
 {
     //distance is along the vector perpendicular to both lines
     Vector3f dirCross = Vector3f::cross(lineDir1, lineDir2);
-    float crossLength = dirCross.abs();
+    float crossLength = dirCross.norm();
     if(crossLength < EPSILON) //lines are approximately parallel
         return sqrt( pointToLineDistanceSquared( linePoint1, linePoint2, lineDir2.normalized() ) );
     return fabs(Vector3f::dot(linePoint2 - linePoint1, dirCross) / crossLength);
@@ -842,7 +841,7 @@ void GeometryUtils::tripleSphereIntersection( Vector3f* c0, float r0,
 	Vector3f::subtract( c1, c0, &c0c1 );
 
 	// distance between c0 and c1
-	float d_c0c1 = c0c1.abs();
+	float d_c0c1 = c0c1.norm();
 	// TODO: when does this not hold?
 	float distanceToCenterOfCircle = ( d_c0c1 * d_c0c1 - r1 * r1 + r0 * r0 ) / ( 2 * d_c0c1 );
 
@@ -878,7 +877,7 @@ void GeometryUtils::tripleSphereIntersection( Vector3f* c0, float r0,
 		
 		Vector3f center1ToCenter2;
 		Vector3f::subtract( &centerOfCircle2, &centerOfCircle, &center1ToCenter2 );
-		float d_center1ToCenter2 = center1ToCenter2.abs();
+		float d_center1ToCenter2 = center1ToCenter2.norm();
 
 		// TODO: when does this fail?
 		// "d" from mathworld
@@ -933,7 +932,7 @@ std::vector< Vector2f > GeometryUtils::uniformSampleLineSegment( const Vector2f&
 	std::vector< Vector2f > samples( nSamples );
 
 	Vector2f unit = ( p1 - p0 ).normalized();
-	float sampleSpacing = ( p1 - p0 ).abs() / ( nSamples - 1 );
+	float sampleSpacing = ( p1 - p0 ).norm() / ( nSamples - 1 );
 	for( int i = 0; i < nSamples; ++i )
 	{
 		samples[ i ] = p0 + i * sampleSpacing * unit;				
@@ -948,7 +947,7 @@ std::vector< Vector3f > GeometryUtils::uniformSampleLineSegment( const Vector3f&
 	std::vector< Vector3f > samples( nSamples );
 
 	Vector3f unit = ( p1 - p0 ).normalized();
-	float sampleSpacing = ( p1 - p0 ).abs() / ( nSamples - 1 );
+	float sampleSpacing = ( p1 - p0 ).norm() / ( nSamples - 1 );
 	for( int i = 0; i < nSamples; ++i )
 	{
 		samples[ i ] = p0 + i * sampleSpacing * unit;				
@@ -966,7 +965,7 @@ std::vector< Vector2f > GeometryUtils::uniformSampleBoxAroundLineSegment( const 
 	Vector2f unitLength = ( p1 - p0 ).normalized();
 	Vector2f unitWidth = unitLength.normal().normalized();
 	float sampleSpacingW = width / ( nSamplesWidth - 1 );
-	float sampleSpacingL = ( p1 - p0 ).abs() / ( nSamplesLength - 1 );
+	float sampleSpacingL = ( p1 - p0 ).norm() / ( nSamplesLength - 1 );
 
 	Vector2f origin = p0 - 0.5f * width * unitWidth;
 	for( int w = 0; w < nSamplesWidth; ++w )

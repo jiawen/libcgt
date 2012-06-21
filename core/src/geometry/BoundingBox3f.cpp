@@ -241,8 +241,14 @@ bool BoundingBox3f::overlaps( const BoundingBox3f& other )
 	return bOverlapsInDirection[0] && bOverlapsInDirection[1] && bOverlapsInDirection[2];
 }
 
+bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction )
+{
+	float tIntersect;
+	return intersectRay( origin, direction, tIntersect );
+}
+
 bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
-	float* tIntersect )
+	float& tIntersect )
 {
 	float tEnter = 0;
 	float tExit = ( std::numeric_limits< float >::max )();
@@ -252,15 +258,15 @@ bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direct
 	intersectSlab( origin.z, direction.z, m_min.z, m_max.z, tEnter, tExit );
 
 	bool intersected = ( tEnter < tExit );
-	if( intersected && tIntersect != nullptr )
+	if( intersected )
 	{
 		if( tEnter == 0 )
 		{
-			*tIntersect = tExit;
+			tIntersect = tExit;
 		}
 		else
 		{
-			*tIntersect = std::min( tEnter, tExit );
+			tIntersect = std::min( tEnter, tExit );
 		}
 	}
 	return intersected;
@@ -281,23 +287,34 @@ BoundingBox3f BoundingBox3f::unite( const BoundingBox3f& b0, const BoundingBox3f
 }
 
 // static
-BoundingBox3f BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingBox3f& b1 )
+bool BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingBox3f& b1 )
 {
-    Vector3f b0Min = b0.minimum();
-    Vector3f b0Max = b0.maximum();
-    Vector3f b1Min = b1.minimum();
-    Vector3f b1Max = b1.maximum();
-
-    Vector3f newMin( max( b0Min.x, b1Min.x ), max( b0Min.y, b1Min.y ), max( b0Min.z, b1Min.z ) );
-    Vector3f newMax( min( b0Max.x, b1Max.x ), min( b0Max.y, b1Max.y ), min( b0Max.z, b1Max.z ) );
-
-	// TODO: hmm
-    for( int i = 0; i < 3; ++i )
+	for( int i = 0; i < 3; ++i )
 	{
-        newMax[i] = max( newMax[i], newMin[i] );
+		if( b0.minimum()[i] > b1.maximum()[i] ||
+			b0.maximum()[i] < b1.minimum()[i] )
+		{
+			return false;
+		}
 	}
 
-    return BoundingBox3f( newMin, newMax );
+	return true;	
+}
+
+// static
+bool BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingBox3f& b1, BoundingBox3f& intersection )
+{
+	bool intersects = intersect( b0, b1 );
+	if( intersects )
+	{
+		Vector3f newMin( max( b0.minimum().x, b1.minimum().x ), max( b0.minimum().y, b1.minimum().y ), max( b0.minimum().z, b1.minimum().z ) );
+		Vector3f newMax( min( b0.maximum().x, b1.maximum().x ), min( b0.maximum().y, b1.maximum().y ), min( b0.maximum().z, b1.maximum().z ) );
+		
+		intersection.minimum() = newMin;
+		intersection.maximum() = newMax;
+	}
+
+	return intersects;
 }
 
 void BoundingBox3f::enlarge( const Vector3f& p )

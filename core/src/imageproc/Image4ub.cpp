@@ -16,8 +16,7 @@
 Image4ub::Image4ub() :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 
@@ -26,8 +25,7 @@ Image4ub::Image4ub() :
 Image4ub::Image4ub( QString filename ) :
 
 	m_width( 0 ),
-	m_height( 0 ),
-	m_data( NULL )
+	m_height( 0 )
 
 {
 	load( filename );	
@@ -37,7 +35,7 @@ Image4ub::Image4ub( int width, int height, const Vector4i& fill ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_data( 4 * m_width * m_height, 0 )
+	m_data( 4 * m_width, m_height )
 
 {
 	int nPixels = m_width * m_height;
@@ -54,7 +52,7 @@ Image4ub::Image4ub( const Vector2i& size, const Vector4i& fill ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_data( 4 * m_width * m_height, 0 )
+	m_data( 4 * m_width, m_height )
 
 {
 	int nPixels = m_width * m_height;
@@ -132,32 +130,32 @@ Vector2i Image4ub::size() const
 	return Vector2i( m_width, m_height );
 }
 
+int Image4ub::numPixels() const
+{
+	return width() * height();
+}
+
 const ubyte* Image4ub::pixels() const
 {
-	return m_data.constData();
+	return m_data;
 }
 
 ubyte* Image4ub::pixels()
 {
-	return m_data.data();
+	return m_data;
 }
 
 ubyte* Image4ub::rowPointer( int y )
 {
-	ubyte* p = m_data.data();
-	ubyte* pRowPointer = &( p[ 4 * y * m_width ] );
-	return pRowPointer;
+	return m_data.rowPointer( y );
 }
 
 void Image4ub::fillChannel( int channel, ubyte value )
 {
-	quint8* p = m_data.data();
-	int nBytes = 4 * m_width * m_height;
-
-	// TODO: use memset()
-	for( int k = channel; k < nBytes; k += 4 )
+	int n = 4 * numPixels();
+	for( int k = channel; k < n; k += 4 )
 	{
-		p[k] = value;
+		m_data[k] = value;
 	}
 }
 
@@ -226,6 +224,24 @@ Vector4i Image4ub::bilinearSample( float x, float y ) const
 	return ColorUtils::floatToInt( vf );
 }
 
+Image4ub Image4ub::flipLR() const
+{
+	Image4ub output( m_width, m_height );
+
+	for( int y = 0; y < m_height; ++y )
+	{
+		for( int x = 0; x < m_width; ++x )
+		{
+			int xx = m_width - x - 1;
+
+			Vector4i p = pixel( xx, y );
+			output.setPixel( x, y, p );
+		}
+	}
+
+	return output;
+}
+
 Image4ub Image4ub::flipUD() const
 {
 	// TODO: do memcpy per row
@@ -271,7 +287,7 @@ bool Image4ub::load( QString filename )
 
 	m_width = q.width();
 	m_height = q.height();
-	m_data = QVector< quint8 >( 4 * m_width * m_height );
+	m_data.resize( 4 * m_width, m_height );
 
 	for( int y = 0; y < m_height; ++y )
 	{

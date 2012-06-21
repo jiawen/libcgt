@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+class QString;
 
 class Vector2f;
 class Vector3d;
@@ -62,6 +62,8 @@ public:
 	Vector3f homogenized() const;
 
 	void negate();
+	
+	Vector3i floored() const;
 
     operator const float* () const { return m_elements; }
     operator float* () { return m_elements; }

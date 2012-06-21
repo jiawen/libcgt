@@ -1,8 +1,8 @@
-#ifndef VECTOR_2F_H
-#define VECTOR_2F_H
+#pragma once
 
 #include <cmath>
-#include <QString>
+
+class QString;
 
 class Vector2d;
 class Vector2i;
@@ -116,5 +116,3 @@ inline Vector2f operator * ( const Vector2f& v, float f ) { return Vector2f(f * 
 
 inline bool operator == ( const Vector2f& v0, const Vector2f& v1 ) { return( v0.x == v1.x && v0.y == v1.y ); }
 inline bool operator != ( const Vector2f& v0, const Vector2f& v1 ) { return !( v0 == v1 ); }
-
-#endif // VECTOR_2F_H

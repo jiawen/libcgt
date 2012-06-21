@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <QString>
+
 #include "math/Arithmetic.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2d.h"
@@ -12,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
+
 Vector2f::Vector2f( const Vector2d& rv )
 {
     m_elements[0] = static_cast< float >( rv.x );
@@ -42,7 +45,11 @@ Vector2f& Vector2f::operator = ( const Vector2i& rv )
 
 Vector2i Vector2f::floored() const
 {
-	return Vector2i( Arithmetic::floorToInt( m_elements[ 0 ] ), Arithmetic::floorToInt( m_elements[ 1 ] ) );
+	return Vector2i
+	(
+		Arithmetic::floorToInt( x ),
+		Arithmetic::floorToInt( y )
+	);
 }
 
 // ---- Utility ----

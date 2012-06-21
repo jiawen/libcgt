@@ -613,7 +613,7 @@ void TriangleMesh::computeAreas()
 		Vector3f e0 = p1 - p0;
 		Vector3f e1 = p2 - p0;
 
-		float area = 0.5f * Vector3f::cross( e0, e1 ).abs();
+		float area = 0.5f * Vector3f::cross( e0, e1 ).norm();
 		m_areas[ f ] = area;
 	}
 }
@@ -627,7 +627,7 @@ void TriangleMesh::computeEdgeLengths()
 		Vector3f p0 = m_positions[ vertexIndices.x ];
 		Vector3f p1 = m_positions[ vertexIndices.y ];
 
-		m_edgeLengths[ vertexIndices ] = ( p1 - p0 ).abs();
+		m_edgeLengths[ vertexIndices ] = ( p1 - p0 ).norm();
 	}
 }
 

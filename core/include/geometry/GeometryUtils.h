@@ -78,10 +78,12 @@ public:
 	static void getBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY,
 		Vector3f* b1, Vector3f* b2 );
 
-	static bool pointInBox( const Vector3f& crPoint, const BoundingBox3f& bbox );
+	// returns true if p is inside axis aligned bbox
+	static bool pointInBox( const Vector3f& p, const BoundingBox3f& bbox );
 	
-	static bool pointInsideSphere( const Vector3f& crPoint,
-		const Vector3f& crSphereCenter, float sphereRadius );
+	// returns true if p is inside sphere
+	static bool pointInsideSphere( const Vector3f& p,
+		const Vector3f& sphereCenter, float sphereRadius );
 
 	// given a line segment v0 --> v1
 	// and a point p

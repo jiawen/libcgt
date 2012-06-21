@@ -84,3 +84,4 @@ Vector3f operator * ( float f, const Vector3i& v );
 Vector3f operator * ( const Vector3i& v, float f );
 
 Vector3i operator / ( const Vector3i& v, int c );
+Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 );

@@ -2,13 +2,12 @@
 
 #include <QImage>
 #include <QString>
-#include <QVector>
 
-#include <common/Array2D.h>
-#include <vecmath/Vector2i.h>
-#include <vecmath/Vector2f.h>
-#include <vecmath/Vector4i.h>
-#include <vecmath/Vector4f.h>
+#include "common/Array2D.h"
+#include "vecmath/Vector2i.h"
+#include "vecmath/Vector2f.h"
+#include "vecmath/Vector4i.h"
+#include "vecmath/Vector4f.h"
 
 class Image4f
 {
@@ -34,6 +33,7 @@ public:
 	int width() const;
 	int height() const;
 	Vector2i size() const;
+	int numPixels() const;
 
 	const float* pixels() const;
 	float* pixels();
@@ -56,6 +56,7 @@ public:
 	Vector4f bilinearSample( float x, float y ) const;
 	Vector4f bilinearSample( const Vector2f& xy ) const;
 
+	Image4f flipLR() const;
 	Image4f flipUD() const;
 
 	// Clamps this Image4f to [0,1]

@@ -257,3 +257,8 @@ Vector3i operator / ( const Vector3i& v, int c )
 {
 	return Vector3i( v.x / c, v.y / c, v.z / c );
 }
+
+Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 )
+{
+	return Vector3i( v0.x / v1.x, v0.y / v1.y, v0.z / v1.z );
+}

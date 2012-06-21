@@ -11,6 +11,7 @@ class BoundingBox3f
 public:
 
 	// TODO: make a const INFINITY?
+	// TODO: make a const ZERO
 
 	// constructs an invalid bounding box with
 	// min = numeric_limist< float >.max(),
@@ -60,14 +61,21 @@ public:
 	// note that a overlaps b iff b overlaps a
 	bool overlaps( const BoundingBox3f& other );
 
-	bool intersectRay( const Vector3f& origin, const Vector3f& direction,
-		float* tIntersect = nullptr );
+	// Ray is treated as a ray: negative intersections are ignored
+	// (tIntersect > 0)
+	bool intersectRay( const Vector3f& origin, const Vector3f& direction );
+	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect );
 
 	// returns the smallest bounding box that contains both bounding boxes
 	static BoundingBox3f unite( const BoundingBox3f& b0, const BoundingBox3f& b1 );
 
-    // returns the largest bounding box contained in both bounding boxes
-    static BoundingBox3f intersect( const BoundingBox3f& b0, const BoundingBox3f& b1 );	
+    // returns whether two bounding boxes intersect
+    static bool intersect( const BoundingBox3f& b0, const BoundingBox3f& b1 );
+
+	// returns whether two bounding boxes intersect
+	// and computes the bounding box that is their intersection
+	// (intersection is unmodified if the intersection is empty)
+	static bool intersect( const BoundingBox3f& b0, const BoundingBox3f& b1, BoundingBox3f& intersection );
 
 private:
 

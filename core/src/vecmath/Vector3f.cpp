@@ -2,6 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <QString>
+
+#include "math/Arithmetic.h"
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector3i.h"
@@ -152,6 +155,16 @@ void Vector3f::negate()
 	x = -x;
 	y = -y;
 	z = -z;
+}
+
+Vector3i Vector3f::floored() const
+{
+	return Vector3i
+	(
+		Arithmetic::floorToInt( x ),
+		Arithmetic::floorToInt( y ),
+		Arithmetic::floorToInt( z )
+	);
 }
 
 QString Vector3f::toString() const

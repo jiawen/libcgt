@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QString>
+class QString;
 
 class Vector2f;
 class Vector3f;
-
 class Vector4i;
 class Vector4d;
 
@@ -75,6 +74,8 @@ public:
 	Vector4f homogenized() const;
 
 	void negate();
+
+	Vector4i floored() const;
 
 	// implicit cast
 	operator const float* () const;

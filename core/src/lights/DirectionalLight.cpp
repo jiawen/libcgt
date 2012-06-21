@@ -56,7 +56,8 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
     for( int i = 0; i < frustumCorners.size(); ++i )
         frustumBB.enlarge(frustumCorners[i]);
 
-    BoundingBox3f sceneAndFrustum =  BoundingBox3f::intersect(frustumBB, sceneBoundingBox);
+    BoundingBox3f sceneAndFrustum;
+	bool intersects = BoundingBox3f::intersect(frustumBB, sceneBoundingBox, sceneAndFrustum);
 
     std::vector< Vector3f > sceneCorners = sceneBoundingBox.corners();
 	std::vector< Vector3f > sceneAndFrustumCorners = sceneAndFrustum.corners();

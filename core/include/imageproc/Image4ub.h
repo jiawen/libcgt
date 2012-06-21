@@ -2,9 +2,9 @@
 
 #include <QImage>
 #include <QString>
-#include <QVector>
 
 #include "common/BasicTypes.h"
+#include "common/Array2D.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector4i.h"
 
@@ -36,6 +36,7 @@ public:
 	int width() const;
 	int height() const;
 	Vector2i size() const;
+	int numPixels() const;
 
 	const ubyte* pixels() const;
 	ubyte* pixels();
@@ -53,6 +54,7 @@ public:
 
 	Vector4i bilinearSample( float x, float y ) const;
 
+	Image4ub flipLR() const;
 	Image4ub flipUD() const;
 
 	QImage toQImage();
@@ -72,6 +74,6 @@ private:
 
 	int m_width;
 	int m_height;
-	QVector< quint8 > m_data;
+	Array2D< ubyte > m_data;
 
 };

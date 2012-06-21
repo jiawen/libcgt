@@ -130,6 +130,11 @@ Vector2i Image4f::size() const
 	return Vector2i( m_width, m_height );
 }
 
+int Image4f::numPixels() const
+{
+	return width() * height();
+}
+
 const float* Image4f::pixels() const
 {
 	return m_data;
@@ -216,6 +221,25 @@ Vector4f Image4f::operator () ( const Vector2i& xy ) const
 		m_data[ index + 2 ],
 		m_data[ index + 3 ]
 	);
+}
+
+Image4f Image4f::flipLR() const
+{
+	// TODO: do memcpy per row
+	Image4f output( m_width, m_height );
+
+	for( int y = 0; y < m_height; ++y )
+	{
+		for( int x = 0; x < m_width; ++x )
+		{
+			int xx = m_width - 1 - 1;
+
+			Vector4f p = pixel( xx, y );
+			output.setPixel( x, y, p );
+		}
+	}
+
+	return output;
 }
 
 Image4f Image4f::flipUD() const
