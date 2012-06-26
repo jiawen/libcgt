@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <limits>
 
+#include "geometry/GeometryUtils.h"
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
@@ -215,6 +217,11 @@ std::vector< Vector3f > BoundingBox3f::corners() const
 	}
 
 	return out;
+}
+
+bool BoundingBox3f::containsPoint( const Vector3f& p ) const
+{
+	return GeometryUtils::pointInBox( p, minimum(), range() );
 }
 
 bool BoundingBox3f::overlaps( const BoundingBox3f& other )

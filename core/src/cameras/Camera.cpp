@@ -275,12 +275,12 @@ Matrix4f Camera::inverseViewProjectionMatrix() const
 	return viewProjectionMatrix().inverse();
 }
 
-Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2i& screenSize )
+Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2i& screenSize ) const
 {
 	return pixelToDirection( xy, Rect2f( screenSize.x, screenSize.y ) );
 }
 
-Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport )
+Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) const
 {
 	// convert from screen coordinates to NDC
 	float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
@@ -295,7 +295,7 @@ Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport )
 	return ( pointOnNearPlane - m_eye ).normalized();
 }
 
-Vector4f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenSize )
+Vector4f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenSize ) const
 {
 	Vector4f clip = viewProjectionMatrix() * world;
 	Vector4f ndc = clip.homogenized();
@@ -318,7 +318,7 @@ Vector4f Camera::projectToScreen( const Vector4f& world, const Vector2i& screenS
 	return Vector4f( sx, sy, sz, sw );
 }
 
-Vector2f Camera::pixelToNDC( const Vector2f& xy, const Vector2i& screenSize )
+Vector2f Camera::pixelToNDC( const Vector2f& xy, const Vector2i& screenSize ) const
 {
 	// convert from screen coordinates to NDC
 	float ndcX = 2 * xy.x / screenSize.x - 1;
@@ -327,7 +327,7 @@ Vector2f Camera::pixelToNDC( const Vector2f& xy, const Vector2i& screenSize )
 	return Vector2f( ndcX, ndcY );
 }
 
-Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize )
+Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const
 {
 	Vector2f ndcXY = pixelToNDC( xy, screenSize );
 
@@ -350,7 +350,7 @@ Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& sc
 	return Vector4f( xEye, yEye, zEye, 1 );
 }
 
-Vector4f Camera::pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize )
+Vector4f Camera::pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize ) const
 {
 	Vector4f eye = pixelToEye( xy, depth, screenSize );
 	return inverseViewMatrix() * eye;

@@ -117,7 +117,7 @@ public:
 	//   where [zNear,zFar] is mapped to [0,1] (outside this range is clipped)
 	// w is z-coordinate (not radial distance) in eye space (farther things are positive)
 	// This is what comes out as the float4 SV_POSITION in an HLSL pixel shader
-	Vector4f projectToScreen( const Vector4f& world, const Vector2i& screenSize );
+	Vector4f projectToScreen( const Vector4f& world, const Vector2i& screenSize ) const;
 
 	// TODO: write unprojectToWorld(), that takes in the useless zScreen value
 	// just for completeness
@@ -127,25 +127,25 @@ public:
 	// given a 2D pixel (x,y) on a screen of size screenSize
 	// returns a 3D ray direction
 	// (call eye() to get the ray origin)
-	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize );
+	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize ) const;
 
 	// xy and viewport are in pixel coordinates
-	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport );	
+	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) const;
 
 	// TODO: support viewports
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// returns its NDC in [-1,1]^2
-	Vector2f pixelToNDC( const Vector2f& xy, const Vector2i& screenSize );	
+	Vector2f pixelToNDC( const Vector2f& xy, const Vector2i& screenSize ) const;
 
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its eye space coordinates (right handed, output z will be negative), output.w = 1
-	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize );
+	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
 
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its world space coordinates, output.w = 1
-	Vector4f pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize );		
+	Vector4f pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
 
 protected:
 

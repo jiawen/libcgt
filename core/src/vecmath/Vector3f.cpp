@@ -107,6 +107,11 @@ float Vector3f::norm() const
 	return sqrt( normSquared() );
 }
 
+float Vector3f::normSquared() const
+{
+	return( x * x + y * y + z * z );
+}
+
 void Vector3f::normalize()
 {
 	float rcpNorm = 1.0f / norm();

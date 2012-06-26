@@ -79,7 +79,7 @@ public:
 		Vector3f* b1, Vector3f* b2 );
 
 	// returns true if p is inside axis aligned bbox
-	static bool pointInBox( const Vector3f& p, const BoundingBox3f& bbox );
+	static bool pointInBox( const Vector3f& p, const Vector3f& origin, const Vector3f& size );
 	
 	// returns true if p is inside sphere
 	static bool pointInsideSphere( const Vector3f& p,

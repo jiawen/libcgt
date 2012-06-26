@@ -284,13 +284,15 @@ void GeometryUtils::getBasisWithPreferredUp( const Vector3f& z, const Vector3f& 
 }
 
 // static
-bool GeometryUtils::pointInBox( const Vector3f& p, const BoundingBox3f& bbox )
+bool GeometryUtils::pointInBox( const Vector3f& p, const Vector3f& origin, const Vector3f& size )
 {
+	Vector3f maximum = origin + size;
+
 	return
 	(
-		( p.x > bbox.minimum().x ) && ( p.x < bbox.maximum().x ) &&
-		( p.y > bbox.minimum().y ) && ( p.y < bbox.maximum().y ) &&
-		( p.z > bbox.minimum().z ) && ( p.z < bbox.maximum().z )
+		( p.x > origin.x ) && ( p.x < maximum.x ) &&
+		( p.y > origin.y ) && ( p.y < maximum.y ) &&
+		( p.z > origin.z ) && ( p.z < maximum.z )
 	);
 }
 

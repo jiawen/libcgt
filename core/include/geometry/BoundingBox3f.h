@@ -36,7 +36,10 @@ public:
 	Vector3f minimum() const;
 	Vector3f maximum() const;
 
+	// range = maximum - minimum
 	Vector3f range() const;
+
+	// center = 0.5f * ( minimum + maximum )
 	Vector3f center() const;
 	
 	float volume() const;
@@ -57,6 +60,10 @@ public:
 	// scales the box symmetrically about the center
 	void scale( const Vector3f& s );
 
+	// returns true if p is inside this box
+	bool containsPoint( const Vector3f& p ) const;
+
+	// TODO: overlaps is the same as intersects??
 	// returns if this boundingbox overlaps the other bounding box
 	// note that a overlaps b iff b overlaps a
 	bool overlaps( const BoundingBox3f& other );

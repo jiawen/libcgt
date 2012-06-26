@@ -12,7 +12,7 @@ public:
 
 	Array2D();
 	Array2D( const char* filename );
-	Array2D( int width, int height );
+	Array2D( int width, int height, const T& fill = T() );
 	Array2D( const Array2D& copy );
 	Array2D( Array2D&& move );
 	Array2D& operator = ( const Array2D& copy );
@@ -34,10 +34,10 @@ public:
 	operator T* ();
 	operator const T* () const;
 
-	T operator () ( int k ) const; // read
+	const T& operator () ( int k ) const; // read
 	T& operator () ( int k ); // write
 
-	T operator () ( int x, int y ) const; // read
+	const T& operator () ( int x, int y ) const; // read
 	T& operator () ( int x, int y ); // write
 
 	bool load( const char* filename );
@@ -74,11 +74,18 @@ Array2D< T >::Array2D( const char* filename ) :
 }
 
 template< typename T >
-Array2D< T >::Array2D( int width, int height )
+Array2D< T >::Array2D( int width, int height, const T& fill )
 {
 	m_width = width;
 	m_height = height;
+	
+	int n = width * height;
 	m_array = new T[ width * height ];
+
+	for( int i = 0; i < n; ++i )
+	{
+		m_array[ i ] = fill;
+	}
 }
 
 template< typename T >
@@ -231,7 +238,7 @@ Array2D< T >::operator const T* () const
 }
 
 template< typename T >
-T Array2D< T >::operator () ( int k ) const
+const T& Array2D< T >::operator () ( int k ) const
 {
 	return m_array[ k ];
 }
@@ -243,7 +250,7 @@ T& Array2D< T >::operator () ( int k )
 }
 
 template< typename T >
-T Array2D< T >::operator () ( int x, int y ) const
+const T& Array2D< T >::operator () ( int x, int y ) const
 {
 	return m_array[ y * m_width + x ];
 }

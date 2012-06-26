@@ -12,7 +12,7 @@ public:
 
 	Array3D();
 	Array3D( const char* filename );
-	Array3D( int width, int height, int depth );
+	Array3D( int width, int height, int depth, const T& fill = T() );
 	Array3D( const Array3D& copy );
 	Array3D( Array3D&& move );
 	Array3D& operator = ( const Array3D& copy );
@@ -38,10 +38,10 @@ public:
 
 	operator T* () const;
 
-	T operator () ( int k ) const; // read
+	const T& operator () ( int k ) const; // read
 	T& operator () ( int k ); // write
 
-	T operator () ( int x, int y, int z ) const; // read
+	const T& operator () ( int x, int y, int z ) const; // read
 	T& operator () ( int x, int y, int z ); // write
 
 	bool load( const char* filename );
@@ -81,12 +81,19 @@ Array3D< T >::Array3D( const char* filename ) :
 }
 
 template< typename T >
-Array3D< T >::Array3D( int width, int height, int depth )
+Array3D< T >::Array3D( int width, int height, int depth, const T& fill )
 {
 	m_width = width;
 	m_height = height;
 	m_depth = depth;
-	m_array = new T[ width * height * depth ];
+
+	int n = width * height * depth;
+	m_array = new T[ n ];
+
+	for( int i = 0; i < n; ++i )
+	{
+		m_array[ i ] = fill;
+	}
 }
 
 template< typename T >
@@ -252,7 +259,7 @@ Array3D< T >::operator T* () const
 }
 
 template< typename T >
-T Array3D< T >::operator () ( int k ) const
+const T& Array3D< T >::operator () ( int k ) const
 {
 	return m_array[ k ];
 }
@@ -264,7 +271,7 @@ T& Array3D< T >::operator () ( int k )
 }
 
 template< typename T >
-T Array3D< T >::operator () ( int x, int y, int z ) const
+const T& Array3D< T >::operator () ( int x, int y, int z ) const
 {
 	int k = z * m_width * m_height + y * m_width + x;
 	return m_array[ k ];
