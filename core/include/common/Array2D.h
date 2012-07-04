@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <vecmath/Vector2i.h>
 
 // TODO: switch to using std::vector as underlying representation
 
@@ -10,6 +11,7 @@ class Array2D
 {
 public:	
 
+	// Default null array with dimensions -1 and no data allocated
 	Array2D();
 	Array2D( const char* filename );
 	Array2D( int width, int height, const T& fill = T() );
@@ -21,15 +23,20 @@ public:
 	
 	bool isNull() const;
 	bool notNull() const;
+	void invalidate(); // makes this array null by setting its dimensions to -1 and frees the data
 
 	int width() const;
 	int height() const;
+	Vector2i size() const;
 	int numElements() const;
 
 	void fill( const T& val );
+
+	// resizing with width or height <= 0 will invalidate this array
 	void resize( int width, int height );
 
-	T* rowPointer( int y ) const;
+	T* rowPointer( int y );
+	const T* rowPointer( int y ) const;
 
 	operator T* ();
 	operator const T* () const;
@@ -39,6 +46,9 @@ public:
 
 	const T& operator () ( int x, int y ) const; // read
 	T& operator () ( int x, int y ); // write
+
+	int subscriptToIndex( int x, int y ) const;
+	Vector2i indextoSubscript( int k ) const;
 
 	bool load( const char* filename );
 	bool save( const char* filename );
@@ -172,6 +182,18 @@ bool Array2D< T >::notNull() const
 }
 
 template< typename T >
+void Array2D< T >::invalidate()
+{
+	m_width = -1;
+	m_height = -1;
+
+	if( m_array != nullptr )
+	{
+		delete[] m_array;
+	}
+}
+
+template< typename T >
 int Array2D< T >::width() const
 {
 	return m_width;
@@ -181,6 +203,12 @@ template< typename T >
 int Array2D< T >::height() const
 {
 	return m_height;
+}
+
+template< typename T >
+Vector2i Array2D< T >::size() const
+{
+	return Vector2i( m_width, m_height );
 }
 
 template< typename T >
@@ -202,25 +230,36 @@ void Array2D< T >::fill( const T& val )
 template< typename T >
 void Array2D< T >::resize( int width, int height )
 {
-	// TODO: check if width or height < 0
-
-	// check if the total number of elements it the same
-	// if it is, don't reallocate
-	if( width * height != m_width * m_height )
+	if( width <= 0 || height <= 0 )
 	{
-		if( m_array != nullptr )
-		{
-			delete[] m_array;
-		}
-		m_array = new T[ width * height ];
+		invalidate();
 	}
+	else
+	{
+		// check if the total number of elements it the same
+		// if it is, don't reallocate
+		if( width * height != m_width * m_height )
+		{
+			if( m_array != nullptr )
+			{
+				delete[] m_array;
+			}
+			m_array = new T[ width * height ];
+		}
 
-	m_width = width;
-	m_height = height;
+		m_width = width;
+		m_height = height;
+	}
 }
 
 template< typename T >
-T* Array2D< T >::rowPointer( int y ) const
+T* Array2D< T >::rowPointer( int y )
+{
+	return &( m_array[ y * m_width ] );
+}
+
+template< typename T >
+const T* Array2D< T >::rowPointer( int y ) const
 {
 	return &( m_array[ y * m_width ] );
 }
@@ -252,13 +291,27 @@ T& Array2D< T >::operator () ( int k )
 template< typename T >
 const T& Array2D< T >::operator () ( int x, int y ) const
 {
-	return m_array[ y * m_width + x ];
+	return m_array[ subscriptToIndex( x, y ) ];
 }
 
 template< typename T >
 T& Array2D< T >::operator () ( int x, int y )
 {
-	return m_array[ y * m_width + x ];
+	return m_array[ subscriptToIndex( x, y ) ];
+}
+
+template< typename T >
+inline int Array2D< T >::subscriptToIndex( int x, int y ) const
+{
+	return( y * m_width + x );
+}
+
+template< typename T >
+Vector2i Array2D< T >::indextoSubscript( int k ) const
+{
+	int y = k / m_width;
+	int x = k - y * m_width;
+	return Vector2i( x, y );
 }
 
 template< typename T >

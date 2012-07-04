@@ -128,7 +128,7 @@ QKinect::~QKinect()
 	}
 }
 
-int QKinect::elevationAngle()
+int QKinect::elevationAngle() const
 {
 	LONG degrees;
 	m_pSensor->NuiCameraElevationGetAngle( &degrees );
@@ -635,7 +635,7 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 		for( int y = 0; y < rgba.height(); ++y )
 		{
 			BYTE* pSrcRow = &( pBuffer[ y * lockedRect.Pitch ] );
-			quint8* pDstRow = rgba.rowPointer( y );
+			ubyte* pDstRow = rgba.rowPointer( y );
 
 			int i = 0;
 			for( int x = 0; x < rgba.width(); ++x )

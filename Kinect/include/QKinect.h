@@ -90,7 +90,7 @@ public:
 
 	virtual ~QKinect();
 
-	int elevationAngle();
+	int elevationAngle() const;
 	void setElevationAngle( int degrees );
 
 public slots:

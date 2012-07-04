@@ -5,6 +5,8 @@
 #include "math/Arithmetic.h"
 #include "time/StopWatch.h"
 
+// TODO: use a mutex on notifications to make the parallel version work
+
 class ProgressReporter
 {
 public:

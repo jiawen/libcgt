@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <vecmath/Vector3i.h>
 
 // TODO: switch to using std::vector as underlying representation
 
@@ -10,6 +11,7 @@ class Array3D
 {
 public:	
 
+	// Default null array with dimensions -1 and no data allocated
 	Array3D();
 	Array3D( const char* filename );
 	Array3D( int width, int height, int depth, const T& fill = T() );
@@ -21,20 +23,26 @@ public:
 	
 	bool isNull() const;
 	bool notNull() const;
+	void invalidate();
 
 	int width() const;
 	int height() const;
 	int depth() const;
+	Vector3i size() const;
 	int numElements() const;
 
 	void fill( const T& val );
+
+	// resizing with width, height, or depth <= 0 will invalidate this array
 	void resize( int width, int height, int depth );
 
 	// Returns a pointer to the beginning of the y-th row of the z-th slice
-	T* rowPointer( int y, int z ) const;
+	T* rowPointer( int y, int z );
+	const T* rowPointer( int y, int z ) const;
 
 	// Returns a pointer to the beginning of the z-th slice
-	T* slicePointer( int z ) const;
+	T* slicePointer( int z );
+	const T* slicePointer( int z ) const;
 
 	operator T* () const;
 
@@ -43,6 +51,9 @@ public:
 
 	const T& operator () ( int x, int y, int z ) const; // read
 	T& operator () ( int x, int y, int z ); // write
+
+	int subscriptToIndex( int x, int y, int z ) const;
+	Vector3i indextoSubscript( int k ) const;
 
 	bool load( const char* filename );
 	bool save( const char* filename );
@@ -163,8 +174,8 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 	return *this;
 }
 
-template< typename T >
 // virtual
+template< typename T >
 Array3D< T >::~Array3D()
 {
 	if( m_array != nullptr )
@@ -186,6 +197,19 @@ bool Array3D< T >::notNull() const
 }
 
 template< typename T >
+void Array3D< T >::invalidate()
+{
+	m_width = -1;
+	m_height = -1;
+	m_depth = -1;
+
+	if( m_array != nullptr )
+	{
+		delete[] m_array;
+	}
+}
+
+template< typename T >
 int Array3D< T >::width() const
 {
 	return m_width;
@@ -201,6 +225,12 @@ template< typename T >
 int Array3D< T >::depth() const
 {
 	return m_depth;
+}
+
+template< typename T >
+Vector3i Array3D< T >::size() const
+{
+	return Vector3i( m_width, m_height, m_depth );
 }
 
 template< typename T >
@@ -222,32 +252,49 @@ void Array3D< T >::fill( const T& val )
 template< typename T >
 void Array3D< T >::resize( int width, int height, int depth )
 {
-	// TODO: check if width or height < 0
-
-	// check if the total number of elements it the same
-	// if it is, don't reallocate
-	if( width * height * depth != m_width * m_height * m_depth )
+	if( width <= 0 || height <= 0 || depth <= 0 )
 	{
-		if( m_array != nullptr )
-		{
-			delete[] m_array;
-		}
-		m_array = new T[ width * height * depth ];
+		invalidate();
 	}
+	else
+	{
+		// check if the total number of elements it the same
+		// if it is, don't reallocate
+		if( width * height * depth != m_width * m_height * m_depth )
+		{
+			if( m_array != nullptr )
+			{
+				delete[] m_array;
+			}
+			m_array = new T[ width * height * depth ];
+		}
 
-	m_width = width;
-	m_height = height;
-	m_depth = depth;
+		m_width = width;
+		m_height = height;
+		m_depth = depth;
+	}
 }
 
 template< typename T >
-T* Array3D< T >::rowPointer( int y, int z ) const
+T* Array3D< T >::rowPointer( int y, int z )
 {
 	return &( m_array[ z * m_width * m_height + y * m_width ] );
 }
 
 template< typename T >
-T* Array3D< T >::slicePointer( int z ) const
+const T* Array3D< T >::rowPointer( int y, int z ) const
+{
+	return &( m_array[ z * m_width * m_height + y * m_width ] );
+}
+
+template< typename T >
+T* Array3D< T >::slicePointer( int z )
+{
+	return &( m_array[ z * m_width * m_height ] );
+}
+
+template< typename T >
+const T* Array3D< T >::slicePointer( int z ) const
 {
 	return &( m_array[ z * m_width * m_height ] );
 }
@@ -273,15 +320,34 @@ T& Array3D< T >::operator () ( int k )
 template< typename T >
 const T& Array3D< T >::operator () ( int x, int y, int z ) const
 {
-	int k = z * m_width * m_height + y * m_width + x;
+	int k = subscriptToIndex( x, y, z );
 	return m_array[ k ];
 }
 
 template< typename T >
 T& Array3D< T >::operator () ( int x, int y, int z )
 {
-	int k = z * m_width * m_height + y * m_width + x;
+	int k = subscriptToIndex( x, y, z );
 	return m_array[ k ];
+}
+
+template< typename T >
+inline int Array3D< T >::subscriptToIndex( int x, int y, int z ) const
+{
+	return z * m_width * m_height + y * m_width + x;
+}
+
+template< typename T >
+Vector3i Array3D< T >::indextoSubscript( int k ) const
+{
+	int wh = m_width * m_height;
+	int z = k / wh;
+
+	int ky = k - z * wh;
+	int y = ky / m_width;
+
+	int x = ky - y * m_width;
+	return Vector3i( x, y, z );
 }
 
 template< typename T >

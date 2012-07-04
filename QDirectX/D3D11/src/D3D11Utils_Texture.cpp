@@ -5,71 +5,39 @@
 #include "StagingTexture2D.h"
 
 // static
-std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV )
+std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUD )
 {
 	Image4ub im( filename );
-	return createTextureFromImage( pDevice, im, flipUV );
+	return createTextureFromImage( pDevice, im, flipUD );
 }
 
 // static
-std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image1f& im, bool flipUV )
+std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image1f& im, bool flipUD )
 {
 	std::shared_ptr< DynamicTexture2D > pTexture( DynamicTexture2D::createFloat1( pDevice, im.width(), im.height() ) );
-	copyImageToTexture( im, pTexture, flipUV );
+	copyImageToTexture( im, pTexture, flipUD );
 	return pTexture;
 }
 
 // static
-std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image4f& im, bool flipUV )
+std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image4f& im, bool flipUD )
 {
 	std::shared_ptr< DynamicTexture2D > pTexture( DynamicTexture2D::createFloat4( pDevice, im.width(), im.height() ) );
-	copyImageToTexture( im, pTexture, flipUV );
+	copyImageToTexture( im, pTexture, flipUD );
 	return pTexture;
 }
 
 // static
-std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image4ub& im, bool flipUV )
+std::shared_ptr< DynamicTexture2D > D3D11Utils_Texture::createTextureFromImage( ID3D11Device* pDevice, const Image4ub& im, bool flipUD )
 {
 	std::shared_ptr< DynamicTexture2D > pTexture( DynamicTexture2D::createUnsignedByte4( pDevice, im.width(), im.height() ) );
-	copyImageToTexture( im, pTexture, flipUV );
+	copyImageToTexture( im, pTexture, flipUD );
 	return pTexture;
 }
 
 
 // static
-void D3D11Utils_Texture::copyImageToTexture( const Image1f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
-{
-	int width = im.width();
-	int height = im.height();
-
-	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
-
-	const float* sourceData = im.pixels();
-	ubyte* destDataBytes = reinterpret_cast< quint8* >( mapping.pData );
-
-	// if the pitch matches and no flip is requested
-	// then just directly copy
-	if( mapping.RowPitch == width * sizeof( float ) && !flipUV )
-	{
-		float* destDataFloat = reinterpret_cast< float* >( mapping.pData );
-		memcpy( destDataFloat, sourceData, width * height * sizeof( float ) );
-	}
-	// otherwise, have to go row by row
-	for( int y = 0; y < height; ++y )
-	{
-		int yy = flipUV ? height - y - 1 : y;
-
-		const float* sourceRow = &( sourceData[ yy * width ] );
-		ubyte* destRow = &( destDataBytes[ y * mapping.RowPitch ] );
-
-		memcpy( destRow, sourceRow, width * sizeof( float ) );
-	}	
-
-	tex->unmap();
-}
-
-// static
-void D3D11Utils_Texture::copyImageToTexture( const Image4f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils_Texture::copyImageToTexture( const Image1f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD )
 {
 	int width = im.width();
 	int height = im.height();
@@ -81,7 +49,39 @@ void D3D11Utils_Texture::copyImageToTexture( const Image4f& im, std::shared_ptr<
 
 	// if the pitch matches and no flip is requested
 	// then just directly copy
-	if( mapping.RowPitch == 4 * width * sizeof( float ) && !flipUV )
+	if( mapping.RowPitch == width * sizeof( float ) && !flipUD )
+	{
+		float* destDataFloat = reinterpret_cast< float* >( mapping.pData );
+		memcpy( destDataFloat, sourceData, width * height * sizeof( float ) );
+	}
+	// otherwise, have to go row by row
+	for( int y = 0; y < height; ++y )
+	{
+		int yy = flipUD ? height - y - 1 : y;
+
+		const float* sourceRow = &( sourceData[ yy * width ] );
+		ubyte* destRow = &( destDataBytes[ y * mapping.RowPitch ] );
+
+		memcpy( destRow, sourceRow, width * sizeof( float ) );
+	}	
+
+	tex->unmap();
+}
+
+// static
+void D3D11Utils_Texture::copyImageToTexture( const Image4f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD )
+{
+	int width = im.width();
+	int height = im.height();
+
+	D3D11_MAPPED_SUBRESOURCE mapping = tex->mapForWriteDiscard();
+
+	const float* sourceData = im.pixels();
+	ubyte* destDataBytes = reinterpret_cast< ubyte* >( mapping.pData );
+
+	// if the pitch matches and no flip is requested
+	// then just directly copy
+	if( mapping.RowPitch == 4 * width * sizeof( float ) && !flipUD )
 	{
 		float* destDataFloat = reinterpret_cast< float* >( mapping.pData );
 		memcpy( destDataFloat, sourceData, 4 * width * height * sizeof( float ) );
@@ -91,7 +91,7 @@ void D3D11Utils_Texture::copyImageToTexture( const Image4f& im, std::shared_ptr<
 	{
 		for( int y = 0; y < height; ++y )
 		{
-			int yy = flipUV ? height - y - 1 : y;
+			int yy = flipUD ? height - y - 1 : y;
 
 			const float* sourceRow = &( sourceData[ 4 * yy * width ] );
 			ubyte* destRow = &( destDataBytes[ y * mapping.RowPitch ] );
@@ -105,7 +105,7 @@ void D3D11Utils_Texture::copyImageToTexture( const Image4f& im, std::shared_ptr<
 
 
 // static
-void D3D11Utils_Texture::copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV )
+void D3D11Utils_Texture::copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD )
 {
 	int width = im.width();
 	int height = im.height();
@@ -117,19 +117,19 @@ void D3D11Utils_Texture::copyImageToTexture( const Image4ub& im, std::shared_ptr
 
 	// if the pitch matches and no flip is requested
 	// then just directly copy
-	if( mapping.RowPitch == 4 * width && !flipUV )
+	if( mapping.RowPitch == 4 * width && !flipUD )
 	{
 		memcpy( destData, sourceData, 4 * width * height );
 	}
 	// otherwise, have to go row by row
 	for( int y = 0; y < height; ++y )
 	{
-		int yy = flipUV ? height - y - 1 : y;
+		int yy = flipUD ? height - y - 1 : y;
 
 		const ubyte* sourceRow = &( sourceData[ 4 * yy * width ] );
 		ubyte* destRow = &( destData[ y * mapping.RowPitch ] );
 
-		memcpy( destRow, sourceRow, 4 * width * sizeof( quint8 ) );
+		memcpy( destRow, sourceRow, 4 * width * sizeof( ubyte ) );
 	}	
 
 	tex->unmap();

@@ -209,8 +209,8 @@ Vector4i Image4ub::bilinearSample( float x, float y ) const
 	int y0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( y ), 0, m_height );
 	int y1 = MathUtils::clampToRangeExclusive( y0 + 1, 0, m_height );
 
-	float xf = x - x0;
-	float yf = y - y0;
+	float xf = x - ( x0 + 0.5f );
+	float yf = y - ( y0 + 0.5f );
 
 	Vector4f v00 = ColorUtils::intToFloat( pixel( x0, y0 ) );
 	Vector4f v01 = ColorUtils::intToFloat( pixel( x0, y1 ) );
@@ -337,10 +337,10 @@ bool Image4ub::saveTXT( QString filename )
 
 		for( int x = 0; x < m_width; ++x )
 		{
-			quint8 r = m_data[ 4 * k ];
-			quint8 g = m_data[ 4 * k + 1 ];
-			quint8 b = m_data[ 4 * k + 2 ];
-			quint8 a = m_data[ 4 * k + 3 ];
+			ubyte r = m_data[ 4 * k ];
+			ubyte g = m_data[ 4 * k + 1 ];
+			ubyte b = m_data[ 4 * k + 2 ];
+			ubyte a = m_data[ 4 * k + 3 ];
 
 			outputTextStream << "[" << k << "] (" << x << "," << y << ") ((" << x << "," << yy << ")): "
 				<< r << " " << g << " " << b << " " << a << "\n";

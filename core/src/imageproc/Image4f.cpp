@@ -274,8 +274,8 @@ Vector4f Image4f::bilinearSample( float x, float y ) const
 	int y0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( y ), 0, m_height );
 	int y1 = MathUtils::clampToRangeExclusive( y0 + 1, 0, m_height );
 
-	float xf = x - x0;
-	float yf = y - y0;
+	float xf = x - ( x0 + 0.5f );
+	float yf = y - ( y0 + 0.5f );
 
 	Vector4f v00 = pixel( x0, y0 );
 	Vector4f v01 = pixel( x0, y1 );

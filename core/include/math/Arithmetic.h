@@ -24,9 +24,14 @@ public:
 
 	static bool isPowerOfTwo( int x );
 	
+	static int roundToInt( float val );
+	static int floatToInt( float val ); // same as a static cast
+	static int floorToInt( float val ); // same as floor(val), followed by static cast
+	static int ceilToInt( float val );
+
 	static int roundToInt( double val );
-	static int floatToInt( double val );
-	static int floorToInt( double val );
+	static int doubleToInt( double val ); // same as a static cast
+	static int floorToInt( double val ); // same as floor(val), followed by static cast
 	static int ceilToInt( double val );
 
 	static float log2( float x );
@@ -40,13 +45,14 @@ public:
 	static int roundUpToNearestMultipleOf256( int x );
 
 	// finds y where y is the next perfect square greater than or equal to x
-	// if sqrtOut != NULL, returns the square root of y in sqrtOut
-	static int findNextPerfectSquare( int x, int* sqrtOut = NULL );
+	// and optionally reqturns the square root
+	static int findNextPerfectSquare( int x );
+	static int findNextPerfectSquare( int x, int& sqrtOut );
 
 	// returns true if x is a perfect square
-	// if it is, then pSqrt contains the square root
-	// pass in NULL for testing only
-	static bool isPerfectSquare( int x, int* sqrtOut = NULL );
+	// optionally returning the square root
+	static bool isPerfectSquare( int x );
+	static bool isPerfectSquare( int x, int& sqrtOut );
 
 	static int integerSquareRoot( int x );
 

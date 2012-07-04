@@ -19,18 +19,18 @@ public:
 
 	// Loads a texture from a standard image file, 8-bits per color channel
 	// By default, Image4ub loads images such that the bottom left has coordinates (0,0) and is at location 0 memory
-	// set flipUV to true to flip it up/down
-	static std::shared_ptr< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUV = false );
+	// set flipUD to true to flip it up/down
+	static std::shared_ptr< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUD = false );
 
 	// image (cpu) --> new texture (GPU)
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image1f& im, bool flipUV = false );
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4f& im, bool flipUV = false );
-	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4ub& im, bool flipUV = false );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image1f& im, bool flipUD = false );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4f& im, bool flipUD = false );
+	static std::shared_ptr< DynamicTexture2D > createTextureFromImage( ID3D11Device* pDevice, const Image4ub& im, bool flipUD = false );
 
 	// image (cpu) --> texture (gpu)
-	static void copyImageToTexture( const Image1f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = false );
-	static void copyImageToTexture( const Image4f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = false );
-	static void copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUV = false );
+	static void copyImageToTexture( const Image1f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD = false );
+	static void copyImageToTexture( const Image4f& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD = false );
+	static void copyImageToTexture( const Image4ub& im, std::shared_ptr< DynamicTexture2D > tex, bool flipUD = false );
 
 	// texture (gpu) --> image (cpu)
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image1f& im );

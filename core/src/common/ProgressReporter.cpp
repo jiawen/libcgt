@@ -128,5 +128,6 @@ void ProgressReporter::initialize( QString prefix, int nTasks, float reportRateP
 	m_totalMillisecondsElapsed = 0;		
 	m_previousTaskCompletedTime = m_stopwatch.millisecondsElapsed();
 
+	m_nextReportedPercent = 0;
 	m_nTasksCompleted = 0;
 }

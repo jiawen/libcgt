@@ -42,6 +42,30 @@ bool Arithmetic::isPowerOfTwo( int x )
 }
 
 // static
+int Arithmetic::roundToInt( float val )
+{
+	return static_cast< int >( val + 0.5f );
+}
+
+// static
+int Arithmetic::floatToInt( float val )
+{
+	return static_cast< int >( val );
+}
+
+// static
+int Arithmetic::floorToInt( float val )
+{
+	return static_cast< int >( floor( val ) );
+}
+
+// static
+int Arithmetic::ceilToInt( float val )
+{
+	return static_cast< int >( ceil( val ) );
+}
+
+// static
 int Arithmetic::roundToInt( double val )
 {
 	// 2^52 * 1.5, uses limited precision to floor
@@ -50,7 +74,7 @@ int Arithmetic::roundToInt( double val )
 }
 
 // static
-int Arithmetic::floatToInt( double val )
+int Arithmetic::doubleToInt( double val )
 {
 	return( ( val < 0 ) ?
 		Arithmetic::roundToInt( val + s_dDoubleMagicRoundEpsilon ) :
@@ -119,7 +143,19 @@ int Arithmetic::roundUpToNearestMultipleOf256( int x )
 }
 
 // static
-int Arithmetic::findNextPerfectSquare( int x, int* sqrtOut )
+int Arithmetic::findNextPerfectSquare( int x )
+{
+	int y = x;
+	while( !isPerfectSquare( y ) )
+	{
+		++y;
+	}
+
+	return y;
+}
+
+// static
+int Arithmetic::findNextPerfectSquare( int x, int& sqrtOut )
 {
 	int y = x;
 	while( !isPerfectSquare( y, sqrtOut ) )
@@ -131,7 +167,14 @@ int Arithmetic::findNextPerfectSquare( int x, int* sqrtOut )
 }
 
 // static
-bool Arithmetic::isPerfectSquare( int x, int* sqrtOut )
+bool Arithmetic::isPerfectSquare( int x )
+{
+	int s;
+	return isPerfectSquare( x, s );
+}
+
+// static
+bool Arithmetic::isPerfectSquare( int x, int& sqrtOut )
 {
 	float fx = static_cast< float >( x );
 	float sqrtFX = sqrt( fx );
@@ -140,19 +183,13 @@ bool Arithmetic::isPerfectSquare( int x, int* sqrtOut )
 
 	if( sqrtXLower * sqrtXLower == x )
 	{
-		if( sqrtOut != NULL )
-		{
-			*sqrtOut = sqrtXLower;
-		}
+		sqrtOut = sqrtXLower;
 		return true;
 	}
 
 	if( sqrtXUpper * sqrtXUpper == x )
 	{
-		if( sqrtOut != NULL )
-		{
-			*sqrtOut = sqrtXUpper;
-		}		
+		sqrtOut = sqrtXUpper;
 		return true;
 	}
 

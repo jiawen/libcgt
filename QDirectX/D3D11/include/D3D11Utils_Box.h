@@ -97,6 +97,8 @@ public:
 	}
 
 	// writes pBuffer with the contents of box
+	// pBuffer needs to have capacity 24
+	// TODO: start vertex
 	template< typename T >
 	static void writeAxisAlignedWireframeBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer )
 	{
