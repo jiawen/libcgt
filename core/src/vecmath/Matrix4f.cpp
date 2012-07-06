@@ -194,7 +194,13 @@ float Matrix4f::determinant() const
 	return( m00 * cofactor00 + m01 * cofactor01 + m02 * cofactor02 + m03 * cofactor03 );
 }
 
-Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
+Matrix4f Matrix4f::inverse() const
+{
+	bool singular;
+	return inverse( singular );
+}
+
+Matrix4f Matrix4f::inverse( bool& isSingular, float epsilon ) const
 {
 	float cofactor00 =  Matrix3f::determinant3x3( m11, m12, m13, m21, m22, m23, m31, m32, m33 );
     float cofactor01 = -Matrix3f::determinant3x3( m12, m13, m10, m22, m23, m20, m32, m33, m30 );
@@ -218,31 +224,22 @@ Matrix4f Matrix4f::inverse( bool* pbIsSingular, float epsilon ) const
 
 	float determinant = m00 * cofactor00 + m01 * cofactor01 + m02 * cofactor02 + m03 * cofactor03;
 
-	bool isSingular = ( abs( determinant ) < epsilon );
+	isSingular = ( abs( determinant ) < epsilon );
 	if( isSingular )
 	{
-		if( pbIsSingular != nullptr )
-		{
-			*pbIsSingular = true;
-		}
 		return Matrix4f();
 	}
 	else
 	{
-		if( pbIsSingular != nullptr )
-		{
-			*pbIsSingular = false;
-		}
-
 		float reciprocalDeterminant = 1.0f / determinant;
 
 		return Matrix4f
-			(
+		(
 			cofactor00 * reciprocalDeterminant, cofactor10 * reciprocalDeterminant, cofactor20 * reciprocalDeterminant, cofactor30 * reciprocalDeterminant,
 			cofactor01 * reciprocalDeterminant, cofactor11 * reciprocalDeterminant, cofactor21 * reciprocalDeterminant, cofactor31 * reciprocalDeterminant,
 			cofactor02 * reciprocalDeterminant, cofactor12 * reciprocalDeterminant, cofactor22 * reciprocalDeterminant, cofactor32 * reciprocalDeterminant,
 			cofactor03 * reciprocalDeterminant, cofactor13 * reciprocalDeterminant, cofactor23 * reciprocalDeterminant, cofactor33 * reciprocalDeterminant
-			);
+		);
 	}
 }
 

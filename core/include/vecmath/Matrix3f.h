@@ -43,7 +43,8 @@ public:
 	void setSubmatrix2x2( int i0, int j0, const Matrix2f& m );
 
 	float determinant() const;
-	Matrix3f inverse( bool* pbIsSingular = NULL, float epsilon = 0.f ) const; // TODO: invert in place as well
+	Matrix3f inverse() const;
+	Matrix3f inverse( bool& isSingular, float epsilon = 0.f ) const; // TODO: invert in place as well
 
 	void transpose();
 	Matrix3f transposed() const;

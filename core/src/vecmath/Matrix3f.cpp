@@ -151,7 +151,13 @@ float Matrix3f::determinant() const
 	);
 }
 
-Matrix3f Matrix3f::inverse( bool* pbIsSingular, float epsilon ) const
+Matrix3f Matrix3f::inverse() const
+{
+	bool isSingular;
+	return inverse( isSingular );
+}
+
+Matrix3f Matrix3f::inverse( bool& isSingular, float epsilon ) const
 {
 	float cofactor00 =  Matrix2f::determinant2x2( m11, m12, m21, m22 );
 	float cofactor01 = -Matrix2f::determinant2x2( m10, m12, m20, m22 );
@@ -167,22 +173,13 @@ Matrix3f Matrix3f::inverse( bool* pbIsSingular, float epsilon ) const
 
 	float determinant = m00 * cofactor00 + m01 * cofactor01 + m02 * cofactor02;
 	
-	bool isSingular = ( abs( determinant ) < epsilon );
+	isSingular = ( abs( determinant ) < epsilon );
 	if( isSingular )
 	{
-		if( pbIsSingular != NULL )
-		{
-			*pbIsSingular = true;
-		}
 		return Matrix3f();
 	}
 	else
 	{
-		if( pbIsSingular != NULL )
-		{
-			*pbIsSingular = false;
-		}
-
 		float reciprocalDeterminant = 1.0f / determinant;
 
 		return Matrix3f

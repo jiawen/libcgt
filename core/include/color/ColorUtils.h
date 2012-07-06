@@ -1,8 +1,6 @@
-#ifndef COLOR_UTILS_H
-#define COLOR_UTILS_H
+#pragma once
 
 #include <common/BasicTypes.h>
-#include <common/ReferenceCountedArray.h>
 
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector3i.h>
@@ -14,7 +12,7 @@ class ColorUtils
 public:
 
 	// the epsilon used when converting to the log domain
-	// and then input is "luminance" from rgb2luminance()
+	// and then input is "luminance" from rgbToLuminance()
 	// value is 1 / 256
 	static const float LOG_LUMINANCE_EPSILON;
 
@@ -35,10 +33,8 @@ public:
 	static ubyte floatToUnsignedByte( float f );
 	static float unsignedByteToFloat( ubyte ub );
 
-	static float rgb2luminance( float rgb[3] );
-	static float rgb2luminance( ubyte rgb[3] );	
-
-	static void rgbArray2LuminanceArray( UnsignedByteArray rgb, UnsignedByteArray luminance );
+	static float rgbToLuminance( float rgb[3] );
+	static float rgbToLuminance( ubyte rgb[3] );
 
 	static float rgba2luminance( float rgba[4] );
 	static float rgba2luminance( ubyte rgba[4] );
@@ -74,5 +70,3 @@ public:
 	static Vector4i saturate( const Vector4i& v );
 
 };
-
-#endif

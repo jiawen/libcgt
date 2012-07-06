@@ -34,6 +34,7 @@ public:
 
 	// resizing with width or height <= 0 will invalidate this array
 	void resize( int width, int height );
+	void resize( const Vector2i& size );
 
 	T* rowPointer( int y );
 	const T* rowPointer( int y ) const;
@@ -250,6 +251,12 @@ void Array2D< T >::resize( int width, int height )
 		m_width = width;
 		m_height = height;
 	}
+}
+
+template< typename T >
+void Array2D< T >::resize( const Vector2i& size )
+{
+	resize( size.x, size.y )
 }
 
 template< typename T >

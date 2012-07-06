@@ -180,7 +180,7 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 	);
 
 	bool bSingular;
-	Matrix2f ai = a.inverse( &bSingular );
+	Matrix2f ai = a.inverse( bSingular );
 	assert( !bSingular );
 
 	Vector2f l0l1 = ai * b;

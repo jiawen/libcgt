@@ -214,17 +214,17 @@ std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool nor
 }
 
 // static
-DynamicVertexBuffer* D3D11Utils::createFrustum( ID3D11Device* pDevice,
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFrustum( ID3D11Device* pDevice,
 	const Vector3f& eye, std::vector< Vector3f > frustumCorners,
 	const Vector4f& color )
 {
-	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() );
+	std::shared_ptr< DynamicVertexBuffer > pBuffer( new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() ) );
 	
-	VertexPosition4fColor4f* vertexArray = buffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
+	VertexPosition4fColor4f* vertexArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
 	writeFrustum( eye, frustumCorners, color, vertexArray );
-	buffer->unmap();
+	pBuffer->unmap();
 
-	return buffer;
+	return pBuffer;
 }
 
 // static

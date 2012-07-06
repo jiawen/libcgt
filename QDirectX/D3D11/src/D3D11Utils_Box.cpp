@@ -27,3 +27,27 @@ D3D11_BOX D3D11Utils_Box::createBox( uint x, uint y, uint z, uint width, uint he
 
 	return box;
 }
+
+// static
+std::shared_ptr< DynamicVertexBuffer > D3D11Utils_Box::createAxisAlignedWireframeGrid( ID3D11Device* pDevice,
+	const Vector3f& origin, const Vector3f& size, const Vector3i& resolution,
+	const Vector4f& color )
+{
+	int nVertices = 2 *
+	(
+		( resolution.y + 1 ) * ( resolution.z + 1 ) +
+		( resolution.z + 1 ) * ( resolution.x + 1 ) +
+		( resolution.x + 1 ) * ( resolution.y + 1 )
+	);
+
+	std::shared_ptr< DynamicVertexBuffer > pBuffer
+	(
+		new DynamicVertexBuffer( pDevice, nVertices, VertexPosition4fColor4f::sizeInBytes() )
+	);
+
+	VertexPosition4fColor4f* pArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
+	D3D11Utils_Box::writeAxisAlignedWireframeGrid( origin, size, resolution, color, pArray );
+	pBuffer->unmap();
+
+	return pBuffer;
+}

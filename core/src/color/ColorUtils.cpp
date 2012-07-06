@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <math/Arithmetic.h>
+#include <common/Iterators.h>
 
 // static
 const float ColorUtils::LOG_LUMINANCE_EPSILON = 0.001f;
@@ -83,13 +84,13 @@ float ColorUtils::unsignedByteToFloat( ubyte ub )
 }
 
 // static
-float ColorUtils::rgb2luminance( float rgb[3] )
+float ColorUtils::rgbToLuminance( float rgb[3] )
 {
 	return( 0.3279f * rgb[0] + 0.6557f * rgb[1] + 0.0164f * rgb[2] );
 }
 
 // static
-float ColorUtils::rgb2luminance( ubyte rgb[3] )
+float ColorUtils::rgbToLuminance( ubyte rgb[3] )
 {
 	return
 	(
@@ -97,20 +98,6 @@ float ColorUtils::rgb2luminance( ubyte rgb[3] )
 		0.6557f * unsignedByteToFloat( rgb[1] ) +
 		0.0164f * unsignedByteToFloat( rgb[2] )
 	);
-}
-
-// static
-void ColorUtils::rgbArray2LuminanceArray( UnsignedByteArray rgb, UnsignedByteArray luminance )
-{
-	assert( rgb.length() % 3 == 0 );
-
-	int nPixels = rgb.length() / 3;
-	assert( nPixels == luminance.length() );
-
-	for( int i = 0; i < nPixels; ++i )
-	{
-		luminance[ i ] = floatToUnsignedByte( rgb2luminance( &( rgb[ 3 * i ] ) ) );
-	}
 }
 
 // static

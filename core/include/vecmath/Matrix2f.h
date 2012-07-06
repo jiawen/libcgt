@@ -28,8 +28,9 @@ public:
 	Vector2f getCol( int j ) const;
 	void setCol( int j, const Vector2f& v );
 
-	float determinant();
-	Matrix2f inverse( bool* pbIsSingular = nullptr, float epsilon = 0.f ); // TODO: in place inverse
+	float determinant() const;
+	Matrix2f inverse() const;
+	Matrix2f inverse( bool& isSingular, float epsilon = 0.f ) const; // TODO: in place inverse
 
 	void transpose();
 	Matrix2f transposed() const;

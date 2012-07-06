@@ -35,6 +35,7 @@ public:
 
 	// resizing with width, height, or depth <= 0 will invalidate this array
 	void resize( int width, int height, int depth );
+	void resize( const Vector3i& size );
 
 	// Returns a pointer to the beginning of the y-th row of the z-th slice
 	T* rowPointer( int y, int z );
@@ -273,6 +274,12 @@ void Array3D< T >::resize( int width, int height, int depth )
 		m_height = height;
 		m_depth = depth;
 	}
+}
+
+template< typename T >
+void Array3D< T >::resize( const Vector3i& size )
+{
+	resize( size.x, size.y, size.z );
 }
 
 template< typename T >

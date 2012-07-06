@@ -3,6 +3,8 @@
 #include <utility>
 
 class Vector2i;
+class Vector3i;
+class Vector4i;
 
 class Comparators
 {
@@ -19,6 +21,10 @@ public:
 	static bool indexAndDistanceLess( const std::pair< int, float >& a, const std::pair< int, float >& b );	
 
 	static bool vector2iLexigraphicLess( const Vector2i& a, const Vector2i& b );
+
+	static bool vector3iLexigraphicLess( const Vector3i& a, const Vector3i& b );
+
+	static bool vector4iLexigraphicLess( const Vector4i& a, const Vector4i& b );
 };
 
 // static

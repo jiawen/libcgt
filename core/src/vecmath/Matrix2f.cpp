@@ -96,7 +96,7 @@ void Matrix2f::setCol( int j, const Vector2f& v )
 	m_elements[ colStart + 1 ] = v.y;
 }
 
-float Matrix2f::determinant()
+float Matrix2f::determinant() const
 {
 	return Matrix2f::determinant2x2
 	(
@@ -105,27 +105,24 @@ float Matrix2f::determinant()
 	);
 }
 
-Matrix2f Matrix2f::inverse( bool* pbIsSingular, float epsilon )
+Matrix2f Matrix2f::inverse() const
 {
-	float determinant = m_elements[ 0 ] * m_elements[ 3 ] - m_elements[ 2 ] * m_elements[ 1 ];
+	bool isSingular;
+	return inverse( isSingular );
+}
 
-	bool isSingular = ( abs( determinant ) < epsilon );
+Matrix2f Matrix2f::inverse( bool& isSingular, float epsilon ) const
+{
+	float det = determinant();
+
+	isSingular = ( abs( det ) < epsilon );
 	if( isSingular )
 	{
-		if( pbIsSingular != NULL )
-		{
-			*pbIsSingular = true;
-		}
 		return Matrix2f();
 	}
 	else
 	{
-		if( pbIsSingular != NULL )
-		{
-			*pbIsSingular = false;
-		}
-
-		float reciprocalDeterminant = 1.0f / determinant;
+		float reciprocalDeterminant = 1.0f / det;
 
 		return Matrix2f
 		(
