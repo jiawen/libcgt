@@ -256,7 +256,7 @@ void Array2D< T >::resize( int width, int height )
 template< typename T >
 void Array2D< T >::resize( const Vector2i& size )
 {
-	resize( size.x, size.y )
+	resize( size.x, size.y );
 }
 
 template< typename T >

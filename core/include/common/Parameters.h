@@ -9,6 +9,7 @@ class Parameters
 public:
 
 	static Parameters* instance();
+	static bool parse( QString filename );
 
 	bool hasBool( QString name );
 	bool getBool( QString name );

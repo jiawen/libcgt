@@ -1,5 +1,9 @@
 #include "common/Parameters.h"
 
+#include <QFile>
+#include <QTextStream>
+#include <QStringList>
+
 // static
 Parameters* Parameters::instance()
 {
@@ -9,6 +13,104 @@ Parameters* Parameters::instance()
 	}
 
 	return s_singleton;
+}
+
+// static
+bool Parameters::parse( QString filename )
+{
+	Parameters* p = Parameters::instance();
+
+	// attempt to read the file
+	QFile inputFile( filename );
+	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+	{
+		return false;
+	}
+
+	int lineNumber = 0;
+	QString line = "";	
+	QString delim( " " );
+
+	QTextStream inputTextStream( &inputFile );
+	line = inputTextStream.readLine();
+	while( !( line.isNull() ) )
+	{
+		if( line != "" )
+		{
+			if( line[0] != '#' )
+			{
+				QStringList tokens = line.split( delim, QString::SkipEmptyParts );
+
+				QString type = tokens[0];				
+
+				if( type == "bool" )
+				{
+					QString name = tokens[1];
+					QString value = tokens[2];
+					bool v = ( value == "true" );
+					p->setBool( name, v );
+				}
+				else if( type == "int" )
+				{
+					QString name = tokens[1];
+					QString value = tokens[2];
+					int v = value.toInt();
+					p->setInt( name, v );
+				}
+				else if( type == "int[]" )
+				{
+					QString name = tokens[1];
+					QVector< int > values;
+					for( int i = 2; i < tokens.size(); ++i )
+					{
+						values.append( tokens[i].toInt() );
+					}
+					p->setIntArray( name, values );
+				}
+				else if( type == "float" )
+				{
+					QString name = tokens[1];
+					QString value = tokens[2];
+					float v = value.toFloat();
+					p->setFloat( name, v );
+				}
+				else if( type == "float[]" )
+				{
+					QString name = tokens[1];
+					QVector< float > values;
+					for( int i = 2; i < tokens.size(); ++i )
+					{
+						values.append( tokens[i].toFloat() );
+					}
+					p->setFloatArray( name, values );
+				}
+				else if( type == "string" )
+				{
+					QString name = tokens[1];
+					QString value = tokens[2];
+					p->setString( name, value );
+				}
+				else if( type == "string[]" )
+				{
+					QString name = tokens[1];
+					QVector< QString > values;
+					for( int i = 2; i < tokens.size(); ++i )
+					{
+						values.append( tokens[i] );
+					}
+					p->setStringArray( name, values );
+				}
+				else
+				{
+					printf( "Ignoring unknown type: %s\n", qPrintable( type ) );
+				}
+			}
+		}
+
+		++lineNumber;
+		line = inputTextStream.readLine();
+	}
+	return true;
 }
 
 bool Parameters::hasBool( QString name )
