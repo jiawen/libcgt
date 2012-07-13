@@ -214,16 +214,49 @@ Matrix2f Matrix2f::rotation( float degrees )
 // Operators
 //////////////////////////////////////////////////////////////////////////
 
+Matrix2f operator + ( const Matrix2f& x, const Matrix2f& y )
+{
+	Matrix2f sum;
+
+	for( int k = 0; k < 4; ++k )
+	{
+		sum[k] = x[k] + y[k];
+	}
+
+	return sum;
+}
+
+Matrix2f operator - ( const Matrix2f& x, const Matrix2f& y )
+{
+	Matrix2f difference;
+
+	for( int k = 0; k < 4; ++k )
+	{
+		difference[k] = x[k] - y[k];
+	}
+
+	return difference;
+}
+
+Matrix2f operator - ( const Matrix2f& x )
+{
+	Matrix2f output;
+
+	for( int k = 0; k < 4; ++k )
+	{
+		output[k] = -x[k];
+	}
+
+	return output;
+}
+
 Matrix2f operator * ( float f, const Matrix2f& m )
 {
 	Matrix2f output;
 
-	for( int i = 0; i < 2; ++i )
+	for( int k = 0; k < 4; ++k )
 	{
-		for( int j = 0; j < 2; ++j )
-		{
-			output( i, j ) = f * m( i, j );
-		}
+		output[k] = f * m[k];
 	}
 
 	return output;

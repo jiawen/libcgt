@@ -60,8 +60,12 @@ public:
 	};
 };
 
-// Scalar-Matrix multiplication
-// TODO: do the rest
+Matrix2f operator + ( const Matrix2f& x, const Matrix2f& y );
+Matrix2f operator - ( const Matrix2f& x, const Matrix2f& y );
+// negate
+Matrix2f operator - ( const Matrix2f& x );
+
+// Matrix-Scalar multiplication
 Matrix2f operator * ( float f, const Matrix2f& m );
 Matrix2f operator * ( const Matrix2f& m, float f );
 

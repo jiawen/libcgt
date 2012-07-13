@@ -766,6 +766,59 @@ Matrix4f Matrix4f::viewport( const Rect2f& rect, bool directX )
 // Operators
 //////////////////////////////////////////////////////////////////////////
 
+Matrix4f operator + ( const Matrix4f& x, const Matrix4f& y )
+{
+	Matrix4f sum;
+
+	for( int k = 0; k < 16; ++k )
+	{
+		sum[k] = x[k] + y[k];
+	}
+
+	return sum;
+}
+
+Matrix4f operator - ( const Matrix4f& x, const Matrix4f& y )
+{
+	Matrix4f difference;
+
+	for( int k = 0; k < 16; ++k )
+	{
+		difference[k] = x[k] - y[k];
+	}
+
+	return difference;
+}
+
+Matrix4f operator - ( const Matrix4f& x )
+{
+	Matrix4f output;
+
+	for( int k = 0; k < 16; ++k )
+	{
+		output[k] = -x[k];
+	}
+
+	return output;
+}
+
+Matrix4f operator * ( float f, const Matrix4f& m )
+{
+	Matrix4f output;
+
+	for( int k = 0; k < 16; ++k )
+	{
+		output[k] = f * m[k];
+	}
+
+	return output;
+}
+
+Matrix4f operator * ( const Matrix4f& m, float f )
+{
+	return f * m;
+}
+
 Vector4f operator * ( const Matrix4f& m, const Vector4f& v )
 {
 	Vector4f output( 0, 0, 0, 0 );

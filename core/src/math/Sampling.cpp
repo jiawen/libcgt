@@ -26,7 +26,7 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 	{
 		for( int j = 0; j < nDimensions; ++j )
 		{
-			samples[ i * nDimensions + j ] = ( i + static_cast< float >( random.nextDouble() ) ) * delta;
+			samples[ i * nDimensions + j ] = ( i + random.nextFloat() ) * delta;
 		}
 	}
 
@@ -42,32 +42,28 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 }
 
 // static
-void Sampling::uniformSampleDisc( float u1, float u2,
-								 float* px, float* py )
+Vector2f Sampling::areaSampleDisc( float u0, float u1 )
 {
-	float r = sqrt( u1 );
-	float theta = static_cast< float >( 2.0f * MathUtils::PI * u2 );
-	*px = r * cos( theta );
-	*py = r * sin( theta );
+	float r = sqrt( u0 );
+	float theta = MathUtils::TWO_PI * u1;
+	return Vector2f( r * cos( theta ), r * sin( theta ) );
 }
 
 // static
-void Sampling::concentricSampleDisc( float u1, float u2,
-								 float* px, float* py )
+Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
 {
-	float r, theta;
+	float r;
+	float theta;
 
 	// Map uniform random numbers to [-1, 1]^2
-	float sx = 2 * u1 - 1;
-	float sy = 2 * u2 - 1;
+	float sx = 2 * u0 - 1;
+	float sy = 2 * u1 - 1;
 
 	// Map square to (r, theta)
 	// Handle degeneracy at the origin
 	if( sx == 0.0 && sy == 0.0 )
 	{
-		*px = 0.0;
-		*py = 0.0;
-		return;
+		return Vector2f( 0, 0 );
 	}
 	
 	if( sx >= -sy )
@@ -108,9 +104,27 @@ void Sampling::concentricSampleDisc( float u1, float u2,
 		}
 	}
 	
-	theta *= static_cast< float >( MathUtils::PI / 4.f );
-	*px = r * cos( theta );
-	*py = r * sin( theta );
+	theta *= MathUtils::QUARTER_PI;
+	return Vector2f( r * cos( theta ), r * sin( theta ) );
+}
+
+// static
+Vector3f Sampling::areaSampleSphere( float u0, float u1 )
+{
+	// See: http://www.cs.cmu.edu/~mws/rpos.html
+	float z = 2 * u0 - 1; // [-1,1]
+	float phi = MathUtils::TWO_PI * u1; // [0,2*pi];
+
+	float sqrtOneMinusSSquared = sqrt( 1.0f - z * z );
+	float cosPhi = cos( phi );
+	float sinPhi = sin( phi );
+
+	return Vector3f
+	(
+		sqrtOneMinusSSquared * cosPhi,
+		sqrtOneMinusSSquared * sinPhi,
+		z
+	);
 }
 
 // static

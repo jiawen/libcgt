@@ -103,6 +103,15 @@ public:
 
 };
 
+Matrix3f operator + ( const Matrix3f& x, const Matrix3f& y );
+Matrix3f operator - ( const Matrix3f& x, const Matrix3f& y );
+// negate
+Matrix3f operator - ( const Matrix3f& x );
+
+// Matrix-Scalar multiplication
+Matrix3f operator * ( float f, const Matrix3f& m );
+Matrix3f operator * ( const Matrix3f& m, float f );
+
 // Matrix-Vector multiplication
 // 3x3 * 3x1 ==> 3x1
 Vector3f operator * ( const Matrix3f& m, const Vector3f& v );

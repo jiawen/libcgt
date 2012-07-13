@@ -162,6 +162,15 @@ public:
 
 };
 
+Matrix4f operator + ( const Matrix4f& x, const Matrix4f& y );
+Matrix4f operator - ( const Matrix4f& x, const Matrix4f& y );
+// negate
+Matrix4f operator - ( const Matrix4f& x );
+
+// Matrix-Scalar multiplication
+Matrix4f operator * ( float f, const Matrix4f& m );
+Matrix4f operator * ( const Matrix4f& m, float f );
+
 // Matrix-Vector multiplication
 // 4x4 * 4x1 ==> 4x1
 Vector4f operator * ( const Matrix4f& m, const Vector4f& v );

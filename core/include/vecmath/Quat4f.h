@@ -69,6 +69,9 @@ public:
 	// axisAngle.xyz need not be unit length
 	void setAxisAngle( const Vector4f& axisAngle );
 
+	// rotates vector v using the rotation defined by q = *this
+	// returns v' = q * quat(v) * conj(q)
+	// where quat(v) is a quaternion with w = 0 and q.xyz ~ v.xyz
 	Vector3f rotateVector( const Vector3f& v );
 
 	// ---- Utility ----
@@ -111,11 +114,6 @@ public:
 	// given u[i] is a uniformly distributed random number in [0,1]
 	// taken from Graphics Gems II
 	static Quat4f randomRotation( float u0, float u1, float u2 );
-
-#if 0
-	// rotates pvVector by the rotation in pqRotation
-	static void rotateVector( Quat4f* pqRotation, Vector3f* pvVector, Vector3f* pvOut );
-#endif
 
 	union
 	{

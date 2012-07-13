@@ -461,8 +461,7 @@ Quat4f Quat4f::randomRotation( float u0, float u1, float u2 )
 }
 
 Vector3f Quat4f::rotateVector( const Vector3f& v )
-{
-	// return q * v * q^-1
+{	
 	return ( ( *this ) * Quat4f( v ) * conjugated() ).xyz();
 }
 

@@ -416,6 +416,59 @@ Matrix3f Matrix3f::scaleTranslate( const Vector2f& srcOrigin, const Vector2f& sr
 // Operators
 //////////////////////////////////////////////////////////////////////////
 
+Matrix3f operator + ( const Matrix3f& x, const Matrix3f& y )
+{
+	Matrix3f sum;
+
+	for( int k = 0; k < 9; ++k )
+	{
+		sum[k] = x[k] + y[k];
+	}
+
+	return sum;
+}
+
+Matrix3f operator - ( const Matrix3f& x, const Matrix3f& y )
+{
+	Matrix3f difference;
+
+	for( int k = 0; k < 9; ++k )
+	{
+		difference[k] = x[k] - y[k];
+	}
+
+	return difference;
+}
+
+Matrix3f operator - ( const Matrix3f& x )
+{
+	Matrix3f output;
+
+	for( int k = 0; k < 9; ++k )
+	{
+		output[k] = -x[k];
+	}
+
+	return output;
+}
+
+Matrix3f operator * ( float f, const Matrix3f& m )
+{
+	Matrix3f output;
+
+	for( int k = 0; k < 9; ++k )
+	{
+		output[k] = f * m[k];
+	}
+
+	return output;
+}
+
+Matrix3f operator * ( const Matrix3f& m, float f )
+{
+	return f * m;
+}
+
 Vector3f operator * ( const Matrix3f& m, const Vector3f& v )
 {
 	Vector3f output( 0, 0, 0 );

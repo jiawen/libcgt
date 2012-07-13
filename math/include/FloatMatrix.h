@@ -63,7 +63,23 @@ public:
 	const float* data() const;
 	float* data();
 
-	FloatMatrix solve( const FloatMatrix& rhs, bool* pSucceeded = nullptr ) const;
+	// TODO: use spotrf to get cholesky factors like LU
+
+	// solves the system Ax = B with LU factorization
+	// A = *this, a general square matrix
+	// B contains multiple right hand sides
+	//
+	// returns a 0x0 matrix on failure
+	FloatMatrix solve( const FloatMatrix& rhs ) const;
+	FloatMatrix solve( const FloatMatrix& rhs, bool& succeeded ) const;
+	
+	// solves the system Ax = B with Cholesky factorization
+	// A = *this, a symmetric matrix with full storage: only lower triangle matters (TODO: allow upper?)
+	// B contains multiple right hand sides
+	//
+	// returns a 0x0 matrix on failure
+	FloatMatrix solveSPD( const FloatMatrix& rhs ) const;
+	FloatMatrix solveSPD( const FloatMatrix& rhs, bool& succeeded ) const;
 
 	// Returns the inverse of this using LU factorization
 	// optional out parameter indicates whether the operation succeeded

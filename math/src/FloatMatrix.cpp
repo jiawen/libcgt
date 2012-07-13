@@ -239,7 +239,13 @@ float* FloatMatrix::data()
 	return m_data.data();
 }
 
-FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
+FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs ) const
+{
+	bool b;
+	return solve( rhs, b );
+}
+
+FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool& succeeded ) const
 {
 	// check that this matrix is square
 	int m = m_nRows;
@@ -248,6 +254,7 @@ FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
 	if( m != n )
 	{
 		fprintf( stderr, "FloatMatrix::solve requires the matrix to be square\n" );
+		return FloatMatrix();
 	}
 
 	int nRHS = rhs.numCols();
@@ -255,6 +262,7 @@ FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
 	{
 		fprintf( stderr, "FloatMatrix::solve: dimension mismatch.  A = %d x %d, rhs = %d x %d\n",
 			m, n, rhs.numRows(), nRHS );
+		return FloatMatrix();
 	}
 
 	// make a copy of this and the right hand side
@@ -264,22 +272,70 @@ FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool* pSucceeded ) const
 	std::vector< int > ipiv( n );
 	int info;
 
-	sgesv( &n, &nRHS, A.data(), &m, ipiv.data(), B.data(), &n,  &info );
+	sgesv( &n, &nRHS, A.data(), &m, ipiv.data(), B.data(), &n, &info );
 
-	bool succeeded = ( info == 0 );
-
-	if( pSucceeded != nullptr )
-	{
-		*pSucceeded = succeeded;
-	}
+	succeeded = ( info == 0 );
 
 	if( info < 0 )
 	{
-		fprintf( stderr, "FloatMatrix::solve(): Illegal parameter value: %d\n", -info );		
+		fprintf( stderr, "FloatMatrix::solve(): Illegal parameter value: %d\n", -info );
+		return FloatMatrix();
 	}
 	else if( info > 0 )
 	{
 		fprintf( stderr, "FloatMatrix::solve(): Matrix is singular.\n" );
+		return FloatMatrix();
+	}
+
+	return B;
+}
+
+FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs ) const
+{
+	bool succeeded;
+	return solveSPD( rhs );
+}
+
+FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded ) const
+{
+	// check that this matrix is square
+	int m = m_nRows;
+	int n = m_nCols;
+
+	if( m != n )
+	{
+		fprintf( stderr, "FloatMatrix::solve requires the matrix to be square\n" );
+		return FloatMatrix();
+	}
+
+	int nRHS = rhs.numCols();
+	if( rhs.numRows() != n )
+	{
+		fprintf( stderr, "FloatMatrix::solve: dimension mismatch.  A = %d x %d, rhs = %d x %d\n",
+			m, n, rhs.numRows(), nRHS );
+		return FloatMatrix();
+	}
+
+	// make a copy of this and the right hand side
+	FloatMatrix A( *this );
+	FloatMatrix B( rhs );
+
+	char uplo = 'L';
+	int info;
+
+	sposv( &uplo, &n, &nRHS, A.data(), &m, B.data(), &m, &info );
+	
+	succeeded = ( info == 0 );
+
+	if( info < 0 )
+	{
+		fprintf( stderr, "FloatMatrix::solveSPD(): Illegal parameter value: %d\n", -info );		
+		return FloatMatrix();
+	}
+	else if( info > 0 )
+	{
+		fprintf( stderr, "FloatMatrix::solveSPD(): Matrix is not positive definite.\n" );
+		return FloatMatrix();
 	}
 
 	return B;
