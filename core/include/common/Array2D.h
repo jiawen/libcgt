@@ -353,7 +353,7 @@ bool Array2D< T >::load( const char* filename )
 
 	fclose( fp );
 
-	return false;
+	return true;
 }
 
 template< typename T >

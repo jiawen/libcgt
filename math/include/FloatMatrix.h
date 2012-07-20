@@ -3,8 +3,10 @@
 #include <QString>
 #include <vector>
 
-#include "vecmath/Vector2i.h"
-#include "vecmath/Vector3f.h"
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector3f.h>
+
+#include "MatrixCommon.h"
 
 class FloatMatrix
 {
@@ -15,12 +17,11 @@ public:
 
 	FloatMatrix(); // makes a 0x0 matrix
 	FloatMatrix( int nRows, int nCols, float fillValue = 0.f );
-	FloatMatrix( const FloatMatrix& m );
-	FloatMatrix( FloatMatrix&& m ); // move constructor
-	FloatMatrix( FloatMatrix* m );
+	FloatMatrix( const FloatMatrix& copy );
+	FloatMatrix( FloatMatrix&& move ); // move constructor
 	virtual ~FloatMatrix();
-	FloatMatrix& operator = ( const FloatMatrix& m );
-	FloatMatrix& operator = ( FloatMatrix&& m ); // move assignment operator
+	FloatMatrix& operator = ( const FloatMatrix& copy );
+	FloatMatrix& operator = ( FloatMatrix&& move ); // move assignment operator
 
 	bool isNull() const; // a matrix is null if either nRows or nCols is 0
 
@@ -74,12 +75,14 @@ public:
 	FloatMatrix solve( const FloatMatrix& rhs, bool& succeeded ) const;
 	
 	// solves the system Ax = B with Cholesky factorization
-	// A = *this, a symmetric matrix with full storage: only lower triangle matters (TODO: allow upper?)
+	// A = *this, a symmetric matrix with full storage
+	//    if storedTriangle = LOWER, only the entries in the lower triangle are used
+	//    else, the upper triangle
 	// B contains multiple right hand sides
 	//
 	// returns a 0x0 matrix on failure
-	FloatMatrix solveSPD( const FloatMatrix& rhs ) const;
-	FloatMatrix solveSPD( const FloatMatrix& rhs, bool& succeeded ) const;
+	FloatMatrix solveSPD( const FloatMatrix& rhs, MatrixTriangle storedTriangle = LOWER ) const;
+	FloatMatrix solveSPD( const FloatMatrix& rhs, bool& succeeded, MatrixTriangle storedTriangle = LOWER ) const;
 
 	// Returns the inverse of this using LU factorization
 	// optional out parameter indicates whether the operation succeeded
@@ -97,8 +100,11 @@ public:
 	void transposed( FloatMatrix& t ) const;
 	FloatMatrix transposed() const;
 
-	// Returns the sum of the square of each element
+	// Returns the square root of the sum of the square of each element
 	float frobeniusNorm() const;
+
+	// Returns the sum of the square of each element
+	float frobeniusNormSquared() const;
 
 	// returns the maximum row sum
 	float infinityNorm() const;

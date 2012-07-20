@@ -655,10 +655,12 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	// TODO: update structure matrix?
 }
 
-// instantiate
+//////////////////////////////////////////////////////////////////////////
+// Instantiate Templates
+//////////////////////////////////////////////////////////////////////////
 
 template
 CompressedSparseMatrix< float >;
 
-template
-CompressedSparseMatrix< double >;
+//template
+//CompressedSparseMatrix< double >;

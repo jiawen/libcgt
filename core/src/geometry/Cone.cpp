@@ -27,7 +27,6 @@ void Cone::tesselate( int nTheta, int nHeight,
 
 	Vector4f bc( baseCenter, 0 );
 
-	int k = 0;
 	for( int t = 0; t < nTheta; ++t )
 	{
 		float t0 = t * dt;

@@ -115,10 +115,12 @@ QString DictionaryOfKeysSparseMatrix< T >::toString() const
 	return "";
 }
 
-// instantiate
+//////////////////////////////////////////////////////////////////////////
+// Instantiate Templates
+//////////////////////////////////////////////////////////////////////////
 
 template
 DictionaryOfKeysSparseMatrix< float >;
 
-template
-DictionaryOfKeysSparseMatrix< double >;
+//template
+//DictionaryOfKeysSparseMatrix< double >;

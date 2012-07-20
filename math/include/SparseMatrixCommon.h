@@ -6,18 +6,7 @@
 
 #include <common/BasicTypes.h>
 
-enum MatrixTriangle
-{
-	LOWER,
-	UPPER
-};
-
-enum MatrixType
-{
-	GENERAL,
-	SYMMETRIC, // one triangle equals other half
-	TRIANGULAR // one triangle is zero
-};
+#include "MatrixCommon.h"
 
 typedef std::pair< uint, uint > SparseMatrixKey;
 

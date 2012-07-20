@@ -45,34 +45,24 @@ FloatMatrix::FloatMatrix( int nRows, int nCols, float fillValue ) :
 
 }
 
-FloatMatrix::FloatMatrix( const FloatMatrix& m ) :
+FloatMatrix::FloatMatrix( const FloatMatrix& copy ) :
 
-	m_nRows( m.m_nRows ),
-	m_nCols( m.m_nCols ),
-	m_data( m.m_data )
+	m_nRows( copy.m_nRows ),
+	m_nCols( copy.m_nCols ),
+	m_data( copy.m_data )
 
 {
 
 }
 
-FloatMatrix::FloatMatrix( FloatMatrix&& m )
+FloatMatrix::FloatMatrix( FloatMatrix&& move )
 {
-	m_data = std::move( m.m_data );
-	m_nRows = m.m_nRows;
-	m_nCols = m.m_nCols;
+	m_data = std::move( move.m_data );
+	m_nRows = move.m_nRows;
+	m_nCols = move.m_nCols;
 
-	m.m_nRows = 0;
-	m.m_nCols = 0;
-}
-
-FloatMatrix::FloatMatrix( FloatMatrix* m ) :
-
-	m_nRows( m->m_nRows ),
-	m_nCols( m->m_nCols ),
-	m_data( m->m_data )
-
-{
-
+	move.m_nRows = 0;
+	move.m_nCols = 0;
 }
 
 // virtual
@@ -81,27 +71,27 @@ FloatMatrix::~FloatMatrix()
 
 }
 
-FloatMatrix& FloatMatrix::operator = ( const FloatMatrix& m )
+FloatMatrix& FloatMatrix::operator = ( const FloatMatrix& copy )
 {
-	if( this != &m )
+	if( this != &copy )
 	{
-		m_nRows = m.m_nRows;
-		m_nCols = m.m_nCols;
-		m_data = m.m_data;
+		m_nRows = copy.m_nRows;
+		m_nCols = copy.m_nCols;
+		m_data = copy.m_data;
 	}
 	return *this;
 }
 
-FloatMatrix& FloatMatrix::operator = ( FloatMatrix&& m )
+FloatMatrix& FloatMatrix::operator = ( FloatMatrix&& move )
 {
-	if( this != &m )
+	if( this != &move )
 	{
-		m_data = std::move( m.m_data );
-		m_nRows = m.m_nRows;
-		m_nCols = m.m_nCols;
+		m_data = std::move( move.m_data );
+		m_nRows = move.m_nRows;
+		m_nCols = move.m_nCols;
 
-		m.m_nRows = 0;
-		m.m_nCols = 0;
+		move.m_nRows = 0;
+		move.m_nCols = 0;
 	}
 	return *this;
 }
@@ -290,13 +280,13 @@ FloatMatrix FloatMatrix::solve( const FloatMatrix& rhs, bool& succeeded ) const
 	return B;
 }
 
-FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs ) const
+FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, MatrixTriangle storedTriangle ) const
 {
 	bool succeeded;
-	return solveSPD( rhs );
+	return solveSPD( rhs, succeeded, storedTriangle );
 }
 
-FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded ) const
+FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded, MatrixTriangle storedTriangle ) const
 {
 	// check that this matrix is square
 	int m = m_nRows;
@@ -320,7 +310,7 @@ FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded ) con
 	FloatMatrix A( *this );
 	FloatMatrix B( rhs );
 
-	char uplo = 'L';
+	char uplo = ( storedTriangle == LOWER ) ? 'L' : 'U';
 	int info;
 
 	sposv( &uplo, &n, &nRHS, A.data(), &m, B.data(), &m, &info );
@@ -387,6 +377,13 @@ FloatMatrix FloatMatrix::transposed() const
 float FloatMatrix::frobeniusNorm() const
 {
 	return norm( 'f' );
+}
+
+float FloatMatrix::frobeniusNormSquared() const
+{
+	int m = numElements();
+	int inc = 1;
+	return sdot( &m, data(), &inc, data(), &inc );
 }
 
 // returns the maximum row sum
