@@ -53,16 +53,16 @@ Matrix3f::Matrix3f( const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, 
 	}
 }
 
-Matrix3f::Matrix3f( const Matrix3f& rm )
+Matrix3f::Matrix3f( const Matrix3f& copy )
 {
-	memcpy( m_elements, rm.m_elements, 9 * sizeof( float ) );
+	memcpy( m_elements, copy.m_elements, 9 * sizeof( float ) );
 }
 
-Matrix3f& Matrix3f::operator = ( const Matrix3f& rm )
+Matrix3f& Matrix3f::operator = ( const Matrix3f& copy )
 {
-	if( this != &rm )
+	if( this != &copy )
 	{
-		memcpy( m_elements, rm.m_elements, 9 * sizeof( float ) );
+		memcpy( m_elements, copy.m_elements, 9 * sizeof( float ) );
 	}
 	return *this;
 }
@@ -238,6 +238,16 @@ void Matrix3f::print()
 		m_elements[ 2 ], m_elements[ 5 ], m_elements[ 8 ] );
 }
 
+Vector2f Matrix3f::transformPoint( const Vector2f& v ) const
+{
+	return ( ( *this ) * Vector3f( v, 1 ) ).xy();
+}
+
+Vector2f Matrix3f::transformNormal( const Vector2f& n ) const
+{
+	return ( ( *this ) * Vector3f( n, 0 ) ).xy();
+}
+
 // static
 float Matrix3f::determinant3x3( float m00, float m01, float m02,
 							   float m10, float m11, float m12,
@@ -290,22 +300,22 @@ Matrix3f Matrix3f::rotation( const Vector3f& axis, float radians )
 }
 
 // static
-Matrix3f Matrix3f::rotation( const Quat4f& rq )
+Matrix3f Matrix3f::fromQuat( const Quat4f& q )
 {
-	Quat4f q = rq.normalized();
+	Quat4f qq = q.normalized();
 
-	float xx = q.x * q.x;
-	float yy = q.y * q.y;
-	float zz = q.z * q.z;
+	float xx = qq.x * qq.x;
+	float yy = qq.y * qq.y;
+	float zz = qq.z * qq.z;
 
-	float xy = q.x * q.y;
-	float zw = q.z * q.w;
+	float xy = qq.x * qq.y;
+	float zw = qq.z * qq.w;
 
-	float xz = q.x * q.z;
-	float yw = q.y * q.w;
+	float xz = qq.x * qq.z;
+	float yw = qq.y * qq.w;
 
-	float yz = q.y * q.z;
-	float xw = q.x * q.w;
+	float yz = qq.y * qq.z;
+	float xw = qq.x * qq.w;
 
 	return Matrix3f
 	(

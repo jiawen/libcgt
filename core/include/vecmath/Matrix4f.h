@@ -31,6 +31,7 @@ public:
 	Matrix4f& operator = ( const Matrix4f& rm ); // assignment operator
 	// no destructor necessary
 
+	// read / write element (i,j)
 	const float& operator () ( int i, int j ) const;
 	float& operator () ( int i, int j );
 
@@ -77,15 +78,20 @@ public:
 	void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const;
 
 	// ---- Utility ----
-	// implicit cast
+	// implicit cast to pointer
 	operator const float* () const;
 	operator float* ();
 	void print();
 
+	// uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
+	Vector3f transformPoint( const Vector3f& v ) const;
+
+	// uses this to transform a point v (appends a homogeneous coordinate 0, transforms, then extracts xy)
+	Vector3f transformNormal( const Vector3f& n ) const;
+
+	// ---- Common graphics matrices ----
 	static Matrix4f ones();
 	static Matrix4f identity();
-	static Matrix4f translation( float x, float y, float z );
-	static Matrix4f translation( const Vector3f& xyz );
 	static Matrix4f rotateX( float radians );
 	static Matrix4f rotateY( float radians );
 	static Matrix4f rotateZ( float radians );
@@ -93,6 +99,8 @@ public:
 	static Matrix4f scaling( float sx, float sy, float sz );
 	static Matrix4f scaling( const Vector3f& xyz );
 	static Matrix4f uniformScaling( float s );
+	static Matrix4f translation( float x, float y, float z );
+	static Matrix4f translation( const Vector3f& xyz );
 	static Matrix4f scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
 		const Vector3f& dstOrigin, const Vector3f& dstSize );
 
@@ -126,8 +134,8 @@ public:
 	static Matrix4f viewport( const Rect2f& rect, bool directX );
 
 	// Returns the rotation matrix represented by a quaternion
-	// uses a normalized version of q
-	static Matrix4f rotation( const Quat4f& q );
+	// (method will normalize q first)
+	static Matrix4f fromQuat( const Quat4f& q );
 
 	// returns an orthogonal matrix that's a uniformly distributed rotation
 	// given u[i] is a uniformly distributed random number in [0,1]

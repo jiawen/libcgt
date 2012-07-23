@@ -334,6 +334,16 @@ void Matrix4f::print()
 		m_elements[ 3 ], m_elements[ 7 ], m_elements[ 11], m_elements[ 15 ] );
 }
 
+Vector3f Matrix4f::transformPoint( const Vector3f& v ) const
+{
+	return ( ( *this ) * Vector4f( v, 1 ) ).xyz();
+}
+
+Vector3f Matrix4f::transformNormal( const Vector3f& n ) const
+{
+	return ( ( *this ) * Vector4f( n, 0 ) ).xyz();
+}
+
 // static
 Matrix4f Matrix4f::ones()
 {
@@ -450,33 +460,6 @@ Matrix4f Matrix4f::rotation( const Vector3f& axis, float radians )
 }
 
 // static
-Matrix4f Matrix4f::rotation( const Quat4f& q )
-{
-	Quat4f qq = q.normalized();
-
-	float xx = qq.x * qq.x;
-	float yy = qq.y * qq.y;
-	float zz = qq.z * qq.z;
-
-	float xy = qq.x * qq.y;
-	float zw = qq.z * qq.w;
-
-	float xz = qq.x * qq.z;
-	float yw = qq.y * qq.w;
-
-	float yz = qq.y * qq.z;
-	float xw = qq.x * qq.w;
-
-	return Matrix4f
-	(
-		1.0f - 2.0f * ( yy + zz ),		2.0f * ( xy - zw ),				2.0f * ( xz + yw ),				0.0f,
-		2.0f * ( xy + zw ),				1.0f - 2.0f * ( xx + zz ),		2.0f * ( yz - xw ),				0.0f,
-		2.0f * ( xz - yw ),				2.0f * ( yz + xw ),				1.0f - 2.0f * ( xx + yy ),		0.0f,
-		0.0f,							0.0f,							0.0f,							1.0f
-	);
-}
-
-// static
 Matrix4f Matrix4f::scaling( float sx, float sy, float sz )
 {
 	return Matrix4f
@@ -525,7 +508,7 @@ Matrix4f Matrix4f::scaleTranslate( const Vector3f& srcOrigin, const Vector3f& sr
 // static
 Matrix4f Matrix4f::randomRotation( float u0, float u1, float u2 )
 {
-	return Matrix4f::rotation( Quat4f::randomRotation( u0, u1, u2 ) );
+	return Matrix4f::fromQuat( Quat4f::randomRotation( u0, u1, u2 ) );
 }
 
 // static
@@ -760,6 +743,33 @@ Matrix4f Matrix4f::viewport( float x0, float y0, float width, float height,
 Matrix4f Matrix4f::viewport( const Rect2f& rect, bool directX )
 {
 	return Matrix4f::viewport( rect.origin().x, rect.origin().y, rect.width(), rect.height(), directX );
+}
+
+// static
+Matrix4f Matrix4f::fromQuat( const Quat4f& q )
+{
+	Quat4f qq = q.normalized();
+
+	float xx = qq.x * qq.x;
+	float yy = qq.y * qq.y;
+	float zz = qq.z * qq.z;
+
+	float xy = qq.x * qq.y;
+	float zw = qq.z * qq.w;
+
+	float xz = qq.x * qq.z;
+	float yw = qq.y * qq.w;
+
+	float yz = qq.y * qq.z;
+	float xw = qq.x * qq.w;
+
+	return Matrix4f
+		(
+		1.0f - 2.0f * ( yy + zz ),		2.0f * ( xy - zw ),				2.0f * ( xz + yw ),				0.0f,
+		2.0f * ( xy + zw ),				1.0f - 2.0f * ( xx + zz ),		2.0f * ( yz - xw ),				0.0f,
+		2.0f * ( xz - yw ),				2.0f * ( yz + xw ),				1.0f - 2.0f * ( xx + yy ),		0.0f,
+		0.0f,							0.0f,							0.0f,							1.0f
+		);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,10 @@
+;LIBCGT_START
+Quat4f=(<w,f>, [<x,f>, <y,f>, <z,f>])
+Vector2f=(<x,f>, <y,f>)
+Vector3f=(<x,f>, <y,f>, <z,f>)
+Vector4f=(<x,f>, <y,f>, <z,f>, <w,f>)
+Matrix2f=[ [<m00,f>, <m01,f>] [<m10,f>, <m11,f>] ]
+Matrix3f=[ [<m00,f>, <m01,f>, <m02,f>] [<m10,f>, <m11,f>, <m12,f>] [<m20,f>, <m21,f>, <m22,f>] ]
+Matrix4f=[ [<m00,f>, <m01,f>, <m02,f>, <m03,f>] [<m10,f>, <m11,f>, <m12,f>, <m13,f>] [<m20,f>, <m21,f>, <m22,f>, <m23,f>] [<m30,f>, <m31,f>, <m32,f>, <m33,f>] ]
+;LIBCGT_END
+

@@ -109,11 +109,18 @@ Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
 }
 
 // static
+Vector2f Sampling::perimeterSampleCircle( float u0 )
+{
+	float theta = MathUtils::TWO_PI * u0; // [0,2*pi]
+	return Vector2f( cos( theta ), sin( theta ) );
+}
+
+// static
 Vector3f Sampling::areaSampleSphere( float u0, float u1 )
 {
 	// See: http://www.cs.cmu.edu/~mws/rpos.html
 	float z = 2 * u0 - 1; // [-1,1]
-	float phi = MathUtils::TWO_PI * u1; // [0,2*pi];
+	float phi = MathUtils::TWO_PI * u1; // [0,2*pi]
 
 	float sqrtOneMinusSSquared = sqrt( 1.0f - z * z );
 	float cosPhi = cos( phi );

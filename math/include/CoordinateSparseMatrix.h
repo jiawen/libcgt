@@ -5,6 +5,8 @@
 #include "SparseMatrixCommon.h"
 #include "CompressedSparseMatrix.h"
 
+// TODO: dynamically maintain nRows / nCols is expensive?
+
 template< typename T >
 class CoordinateSparseMatrix
 {

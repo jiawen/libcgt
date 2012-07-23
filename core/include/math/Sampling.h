@@ -29,6 +29,11 @@ public:
 	// less distorted and better preserves distances between points
 	static Vector2f concentricSampleDisc( float u1, float u2 );
 
+	// Given uniform random number u0 in [0,1]
+	// Returns a point uniformly sampled
+	// over the perimeter of the unit circle (center 0, radius 1)
+	static Vector2f perimeterSampleCircle( float u0 );
+
 	// Given uniform random numbers u0, u1 in [0,1]
 	// Returns a point uniformly sampled
 	// over the surface area of the unit sphere (center 0, radius 1)
