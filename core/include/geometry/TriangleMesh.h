@@ -46,7 +46,7 @@ public:
 	std::vector< Vector3f >& normals();
 
 	const std::vector< Vector3i >& faces() const;
-	std::vector< Vector3i >& faces();
+	std::vector< Vector3i >& faces();	
 
 	// returns -1 if edge i --> j is not on a face
 	int vertexOppositeEdge( int i, int j ) const;
@@ -60,6 +60,13 @@ public:
 	float totalArea() const;
 
 	bool obtuse( int faceIndex ) const;
+
+	bool intersectRay( const Vector3f& origin, const Vector3f& direction,
+		float& t, Vector3f& barycentrics, int& faceIndex,
+		float tMin = 0 ) const;
+
+	Vector3f barycentricInterpolatePosition( int faceIndex, const Vector3f& barycentrics ) const;
+	Vector3f barycentricInterpolateNormal( int faceIndex, const Vector3f& barycentrics ) const;
 
 	// given a set of connected faces in connectedComponent
 	// returns a consolidated mesh

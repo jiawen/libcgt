@@ -14,9 +14,9 @@ public:
 	static const Vector3f UP;
 	static const Vector3f RIGHT;
 	static const Vector3f FORWARD;
-
-    Vector3f();
-    Vector3f( float f );
+	
+    Vector3f(); // (0,0,0)
+    Vector3f( float f ); // (f,f,f)
     Vector3f( float _x, float _y, float _z );
 
 	Vector3f( const Vector2f& xy, float z );

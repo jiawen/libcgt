@@ -105,7 +105,7 @@ int Spline2f::closestControlPoint( const Vector2f& p, float* distanceSquared )
 	for( int i = 0; i < numControlPoints(); ++i )
 	{
 		Vector2f controlPoint = getControlPoint( i );
-		float currentDistanceSquared = ( p - controlPoint ).absSquared();
+		float currentDistanceSquared = ( p - controlPoint ).normSquared();
 		if( currentDistanceSquared < minDistanceSquared )
 		{
 			minDistanceSquared = currentDistanceSquared;
@@ -174,7 +174,7 @@ Vector2f Spline2f::closestPointOnSpline( const Vector2f& p, float* closestT, flo
 	for( int i = 0; i < nPointsToEvaluate; ++i )
 	{
 		Vector2f splinePoint = m_cache[ i ];
-		float currentDistanceSquared = ( splinePoint - p ).absSquared();
+		float currentDistanceSquared = ( splinePoint - p ).normSquared();
 		if( currentDistanceSquared < minDistance )
 		{
 			minDistance = currentDistanceSquared;

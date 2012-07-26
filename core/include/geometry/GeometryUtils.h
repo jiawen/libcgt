@@ -112,9 +112,9 @@ public:
 	// ray triangle intersection
 	// returns true if the ray intersects the triangle
 	// TODO: one sided intersection is also in there, ifdefed
-	static bool rayTriangleIntersection( const Vector3f& crRayOrigin, const Vector3f& crRayDirection,
-		const Vector3f& crV0, const Vector3f& crV1, const Vector3f& crV2,
-		float* t, float* u, float* v );
+	static bool rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
+		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
+		float& t, float& u, float& v );
 
 	static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
 		BoundingBox3f* pBox );

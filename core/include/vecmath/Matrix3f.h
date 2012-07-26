@@ -61,11 +61,11 @@ public:
 	operator float* ();
 	void print();
 
-	// uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
-	Vector2f transformPoint( const Vector2f& v ) const;
+	// uses this to transform a point p (appends a homogeneous coordinate 1, transforms, then extracts xy)
+	Vector2f transformPoint( const Vector2f& p ) const;
 
-	// uses this to transform a point v (appends a homogeneous coordinate 0, transforms, then extracts xy)
-	Vector2f transformNormal( const Vector2f& n ) const;
+	// uses this to transform a vector v (appends a homogeneous coordinate 0, transforms, then extracts xy)
+	Vector2f transformVector( const Vector2f& v ) const;
 
 	static float determinant3x3( float m00, float m01, float m02,
 		float m10, float m11, float m12,

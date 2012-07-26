@@ -177,8 +177,8 @@ QString Vector3f::toString() const
 	QString out;
 
 	out.append( "( " );
-	out.append( QString( "%1" ).arg( x, 10, 'g', 4 ) );
-	out.append( QString( "%1" ).arg( y, 10, 'g', 4 ) );
+	out.append( QString( "%1, " ).arg( x, 10, 'g', 4 ) );
+	out.append( QString( "%1, " ).arg( y, 10, 'g', 4 ) );
 	out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
 	out.append( " )" );
 

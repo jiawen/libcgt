@@ -233,19 +233,19 @@ Matrix3f::operator float* ()
 void Matrix3f::print()
 {
 	printf( "[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n",
-		m_elements[ 0 ], m_elements[ 3 ], m_elements[ 6 ],
-		m_elements[ 1 ], m_elements[ 4 ], m_elements[ 7 ],
-		m_elements[ 2 ], m_elements[ 5 ], m_elements[ 8 ] );
+		m00, m01, m02,
+		m10, m11, m12,
+		m20, m21, m22 );
 }
 
-Vector2f Matrix3f::transformPoint( const Vector2f& v ) const
+Vector2f Matrix3f::transformPoint( const Vector2f& p ) const
 {
-	return ( ( *this ) * Vector3f( v, 1 ) ).xy();
+	return ( ( *this ) * Vector3f( p, 1 ) ).xy();
 }
 
-Vector2f Matrix3f::transformNormal( const Vector2f& n ) const
+Vector2f Matrix3f::transformVector( const Vector2f& v ) const
 {
-	return ( ( *this ) * Vector3f( n, 0 ) ).xy();
+	return ( ( *this ) * Vector3f( v, 0 ) ).xy();
 }
 
 // static

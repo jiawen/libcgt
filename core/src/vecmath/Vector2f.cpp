@@ -15,30 +15,30 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Vector2f::Vector2f( const Vector2d& rv )
+Vector2f::Vector2f( const Vector2d& v )
 {
-    m_elements[0] = static_cast< float >( rv.x );
-    m_elements[1] = static_cast< float >( rv.y );
+    m_elements[0] = static_cast< float >( v.x );
+    m_elements[1] = static_cast< float >( v.y );
 }
 
-Vector2f::Vector2f( const Vector2i& rv )
+Vector2f::Vector2f( const Vector2i& v )
 {
-    m_elements[ 0 ] = static_cast< float >( rv.x );
-    m_elements[ 1 ] = static_cast< float >( rv.y );
+    m_elements[ 0 ] = static_cast< float >( v.x );
+    m_elements[ 1 ] = static_cast< float >( v.y );
 }
 
-Vector2f& Vector2f::operator = ( const Vector2d& rv )
+Vector2f& Vector2f::operator = ( const Vector2d& v )
 {
-    m_elements[ 0 ] = static_cast< float >( rv.x );
-    m_elements[ 1 ] = static_cast< float >( rv.y );
+    m_elements[ 0 ] = static_cast< float >( v.x );
+    m_elements[ 1 ] = static_cast< float >( v.y );
 
     return *this;
 }
 
-Vector2f& Vector2f::operator = ( const Vector2i& rv )
+Vector2f& Vector2f::operator = ( const Vector2i& v )
 {
-    m_elements[ 0 ] = static_cast< float >( rv.x );
-    m_elements[ 1 ] = static_cast< float >( rv.y );
+    m_elements[ 0 ] = static_cast< float >( v.x );
+    m_elements[ 1 ] = static_cast< float >( v.y );
 
     return *this;
 }
@@ -52,6 +52,15 @@ Vector2i Vector2f::floored() const
 	);
 }
 
+Vector2i Vector2f::rounded() const
+{
+	return Vector2i
+	(
+		Arithmetic::roundToInt( x ),
+		Arithmetic::roundToInt( y )
+	);
+}
+
 // ---- Utility ----
 void Vector2f::print() const
 {
@@ -61,7 +70,7 @@ void Vector2f::print() const
 
 QString Vector2f::toString() const
 {
-	return QString( "%1%2" ).arg( x, 10, 'g', 4 ).arg( y, 10, 'g', 4 );
+	return QString( "( %1, %2 )" ).arg( x, 10, 'g', 4 ).arg( y, 10, 'g', 4 );
 }
 
 //static

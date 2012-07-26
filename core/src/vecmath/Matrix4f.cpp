@@ -334,14 +334,19 @@ void Matrix4f::print()
 		m_elements[ 3 ], m_elements[ 7 ], m_elements[ 11], m_elements[ 15 ] );
 }
 
-Vector3f Matrix4f::transformPoint( const Vector3f& v ) const
+Vector3f Matrix4f::transformPoint( const Vector3f& p ) const
 {
-	return ( ( *this ) * Vector4f( v, 1 ) ).xyz();
+	return ( ( *this ) * Vector4f( p, 1 ) ).xyz();
+}
+
+Vector3f Matrix4f::transformVector( const Vector3f& v ) const
+{
+	return ( ( *this ) * Vector4f( v, 0 ) ).xyz();
 }
 
 Vector3f Matrix4f::transformNormal( const Vector3f& n ) const
 {
-	return ( ( *this ) * Vector4f( n, 0 ) ).xyz();
+	return normalMatrix() * n;
 }
 
 // static

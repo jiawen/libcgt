@@ -22,10 +22,25 @@ float Random::nextFloat()
 {
 	return static_cast< float >( nextDouble() );
 }
-	
-uint Random::nextInt()
+
+Vector2f Random::nextVector2f()
 {
-	return m_mtRand.randInt();
+	return Vector2f( nextFloat(), nextFloat() );
+}
+
+Vector3f Random::nextVector3f()
+{
+	return Vector3f( nextFloat(), nextFloat(), nextFloat() );
+}
+
+Vector4f Random::nextVector4f()
+{
+	return Vector4f( nextFloat(), nextFloat(), nextFloat(), nextFloat() );
+}
+
+int Random::nextIntRange( int lo, int count )
+{
+	return lo + nextIntExclusive( count );
 }
 
 double Random::nextDoubleRange( double lo, double hi )
@@ -40,12 +55,34 @@ float Random::nextFloatRange( float lo, float hi )
 	return( lo + range * nextFloat() );
 }
 
-int Random::nextIntInclusive( int n )
+Vector2f Random::nextVector2fRange( const Vector2f& lo, const Vector2f& hi )
 {
-	return m_mtRand.randInt( n );
+	return Vector2f( nextFloatRange( lo.x, hi.x ), nextFloatRange( lo.y, hi.y ) );
+}
+
+Vector3f Random::nextVector3fRange( const Vector3f& lo, const Vector3f& hi )
+{
+	return Vector3f( nextFloatRange( lo.x, hi.x ), nextFloatRange( lo.y, hi.y ),
+		nextFloatRange( lo.z, hi.z ) );
+}
+
+Vector4f Random::nextVector4fRange( const Vector4f& lo, const Vector4f& hi )
+{
+	return Vector4f( nextFloatRange( lo.x, hi.x ), nextFloatRange( lo.y, hi.y ),
+		nextFloatRange( lo.z, hi.z ), nextFloatRange( lo.w, hi.w ) );
+}
+
+uint Random::nextInt()
+{
+	return m_mtRand.randInt();
 }
 
 int Random::nextIntExclusive( int n )
 {
 	return nextIntInclusive( n - 1 );
+}
+
+int Random::nextIntInclusive( int n )
+{
+	return m_mtRand.randInt( n );
 }

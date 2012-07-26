@@ -11,6 +11,16 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
+// static
+const PerspectiveCamera PerspectiveCamera::CANONICAL(
+	Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ), Vector3f( 0, 1, 0 ),
+	90.0f, 1.0f, 1.0f, 100.0f, false, true );
+
+// static
+const PerspectiveCamera PerspectiveCamera::FRONT(
+	Vector3f( 0, 0, 5 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
+	50.0f, 1.0f, 1.0f, 100.0f, false, true );
+
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
 	float fovYDegrees, float aspect,
 	float zNear, float zFar,
@@ -142,7 +152,53 @@ Matrix4f PerspectiveCamera::projectionMatrix() const
 	}
 }
 
-Vector4f PerspectiveCamera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize )
+Matrix4f PerspectiveCamera::jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
+{
+	float dx = -eyeX * m_zNear / focusZ;
+	float dy = -eyeY * m_zNear / focusZ;
+
+	if( m_zFarIsInfinite )
+	{
+		return Matrix4f::infinitePerspectiveProjection( m_left + dx, m_right + dx,
+			m_bottom + dy, m_top + dy,
+			m_zNear, m_directX );
+	}
+	else
+	{
+		return Matrix4f::perspectiveProjection( m_left + dx, m_right + dx,
+			m_bottom + dy, m_top + dy,
+			m_zNear, m_zFar, m_directX );
+	}
+}
+
+Matrix4f PerspectiveCamera::jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
+{
+	return
+	(
+		jitteredProjectionMatrix( eyeX, eyeY, focusZ ) *
+		jitteredViewMatrix( eyeX, eyeY )
+	);
+}
+
+// virtual
+Vector4f PerspectiveCamera::pixelToEye( int x, int y, float depth, const Vector2i& screenSize ) const
+{
+	return pixelToEye( Vector2f( x + 0.5f, y + 0.5f ), depth, screenSize );
+}
+
+// virtual
+Vector4f PerspectiveCamera::pixelToEye( float x, float y, float depth, const Vector2i& screenSize ) const
+{
+	return pixelToEye( Vector2f( x, y ), depth, screenSize );
+}
+
+// virtual 
+Vector4f PerspectiveCamera::pixelToEye( const Vector2i& xy, float depth, const Vector2i& screenSize ) const
+{
+	return pixelToEye( Vector2f( xy.x + 0.5f, xy.y + 0.5f ), depth, screenSize );
+}
+
+Vector4f PerspectiveCamera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const
 {
 	Vector2f ndcXY = pixelToNDC( xy, screenSize );
 	float t = tanHalfFovY();
@@ -154,6 +210,14 @@ Vector4f PerspectiveCamera::pixelToEye( const Vector2f& xy, float depth, const V
 	float zEye = -depth; // right handed, z points toward viewer
 
 	return Vector4f( xEye, yEye, zEye, 1 );
+}
+
+QString PerspectiveCamera::toString() const
+{
+	return QString( "Perspective camera:\neye: %1\ncenter: %2\nup:%3" )
+		.arg( eye().toString() )
+		.arg( center().toString() )
+		.arg( up().toString() );
 }
 
 // static

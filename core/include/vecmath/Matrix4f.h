@@ -84,9 +84,13 @@ public:
 	void print();
 
 	// uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
-	Vector3f transformPoint( const Vector3f& v ) const;
+	Vector3f transformPoint( const Vector3f& p ) const;
 
-	// uses this to transform a point v (appends a homogeneous coordinate 0, transforms, then extracts xy)
+	// uses this to transform a vector v (appends a homogeneous coordinate 0, transforms, then extracts xy)
+	Vector3f transformVector( const Vector3f& v ) const;
+
+	// uses this to transform a normal vector n
+	// equivalent to normalMatrix() * n
 	Vector3f transformNormal( const Vector3f& n ) const;
 
 	// ---- Common graphics matrices ----

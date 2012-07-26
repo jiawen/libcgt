@@ -14,76 +14,61 @@ public:
 
 	// TODO: conversion operators for double <--> float on Vector3f and Vector4f
 
-    Vector2f() { m_elements[0] = 0; m_elements[1] = 0; }
-    Vector2f( float f ) { m_elements[0] = f; m_elements[1] = f; }
-    Vector2f( float x, float y ) { m_elements[0] = x; m_elements[1] = y; }
+    Vector2f(); // (0,0)
+    Vector2f( float f ); // (f,f)
+    Vector2f( float x, float y );
 
 	// copy constructors
-    Vector2f( const Vector2f& rv )
-	{
-		x = rv.x;
-		y = rv.y;
-	}
-
+    Vector2f( const Vector2f& v );
 	Vector2f( const Vector2d& rv );
 	Vector2f( const Vector2i& rv );
 
 	// assignment operators
-	Vector2f& operator = ( const Vector2f& rv )
-	{
-		if( this != &rv )
-		{
-			x = rv.x;
-			y = rv.y;
-		}
-		return *this;
-	}
-	Vector2f& operator = ( const Vector2d& rv );
-	Vector2f& operator = ( const Vector2i& rv );
+	Vector2f& operator = ( const Vector2f& v );
+	Vector2f& operator = ( const Vector2d& v );
+	Vector2f& operator = ( const Vector2i& v );
 
 	// no destructor necessary
 
 	// returns the ith element
-    const float& operator [] ( int i ) const { return m_elements[i]; }
-	float& operator [] ( int i ) { return m_elements[i]; }
+    const float& operator [] ( int i ) const;
+	float& operator [] ( int i );
 
-    Vector2f xy() const { return *this; }
-	Vector2f yx() const { return Vector2f( y, x ); }
-	Vector2f xx() const { return Vector2f( x, x ); }
-	Vector2f yy() const { return Vector2f( y, y ); }
+    Vector2f xy() const;
+	Vector2f yx() const;
+	Vector2f xx() const;
+	Vector2f yy() const;
 
 	// returns ( -y, x )
-	Vector2f normal() const { return Vector2f( -y, x ); }
+	Vector2f normal() const;
+		
+	float norm() const;
+	float normSquared() const;
 
-	// TODO: these are deprecated
-    float abs() const { return norm(); }
-	float absSquared() const { return normSquared(); }
+    void normalize();
+    Vector2f normalized() const;
 
-	float norm() const { return sqrt( normSquared() ); }
-	float normSquared() const { return x * x + y * y; }
-
-    void normalize() { float n = abs(); x /= n; y /= n; }
-    Vector2f normalized() const { float n = norm(); return Vector2f( x / n, y / n); }
-
-    void negate() { m_elements[0] = -m_elements[0]; m_elements[1] = -m_elements[1]; }
+    void negate();
 
 	Vector2i floored() const;
+	Vector2i rounded() const;
 
 	// ---- Utility ----
-	// TODO: make the rest const correct
-    operator const float* () const { return m_elements; } // automatic type conversion for GL
-    operator float* () { return m_elements; } // automatic type conversion for Direct3D
+    operator const float* () const;
+    operator float* ();
 	void print() const;
 	QString toString() const;
 
-    static float dot( const Vector2f& v0, const Vector2f& v1 ) { return v0[0] * v1[0] + v0[1] * v1[1]; }
+    static float dot( const Vector2f& v0, const Vector2f& v1 );
 
+	// returns (0,0, x0 * y1 - x1 * y0 )
 	static Vector3f cross( const Vector2f& v0, const Vector2f& v1 );
 
 	// returns v0 * ( 1 - alpha ) * v1 * alpha
 	static Vector2f lerp( const Vector2f& v0, const Vector2f& v1, float alpha );
 
-	inline Vector2f& operator+=( const Vector2f& );
+	Vector2f& operator += ( const Vector2f& v );
+	Vector2f& operator -= ( const Vector2f& v );
 
 	union
 	{
@@ -96,23 +81,18 @@ public:
 	};
 };
 
-inline Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x + v1.x, v0.y + v1.y ); }
-inline Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x - v1.x, v0.y - v1.y ); }
-inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x * v1.x, v0.y * v1.y ); }
-
-inline Vector2f& Vector2f::operator+=( const Vector2f& addend )
-{
-	m_elements[ 0 ] += addend.m_elements[ 0 ];
-	m_elements[ 1 ] += addend.m_elements[ 1 ];
-	return *this;
-}
+Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 );
 
 // component-wise division
-inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 ) { return Vector2f( v0.x * v1.x, v0.y * v1.y ); }
+Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 );
 
-inline Vector2f operator - ( const Vector2f& v ) { return Vector2f(-v.x, -v.y); }
-inline Vector2f operator * ( float f, const Vector2f& v ) { return Vector2f(f * v.x, f * v.y); }
-inline Vector2f operator * ( const Vector2f& v, float f ) { return Vector2f(f * v.x, f * v.y); }
+Vector2f operator - ( const Vector2f& v );
+Vector2f operator * ( float f, const Vector2f& v );
+Vector2f operator * ( const Vector2f& v, float f );
 
-inline bool operator == ( const Vector2f& v0, const Vector2f& v1 ) { return( v0.x == v1.x && v0.y == v1.y ); }
-inline bool operator != ( const Vector2f& v0, const Vector2f& v1 ) { return !( v0 == v1 ); }
+bool operator == ( const Vector2f& v0, const Vector2f& v1 );
+bool operator != ( const Vector2f& v0, const Vector2f& v1 );
+
+#include "Vector2f.inl"

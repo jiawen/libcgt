@@ -1,12 +1,14 @@
 #include "geometry/TriangleMesh.h"
 
-#include "common/ProgressReporter.h"
-
 #include <algorithm>
 #include <numeric>
 #include <stack>
 #include <cstdio>
 #include <cassert>
+
+#include "common/ProgressReporter.h"
+#include "geometry/GeometryUtils.h"
+#include "math/MathUtils.h"
 
 TriangleMesh::TriangleMesh() :
 
@@ -236,6 +238,70 @@ bool TriangleMesh::obtuse( int faceIndex ) const
 	);
 }
 
+bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& direction,
+	float& t, Vector3f& barycentrics, int& faceIndex, float tMin ) const
+{
+	bool hit = false;
+	t = MathUtils::POSITIVE_INFINITY;
+
+	for( size_t f = 0; f < numFaces(); ++f )
+	{
+		Vector3i vertexIndices = m_faces[ f ];
+
+		Vector3f v0 = m_positions[ vertexIndices[ 0 ] ];
+		Vector3f v1 = m_positions[ vertexIndices[ 1 ] ];
+		Vector3f v2 = m_positions[ vertexIndices[ 2 ] ];
+
+		bool faceHit;
+		float faceT;
+		float faceU;
+		float faceV;
+
+		faceHit = GeometryUtils::rayTriangleIntersection( origin, direction,
+			v0, v1, v2,
+			faceT, faceU, faceV );
+		if( faceHit &&
+			faceT > tMin )
+		{
+			hit = true;
+			t = faceT;
+			barycentrics = Vector3f( faceU, faceV, 1 - faceU - faceV );
+			faceIndex = f;
+		}
+	}
+
+	return hit;
+}
+
+Vector3f TriangleMesh::barycentricInterpolatePosition( int faceIndex, const Vector3f& barycentrics ) const
+{
+	Vector3i vertexIndices = m_faces[ faceIndex ];
+	Vector3f p0 = m_positions[ vertexIndices[ 0 ] ];
+	Vector3f p1 = m_positions[ vertexIndices[ 1 ] ];
+	Vector3f p2 = m_positions[ vertexIndices[ 2 ] ];
+
+	Vector3f p;
+	p.x = Vector3f::dot( barycentrics, Vector3f( p0.x, p1.x, p2.x ) );
+	p.y = Vector3f::dot( barycentrics, Vector3f( p0.y, p1.y, p2.y ) );
+	p.z = Vector3f::dot( barycentrics, Vector3f( p0.z, p1.z, p2.z ) );
+
+	return p;
+}
+
+Vector3f TriangleMesh::barycentricInterpolateNormal( int faceIndex, const Vector3f& barycentrics ) const
+{
+	Vector3i vertexIndices = m_faces[ faceIndex ];
+	Vector3f n0 = m_normals[ vertexIndices[ 0 ] ];
+	Vector3f n1 = m_normals[ vertexIndices[ 1 ] ];
+	Vector3f n2 = m_normals[ vertexIndices[ 2 ] ];
+
+	Vector3f normal;
+	normal.x = Vector3f::dot( barycentrics, Vector3f( n0.x, n1.x, n2.x ) );
+	normal.y = Vector3f::dot( barycentrics, Vector3f( n0.y, n1.y, n2.y ) );
+	normal.z = Vector3f::dot( barycentrics, Vector3f( n0.z, n1.z, n2.z ) );
+
+	return normal.normalized();
+}
 
 TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedComponent )
 {

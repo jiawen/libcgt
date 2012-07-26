@@ -1,5 +1,7 @@
+#include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 
 #include "math/MathUtils.h"
 
@@ -17,6 +19,12 @@ const float MathUtils::PI = M_PI;
 const float MathUtils::HALF_PI = M_PI_2;
 const float MathUtils::QUARTER_PI = M_PI_4;
 #endif
+
+// static
+const float MathUtils::NEGATIVE_INFINITY = -std::numeric_limits< float >::infinity();
+
+// static
+const float MathUtils::POSITIVE_INFINITY = std::numeric_limits< float >::infinity();
 
 const float MathUtils::TWO_PI = 2.0f * MathUtils::PI;
 
@@ -51,8 +59,23 @@ int MathUtils::sign( float f )
 
 // static
 bool MathUtils::sameSign( float x, float y )
-{
+{	
 	return sign( x ) == sign( y );
+}
+
+//static
+bool MathUtils::isNumber( float x )
+{
+	// See: http://www.johndcook.com/IEEE_exceptions_in_cpp.html
+	// returns false if x is NaN
+	return( x == x );
+}
+
+// static
+bool MathUtils::isFinite( float x )
+{
+	// See: http://www.johndcook.com/IEEE_exceptions_in_cpp.html
+	return( x <= FLT_MAX && x >= -FLT_MAX );
 }
 
 // static

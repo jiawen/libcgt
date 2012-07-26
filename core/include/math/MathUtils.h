@@ -12,11 +12,21 @@ public:
 	static const float QUARTER_PI;
 	static const float TWO_PI;
 
+	static const float NEGATIVE_INFINITY;
+	static const float POSITIVE_INFINITY;
+
 	static float cot( float x );
     static float asinh(float x);
 
 	static int sign( float f );
 	static bool sameSign( float x, float y );
+
+	// returns true if x is not NaN
+	// -inf and +inf *are* considered numbers
+	static bool isNumber( float x );
+
+	// returns true if x is not one of: {NaN, -inf, +inf}
+	static bool isFinite( float x );
 
 	static float degreesToRadians( float degrees );
 	static double degreesToRadians( double degrees );

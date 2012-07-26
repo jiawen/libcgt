@@ -449,9 +449,9 @@ bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vec
 }
 
 // static
-bool GeometryUtils::rayTriangleIntersection( const Vector3f& crRayOrigin, const Vector3f& crRayDirection,
-		const Vector3f& crV0, const Vector3f& crV1, const Vector3f& crV2,
-		float* t, float* u, float* v )
+bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
+		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
+		float& t, float& u, float& v )
 {
 	Vector3f edge1;
 	Vector3f edge2;
@@ -463,11 +463,11 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& crRayOrigin, const 
 	float inv_det;
 
 	// find vectors for two edges sharing vert0
-	edge1 = crV1 - crV0;
-	edge2 = crV2 - crV0;
+	edge1 = v1 - v0;
+	edge2 = v2 - v0;
 
 	// begin calculating determinant - also used to calculate U parameter
-	pvec = Vector3f::cross( crRayDirection, edge2 );
+	pvec = Vector3f::cross( rayDirection, edge2 );
 	det = Vector3f::dot( edge1, pvec );
 	
 #if 1
@@ -477,11 +477,11 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& crRayOrigin, const 
 	}
 
 	// calculate distance from vert0 to ray origin
-	tvec = crRayOrigin - crV0;
+	tvec = rayOrigin - v0;
 
 	// calculate U parameter and test bounds
-	*u = Vector3f::dot( tvec, pvec );
-	if( *u < 0.0f || *u > det )
+	u = Vector3f::dot( tvec, pvec );
+	if( u < 0.0f || u > det )
 	{
 		return false;
 	}
@@ -490,18 +490,18 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& crRayOrigin, const 
 	qvec = Vector3f::cross( tvec, edge1 );
 
 	// calculate V parameter and test bounds
-	*v = Vector3f::dot( crRayDirection, qvec );
-	if( *v < 0.0 || ( *u + *v > det ) )
+	v = Vector3f::dot( rayDirection, qvec );
+	if( v < 0.0 || ( u + v > det ) )
 	{
 		return false;
 	}
 
 	// calculate t, scale parameters, ray intersects triangle
-	*t = Vector3f::dot( edge2, qvec );
+	t = Vector3f::dot( edge2, qvec );
 	inv_det = 1.0f / det;
-	*t *= inv_det;
-	*u *= inv_det;
-	*v *= inv_det;
+	t *= inv_det;
+	u *= inv_det;
+	v *= inv_det;
 
 #else
 	// if determinant is near zero, ray lies in plane of triangle

@@ -10,23 +10,9 @@
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Rect2f.h>
 
-class BoundingBox3f;
-
 class Camera
 {
 public:
-
-	// TODO: having a constructor for an abstract class doesn't make sense	
-
-	// Initializes to a camera at (0, 0, 5) looking at (0, 0, 0)
-	// with zNear = 1, zFar = 100, an FoV of 50 degrees and an aspect ratio	of 1:1
-	Camera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
-		const Vector3f& center = Vector3f( 0, 0, 0 ),
-		const Vector3f& up = Vector3f( 0, 1, 0 ),
-		float left = -0.46630767f, float right = 0.46630767f,
-		float bottom = -0.46630767f, float top = 0.46630767f,
-		float zNear = 1.0f, float zFar = 100.0f, bool zFarIsInfinite = false,
-		bool isDirectX = true );
 
     void setDirectX( bool directX );
 
@@ -45,7 +31,7 @@ public:
 	// all the planes have normals pointing outward	
 	std::vector< Plane3f > frustumPlanes() const;
 
-	bool isZFarInfinite();
+	bool isZFarInfinite() const;
 
 	void setFrustum( float left, float right,
 		float bottom, float top,
@@ -55,14 +41,17 @@ public:
 	void getLookAt( Vector3f* pEye, Vector3f* pCenter, Vector3f* pUp ) const;
 
 	// up should be of unit length
+	// and orthogonal to (center - eye)
 	void setLookAt( const Vector3f& eye,
 		const Vector3f& center,
 		const Vector3f& up );
 
-    Vector3f eye() const { return m_eye; }
+	void setLookAtFromInverseViewMatrix( const Matrix4f& ivm );
+
+    Vector3f eye() const;
 	void setEye( const Vector3f& eye );
 
-	Vector3f center() const { return m_center; }
+	Vector3f center() const;
 	void setCenter( const Vector3f& center );
 
 	// return the "up" unit vector
@@ -81,16 +70,10 @@ public:
 	float zFar() const;
 	void setZFar( float zFar );
 
+	// TODO: virtual QString toString() const;
+
 	virtual Matrix4f projectionMatrix() const = 0;
-
-	// returns the projection matrix P such that
-	// the plane at a distance focusZ in front of the center of the lens
-	// is kept constant while the eye has been moved
-	// by (eyeX, eyeY) *in the plane of the lens*
-	// i.e. eyeX is in the direction of right()
-	// and eyeY is in the direction of up()
-	Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
-
+	
 	Matrix4f viewMatrix() const;
 
 	// returns the view matrix V such that
@@ -101,14 +84,14 @@ public:
 	Matrix4f jitteredViewMatrix( float eyeX, float eyeY ) const;
 
 	// equivalent to viewMatrix() * projectionMatrix()
-	Matrix4f viewProjectionMatrix() const;
-	
-	// equivalent to jitteredProjectionMatrix() * jitteredViewMatrix()
-	Matrix4f jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
+	Matrix4f viewProjectionMatrix() const;	
 
 	Matrix4f inverseProjectionMatrix() const;
 	Matrix4f inverseViewMatrix() const;
 	Matrix4f inverseViewProjectionMatrix() const;
+
+	Vector4f worldToEye( const Vector4f& world ) const;
+	Vector4f eyeToScreen( const Vector4f& eye, const Vector2i& screenSize ) const;
 
 	// Given a point in the world and a screen of size screenSize
 	// returns (x,y,z,w) where:
@@ -117,7 +100,7 @@ public:
 	//   where [zNear,zFar] is mapped to [0,1] (outside this range is clipped)
 	// w is z-coordinate (not radial distance) in eye space (farther things are positive)
 	// This is what comes out as the float4 SV_POSITION in an HLSL pixel shader
-	Vector4f projectToScreen( const Vector4f& world, const Vector2i& screenSize ) const;
+	Vector4f worldToScreen( const Vector4f& world, const Vector2i& screenSize ) const;
 
 	// TODO: write unprojectToWorld(), that takes in the useless zScreen value
 	// just for completeness
@@ -127,6 +110,10 @@ public:
 	// given a 2D pixel (x,y) on a screen of size screenSize
 	// returns a 3D ray direction
 	// (call eye() to get the ray origin)
+	// (integer versions are at the center of pixel)
+	Vector3f pixelToDirection( int x, int y, const Vector2i& screenSize ) const;
+	Vector3f pixelToDirection( float x, float y, const Vector2i& screenSize ) const;
+	Vector3f pixelToDirection( const Vector2i& xy, const Vector2i& screenSize ) const;
 	Vector3f pixelToDirection( const Vector2f& xy, const Vector2i& screenSize ) const;
 
 	// xy and viewport are in pixel coordinates
@@ -140,11 +127,19 @@ public:
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its eye space coordinates (right handed, output z will be negative), output.w = 1
+	// (integer versions are at the center of pixel)
+	virtual Vector4f pixelToEye( int x, int y, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f pixelToEye( float x, float y, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f pixelToEye( const Vector2i& xy, float depth, const Vector2i& screenSize ) const;
 	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
 
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its world space coordinates, output.w = 1
+	// (integer versions are at the center of pixel)
+	Vector4f pixelToWorld( int x, int y, float depth, const Vector2i& screenSize ) const;
+	Vector4f pixelToWorld( float x, float y, float depth, const Vector2i& screenSize ) const;
+	Vector4f pixelToWorld( const Vector2i& xy, float depth, const Vector2i& screenSize ) const;
 	Vector4f pixelToWorld( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
 
 protected:

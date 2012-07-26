@@ -7,6 +7,19 @@
 class PerspectiveCamera : public Camera
 {
 public:
+
+	// camera at origin
+	// x points right, y points up, z towards viewer
+	// 90 degree field of view, 1:1 aspect ratio
+	static const PerspectiveCamera CANONICAL;
+	
+	// camera at (0,0,5)
+	// x points right, y points up, z towards viewer, looking at origin
+	// 50 degree field of view, 1:1 aspect ratio
+	static const PerspectiveCamera FRONT;
+
+	// LEFT
+	// TOP
 	
 	// fovY: field of view angle in the y direction, in degrees
 	// aspect: aspect ratio in width over height
@@ -59,6 +72,18 @@ public:
 
 	Matrix4f projectionMatrix() const;
 
+	// TODO: jittered orthographic projection?
+	// returns the projection matrix P such that
+	// the plane at a distance focusZ in front of the center of the lens
+	// is kept constant while the eye has been moved
+	// by (eyeX, eyeY) *in the plane of the lens*
+	// i.e. eyeX is in the direction of right()
+	// and eyeY is in the direction of up()
+	Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
+
+	// equivalent to jitteredProjectionMatrix() * jitteredViewMatrix()
+	Matrix4f jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
+
 	// TODO: harmonize this with math, maybe just make these static functions
 	// for a perspective camera, you only need the field of view and viewport aspect ratio
 	// for a skewed camera, you need left/right/bottom/top, along with zNear
@@ -70,7 +95,12 @@ public:
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its eye space coordinates (right handed, output z will be negative), w = 1
-	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize );
+	virtual Vector4f pixelToEye( int x, int y, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f pixelToEye( float x, float y, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f pixelToEye( const Vector2i& xy, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
+
+	QString toString() const;
 
 	bool saveTXT( QString filename );
 	

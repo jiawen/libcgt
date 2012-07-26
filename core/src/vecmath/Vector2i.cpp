@@ -75,31 +75,36 @@ Vector2i Vector2i::yy() const
 	return Vector2i( m_elements[1], m_elements[1] );
 }
 
-float Vector2i::abs() const
+float Vector2i::norm() const
 {
-	return sqrt( static_cast< float >( absSquared() ) );
+	return sqrt( static_cast< float >( normSquared() ) );
 }
 
-int Vector2i::absSquared() const
+int Vector2i::normSquared() const
 {
-	return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] );
+	return( x * x + y * y );
 }
 
 Vector2f Vector2i::normalized() const
 {
-	float rLength = 1.f / abs();
+	float n = 1.f / norm();
 
 	return Vector2f
 	(
-		rLength * m_elements[ 0 ],
-		rLength * m_elements[ 1 ]
+		n * x,
+		n * y
 	);
 }
 
 void Vector2i::negate()
 {
-	m_elements[0] = -m_elements[0];
-	m_elements[1] = -m_elements[1];
+	x = -x;
+	y = -y;
+}
+
+Vector2i Vector2i::flippedUD( int height ) const
+{
+	return Vector2i( x, height - y - 1 );
 }
 
 Vector2i::operator const int* () const

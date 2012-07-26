@@ -151,11 +151,11 @@ PARDISOSolver< float, true >::~PARDISOSolver();
 template
 PARDISOSolver< float, false >::~PARDISOSolver();
 
-template
-PARDISOSolver< double, true >::~PARDISOSolver();
+//template
+//PARDISOSolver< double, true >::~PARDISOSolver();
 
-template
-PARDISOSolver< double, false >::~PARDISOSolver();
+//template
+//PARDISOSolver< double, false >::~PARDISOSolver();
 
 template
 bool PARDISOSolver< float, true >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
@@ -163,17 +163,17 @@ bool PARDISOSolver< float, true >::analyzePattern( int m, int n, int* rowIndex, 
 template
 bool PARDISOSolver< float, false >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
 
-template
-bool PARDISOSolver< double, true >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
+//template
+//bool PARDISOSolver< double, true >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
 
-template
-bool PARDISOSolver< double, false >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
+//template
+//bool PARDISOSolver< double, false >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes );
 
 template
 bool PARDISOSolver< float, true >::analyzePattern( CompressedSparseMatrix< float >& A );
 
-template
-bool PARDISOSolver< double, true >::analyzePattern( CompressedSparseMatrix< double >& A );
+//template
+//bool PARDISOSolver< double, true >::analyzePattern( CompressedSparseMatrix< double >& A );
 
 template
 bool PARDISOSolver< float, true >::factorize( float* values );
@@ -181,8 +181,8 @@ bool PARDISOSolver< float, true >::factorize( float* values );
 template
 bool PARDISOSolver< float, false >::factorize( float* values );
 
-template
-bool PARDISOSolver< double, true >::factorize( double* values );
+//template
+//bool PARDISOSolver< double, true >::factorize( double* values );
 
 template
 bool PARDISOSolver< double, false >::factorize( double* values );
@@ -190,8 +190,8 @@ bool PARDISOSolver< double, false >::factorize( double* values );
 template
 bool PARDISOSolver< float, true >::factorize( CompressedSparseMatrix< float >& A );
 
-template
-bool PARDISOSolver< double, true >::factorize( CompressedSparseMatrix< double >& A );
+//template
+//bool PARDISOSolver< double, true >::factorize( CompressedSparseMatrix< double >& A );
 
 template
 bool PARDISOSolver< float, true >::solve( const float* rhs, float* solution );
@@ -199,11 +199,11 @@ bool PARDISOSolver< float, true >::solve( const float* rhs, float* solution );
 template
 bool PARDISOSolver< float, false >::solve( const float* rhs, float* solution );
 
-template
-bool PARDISOSolver< double, true >::solve( const double* rhs, double* solution );
+//template
+//bool PARDISOSolver< double, true >::solve( const double* rhs, double* solution );
 
-template
-bool PARDISOSolver< double, false >::solve( const double* rhs, double* solution );
+//template
+//bool PARDISOSolver< double, false >::solve( const double* rhs, double* solution );
 
 template
 bool PARDISOSolver< float, true >::solve( const FloatMatrix& rhs, FloatMatrix& solution );

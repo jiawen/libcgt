@@ -1,11 +1,12 @@
-#ifndef DIRECTIONAL_LIGHT_H
-#define DIRECTIONAL_LIGHT_H
+#pragma once
 
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Matrix4f.h>
 
 #include "cameras/Camera.h"
+
+class BoundingBox3f;
 
 // A directional light (at infinity)
 // The light direction is conventinally defined
@@ -38,5 +39,3 @@ private:
 	Vector3f m_direction;
 
 };
-
-#endif // DIRECTIONAL_LIGHT_H

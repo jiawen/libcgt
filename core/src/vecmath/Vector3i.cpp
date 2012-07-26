@@ -119,19 +119,19 @@ Vector3i Vector3i::zxy() const
 	return Vector3i( m_elements[2], m_elements[0], m_elements[1] );
 }
 
-float Vector3i::abs() const
+float Vector3i::norm() const
 {
-	return sqrt( static_cast< float >( absSquared() ) );
+	return sqrt( static_cast< float >( normSquared() ) );
 }
 
-int Vector3i::absSquared() const
+int Vector3i::normSquared() const
 {
-	return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] );
+	return( x * x + y * y + z * z );
 }
 
 Vector3f Vector3i::normalized() const
 {
-	float rLength = 1.f / abs();
+	float rLength = 1.f / norm();
 
 	return Vector3f
 	(

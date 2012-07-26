@@ -27,11 +27,13 @@ public:
 	Vector2i xx() const;
 	Vector2i yy() const;
 
-	float abs() const;
-	int absSquared() const;
+	float norm() const;
+	int normSquared() const;
 	Vector2f normalized() const;
 
 	void negate();
+
+	Vector2i flippedUD( int height ) const;
 
 	// implicit cast
 	operator const int* () const;

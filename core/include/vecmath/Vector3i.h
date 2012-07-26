@@ -38,8 +38,8 @@ public:
 	Vector3i zxy() const;
 	// TODO: all the other combinations
 
-	float abs() const;
-	int absSquared() const;
+	float norm() const;
+	int normSquared() const;
 	Vector3f normalized() const;
 
 	void negate();
