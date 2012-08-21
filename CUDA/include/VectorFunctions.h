@@ -24,7 +24,7 @@ float3 xyz( float4 f )
 }
 
 static __inline__ __host__ __device__
-float4 homogenized( float4 f )
+float4 homogenized( const float4& f )
 {
 	float rcpW = 1.0f / f.w;
 	return make_float4( rcpW * f.x, rcpW * f.y, rcpW * f.z, 1 );
@@ -71,7 +71,7 @@ uchar4 float3ToUChar4UnsignedNormalized( float3 rgb )
 // ----- component-wise multiply with conversion -----
 
 static __inline__ __host__ __device__
-	float3 operator * ( const int3& v1, const float3& v2 )
+float3 operator * ( const int3& v1, const float3& v2 )
 {
 	return make_float3( v1.x * v2.x,
 		v1.y * v2.y,
