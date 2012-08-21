@@ -1,5 +1,4 @@
-#ifndef CUDA_VECTOR_2D_H
-#define CUDA_VECTOR_2D_H
+#pragma once
 
 #include <cuda_runtime.h>
 #include <cutil.h>
@@ -326,5 +325,3 @@ size_t CUDAVector2D< T >::widthInBytes() const
 {
 	return m_width * sizeof( T );
 }
-
-#endif // CUDA_VECTOR_2D_H

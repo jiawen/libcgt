@@ -1,7 +1,5 @@
-#ifndef DEVICE_ARRAY_2D_H
-#define DEVICE_ARRAY_2D_H
+#pragma once
 
-// TODO: can this be unified directly with CUDAVector?
 template< typename T >
 struct DeviceVector2D
 {
@@ -65,5 +63,3 @@ T& DeviceVector2D< T >::operator () ( uint2 xy )
 {
 	return getRowPointer( xy.y )[ xy.x ];
 }
-
-#endif // DEVICE_ARRAY_2D_H

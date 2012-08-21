@@ -1,5 +1,4 @@
-#ifndef CUDA_VECTOR_3D_H
-#define CUDA_VECTOR_3D_H
+#pragma once
 
 #include <cuda_runtime.h>
 #include <cutil.h>
@@ -42,6 +41,19 @@ struct DeviceArray3D
 	}
 
 	__device__
+	const T* getRowPointer( int y, int z ) const
+	{
+		// TODO: char --> ubyte
+		char* p = reinterpret_cast< char* >( pitchedPointer.ptr );
+
+		size_t rowPitch = pitchedPointer.pitch;
+
+		// TODO: switch pointer arithmetic to array indexing?
+		char* pSlice = p + z * slicePitch;
+		return reinterpret_cast< T* >( pSlice + y * rowPitch );
+	}
+
+	__inline__ __device__
 	T* getSlicePointer( int z )
 	{
 		// TODO: char --> ubyte
@@ -51,14 +63,36 @@ struct DeviceArray3D
 		return reinterpret_cast< T* >( p + z * slicePitch );
 	}
 
-	__device__
-	T& operator () ( int x, int y, int z )
+	__inline__ __device__
+	const T* getSlicePointer( int z ) const
+	{
+		// TODO: char --> ubyte
+		char* p = reinterpret_cast< char* >( pitchedPointer.ptr );
+
+		// TODO: switch pointer arithmetic to array indexing?
+		return reinterpret_cast< T* >( p + z * slicePitch );
+	}
+
+	__inline__ __device__
+	const T& operator () ( int x, int y, int z ) const
 	{
 		return getRowPointer( y, z )[ x ];
 	}
 
-	__device__
-	T& operator () ( int3 xyz )
+	__inline__ __device__
+	T& operator () ( int x, int y, int z )
+	{
+		return getRowPointer( y, z )[ x ];
+	}
+	
+	__inline__ __device__
+	T& operator () ( const int3& xyz )
+	{
+		return getRowPointer( xyz.y, xyz.z )[ xyz.x ];
+	}
+
+	__inline__ __device__
+	const T& operator () ( const int3& xyz ) const
 	{
 		return getRowPointer( xyz.y, xyz.z )[ xyz.x ];
 	}
@@ -383,5 +417,3 @@ void CUDAVector3D< T >::destroy()
 
 	m_extent = make_cudaExtent( 0, 0, 0 );
 }
-
-#endif // CUDA_VECTOR_3D_H

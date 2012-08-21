@@ -65,3 +65,81 @@ uchar4 float3ToUChar4UnsignedNormalized( float3 rgb )
 		255
 	);
 }
+
+// ========== operators ==========
+
+// ----- component-wise multiply with conversion -----
+
+static __inline__ __host__ __device__
+	float3 operator * ( const int3& v1, const float3& v2 )
+{
+	return make_float3( v1.x * v2.x,
+		v1.y * v2.y,
+		v1.z * v2.z );
+}
+
+static __inline__ __host__ __device__
+int3 operator * ( const int3& v1, const uint3& v2 )
+{
+	return make_int3( v1.x * v2.x,
+		v1.y * v2.y,
+		v1.z * v2.z );
+}
+
+static __inline__ __host__ __device__
+float3 operator * ( const float3& v1, const uint3& v2 )
+{
+	return make_float3( v1.x * v2.x,
+		v1.y * v2.y,
+		v1.z * v2.z );
+}
+
+static __inline__ __host__ __device__
+float3 operator * ( const float3& v1, const int3& v2 )
+{
+	return make_float3(v1.x * v2.x,
+		v1.y * v2.y,
+		v1.z * v2.z);
+}
+
+// ----- component-wise divide with conversion -----
+
+static __inline__ __host__ __device__
+float3 operator / ( const float3& v1, const int3& v2 )
+{
+	return make_float3( v1.x / v2.x,
+		v1.y / v2.y,
+		v1.z / v2.z );
+}
+
+static __inline__ __host__ __device__
+float3 operator / ( const float3& v1, const uint3& v2 )
+{
+	return make_float3( v1.x / v2.x,
+		v1.y / v2.y,
+		v1.z / v2.z );
+}
+
+static __inline__ __host__ __device__
+int3 operator / ( const int3& v1, const int3& v2 )
+{
+	return make_int3( v1.x / v2.x,
+		v1.y / v2.y,
+		v1.z / v2.z  );
+}
+
+static __inline__ __host__ __device__
+int3 operator / ( const int3& v1, const uint3& v2 )
+{
+	return make_int3( v1.x / v2.x,
+		v1.y / v2.y,
+		v1.z / v2.z  );
+}
+
+static __inline__ __host__ __device__
+uint3 operator / ( const uint3& v1, const uint3& v2 )
+{
+	return make_uint3( v1.x / v2.x,
+		v1.y / v2.y,
+		v1.z / v2.z );
+}
