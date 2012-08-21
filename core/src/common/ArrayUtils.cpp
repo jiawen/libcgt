@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 
-#include <vecmath/Vector4f.h>
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -115,6 +114,50 @@ bool ArrayUtils::saveTXT( const Array3D< float >& array, const char* filename )
 		}
 	}
 	
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( const Array3D< Vector2f >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+
+	retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float2\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	int w = array.width();
+	int h = array.height();
+	int d = array.depth();
+
+	for( int z = 0; z < d; ++z )
+	{
+		for( int y = 0; y < h; ++y )
+		{
+			for( int x = 0; x < w; ++x )
+			{
+				int index = z * w * h + y * w + x;
+				Vector2f v = array( x, y, z );
+				fprintf( fp, "[%d] (%d %d %d): %f %f\n", index, x, y, z, v.x, v.y );
+			}
+		}
+	}
+
 	retVal = fclose( fp );
 	return( retVal == 0 );
 }

@@ -62,12 +62,12 @@ void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 	updateFrustum();	
 }
 
-void PerspectiveCamera::setPerspectiveFromIntrinsics( float focalLengthPixels,
+void PerspectiveCamera::setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
 	float imageWidth, float imageHeight,
 	float zNear, float zFar )
 {
-	m_fovYRadians = 2 * atan( 0.5f * imageHeight / focalLengthPixels );
-	m_aspect = imageWidth/ imageHeight;
+	m_fovYRadians = 2 * atan( 0.5f * imageHeight / focalLengthPixels.y );
+	m_aspect = imageWidth / imageHeight;
 
 	m_zNear = zNear;
 	m_zFar = zFar;

@@ -71,6 +71,12 @@ namespace libcgt
 		__host__ __device__ __inline__
 		int roundToInt( float x );
 
+		__host__ __device__ __inline__
+		int2 roundToInt( const float2& v );
+
+		__host__ __device__ __inline__
+		int3 roundToInt( const float3& v );
+
 		// efficiently computes x % divisor, where divisor is a power of two
 		// by the magic formula:
 		// x % ( 2^p ) = x & ( 2^p - 1 )
@@ -147,8 +153,10 @@ namespace libcgt
 		__host__ __device__ __inline__
 		int rescaleRange( int x, int oldRange, int newRange );
 
+#if 0
 		__host__ __device__ __inline__
 		int roundUpToNearestPowerOfTwo( int x );
+#endif
 
 		// leave x alone if it's already a multiple of 4
 		__host__ __device__ __inline__
@@ -320,6 +328,18 @@ int libcgt::cuda::roundToInt( float x )
 }
 
 __host__ __device__ __inline__
+int2 libcgt::cuda::roundToInt( const float2& v )
+{
+	return make_int2( roundToInt( v.x ), roundToInt( v.y ) );
+}
+
+__host__ __device__ __inline__
+int3 libcgt::cuda::roundToInt( const float3& v )
+{
+	return make_int3( roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) );
+}
+
+__host__ __device__ __inline__
 uint libcgt::cuda::modPowerOfTwoWithDivisor( uint x, uint divisor )
 {
 	return( x & ( divisor - 1 ) );
@@ -475,6 +495,8 @@ int libcgt::cuda::rescaleRange( int x, int oldRange, int newRange )
 	return g;
 }
 
+#if 0
+// TODO: fix this
 __host__ __device__ __inline__
 int libcgt::cuda::roundUpToNearestPowerOfTwo( int x )
 {
@@ -487,6 +509,7 @@ int libcgt::cuda::roundUpToNearestPowerOfTwo( int x )
 	float nextLog2 = ceil( log2x );
 	return static_cast< int >( exp2f( nextLog2 ) );
 }
+#endif
 
 __host__ __device__ __inline__
 int libcgt::cuda::roundUpToNearestMultipleOfFour( int x )

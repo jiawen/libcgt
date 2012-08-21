@@ -4,6 +4,8 @@
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector3i.h>
 #include <vecmath/Matrix4f.h>
 #include <vector_functions.h>
 
@@ -57,4 +59,16 @@ float4x4 make_float4x4( const Matrix4f& m )
 	float4x4 output;
 	memcpy( &output, m, 16 * sizeof( float ) );
 	return output;
+}
+
+__host__
+int2 make_int2( const Vector2i& v )
+{
+	return make_int2( v.x, v.y );
+}
+
+__host__
+int3 make_int3( const Vector3i& v )
+{
+	return make_int3( v.x, v.y, v.z );
 }

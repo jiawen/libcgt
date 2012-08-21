@@ -320,6 +320,26 @@ void D3D11Utils::writeFrustum( const Vector3f& eye, const std::vector< Vector3f 
 }
 
 // static
+std::vector< Vector4f > D3D11Utils::createAxes()
+{
+	std::vector< Vector4f > output( 6 );
+
+	// x
+	output[ 0 ] = Vector4f( 0, 0, 0, 1 );
+	output[ 1 ] = Vector4f( 1, 0, 0, 1 );
+
+	// y
+	output[ 2 ] = Vector4f( 0, 0, 0, 1 );
+	output[ 3 ] = Vector4f( 0, 1, 0, 1 );
+
+	// z
+	output[ 4 ] = Vector4f( 0, 0, 0, 1 );
+	output[ 5 ] = Vector4f( 0, 0, 1, 1 );
+
+	return output;
+}
+
+// static
 DynamicVertexBuffer* D3D11Utils::createAxes( ID3D11Device* pDevice )
 {
 	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );

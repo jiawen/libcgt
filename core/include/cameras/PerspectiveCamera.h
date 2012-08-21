@@ -50,7 +50,7 @@ public:
 	// Sets the perspective projection given computer-vision style intrinsics:
 	// focal length and image size in pixels
 	// Does not allow for radial distortion
-	void setPerspectiveFromIntrinsics( float focalLengthPixels,
+	void setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
 		float imageWidth, float imageHeight,
 		float zNear = 1.0f, float zFar = 100.0f );
 

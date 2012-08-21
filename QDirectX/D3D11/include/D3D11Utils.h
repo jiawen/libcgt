@@ -101,6 +101,8 @@ public:
 	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray );
 	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
 
+	static std::vector< Vector4f > createAxes();
+
 	// Create a DynamicVertexBuffer of 6 vertices
 	// each vertex is a VertexPosition4fColor4f
 	static DynamicVertexBuffer* createAxes( ID3D11Device* pDevice );
