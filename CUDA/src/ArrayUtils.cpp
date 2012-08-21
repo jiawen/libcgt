@@ -1,6 +1,9 @@
 #include "ArrayUtils.h"
 
-bool ArrayUtils::saveTXT( const Array2D< float2 >& array, const char* filename )
+#include <common/ArrayUtils.h>
+
+// static
+bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float2 >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -28,7 +31,8 @@ bool ArrayUtils::saveTXT( const Array2D< float2 >& array, const char* filename )
 	return true;
 }
 
-bool ArrayUtils::saveTXT( const Array2D< float4 >& array, const char* filename )
+// static
+bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float4 >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -54,4 +58,12 @@ bool ArrayUtils::saveTXT( const Array2D< float4 >& array, const char* filename )
 	fclose( fp );
 
 	return true;
+}
+
+// static
+bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float >& array, const char* filename )
+{
+	Array2D< float > h_array( array.width(), array.height() );
+	array.copyToHost( h_array );
+	return ::ArrayUtils::saveTXT( h_array, filename );
 }
