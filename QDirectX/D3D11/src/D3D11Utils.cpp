@@ -228,7 +228,50 @@ std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFrustum( ID3D11Device* 
 }
 
 // static
-void D3D11Utils::writeFrustum( const Vector3f& eye, std::vector< Vector3f > frustumCorners, const Vector4f& color,
+void D3D11Utils::writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray )
+{
+	// 4 lines from eye to each far corner
+	vertexArray[0].position = Vector4f( eye, 1 );
+	vertexArray[1].position = Vector4f( frustumCorners[4], 1 );
+
+	vertexArray[2].position = Vector4f( eye, 1 );
+	vertexArray[3].position = Vector4f( frustumCorners[5], 1 );
+
+	vertexArray[4].position = Vector4f( eye, 1 );
+	vertexArray[5].position = Vector4f( frustumCorners[6], 1 );
+
+	vertexArray[6].position = Vector4f( eye, 1 );
+	vertexArray[7].position = Vector4f( frustumCorners[7], 1 );
+
+	// 4 lines between near corners
+	vertexArray[8].position = Vector4f( frustumCorners[0], 1 );
+	vertexArray[9].position = Vector4f( frustumCorners[1], 1 );
+
+	vertexArray[10].position = Vector4f( frustumCorners[1], 1 );
+	vertexArray[11].position = Vector4f( frustumCorners[2], 1 );
+
+	vertexArray[12].position = Vector4f( frustumCorners[2], 1 );
+	vertexArray[13].position = Vector4f( frustumCorners[3], 1 );
+
+	vertexArray[14].position = Vector4f( frustumCorners[3], 1 );
+	vertexArray[15].position = Vector4f( frustumCorners[0], 1 );
+
+	// 4 lines between far corners
+	vertexArray[16].position = Vector4f( frustumCorners[4], 1 );
+	vertexArray[17].position = Vector4f( frustumCorners[5], 1 );
+
+	vertexArray[18].position = Vector4f( frustumCorners[5], 1 );
+	vertexArray[19].position = Vector4f( frustumCorners[6], 1 );
+
+	vertexArray[20].position = Vector4f( frustumCorners[6], 1 );
+	vertexArray[21].position = Vector4f( frustumCorners[7], 1 );
+
+	vertexArray[22].position = Vector4f( frustumCorners[7], 1 );
+	vertexArray[23].position = Vector4f( frustumCorners[4], 1 );
+}
+
+// static
+void D3D11Utils::writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, const Vector4f& color,
 	VertexPosition4fColor4f* vertexArray )
 {
 	// 4 lines from eye to each far corner

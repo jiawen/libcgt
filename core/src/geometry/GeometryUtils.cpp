@@ -451,7 +451,7 @@ bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vec
 // static
 bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
 		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
-		float& t, float& u, float& v )
+		float& t, Vector3f& barycentrics )
 {
 	Vector3f edge1;
 	Vector3f edge2;
@@ -459,6 +459,8 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Ve
 	Vector3f pvec;
 	Vector3f qvec;
 
+	float u;
+	float v;
 	float det;
 	float inv_det;
 
@@ -503,6 +505,8 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Ve
 	u *= inv_det;
 	v *= inv_det;
 
+	barycentrics = Vector3f( 1 - u - v, u, v );
+
 #else
 	// if determinant is near zero, ray lies in plane of triangle
 	if( det > -EPSILON && det < EPSILON )
@@ -533,6 +537,8 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Ve
 
 	// calculate t, ray intersects triangle
 	*t = inv_det * Vector3f::dot( &edge2, &qvec );
+
+	barycentrics = Vector3f( 1 - u - v, u, v );
 #endif
 	return true;
 }

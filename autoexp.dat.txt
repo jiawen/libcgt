@@ -1,10 +1,13 @@
 ;LIBCGT_START
 Quat4f=(<w,f>, [<x,f>, <y,f>, <z,f>])
 Vector2f=(<x,f>, <y,f>)
+Vector2i=(<x,d>, <y,d>)
 Vector3f=(<x,f>, <y,f>, <z,f>)
+Vector3i=(<x,d>, <y,d>, <z,d>)
 Vector4f=(<x,f>, <y,f>, <z,f>, <w,f>)
+Vector4i=(<x,d>, <y,d>, <z,d>, <w,d>)
 Matrix2f=[ [<m00,f>, <m01,f>] [<m10,f>, <m11,f>] ]
 Matrix3f=[ [<m00,f>, <m01,f>, <m02,f>] [<m10,f>, <m11,f>, <m12,f>] [<m20,f>, <m21,f>, <m22,f>] ]
 Matrix4f=[ [<m00,f>, <m01,f>, <m02,f>, <m03,f>] [<m10,f>, <m11,f>, <m12,f>, <m13,f>] [<m20,f>, <m21,f>, <m22,f>, <m23,f>] [<m30,f>, <m31,f>, <m32,f>, <m33,f>] ]
+PerspectiveCamera=[ eye: <m_eye>, center: <m_center>, up: <m_up>, fov: <m_fovYRadians * 57.29578>, aspect: <m_aspect,f> ]
 ;LIBCGT_END
-

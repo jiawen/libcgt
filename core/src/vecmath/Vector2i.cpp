@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <QString>
+
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3i.h"

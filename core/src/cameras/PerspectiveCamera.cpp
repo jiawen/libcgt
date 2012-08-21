@@ -1,6 +1,7 @@
 #include "cameras/PerspectiveCamera.h"
 
 #include <QFile>
+#include <QString>
 #include <QTextStream>
 
 #include <math/Arithmetic.h>
@@ -14,28 +15,28 @@
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
 	Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ), Vector3f( 0, 1, 0 ),
-	90.0f, 1.0f, 1.0f, 100.0f, false, true );
+	MathUtils::HALF_PI, 1.0f, 1.0f, 100.0f, false, true );
 
 // static
 const PerspectiveCamera PerspectiveCamera::FRONT(
 	Vector3f( 0, 0, 5 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
-	50.0f, 1.0f, 1.0f, 100.0f, false, true );
+	MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f, false, true );
 
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
-	float fovYDegrees, float aspect,
+	float fovYRadians, float aspect,
 	float zNear, float zFar,
 	bool zFarIsInfinite,
 	bool isDirectX )
 {
-	setPerspective( fovYDegrees, aspect, zNear, zFar, zFarIsInfinite );
+	setPerspective( fovYRadians, aspect, zNear, zFar, zFarIsInfinite );
 	setLookAt( eye, center, up );
 	setDirectX( isDirectX );
 }
 
-void PerspectiveCamera::getPerspective( float* pfFovYDegrees, float* pfAspect,
+void PerspectiveCamera::getPerspective( float* pfFovYRadians, float* pfAspect,
 	float* pfZNear, float* pfZFar, bool* pbZFarIsInfinite )
 {
-	*pfFovYDegrees = MathUtils::radiansToDegrees( m_fovYRadians );
+	*pfFovYRadians = m_fovYRadians;
 	*pfAspect = m_aspect;
 
 	*pfZNear = m_zNear;
@@ -47,16 +48,29 @@ void PerspectiveCamera::getPerspective( float* pfFovYDegrees, float* pfAspect,
 	}
 }
 
-void PerspectiveCamera::setPerspective( float fovYDegrees, float aspect,
+void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 	float zNear, float zFar, bool zFarIsInfinite )
 {
 	// store fov and aspect ratio parameters
-	m_fovYRadians = MathUtils::degreesToRadians( fovYDegrees );
+	m_fovYRadians = fovYRadians;
 	m_aspect = aspect;
 
 	m_zNear = zNear;
 	m_zFar = zFar;
 	m_zFarIsInfinite = zFarIsInfinite;
+
+	updateFrustum();	
+}
+
+void PerspectiveCamera::setPerspectiveFromIntrinsics( float focalLengthPixels,
+	float imageWidth, float imageHeight,
+	float zNear, float zFar )
+{
+	m_fovYRadians = 2 * atan( 0.5f * imageHeight / focalLengthPixels );
+	m_aspect = imageWidth/ imageHeight;
+
+	m_zNear = zNear;
+	m_zFar = zFar;
 
 	updateFrustum();	
 }
@@ -121,6 +135,11 @@ float PerspectiveCamera::tanHalfFovX() const
 float PerspectiveCamera::tanHalfFovY() const
 {
 	return tan( halfFovYRadians() );
+}
+
+float PerspectiveCamera::fovXDegrees() const
+{
+	return MathUtils::radiansToDegrees( fovXRadians() );
 }
 
 float PerspectiveCamera::fovYDegrees() const
@@ -220,6 +239,54 @@ QString PerspectiveCamera::toString() const
 		.arg( up().toString() );
 }
 
+std::vector< Vector4f > PerspectiveCamera::frustumLines() const
+{
+	std::vector< Vector3f > corners = frustumCorners();
+	std::vector< Vector4f > output( 24 );
+
+	Vector3f e = eye();
+
+	// 4 lines from eye to each far corner
+	output[ 0] = Vector4f( e, 1 );
+	output[ 1] = Vector4f( corners[4], 1 );
+				 
+	output[ 2] = Vector4f( e, 1 );
+	output[ 3] = Vector4f( corners[5], 1 );
+				 
+	output[ 4] = Vector4f( e, 1 );
+	output[ 5] = Vector4f( corners[6], 1 );
+				 
+	output[ 6] = Vector4f( e, 1 );
+	output[ 7] = Vector4f( corners[7], 1 );
+
+	output[ 8] = Vector4f( corners[0], 1 );
+	output[ 9] = Vector4f( corners[1], 1 );
+
+	output[10] = Vector4f( corners[1], 1 );
+	output[11] = Vector4f( corners[2], 1 );
+
+	output[12] = Vector4f( corners[2], 1 );
+	output[13] = Vector4f( corners[3], 1 );
+
+	output[14] = Vector4f( corners[3], 1 );
+	output[15] = Vector4f( corners[0], 1 );
+
+	// 4 lines between near corners
+	output[16] = Vector4f( corners[4], 1 );
+	output[17] = Vector4f( corners[5], 1 );
+
+	output[18] = Vector4f( corners[5], 1 );
+	output[19] = Vector4f( corners[6], 1 );
+
+	output[20] = Vector4f( corners[6], 1 );
+	output[21] = Vector4f( corners[7], 1 );
+
+	output[22] = Vector4f( corners[7], 1 );
+	output[23] = Vector4f( corners[4], 1 );
+
+	return output;
+}
+
 // static
 bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
 {
@@ -242,7 +309,7 @@ bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
 	Vector3f up;
 	float zNear;
 	float zFar;
-	float fovY;
+	float fovYDegrees;
 	float aspect;
 
 	bool isInfinite;
@@ -255,15 +322,17 @@ bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
 	inputTextStream >> str >> zFar;
 	inputTextStream >> str >> i;
 	isInfinite = ( i != 0 );
-	inputTextStream >> str >> fovY;
+	inputTextStream >> str >> fovYDegrees;
 	inputTextStream >> str >> aspect;
 	inputTextStream >> str >> i;
 	isDirectX = ( i != 0 );
 
 	inputFile.close();
 
+	float fovYRadians = MathUtils::degreesToRadians( fovYDegrees );
+
 	camera.setLookAt( eye, center, up );
-	camera.setPerspective( fovY, aspect, zNear, zFar, isInfinite );
+	camera.setPerspective( fovYRadians, aspect, zNear, zFar, isInfinite );
 	camera.setDirectX( isDirectX );
 
 	return true;

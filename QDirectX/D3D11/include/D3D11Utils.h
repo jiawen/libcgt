@@ -89,14 +89,17 @@ public:
 		}
 	}
 
+	// TODO: take in a PerspectiveCamera
+	// TODO: make a version that takes in a color, one that doesn't
+	// TODO: use frustumLines
 	// Create a DynamicVertexBuffer< VertexPosition4fColor4f >
-	// it has length 16 (8 lines, 2 * 8 vertices)
+	// it has length 24 (12 lines, 2 * 12 vertices)
 	static std::shared_ptr< DynamicVertexBuffer >createFrustum( ID3D11Device* pDevice,
 		const Vector3f& eye, std::vector< Vector3f > frustumCorners,
 		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
 
-	// TODO: writeFrustum< T >
-	static void writeFrustum( const Vector3f& eye, std::vector< Vector3f > frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
+	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray );
+	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
 
 	// Create a DynamicVertexBuffer of 6 vertices
 	// each vertex is a VertexPosition4fColor4f

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <QFile>
 #include <QTextStream>
+#include <QString>
 
 #include <vecmath/Vector4f.h>
 

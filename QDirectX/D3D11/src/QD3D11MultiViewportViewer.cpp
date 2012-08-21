@@ -44,7 +44,7 @@ QD3D11MultiViewportViewer::QD3D11MultiViewportViewer( bool flipMouseUpDown,
 	
     m_perspectiveCamera.setDirectX( true );
 	m_perspectiveCamera.setLookAt( 5 * Vector3f( 1, 1, 1 ).normalized(), Vector3f( 0, 0, 0 ), Vector3f( -1, 1, -1 ).normalized() );
-	m_perspectiveCamera.setPerspective( 50.f, 1.f, 0.01f, 10.0f );
+	m_perspectiveCamera.setPerspective( MathUtils::degreesToRadians( 50.0f ), 1.f, 0.01f, 10.0f );
 
 	setUpVector( Vector3f( 0, 1, 0 ) );
 }

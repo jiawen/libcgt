@@ -29,9 +29,9 @@ QD3D11Viewer::QD3D11Viewer( QWidget* parent,
 
 {
     m_camera.setDirectX( true );
-    // m_camera.setPerspective( 10.f, 1.f, 4.7f, 5.4f);
-    // m_camera.setPerspective( 50.f, 1.f, 3.5f, 6.5f);	
-	m_camera.setPerspective( 50.f, 1.f, 0.01f, 10.0f );
+    // m_camera.setPerspective( MathUtils::degreesToRadians( 10.f ), 1.f, 4.7f, 5.4f);
+    // m_camera.setPerspective( MathUtils::degreesToRadians( 50.f ), 1.f, 3.5f, 6.5f);	
+	m_camera.setPerspective( MathUtils::degreesToRadians( 50.f ), 1.f, 0.01f, 10.0f );
 
 	m_pXboxController0 = new XboxController( 0, this );
 }

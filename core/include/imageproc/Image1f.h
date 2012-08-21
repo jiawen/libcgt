@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QImage>
-#include <QString>
-
 #include "common/Array2D.h"
 #include "vecmath/Vector2i.h"
+
+class QImage;
+class QString;
 
 // TODO: move constructor and assignment operator
 // TODO: images should be "views" on top of Array2Ds

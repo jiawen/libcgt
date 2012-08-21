@@ -45,6 +45,7 @@ HEADERS += include/lights/*.h
 SOURCES += src/lights/*.cpp
 
 HEADERS += include/math/*.h
+HEADERS += include/math/*.inl
 SOURCES += src/math/*.cpp
 
 HEADERS += include/time/*.h

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Camera.h"
+#include <math/MathUtils.h>
 
-#include <QString>
+class QString;
 
 class PerspectiveCamera : public Camera
 {
@@ -26,7 +27,7 @@ public:
 	PerspectiveCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
 		const Vector3f& center = Vector3f( 0, 0, 0 ),
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
-		float fovYDegrees = 50.0f, float aspect = 1.0f,
+		float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
 		bool zFarIsInfinite = false,
 		bool isDirectX = true );
@@ -42,9 +43,16 @@ public:
 		float* pfZNear, float* pfZFar,
 		bool* pbZFarIsInfinite = nullptr );
 
-	void setPerspective( float fovYDegrees = 50.0f, float aspect = 1.0f,
+	void setPerspective( float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
 		bool zFarIsInfinite = false );
+
+	// Sets the perspective projection given computer-vision style intrinsics:
+	// focal length and image size in pixels
+	// Does not allow for radial distortion
+	void setPerspectiveFromIntrinsics( float focalLengthPixels,
+		float imageWidth, float imageHeight,
+		float zNear = 1.0f, float zFar = 100.0f );
 
 	// get/set the aspect ratio of the screen,
 	// defined as width / height
@@ -57,6 +65,11 @@ public:
 	float fovYRadians() const;
 	void setFovYRadians( float fovY );
 
+	// get/set the field of view, in degrees
+	float fovXDegrees() const;
+	float fovYDegrees() const;
+	void setFovYDegrees( float fovY );
+
 	// returns half the field of view, in radians
 	// very useful in projection math
 	float halfFovXRadians() const;
@@ -66,19 +79,15 @@ public:
 	float tanHalfFovX() const;
 	float tanHalfFovY() const;
 
-	// get/set the field of view, in degree
-	float fovYDegrees() const;
-	void setFovYDegrees( float fovY );
-
 	Matrix4f projectionMatrix() const;
 
-	// TODO: jittered orthographic projection?
 	// returns the projection matrix P such that
 	// the plane at a distance focusZ in front of the center of the lens
 	// is kept constant while the eye has been moved
 	// by (eyeX, eyeY) *in the plane of the lens*
 	// i.e. eyeX is in the direction of right()
 	// and eyeY is in the direction of up()
+	// TODO: jittered orthographic projection?
 	Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
 
 	// equivalent to jitteredProjectionMatrix() * jitteredViewMatrix()
@@ -101,6 +110,7 @@ public:
 	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
 
 	QString toString() const;
+	std::vector< Vector4f > frustumLines() const;
 
 	bool saveTXT( QString filename );
 	

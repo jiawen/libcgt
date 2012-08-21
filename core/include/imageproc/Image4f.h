@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QImage>
-#include <QString>
-
 #include "common/Array2D.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector4i.h"
 #include "vecmath/Vector4f.h"
+
+class QImage;
+class QString;
 
 class Image4f
 {

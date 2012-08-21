@@ -1,13 +1,14 @@
 #pragma once
 
-#include <QString>
-#include <qvector.h>
+#include <vector>
 
 #include <math/MathUtils.h>
 
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Matrix4f.h>
+
+class QString;
 
 class SpotLight
 {

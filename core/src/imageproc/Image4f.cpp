@@ -3,6 +3,8 @@
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
+#include <QImage>
+#include <QString>
 
 #include "color/ColorUtils.h"
 #include "math/Arithmetic.h"

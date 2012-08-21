@@ -54,10 +54,15 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
 
     BoundingBox3f frustumBB;
     for( int i = 0; i < frustumCorners.size(); ++i )
-        frustumBB.enlarge(frustumCorners[i]);
+	{
+		// TODO: enlargeToInclude
+        frustumBB.enlarge( frustumCorners[i] );
+	}
 
     BoundingBox3f sceneAndFrustum;
-	bool intersects = BoundingBox3f::intersect(frustumBB, sceneBoundingBox, sceneAndFrustum);
+	bool intersects = BoundingBox3f::intersect( frustumBB, sceneBoundingBox, sceneAndFrustum );
+
+	// TODO: check for intersection
 
     std::vector< Vector3f > sceneCorners = sceneBoundingBox.corners();
 	std::vector< Vector3f > sceneAndFrustumCorners = sceneAndFrustum.corners();
@@ -82,14 +87,14 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
 	// add eye point
 	for(int j = 0; j < 3; ++j)
 	{
-		maxCorner[j] = qMax( maxCorner[ j ], 0.0f );
-		minCorner[j] = qMin( minCorner[ j ], 0.0f );
+		maxCorner[j] = std::max( maxCorner[ j ], 0.0f );
+		minCorner[j] = std::min( minCorner[ j ], 0.0f );
 	}
 
 	// bound the near plane to the scene
 	for( int i = 0; i < sceneCorners.size(); ++i )
 	{
-		minCorner[2] = qMin( minCorner[2], sceneCorners[ i ][ 2 ] );
+		minCorner[2] = std::min( minCorner[2], sceneCorners[ i ][ 2 ] );
 	}
 
 	// finally, compute the full light matrix

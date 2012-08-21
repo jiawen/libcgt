@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <limits>
 
+#include <QString>
+
 #include "geometry/GeometryUtils.h"
 
 using namespace std;

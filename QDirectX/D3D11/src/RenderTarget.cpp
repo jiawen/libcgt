@@ -1,5 +1,6 @@
 #include "RenderTarget.h"
 
+#include <common/BasicTypes.h>
 #include <imageproc/Image4f.h>
 
 // static

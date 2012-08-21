@@ -1,5 +1,4 @@
-#ifndef COLOR4F_H
-#define COLOR4F_H
+#pragma once
 
 #include "../vecmath/Vector4f.h"
 
@@ -19,6 +18,3 @@ public:
 	static const Vector4f TRANSPARENT_WHITE;
 
 };
-
-
-#endif // COLOR4F_H

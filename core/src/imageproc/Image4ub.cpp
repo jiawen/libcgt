@@ -2,6 +2,8 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QImage>
+#include <QString>
 
 #include <math/Arithmetic.h>
 #include <math/MathUtils.h>

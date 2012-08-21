@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <time/Clock.h>
-#include <QString>
+
+class QString;
 
 // A simple frames-per-second estimator
 // based on sampling the last N frame times

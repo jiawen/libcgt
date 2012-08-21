@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+class QString;
 
 class Vector2f;
 class Vector3i;

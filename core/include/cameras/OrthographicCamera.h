@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QString>
-
 #include "Camera.h"
 #include "vecmath/Matrix4f.h"
 #include "vecmath/Vector4f.h"
+
+class QString;
 
 class OrthographicCamera : public Camera
 {

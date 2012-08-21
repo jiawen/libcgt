@@ -110,11 +110,14 @@ public:
 		Vector3f& rIntersectionPoint );
 
 	// ray triangle intersection
-	// returns true if the ray intersects the triangle
-	// TODO: one sided intersection is also in there, ifdefed
+	// if the ray intersects the triangle,
+	//   returns true, along with the parameter t along the ray, and barycentric coordinates a, b, c
+	//   such that intersection point = a * v0 + b * v1 + c * v2
+	//
+	// otherwise, returns false
 	static bool rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
 		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
-		float& t, float& u, float& v );
+		float& t, Vector3f& barycentrics );
 
 	static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
 		BoundingBox3f* pBox );

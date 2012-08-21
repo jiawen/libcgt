@@ -1,5 +1,4 @@
-#ifndef PERFORMANCE_COLLECTOR_H
-#define PERFORMANCE_COLLECTOR_H
+#pragma once
 
 #include <QString>
 #include <QHash>
@@ -40,5 +39,3 @@ private:
 	QHash< QString, int > m_eventCounts;
 
 };
-
-#endif // PERFORMANCE_COLLECTOR_H

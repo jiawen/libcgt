@@ -10,5 +10,5 @@ NumberedFilenameBuilder::NumberedFilenameBuilder( QString prefix, QString suffix
 
 QString NumberedFilenameBuilder::filenameForNumber( int number )
 {
-	return m_baseString.arg( number, m_nDigits, QChar( '0' ) );
+	return m_baseString.arg( number, m_nDigits, 10, QChar( '0' ) );
 }

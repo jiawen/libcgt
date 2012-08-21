@@ -1,5 +1,7 @@
 #include "time/FPSEstimator.h"
 
+#include <QString>
+
 #include <math/MathUtils.h>
 
 FPSEstimator::FPSEstimator( int nSamples ) :

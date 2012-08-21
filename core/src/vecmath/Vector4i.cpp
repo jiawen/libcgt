@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <QString>
+
 #include "vecmath/Vector4i.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3i.h"

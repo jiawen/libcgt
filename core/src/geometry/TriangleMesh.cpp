@@ -254,18 +254,17 @@ bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& directi
 
 		bool faceHit;
 		float faceT;
-		float faceU;
-		float faceV;
+		Vector3f lambda;
 
 		faceHit = GeometryUtils::rayTriangleIntersection( origin, direction,
 			v0, v1, v2,
-			faceT, faceU, faceV );
+			faceT, lambda );
 		if( faceHit &&
 			faceT > tMin )
 		{
 			hit = true;
 			t = faceT;
-			barycentrics = Vector3f( faceU, faceV, 1 - faceU - faceV );
+			barycentrics = lambda;
 			faceIndex = f;
 		}
 	}

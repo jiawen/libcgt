@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QString>
 #include <vector>
 
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector3f.h>
 
 #include "MatrixCommon.h"
+
+class QString;
 
 class FloatMatrix
 {

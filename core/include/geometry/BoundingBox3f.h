@@ -3,8 +3,9 @@
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
-#include <QString>
 #include <vector>
+
+class QString;
 
 class BoundingBox3f
 {

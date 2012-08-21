@@ -1,12 +1,13 @@
 #include "FloatMatrix.h"
 
+#include <cassert>
+#include <cstdarg>
+#include <algorithm>
+
 #include <mkl.h>
 #include <mkl_blas.h>
 
-#include <cassert>
-#include <cstdarg>
-
-#include <algorithm>
+#include <QString>
 
 #include "LUFactorization.h"
 

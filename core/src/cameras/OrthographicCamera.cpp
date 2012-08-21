@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QString>
 
 #include <math/MathUtils.h>
 #include <vecmath/Quat4f.h>

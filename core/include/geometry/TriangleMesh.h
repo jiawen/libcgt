@@ -66,6 +66,8 @@ public:
 		float tMin = 0 ) const;
 
 	Vector3f barycentricInterpolatePosition( int faceIndex, const Vector3f& barycentrics ) const;
+
+	// returns a normalized normal
 	Vector3f barycentricInterpolateNormal( int faceIndex, const Vector3f& barycentrics ) const;
 
 	// given a set of connected faces in connectedComponent

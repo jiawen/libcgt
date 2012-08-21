@@ -260,7 +260,8 @@ Matrix4f Camera::inverseViewProjectionMatrix() const
 
 Vector4f Camera::worldToEye( const Vector4f& world ) const
 {
-	return viewMatrix() * world;
+	Matrix4f vm = viewMatrix();
+	return vm * world;
 }
 
 Vector4f Camera::eyeToScreen( const Vector4f& eye, const Vector2i& screenSize ) const
@@ -323,6 +324,8 @@ Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) 
 	Vector4f world = inverseViewMatrix() * eye;
 
 	Vector3f pointOnNearPlane = world.homogenized().xyz();
+
+	// TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
 
 	return ( pointOnNearPlane - m_eye ).normalized();
 }
