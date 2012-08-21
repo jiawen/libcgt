@@ -5,19 +5,19 @@
 
 #include <common/Array2D.h>
 
-#include "DeviceVector2D.h"
+#include "DeviceArray2D.h"
 
 // Basic 2D array interface around CUDA global memory
 // Wraps around cudaMallocPitch() (linear allocation with pitch)
 template< typename T >
-class CUDAVector2D
+class HostArray2D
 {
 public:
 
-	CUDAVector2D();
-	CUDAVector2D( int width, int height );
-	CUDAVector2D( const Array2D< T >& src );
-	virtual ~CUDAVector2D();
+	HostArray2D();
+	HostArray2D( int width, int height );
+	HostArray2D( const Array2D< T >& src );
+	virtual ~HostArray2D();
 	
 	bool isNull() const;
 	bool notNull() const;
@@ -59,7 +59,7 @@ public:
 
 	T* devicePtr() const;
 
-	DeviceVector2D< T > deviceVector() const;
+	DeviceArray2D< T > deviceArray() const;
 
 	// TODO: constructor from filename: just use load	
 
@@ -83,7 +83,7 @@ private:
 };
 
 template< typename T >
-CUDAVector2D< T >::CUDAVector2D() :
+HostArray2D< T >::HostArray2D() :
 
 	m_width( -1 ),
 	m_height( -1 ),
@@ -96,7 +96,7 @@ CUDAVector2D< T >::CUDAVector2D() :
 }
 
 template< typename T >
-CUDAVector2D< T >::CUDAVector2D( int width, int height ) :
+HostArray2D< T >::HostArray2D( int width, int height ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
@@ -110,7 +110,7 @@ CUDAVector2D< T >::CUDAVector2D( int width, int height ) :
 }
 
 template< typename T >
-CUDAVector2D< T >::CUDAVector2D( const Array2D< T >& src ) :
+HostArray2D< T >::HostArray2D( const Array2D< T >& src ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
@@ -126,55 +126,55 @@ CUDAVector2D< T >::CUDAVector2D( const Array2D< T >& src ) :
 
 template< typename T >
 // virtual
-CUDAVector2D< T >::~CUDAVector2D()
+HostArray2D< T >::~HostArray2D()
 {
 	destroy();
 }
 
 template< typename T >
-bool CUDAVector2D< T >::isNull() const
+bool HostArray2D< T >::isNull() const
 {
 	return( m_devicePtr == NULL );
 }
 
 template< typename T >
-bool CUDAVector2D< T >::notNull() const
+bool HostArray2D< T >::notNull() const
 {
 	return( m_devicePtr != NULL );
 }
 
 template< typename T >
-int CUDAVector2D< T >::width() const
+int HostArray2D< T >::width() const
 {
 	return m_width;
 }
 
 template< typename T >
-int CUDAVector2D< T >::height() const
+int HostArray2D< T >::height() const
 {
 	return m_height;
 }
 
 template< typename T >
-int CUDAVector2D< T >::numElements() const
+int HostArray2D< T >::numElements() const
 {
 	return m_width * m_height;
 }
 
 template< typename T >
-size_t CUDAVector2D< T >::pitch() const
+size_t HostArray2D< T >::pitch() const
 {
 	return m_pitch;
 }
 
 template< typename T >
-size_t CUDAVector2D< T >::sizeInBytes() const
+size_t HostArray2D< T >::sizeInBytes() const
 {
 	return m_sizeInBytes;
 }
 
 template< typename T >
-void CUDAVector2D< T >::resize( int width, int height )
+void HostArray2D< T >::resize( int width, int height )
 {
 	if( width == m_width && height == m_height )
 	{
@@ -201,13 +201,13 @@ void CUDAVector2D< T >::resize( int width, int height )
 }
 
 template< typename T >
-void CUDAVector2D< T >::clear()
+void HostArray2D< T >::clear()
 {
 	CUDA_SAFE_CALL( cudaMemset2D( devicePtr(), pitch(), 0, widthInBytes(), height() ) );
 }
 
 template< typename T >
-void CUDAVector2D< T >::copyFromArray( cudaArray* src )
+void HostArray2D< T >::copyFromArray( cudaArray* src )
 {
 	CUDA_SAFE_CALL
 	(
@@ -223,7 +223,7 @@ void CUDAVector2D< T >::copyFromArray( cudaArray* src )
 }
 
 template< typename T >
-void CUDAVector2D< T >::copyToArray( cudaArray* dst )
+void HostArray2D< T >::copyToArray( cudaArray* dst )
 {
 	CUDA_SAFE_CALL
 	(
@@ -239,7 +239,7 @@ void CUDAVector2D< T >::copyToArray( cudaArray* dst )
 }
 
 template< typename T >
-void CUDAVector2D< T >::copyFromHost( const Array2D< T >& src )
+void HostArray2D< T >::copyFromHost( const Array2D< T >& src )
 {
 	CUDA_SAFE_CALL
 	(
@@ -254,7 +254,7 @@ void CUDAVector2D< T >::copyFromHost( const Array2D< T >& src )
 }
 
 template< typename T >
-void CUDAVector2D< T >::copyToHost( Array2D< T >& dst ) const
+void HostArray2D< T >::copyToHost( Array2D< T >& dst ) const
 {
 	CUDA_SAFE_CALL
 	(
@@ -269,25 +269,25 @@ void CUDAVector2D< T >::copyToHost( Array2D< T >& dst ) const
 }
 
 template< typename T >
-CUDAVector2D< T >::operator T* () const
+HostArray2D< T >::operator T* () const
 {
 	return m_devicePtr;
 }
 
 template< typename T >
-T* CUDAVector2D< T >::devicePtr() const
+T* HostArray2D< T >::devicePtr() const
 {
 	return m_devicePtr;
 }
 
 template< typename T >
-DeviceVector2D< T > CUDAVector2D< T >::deviceVector() const
+DeviceArray2D< T > HostArray2D< T >::deviceArray() const
 {
-	return DeviceVector2D< T >( m_devicePtr, m_width, m_height, m_pitch );
+	return DeviceArray2D< T >( m_devicePtr, m_width, m_height, m_pitch );
 }
 
 template< typename T >
-void CUDAVector2D< T >::load( const char* filename )
+void HostArray2D< T >::load( const char* filename )
 {
 	Array2D< T > h_arr( filename );
 	if( !( h_arr.isNull() ) )
@@ -298,7 +298,7 @@ void CUDAVector2D< T >::load( const char* filename )
 }
 
 template< typename T >
-void CUDAVector2D< T >::save( const char* filename ) const
+void HostArray2D< T >::save( const char* filename ) const
 {
 	Array2D< T > h_arr( width(), height() );
 	copyToHost( h_arr );
@@ -306,7 +306,7 @@ void CUDAVector2D< T >::save( const char* filename ) const
 }
 
 template< typename T >
-void CUDAVector2D< T >::destroy()
+void HostArray2D< T >::destroy()
 {
 	if( notNull() )
 	{
@@ -321,7 +321,7 @@ void CUDAVector2D< T >::destroy()
 }
 
 template< typename T >
-size_t CUDAVector2D< T >::widthInBytes() const
+size_t HostArray2D< T >::widthInBytes() const
 {
 	return m_width * sizeof( T );
 }

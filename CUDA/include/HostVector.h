@@ -1,5 +1,4 @@
-#ifndef CUDA_VECTOR_H
-#define CUDA_VECTOR_H
+#pragma once
 
 #include <cuda_runtime.h>
 #include <cutil.h>
@@ -7,13 +6,13 @@
 // Basic vector interface around CUDA global memory
 // Wraps around cudaMalloc() (linear allocation)
 template< typename T >
-class CUDAVector
+class HostVector
 {
 public:
 
-	CUDAVector();
-	CUDAVector( int length );
-	virtual ~CUDAVector();
+	HostVector();
+	HostVector( int length );
+	virtual ~HostVector();
 
 	bool isNull() const;
 	bool notNull() const;
@@ -53,7 +52,7 @@ private:
 };
 
 template< typename T >
-CUDAVector< T >::CUDAVector() :
+HostVector< T >::HostVector() :
 
 	m_sizeInBytes( 0 ),
 	m_length( -1 ),
@@ -65,7 +64,7 @@ CUDAVector< T >::CUDAVector() :
 
 
 template< typename T >
-CUDAVector< T >::CUDAVector( int length ) :
+HostVector< T >::HostVector( int length ) :
 
 	m_sizeInBytes( 0 ),
 	m_length( -1 ),
@@ -77,43 +76,43 @@ CUDAVector< T >::CUDAVector( int length ) :
 
 template< typename T >
 // virtual
-CUDAVector< T >::~CUDAVector()
+HostVector< T >::~HostVector()
 {
 	destroy();	
 }
 
 template< typename T >
-bool CUDAVector< T >::isNull() const
+bool HostVector< T >::isNull() const
 {
 	return( m_devicePtr == NULL );
 }
 
 template< typename T >
-bool CUDAVector< T >::notNull() const
+bool HostVector< T >::notNull() const
 {
 	return( m_devicePtr != NULL );
 }
 
 template< typename T >
-int CUDAVector< T >::length() const
+int HostVector< T >::length() const
 {
 	return m_length;
 }
 
 template< typename T >
-size_t CUDAVector< T >::sizeInBytes() const
+size_t HostVector< T >::sizeInBytes() const
 {
 	return m_sizeInBytes;
 }
 
 template< typename T >
-void CUDAVector< T >::clear()
+void HostVector< T >::clear()
 {
 	cudaMemset( m_devicePtr, 0, m_sizeInBytes );
 }
 
 template< typename T >
-void CUDAVector< T >::resize( int length )
+void HostVector< T >::resize( int length )
 {
 	if( m_length == length )
 	{
@@ -129,31 +128,31 @@ void CUDAVector< T >::resize( int length )
 }
 
 template< typename T >
-void CUDAVector< T >::copyFromHost( void* input )
+void HostVector< T >::copyFromHost( void* input )
 {
 	CUDA_SAFE_CALL( cudaMemcpy( m_devicePtr, input, m_sizeInBytes, cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
-void CUDAVector< T >::copyToHost( void* output )
+void HostVector< T >::copyToHost( void* output )
 {
 	CUDA_SAFE_CALL( cudaMemcpy( output, m_devicePtr, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
 }
 
 template< typename T >
-CUDAVector< T >::operator T* () const
+HostVector< T >::operator T* () const
 {
 	return m_devicePtr;
 }
 
 template< typename T >
-T* CUDAVector< T >::devicePtr() const
+T* HostVector< T >::devicePtr() const
 {
 	return m_devicePtr;
 }
 
 template< typename T >
-void CUDAVector< T >::destroy()
+void HostVector< T >::destroy()
 {
 	if( notNull() )
 	{
@@ -164,5 +163,3 @@ void CUDAVector< T >::destroy()
 	m_sizeInBytes = 0;
 	m_length = -1;	
 }
-
-#endif // CUDA_VECTOR_H
