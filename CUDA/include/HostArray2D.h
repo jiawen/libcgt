@@ -43,7 +43,7 @@ public:
 	void copyFromArray( cudaArray* src );
 
 	// copy from this to cudaArray dst
-	void copyToArray( cudaArray* dst );
+	void copyToArray( cudaArray* dst ) const;
 
 	// copy from host array src to this
 	void copyFromHost( const Array2D< T >& src );
@@ -223,7 +223,7 @@ void HostArray2D< T >::copyFromArray( cudaArray* src )
 }
 
 template< typename T >
-void HostArray2D< T >::copyToArray( cudaArray* dst )
+void HostArray2D< T >::copyToArray( cudaArray* dst ) const
 {
 	CUDA_SAFE_CALL
 	(
