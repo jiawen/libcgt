@@ -2,7 +2,6 @@
 
 #include <common/BasicTypes.h>
 
-
 // makes an int2 out of a short2
 static __inline__ __host__ __device__
 int2 make_int2( short2 s )

@@ -18,6 +18,7 @@ namespace libcgt
 
 			//static bool saveTXT( const HostArray2D< uchar4 >& array, const char* filename );
 			static bool saveTXT( const HostArray2D< float >& array, const char* filename );
+			static bool saveTXT( const HostArray2D< float4 >& array, const char* filename );
 		};
 
 	}

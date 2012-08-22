@@ -67,3 +67,11 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float >& array, const
 	array.copyToHost( h_array );
 	return ::ArrayUtils::saveTXT( h_array, filename );
 }
+
+// static
+bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float4 >& array, const char* filename )
+{
+	Array2D< float4 > h_array( array.width(), array.height() );
+	array.copyToHost( h_array );
+	return saveTXT( h_array, filename );
+}
