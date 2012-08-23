@@ -66,8 +66,9 @@ DynamicTexture2D* DynamicTexture2D::createUnsignedByte4( ID3D11Device* pDevice, 
 // virtual
 DynamicTexture2D::~DynamicTexture2D()
 {
-	m_pTexture->Release();
 	m_pShaderResourceView->Release();
+	m_pTexture->Release();
+	m_pDevice->Release();
 }
 
 int DynamicTexture2D::width()
@@ -83,6 +84,26 @@ int DynamicTexture2D::height()
 Vector2i DynamicTexture2D::size()
 {
 	return Vector2i( m_width, m_height );
+}
+
+void DynamicTexture2D::resize( int width, int height )
+{
+	// TODO: destroy(), resize() in constructor
+
+	if( width != m_width || height != m_height )
+	{
+		D3D11_TEXTURE2D_DESC td = description();
+		td.Width = width;
+		td.Height = height;
+
+		m_pShaderResourceView->Release();
+		m_pTexture->Release();
+
+		m_pDevice->CreateTexture2D( &td, NULL, &m_pTexture );
+
+		m_pTexture->AddRef();
+		m_pDevice->CreateShaderResourceView( m_pTexture, NULL, &m_pShaderResourceView );
+	}
 }
 
 DynamicTexture2D::operator ID3D11Texture2D* ()
@@ -142,10 +163,16 @@ D3D11_TEXTURE2D_DESC DynamicTexture2D::makeTextureDescription( int width, int he
 }
 
 DynamicTexture2D::DynamicTexture2D( ID3D11Device* pDevice, int width, int height, ID3D11Texture2D* pTexture ) :
+
+	m_pDevice( pDevice ),
 	m_width( width ),
 	m_height( height ),
 	m_pTexture( pTexture )
+
 {
-	pDevice->CreateShaderResourceView( pTexture, NULL, &m_pShaderResourceView );	
+	m_pDevice->AddRef();
+	pTexture->AddRef();
+	pDevice->CreateShaderResourceView( pTexture, NULL, &m_pShaderResourceView );
+
 	pDevice->GetImmediateContext( &m_pContext );	
 }

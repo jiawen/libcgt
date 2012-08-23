@@ -26,6 +26,8 @@ public:
 	int height();
 	Vector2i size();
 
+	void resize( int width, int height );
+
 	// implicit cast to ID3D11Texture2D*
 	operator ID3D11Texture2D* ();
 
@@ -46,6 +48,7 @@ private:
 	int m_width;
 	int m_height;
 
+	ID3D11Device* m_pDevice;
 	ID3D11Texture2D* m_pTexture;
 	ID3D11ShaderResourceView* m_pShaderResourceView;	
 
