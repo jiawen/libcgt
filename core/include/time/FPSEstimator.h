@@ -15,7 +15,7 @@ class FPSEstimator
 {
 public:
 
-	FPSEstimator( int nSamples );
+	FPSEstimator( int nSamples = 128 );
 
 	void update();
 

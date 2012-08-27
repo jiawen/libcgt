@@ -78,25 +78,22 @@ void QKinectThread::run()
 			}
 		}
 
-#if 0
 		float dt = clock.convertIntervalToMillis( t1 - t0 );
 		t0 = t1;
 		
-		printf( "dt = %f ms\n", dt );
+		// printf( "dt = %f ms\n", dt );
 
 		if( dt < m_pollingIntervalMS )
 		{
 			int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );			
-			printf( "sleeping for %d milliseconds\n", sleepInterval );
+			//printf( "sleeping for %d milliseconds\n", sleepInterval );
 			msleep( sleepInterval );
 		}
 
-		int64 t2 = clock.getCounterValue();
-		float loopTime = clock.convertIntervalToMillis( t2 - t1 );
-		printf( "loopTime = %f ms\n", loopTime );
-#endif
-
-		msleep( m_pollingIntervalMS );
+		//int64 t2 = clock.getCounterValue();
+		//float loopTime = clock.convertIntervalToMillis( t2 - t1 );
+		//printf( "loopTime = %f ms\n", loopTime );
+		// msleep( m_pollingIntervalMS );
 
 		eventLoop.processEvents();
 	}

@@ -69,6 +69,18 @@ namespace libcgt
 		int numElementsInBin( int binIndex, int binSize, int n );
 
 		__host__ __device__ __inline__
+		int floorToInt( float x );
+
+		__host__ __device__ __inline__
+		int2 floorToInt( const float2& v );
+
+		__host__ __device__ __inline__
+		int3 floorToInt( const float3& v );
+
+		__host__ __device__ __inline__
+		int4 floorToInt( const float4& v );
+
+		__host__ __device__ __inline__
 		int ceilToInt( float x );
 
 		__host__ __device__ __inline__
@@ -78,6 +90,9 @@ namespace libcgt
 		int3 ceilToInt( const float3& v );
 
 		__host__ __device__ __inline__
+		int4 ceilToInt( const float4& v );
+
+		__host__ __device__ __inline__
 		int roundToInt( float x );
 
 		__host__ __device__ __inline__
@@ -85,6 +100,9 @@ namespace libcgt
 
 		__host__ __device__ __inline__
 		int3 roundToInt( const float3& v );
+
+		__host__ __device__ __inline__
+		int4 roundToInt( const float4& v );
 
 		// efficiently computes x % divisor, where divisor is a power of two
 		// by the magic formula:
@@ -331,21 +349,51 @@ int libcgt::cuda::numElementsInBin( int binIndex, int binSize, int n )
 }
 
 __host__ __device__ __inline__
-	int libcgt::cuda::ceilToInt( float x )
+int libcgt::cuda::floorToInt( float x )
+{
+	return static_cast< int >( floor( x ) );
+}
+
+__host__ __device__ __inline__
+int2 libcgt::cuda::floorToInt( const float2& v )
+{
+	return make_int2( floorToInt( v.x ), floorToInt( v.y ) );
+}
+
+__host__ __device__ __inline__
+int3 libcgt::cuda::floorToInt( const float3& v )
+{
+	return make_int3( floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ) );
+}
+
+__host__ __device__ __inline__
+int4 libcgt::cuda::floorToInt( const float4& v )
+{
+	return make_int4( floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ), floorToInt( v.w ) );
+}
+
+__host__ __device__ __inline__
+int libcgt::cuda::ceilToInt( float x )
 {
 	return static_cast< int >( ceil( x ) );
 }
 
 __host__ __device__ __inline__
-	int2 libcgt::cuda::ceilToInt( const float2& v )
+int2 libcgt::cuda::ceilToInt( const float2& v )
 {
 	return make_int2( ceilToInt( v.x ), ceilToInt( v.y ) );
 }
 
 __host__ __device__ __inline__
-	int3 libcgt::cuda::ceilToInt( const float3& v )
+int3 libcgt::cuda::ceilToInt( const float3& v )
 {
 	return make_int3( ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ) );
+}
+
+__host__ __device__ __inline__
+int4 libcgt::cuda::ceilToInt( const float4& v )
+{
+	return make_int4( ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ), ceilToInt( v.w ) );
 }
 
 __host__ __device__ __inline__
@@ -364,6 +412,12 @@ __host__ __device__ __inline__
 int3 libcgt::cuda::roundToInt( const float3& v )
 {
 	return make_int3( roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) );
+}
+
+__host__ __device__ __inline__
+int4 libcgt::cuda::roundToInt( const float4& v )
+{
+	return make_int4( roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ), roundToInt( v.w ) );
 }
 
 __host__ __device__ __inline__
