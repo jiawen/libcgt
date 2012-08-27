@@ -39,7 +39,15 @@ public:
 
 	// Creates a Kinect device
 	// deviceIndex should be between [0, numDevices()),
-	// nuiFlags is an bit mask combination of NUI_INITIALIZE_FLAG_USES_COLOR, NUI_INITIALIZE_FLAG_USES_DEPTH, NUI_INITIALIZE_FLAG_USES_SKELETON, NUI_INITIALIZE_FLAG_USES_AUDIO
+	// nuiFlags is an bit mask combination of:
+	// NUI_INITIALIZE_FLAG_USES_COLOR,
+	// NUI_INITIALIZE_FLAG_USES_DEPTH,
+	// NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX,
+	// NUI_INITIALIZE_FLAG_USES_SKELETON,
+	// and NUI_INITIALIZE_FLAG_USES_AUDIO
+
+	// NUI_INITIALIZE_FLAG_USES_DEPTH or NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX must be set if you want to recognize skeletons with NUI_INITIALIZE_FLAG_USES_SKELETON
+	// NUI_INITIALIZE_FLAG_USES_DEPTH or NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX must be set if you want to enable near mode
 	// NUI_INITIALIZE_FLAG_USES_AUDIO must be set if you want to recognize any of the phrases in recognizedPhrases
 	static std::shared_ptr< QKinect > create
 	(
@@ -93,15 +101,24 @@ public:
 	int elevationAngle() const;
 	void setElevationAngle( int degrees );
 
+	bool isNearModeEnabled() const;
+	void setNearModeEnabled( bool b );
+
 public slots:
 
-	// poll the Kinect for a skeleton and return the results in the output variables
-	// returns:
-	//   -1 if nothing is ready (timed out)
-	//   0, if skeleton frame is ready
-	//   1, if rgba frame is ready
-	//   2, if depth frame is ready
-	QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitInterval = 0 );
+	// poll the Kinect for data and return the results in the output variables
+	// may wait up until waitIntervalMilliseconds before returning
+	// setting waitIntervalMilliseconds to 0 means check and if data is ready, return immediately
+	// otherwise return nothing
+	//
+	// returns an enumerated event indicating the result
+	QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitIntervalMilliseconds = 0 );
+
+	// poll the Kinect for depth data only and return the result in the depth output variable
+	// may wait up until waitIntervalMilliseconds before returning
+	// setting waitIntervalMilliseconds to 0 means check and if data is ready, return immediately
+	// otherwise return nothing
+	QKinectEvent pollDepth( Array2D< ushort >& depth, int waitIntervalMilliseconds = 0 );
 
 	// poll the Kinect for a voice recognition command and return the results in the output variables
 	// returns false is nothing was recognized
@@ -113,7 +130,7 @@ private:
 
 	// initialization
 	HRESULT initialize( DWORD nuiFlags, QVector< QString > recognizedPhrases );
-		HRESULT initializeDepthStream();
+		HRESULT initializeDepthStream( bool trackPlayerIndex );
 		HRESULT initializeRGBStream();
 		HRESULT initializeSkeletonTracking();
 	
@@ -138,6 +155,9 @@ private:
 
 	HANDLE m_hRGBStreamHandle;
 	HANDLE m_hDepthStreamHandle;
+
+	// properties
+	DWORD m_depthStreamFlags;
 
 	// speech
 	IMediaObject* m_pDMO;
