@@ -69,6 +69,15 @@ namespace libcgt
 		int numElementsInBin( int binIndex, int binSize, int n );
 
 		__host__ __device__ __inline__
+		int ceilToInt( float x );
+
+		__host__ __device__ __inline__
+		int2 ceilToInt( const float2& v );
+
+		__host__ __device__ __inline__
+		int3 ceilToInt( const float3& v );
+
+		__host__ __device__ __inline__
 		int roundToInt( float x );
 
 		__host__ __device__ __inline__
@@ -319,6 +328,24 @@ int libcgt::cuda::numElementsInBin( int binIndex, int binSize, int n )
 	return
 		( ( binIndex + 1 ) * binSize > n ) ?
 		( n % binSize ) : binSize;
+}
+
+__host__ __device__ __inline__
+	int libcgt::cuda::ceilToInt( float x )
+{
+	return static_cast< int >( ceil( x ) );
+}
+
+__host__ __device__ __inline__
+	int2 libcgt::cuda::ceilToInt( const float2& v )
+{
+	return make_int2( ceilToInt( v.x ), ceilToInt( v.y ) );
+}
+
+__host__ __device__ __inline__
+	int3 libcgt::cuda::ceilToInt( const float3& v )
+{
+	return make_int3( ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ) );
 }
 
 __host__ __device__ __inline__

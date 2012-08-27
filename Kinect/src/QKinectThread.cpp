@@ -47,7 +47,8 @@ void QKinectThread::run()
 	m_running = true;
 	QEventLoop eventLoop;
 	Clock clock;
-	int64 t0 = clock.getCounterValue();
+	int64 tStart = clock.getCounterValue();
+	int64 t0 = tStart;
 
 	NUI_SKELETON_FRAME skeletonFrame;
 	Image4ub rgba( 640, 480 );
@@ -77,14 +78,25 @@ void QKinectThread::run()
 			}
 		}
 
+#if 0
 		float dt = clock.convertIntervalToMillis( t1 - t0 );
 		t0 = t1;
+		
+		printf( "dt = %f ms\n", dt );
 
 		if( dt < m_pollingIntervalMS )
 		{
-			int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );
+			int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );			
+			printf( "sleeping for %d milliseconds\n", sleepInterval );
 			msleep( sleepInterval );
 		}
+
+		int64 t2 = clock.getCounterValue();
+		float loopTime = clock.convertIntervalToMillis( t2 - t1 );
+		printf( "loopTime = %f ms\n", loopTime );
+#endif
+
+		msleep( m_pollingIntervalMS );
 
 		eventLoop.processEvents();
 	}
