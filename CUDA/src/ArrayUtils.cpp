@@ -61,7 +61,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float4 >& array, const ch
 }
 
 // static
-bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float >& array, const char* filename )
+bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float >& array, const char* filename )
 {
 	Array2D< float > h_array( array.width(), array.height() );
 	array.copyToHost( h_array );
@@ -69,7 +69,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float >& array, const
 }
 
 // static
-bool libcgt::cuda::ArrayUtils::saveTXT( const HostArray2D< float4 >& array, const char* filename )
+bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
 {
 	Array2D< float4 > h_array( array.width(), array.height() );
 	array.copyToHost( h_array );

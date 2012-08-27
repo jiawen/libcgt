@@ -19,7 +19,8 @@ float Arithmetic::divideIntsToFloat( int numerator, int denominator )
 // static
 int Arithmetic::divideIntsToFloatAndRound( int numerator, int denominator )
 {
-	return Arithmetic::roundToInt( Arithmetic::divideIntsToFloat( numerator, denominator ) );
+	float f = Arithmetic::divideIntsToFloat( numerator, denominator );
+	return Arithmetic::roundToInt( f );
 }
 
 // static		
