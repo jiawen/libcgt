@@ -73,6 +73,10 @@ public:
 	// (tIntersect > 0)
 	bool intersectRay( const Vector3f& origin, const Vector3f& direction );
 	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect );
+	
+	// Intersects a ray with full intersections
+	// TODO: refactor the above ones to use this one
+	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
 
 	// returns the smallest bounding box that contains both bounding boxes
 	static BoundingBox3f unite( const BoundingBox3f& b0, const BoundingBox3f& b1 );

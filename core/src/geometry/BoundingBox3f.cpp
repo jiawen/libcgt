@@ -281,6 +281,30 @@ bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direct
 	return intersected;
 }
 
+bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
+	float& tNear, float& tFar ) const
+{
+	// compute t to each face
+	Vector3f rcpDir = 1.0f / direction;
+	
+	// three "bottom" faces (min of the box)
+	Vector3f tBottom = rcpDir * ( minimum() - origin );
+	// three "top" faces (max of the box)
+	Vector3f tTop = rcpDir * ( maximum() - origin );
+
+	// find the smallest and largest distances along each axis
+	Vector3f tMin = Vector3f::minimum( tBottom, tTop );
+	Vector3f tMax = Vector3f::maximum( tBottom, tTop );
+
+	// tNear is the largest tMin
+	tNear = tMin.maximum();
+
+	// tFar is the smallest tMax
+	tFar = tMax.minimum();
+	
+	return tFar > tNear;
+}
+
 // static
 BoundingBox3f BoundingBox3f::unite( const BoundingBox3f& b0, const BoundingBox3f& b1 )
 {

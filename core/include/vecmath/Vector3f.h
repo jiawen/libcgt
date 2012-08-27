@@ -64,6 +64,11 @@ public:
 	void negate();
 	
 	Vector3i floored() const;
+	float minimum() const;
+	float maximum() const;
+
+	static Vector3f minimum( const Vector3f& v0, const Vector3f& v1 );
+	static Vector3f maximum( const Vector3f& v0, const Vector3f& v1 );
 
 	// automatic type conversion to float pointer
     operator const float* () const;
@@ -112,8 +117,11 @@ Vector3f operator * ( const Vector3f& v, float f );
 // component-wise multiplication
 Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 );
 
-Vector3f operator / ( const Vector3f& v, float f );
 // component-wise division
+Vector3f operator / ( const Vector3f& v, float f );
 Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
+
+// reciprocal of each component
+Vector3f operator / ( float f, const Vector3f& v );
 
 #include "Vector3f.inl"

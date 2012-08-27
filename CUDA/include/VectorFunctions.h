@@ -54,6 +54,26 @@ float normL1( float3 v )
 	return abs( v.x ) + abs( v.y ) + abs( v.z );
 }
 
+static
+__inline__ __host__ __device__
+void print( const int3& v )
+{
+	printf( "( %d, %d, %d )\n", v.x, v.y, v.z );
+}
+
+static
+__inline__ __host__ __device__
+void print( const float3& v )
+{
+	printf( "( %.4f, %.4f, %.4f )\n", v.x, v.y, v.z );
+}
+
+static __inline__ __host__ __device__
+void print( const float4& v )
+{
+	printf( "( %.4f, %.4f, %.4f, %.4f )\n", v.x, v.y, v.z, v.w );
+}
+
 // ========== operators ==========
 
 // ----- component-wise multiply with conversion -----

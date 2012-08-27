@@ -40,7 +40,7 @@ public:
 	// clamps x to [lo, hi]
 	static int clampToRangeInclusive( int x, int lo, int hi );
 
-	// clamps x to between min (inclusive) and max (includisve)
+	// clamps x to between min (inclusive) and max (inclusive)
 	static float clampToRange( float x, float lo, float hi );
 	static double clampToRange( double x, double lo, double hi );
 
@@ -53,22 +53,37 @@ public:
 	// a [snorm] float in [-1,1]
 	static float signedByteToFloatNormalized( sbyte sb );
 
-	static float rescaleFloatToFloat( float value,
+	// given an input range [inputMin, inputMax]
+	// and an output range [outputMin, outputMax]
+	//
+	// returns the parameters scale and offset such that
+	// for x \in [inputMin, inputMax]
+	// scale * x + offset is in the range [outputMin,outputMax]	
+	static void rescaleRangeToScaleOffset( float inputMin, float inputMax,
+		float outputMin, float outputMax,
+		float& scale, float& offset );
+
+	static float rescaleFloatToFloat( float x,
 		float inputMin, float inputMax,
 		float outputMin, float outputMax );
 
-	static int rescaleFloatToInt( float value,
+	// rescales a float range to an int range, with rounding
+	// iMax is inclusive
+	static int rescaleFloatToInt( float x,
 		float fMin, float fMax,
 		int iMin, int iMax );
 
-	static float rescaleIntToFloat( int value,
+	// iMax is inclusive
+	static float rescaleIntToFloat( int x,
 		int iMin, int iMax,
 		float fMin, float fMax );
 
-	static int rescaleIntToInt( int value,
+	// rescale an int range with rounding,
+	// inMax and out Max are inclusive
+	static int rescaleIntToInt( int x,
 		int inMin, int inMax,
 		int outMin, int outMax );
-	
+
 	template< typename T >
 	static T lerp( const T& x, const T& y, float t );
 

@@ -148,19 +148,14 @@ inline Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 )
 	return Vector2f( v0.x - v1.x, v0.y - v1.y );
 }
 
-inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 )
-{
-	return Vector2f( v0.x * v1.x, v0.y * v1.y );
-}
-
-inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 )
-{
-	return Vector2f( v0.x * v1.x, v0.y * v1.y );
-}
-
 inline Vector2f operator - ( const Vector2f& v )
 {
 	return Vector2f( -v.x, -v.y );
+}
+
+inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f( v0.x * v1.x, v0.y * v1.y );
 }
 
 inline Vector2f operator * ( float f, const Vector2f& v )
@@ -171,6 +166,21 @@ inline Vector2f operator * ( float f, const Vector2f& v )
 inline Vector2f operator * ( const Vector2f& v, float f )
 {
 	return Vector2f( f * v.x, f * v.y );
+}
+
+inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f( v0.x * v1.x, v0.y * v1.y );
+}
+
+inline Vector2f operator / ( const Vector2f& v, float f )
+{
+	return Vector2f( v.x / f, v.y / f );
+}
+
+inline Vector2f operator / ( float f, const Vector2f& v )
+{
+	return Vector2f( f / v.x, f / v.y );
 }
 
 inline bool operator == ( const Vector2f& v0, const Vector2f& v1 )

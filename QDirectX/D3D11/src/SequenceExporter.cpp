@@ -5,18 +5,28 @@
 #include "StagingTexture2D.h"
 #include "D3D11Utils.h"
 
-SequenceExporter::SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, int startFrameIndex ) :
+SequenceExporter::SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, QString extension, int startFrameIndex ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_prefix( prefix ),
-	m_image( width, height ),
-	m_frameIndex( startFrameIndex )
-
+	m_frameIndex( startFrameIndex ),
+	m_extension( extension ),
+	m_builder( prefix, QString( "." ) + extension )
 {
-	m_pRT.reset( RenderTarget::createUnsignedByte4( pDevice, width, height ) );
+
+	if( extension == "png" )
+	{
+		m_pRT.reset( RenderTarget::createUnsignedByte4( pDevice, width, height ) );
+		m_pStagingTexture.reset( StagingTexture2D::createUnsignedByte4( pDevice, width, height ) );
+		m_image4ub = Image4ub( width, height );
+	}
+	else if( extension == "pfm" )
+	{
+		m_pRT.reset( RenderTarget::createFloat4( pDevice, width, height ) );
+		m_pStagingTexture.reset( StagingTexture2D::createFloat4( pDevice, width, height ) );
+		m_image4f = Image4f( width, height );
+	}
 	m_pDST.reset( DepthStencilTarget::createDepthFloat24StencilUnsignedByte8( pDevice, width, height ) );
-	m_pStagingTexture.reset( StagingTexture2D::createUnsignedByte4( pDevice, width, height ) );
 
 	m_viewport = D3D11Utils::createViewport( width, height );
 
@@ -73,23 +83,49 @@ void SequenceExporter::beginFrame()
 void SequenceExporter::endFrame()
 {
 	m_pStagingTexture->copyFrom( m_pRT->texture() );
-	
+		
 	// TODO: D3D11Utils_Texture should have this
 	// or StagingTexture should take this
 	D3D11_MAPPED_SUBRESOURCE mt = m_pStagingTexture->mapForReadWrite();
-	ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
 
-	for( int y = 0; y < m_height; ++y )
+	// HACK
+	if( m_extension == "png" )
 	{
-		ubyte* srcRow = &( sourceData[ y * mt.RowPitch ] );
-		ubyte* dstRow = m_image.rowPointer( y );
-		memcpy( dstRow, srcRow, 4 * m_width );
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+
+		for( int y = 0; y < m_height; ++y )
+		{
+			ubyte* srcRow = &( sourceData[ y * mt.RowPitch ] );
+			ubyte* dstRow = m_image4ub.rowPointer( y );
+			memcpy( dstRow, srcRow, 4 * m_width );
+		}
 	}
+	else
+	{
+		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
+
+		for( int y = 0; y < m_height; ++y )
+		{
+			float* srcRow = reinterpret_cast< float* >( &( sourceData[ y * mt.RowPitch ] ) );
+			float* dstRow = m_image4f.rowPointer( y );
+			memcpy( dstRow, srcRow, 4 * m_width * sizeof( float ) );
+		}
+	}
+
 	m_pStagingTexture->unmap();
 
-	QString filename = QString( "%1_%2.png" ).arg( m_prefix ).arg( m_frameIndex, 5, 10, QChar( '0' ) );
+
+	QString filename = m_builder.filenameForNumber( m_frameIndex );
 	printf( "Saving frame %d as %s\n", m_frameIndex, qPrintable( filename ) );
-	m_image.save( filename );
+
+	if( m_extension == "png" )
+	{
+		m_image4ub.save( filename );
+	}
+	else
+	{
+		m_image4f.save( filename );
+	}
 
 	++m_frameIndex;
 }

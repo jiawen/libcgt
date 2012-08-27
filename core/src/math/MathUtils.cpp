@@ -1,23 +1,30 @@
+#include "math/MathUtils.h"
+
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
 
-#include "math/MathUtils.h"
+#include "math/Arithmetic.h"
 
-#ifndef M_E
-const float MathUtils::E = 2.71828182845904523536f;
-#else
+// In Visual Studio, if _MATH_DEFINES_DEFINED is defined
+// then M_PI, etc are defined, so just copy them
+#ifdef _MATH_DEFINES_DEFINED
+
 const float MathUtils::E = M_E;
-#endif
-#ifndef M_PI
-const float MathUtils::PI = 3.14159265358979323846f;
-const float MathUtils::HALF_PI = 1.57079632679489661923f;
-const float MathUtils::QUARTER_PI = 0.78539816339744830962f;
-#else
 const float MathUtils::PI = M_PI;
 const float MathUtils::HALF_PI = M_PI_2;
 const float MathUtils::QUARTER_PI = M_PI_4;
+const float MathUtils::TWO_PI = 2.0f * M_PI;
+
+#else
+
+const float MathUtils::E = 2.71828182845904523536f;
+const float MathUtils::PI = 3.14159265358979323846f;
+const float MathUtils::HALF_PI = 1.57079632679489661923f;
+const float MathUtils::QUARTER_PI = 0.78539816339744830962f;
+const float MathUtils::TWO_PI = 2.0f * MathUtils::PI;
+
 #endif
 
 // static
@@ -25,8 +32,6 @@ const float MathUtils::NEGATIVE_INFINITY = -std::numeric_limits< float >::infini
 
 // static
 const float MathUtils::POSITIVE_INFINITY = std::numeric_limits< float >::infinity();
-
-const float MathUtils::TWO_PI = 2.0f * MathUtils::PI;
 
 // static
 float MathUtils::cot( float x )
@@ -175,39 +180,69 @@ float MathUtils::signedByteToFloatNormalized( sbyte sb )
 }
 
 // static
-float MathUtils::rescaleFloatToFloat( float value,
-									 float inputMin, float inputMax,
-									 float outputMin, float outputMax )
+void MathUtils::rescaleRangeToScaleOffset( float inputMin, float inputMax,
+	float outputMin, float outputMax,
+	float& scale, float& offset )
 {
-	float fraction = ( value - inputMin ) / ( inputMax - inputMin );
-	return( outputMin + fraction * ( outputMax - outputMin ) );
+	float inputRange = inputMax - inputMin;
+	float outputRange = outputMax - outputMin;
+
+	// y = outputMin + [ ( x - inputMin ) / inputRange ] * outputRange
+	//   = outputMin + ( x * outputRange / inputRange ) - ( inputMin * outputRange / inputRange )
+	//
+	// -->
+	//
+	// scale = outputRange / inputRange
+	// offset = outputMin - inputMin * outputRange / inputRange
+
+	scale = outputRange / inputRange;
+	offset = outputMin - inputMin * scale;
 }
 
 // static
-int MathUtils::rescaleFloatToInt( float value,
-							 float fMin, float fMax,
-							 int iMin, int iMax )
+float MathUtils::rescaleFloatToFloat( float x,
+	float inputMin, float inputMax,
+	float outputMin, float outputMax )
 {
-	float fraction = ( value - fMin ) / ( fMax - fMin );
-	return( iMin + ( int )( fraction * ( iMax - iMin ) + 0.5f ) );
+	float inputRange = inputMax - inputMin;
+	float outputRange = outputMax - outputMin;
+
+	float fraction = ( x - inputMin ) / inputRange;
+
+	return( outputMin + fraction * outputRange );
 }
 
 // static
-float MathUtils::rescaleIntToFloat( int value,
-							 int iMin, int iMax,
-							 float fMin, float fMax )
+int MathUtils::rescaleFloatToInt( float x,
+	float fMin, float fMax,
+	int iMin, int iMax )
 {
-	float fraction = ( ( float )( value - iMin ) ) / ( iMax - iMin );
-	return( fMin + fraction * ( fMax - fMin ) );
+	float fraction = ( x - fMin ) / ( fMax - fMin );
+	return( iMin + Arithmetic::roundToInt( fraction * ( iMax - iMin ) ) );
 }
 
 // static
-int MathUtils::rescaleIntToInt( int value,
-							   int inMin, int inMax,
-							   int outMin, int outMax )
+float MathUtils::rescaleIntToFloat( int x,
+	int iMin, int iMax,
+	float fMin, float fMax )
 {
-	float fraction = ( ( float )( value - inMin ) ) / ( inMax - inMin );
-	return( ( int )( ( outMin + fraction * ( outMax - outMin ) ) + 0.5f ) );
+	int inputRange = iMax - iMin;
+	float outputRange = fMax - fMin;
+
+	float fraction = static_cast< float >( x - iMin ) / inputRange;
+	return( fMin + fraction * outputRange );
+}
+
+// static
+int MathUtils::rescaleIntToInt( int x,
+	int inMin, int inMax,
+	int outMin, int outMax )
+{
+	int inputRange = inMax - inMin;
+	int outputRange = outMax - outMin;
+
+	float fraction = static_cast< float >( x - inMin )  / inputRange;
+	return Arithmetic::roundToInt( outMin + fraction * outputRange );
 }
 
 // static

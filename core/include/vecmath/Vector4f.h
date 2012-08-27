@@ -76,6 +76,12 @@ public:
 	void negate();
 
 	Vector4i floored() const;
+	
+	float minimum() const;
+	float maximum() const;
+
+	static Vector4f minimum( const Vector4f& v0, const Vector4f& v1 );
+	static Vector4f maximum( const Vector4f& v0, const Vector4f& v1 );
 
 	// implicit cast
 	operator const float* () const;

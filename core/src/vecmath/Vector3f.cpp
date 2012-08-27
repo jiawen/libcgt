@@ -172,6 +172,38 @@ Vector3i Vector3f::floored() const
 	);
 }
 
+float Vector3f::minimum() const
+{
+	return std::min( x, std::min( y, z ) );
+}
+
+float Vector3f::maximum() const
+{
+	return std::max( x, std::max( y, z ) );
+}
+
+// static
+Vector3f Vector3f::minimum( const Vector3f& v0, const Vector3f& v1 )
+{
+	return Vector3f
+	(
+		std::min( v0.x, v1.x ),
+		std::min( v0.y, v1.y ),
+		std::min( v0.z, v1.z )
+	);
+}
+
+// static
+Vector3f Vector3f::maximum( const Vector3f& v0, const Vector3f& v1 )
+{
+	return Vector3f
+	(
+		std::max( v0.x, v1.x ),
+		std::max( v0.y, v1.y ),
+		std::max( v0.z, v1.z )
+	);
+}
+
 QString Vector3f::toString() const
 {
 	QString out;

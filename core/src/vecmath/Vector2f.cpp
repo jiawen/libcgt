@@ -61,6 +61,36 @@ Vector2i Vector2f::rounded() const
 	);
 }
 
+float Vector2f::minimum() const
+{
+	return std::min( x, y );
+}
+
+float Vector2f::maximum() const
+{
+	return std::max( x, y );
+}
+
+// static
+Vector2f Vector2f::minimum( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f
+	(
+		std::min( v0.x, v1.x ),
+		std::min( v0.y, v1.y )
+	);
+}
+
+// static
+Vector2f Vector2f::maximum( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f
+	(
+		std::max( v0.x, v1.x ),
+		std::max( v0.y, v1.y )
+	);
+}
+
 // ---- Utility ----
 void Vector2f::print() const
 {

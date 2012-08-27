@@ -1,5 +1,4 @@
-#ifndef BOUNDING_BOX_2F
-#define BOUNDING_BOX_2F
+#pragma once
 
 #include <vecmath/Vector2f.h>
 
@@ -33,7 +32,8 @@ public:
 	
 	bool intersectRay( const Vector2f& origin, const Vector2f& direction,
 		float* tIntersect = nullptr );
-	bool intersectLine( const Vector2f& p0, const Vector2f& p1 );
+
+	bool intersectRay( const Vector2f& origin, const Vector2f& direction, float& tNear, float& tFar ) const;
 
 	// returns the smallest bounding box that contains both bounding boxes
 	static BoundingBox2f merge( const BoundingBox2f& b0, const BoundingBox2f& b1 );
@@ -52,5 +52,3 @@ private:
 	void intersectSlab( float origin, float direction, float s0, float s1,
 		float& tEnter, float& tExit );
 };
-
-#endif

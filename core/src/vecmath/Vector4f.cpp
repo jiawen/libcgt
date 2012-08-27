@@ -284,6 +284,40 @@ Vector4i Vector4f::floored() const
 	);
 }
 
+float Vector4f::minimum() const
+{
+	return std::min( x, std::min( y, std::min( z, w ) ) );
+}
+
+float Vector4f::maximum() const
+{
+	return std::max( x, std::max( y, std::max( z, w ) ) );
+}
+
+// static
+Vector4f Vector4f::minimum( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f
+	(
+		std::min( v0.x, v1.x ),
+		std::min( v0.y, v1.y ),
+		std::min( v0.z, v1.z ),
+		std::min( v0.w, v1.w )
+	);
+}
+
+// static
+Vector4f Vector4f::maximum( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f
+	(
+		std::max( v0.x, v1.x ),
+		std::max( v0.y, v1.y ),
+		std::max( v0.z, v1.z ),
+		std::max( v0.w, v1.w )
+	);
+}
+
 Vector4f::operator const float* () const
 {
 	return m_elements;

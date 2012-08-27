@@ -112,10 +112,8 @@ public:
 	QString toString() const;
 	std::vector< Vector4f > frustumLines() const;
 
+	bool loadTXT( QString filename );
 	bool saveTXT( QString filename );
-	
-	// TODO: careful!  when we serialize in degrees
-	static bool loadTXT( QString filename, PerspectiveCamera& camera );
 
 	static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
 	static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );	

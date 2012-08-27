@@ -34,7 +34,8 @@ struct float4x4
 	};
 };
 
-static __inline__ __host__ __device__
+static
+__inline__ __host__ __device__
 float4 operator * ( const float4x4& m, const float4& v )
 {
 	float4 output;
@@ -47,7 +48,8 @@ float4 operator * ( const float4x4& m, const float4& v )
 	return output;
 }
 
-static __inline__ __host__ __device__
+static
+__inline__ __host__ __device__
 float3 transformPoint( const float4x4& m, const float3& p )
 {
 	float3 q;
@@ -59,7 +61,8 @@ float3 transformPoint( const float4x4& m, const float3& p )
 	return q;
 }
 
-static __inline__ __host__ __device__
+static
+__inline__ __host__ __device__
 float3 transformVector( const float4x4& m, const float3& v )
 {
 	float3 output;
@@ -71,7 +74,8 @@ float3 transformVector( const float4x4& m, const float3& v )
 	return output;
 }
 
-static __inline__ __host__ __device__
+static
+__inline__ __host__ __device__
 void print( const float4x4& m )
 {
 	printf( "[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n",

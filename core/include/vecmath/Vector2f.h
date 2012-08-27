@@ -52,6 +52,11 @@ public:
 
 	Vector2i floored() const;
 	Vector2i rounded() const;
+	float minimum() const;
+	float maximum() const;
+
+	static Vector2f minimum( const Vector2f& v0, const Vector2f& v1 );
+	static Vector2f maximum( const Vector2f& v0, const Vector2f& v1 );
 
 	// ---- Utility ----
     operator const float* () const;
@@ -82,15 +87,23 @@ public:
 };
 
 Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );
+
 Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 );
+// negate
+Vector2f operator - ( const Vector2f& v );
+
+Vector2f operator * ( float f, const Vector2f& v );
+Vector2f operator * ( const Vector2f& v, float f );
+
+// component-wise multiplication
 Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 );
 
 // component-wise division
+Vector2f operator / ( const Vector2f& v, float f );
 Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 );
 
-Vector2f operator - ( const Vector2f& v );
-Vector2f operator * ( float f, const Vector2f& v );
-Vector2f operator * ( const Vector2f& v, float f );
+// reciprocal of each component
+Vector2f operator / ( float f, const Vector2f& v );
 
 bool operator == ( const Vector2f& v0, const Vector2f& v1 );
 bool operator != ( const Vector2f& v0, const Vector2f& v1 );

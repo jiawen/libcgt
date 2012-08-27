@@ -118,18 +118,28 @@ bool BoundingBox2f::intersectRay( const Vector2f& origin, const Vector2f& direct
 	return intersected;
 }
 
-bool BoundingBox2f::intersectLine( const Vector2f& p0, const Vector2f& p1 )
+bool BoundingBox2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
+	float& tNear, float& tFar ) const
 {
-	float tEnter = std::numeric_limits< float >::lowest();
-	float tExit = ( std::numeric_limits< float >::max )();
+	// compute t to each face
+	Vector2f rcpDir = 1.0f / direction;
 
-	Vector2f direction = p1 - p0;
+	// three "bottom" faces (min of the box)
+	Vector2f tBottom = rcpDir * ( minimum() - origin );
+	// three "top" faces (max of the box)
+	Vector2f tTop = rcpDir * ( maximum() - origin );
 
-	intersectSlab( p0.x, direction.x, m_min.x, m_max.x, tEnter, tExit );
-	intersectSlab( p1.y, direction.y, m_min.y, m_max.y, tEnter, tExit );
+	// find the smallest and largest distances along each axis
+	Vector2f tMin = Vector2f::minimum( tBottom, tTop );
+	Vector2f tMax = Vector2f::maximum( tBottom, tTop );
 
-	bool intersected = ( tEnter < tExit );
-	return intersected;
+	// tNear is the largest tMin
+	tNear = tMin.maximum();
+
+	// tFar is the smallest tMax
+	tFar = tMax.minimum();
+
+	return tFar > tNear;
 }
 
 // static

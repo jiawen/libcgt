@@ -287,8 +287,7 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
 	return output;
 }
 
-// static
-bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
+bool PerspectiveCamera::loadTXT( QString filename )
 {
 	QFile inputFile( filename );
 
@@ -309,7 +308,7 @@ bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
 	Vector3f up;
 	float zNear;
 	float zFar;
-	float fovYDegrees;
+	float fovYRadians;
 	float aspect;
 
 	bool isInfinite;
@@ -322,18 +321,16 @@ bool PerspectiveCamera::loadTXT( QString filename, PerspectiveCamera& camera )
 	inputTextStream >> str >> zFar;
 	inputTextStream >> str >> i;
 	isInfinite = ( i != 0 );
-	inputTextStream >> str >> fovYDegrees;
+	inputTextStream >> str >> fovYRadians;
 	inputTextStream >> str >> aspect;
 	inputTextStream >> str >> i;
 	isDirectX = ( i != 0 );
 
-	inputFile.close();
+	inputFile.close();	
 
-	float fovYRadians = MathUtils::degreesToRadians( fovYDegrees );
-
-	camera.setLookAt( eye, center, up );
-	camera.setPerspective( fovYRadians, aspect, zNear, zFar, isInfinite );
-	camera.setDirectX( isDirectX );
+	setLookAt( eye, center, up );
+	setPerspective( fovYRadians, aspect, zNear, zFar, isInfinite );
+	setDirectX( isDirectX );
 
 	return true;
 }
@@ -357,7 +354,7 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	outputTextStream << "zNear " << m_zNear << "\n";
 	outputTextStream << "zFar " << m_zFar << "\n";
 	outputTextStream << "zFarInfinite " << static_cast< int >( m_zFarIsInfinite ) << "\n";
-	outputTextStream << "fovYDegrees " << MathUtils::radiansToDegrees( m_fovYRadians ) << "\n";
+	outputTextStream << "fovYRadians " << m_fovYRadians << "\n";
 	outputTextStream << "aspect " << m_aspect << "\n";
 	outputTextStream << "isDirectX " << static_cast< int >( m_directX ) << "\n";
 
