@@ -12,6 +12,9 @@ class ArrayUtils
 {
 public:
 
+	template< typename T >
+	static bool saveBinary( const std::vector< T >& input, const char* filename );
+
 	static bool saveTXT( const std::vector< float >& array, const char* filename );
 	static bool saveTXT( const Array2D< float >& array, const char* filename );
 	static bool saveTXT( const Array3D< float >& array, const char* filename );
@@ -20,3 +23,23 @@ public:
 
 	static bool saveTXT( const Array2D< Vector4f >& array, const char* filename );
 };
+
+template< typename T >
+// static
+bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename )
+{
+	FILE* fp = fopen( filename, "wb" );
+	if( fp == nullptr )
+	{
+		return false;
+	}
+
+	int length = static_cast< int >( input.size() );
+	fwrite( &length, sizeof( int ), 1, fp );
+
+	fwrite( input.data(), sizeof( T ), size, fp );
+
+	fclose( fp );
+
+	return true;
+}

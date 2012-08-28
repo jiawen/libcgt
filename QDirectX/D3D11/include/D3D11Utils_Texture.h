@@ -11,14 +11,12 @@
 
 #include "DynamicTexture2D.h"
 
-// TODO: shared_ptr< Image > --> Image
-
 class D3D11Utils_Texture
 {
 public:
 
-	// Loads a texture from a standard image file, 8-bits per color channel
-	// By default, Image4ub loads images such that the bottom left has coordinates (0,0) and is at location 0 memory
+	// Loads a texture from a standard image file, 8 bits per color channel, 32 bits per pixel
+	// By default, Image4ub loads images such that the top left has coordinates (0,0) and is at memory, location 0
 	// set flipUD to true to flip it up/down
 	static std::shared_ptr< DynamicTexture2D > createTextureFromFile( ID3D11Device* pDevice, QString filename, bool flipUD = false );
 
@@ -43,7 +41,4 @@ public:
 	static void saveTextureToPFM4( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
 	static void saveTextureToPNG( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename, bool scale = false, float factor = 1.f );
 	static void saveTextureToTXT( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
-	
-	// HACK
-	static void saveTextureToBinary( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );
 };

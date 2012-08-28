@@ -1,10 +1,8 @@
-
 template< typename T >
-Array3D< T >::Array3D() :
+Array2D< T >::Array2D() :
 
 	m_width( -1 ),
 	m_height( -1 ),
-	m_depth( -1 ),
 	m_array( nullptr )
 
 {
@@ -12,11 +10,10 @@ Array3D< T >::Array3D() :
 }
 
 template< typename T >
-Array3D< T >::Array3D( const char* filename ) :
+Array2D< T >::Array2D( const char* filename ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
-	m_depth( -1 ),
 	m_array( nullptr )
 
 {
@@ -24,15 +21,13 @@ Array3D< T >::Array3D( const char* filename ) :
 }
 
 template< typename T >
-Array3D< T >::Array3D( int width, int height, int depth, const T& fill ) :
+Array2D< T >::Array2D( int width, int height, const T& fill ) :
 
 	m_width( width ),
-	m_height( height ),
-	m_depth( depth )
+	m_height( height )
 
 {
-
-	int n = width * height * depth;
+	int n = width * height;
 	// to make new work without default constructor
 	ubyte* pBuffer = new ubyte[ n * sizeof( T ) ];
 	m_array = reinterpret_cast< T* >( pBuffer );
@@ -44,32 +39,29 @@ Array3D< T >::Array3D( int width, int height, int depth, const T& fill ) :
 }
 
 template< typename T >
-Array3D< T >::Array3D( const Array3D& copy )
+Array2D< T >::Array2D( const Array2D& copy )
 {
 	m_width = copy.m_width;
 	m_height = copy.m_height;
-	m_depth = copy.m_depth;
 
-	m_array = new T[ m_width * m_height * m_depth ];
-	memcpy( m_array, copy.m_array, m_width * m_height * m_depth * sizeof( T ) );
+	m_array = new T[ m_width * m_height ];
+	memcpy( m_array, copy.m_array, m_width * m_height * sizeof( T ) );
 }
 
 template< typename T >
-Array3D< T >::Array3D( Array3D&& move )
+Array2D< T >::Array2D( Array2D&& move )
 {
 	m_array = move.m_array;
 	m_width = move.m_width;
 	m_height = move.m_height;
-	m_depth = move.m_depth;
 
 	move.m_array = nullptr;
 	move.m_width = -1;
 	move.m_height = -1;
-	move.m_depth = -1;
 }
 
 template< typename T >
-Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
+Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 {
 	if( this != &copy )
 	{
@@ -77,19 +69,17 @@ Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 		{
 			delete[] m_array;
 		}
-
 		m_width = copy.m_width;
 		m_height = copy.m_height;
-		m_depth = copy.m_depth;
 
-		m_array = new T[ m_width * m_height * m_depth ];
-		memcpy( m_array, copy.m_array, m_width * m_height * m_depth * sizeof( T ) );
+		m_array = new T[ m_width * m_height ];
+		memcpy( m_array, copy.m_array, m_width * m_height * sizeof( T ) );
 	}
 	return *this;
 }
 
 template< typename T >
-Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
+Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
 {
 	if( this != &move )
 	{
@@ -98,21 +88,20 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 			delete[] m_array;
 		}
 
+		m_array = move.m_array;
 		m_width = move.m_width;
 		m_height = move.m_height;
-		m_depth = move.m_depth;
 
 		move.m_array = nullptr;
 		move.m_width = -1;
 		move.m_height = -1;
-		move.m_depth = -1;
 	}
 	return *this;
 }
 
-// virtual
 template< typename T >
-Array3D< T >::~Array3D()
+// virtual
+Array2D< T >::~Array2D()
 {
 	if( m_array != nullptr )
 	{
@@ -121,23 +110,22 @@ Array3D< T >::~Array3D()
 }
 
 template< typename T >
-bool Array3D< T >::isNull() const
+bool Array2D< T >::isNull() const
 {
 	return( m_array == nullptr );
 }
 
 template< typename T >
-bool Array3D< T >::notNull() const
+bool Array2D< T >::notNull() const
 {
 	return( m_array != nullptr );
 }
 
 template< typename T >
-void Array3D< T >::invalidate()
+void Array2D< T >::invalidate()
 {
 	m_width = -1;
 	m_height = -1;
-	m_depth = -1;
 
 	if( m_array != nullptr )
 	{
@@ -146,37 +134,31 @@ void Array3D< T >::invalidate()
 }
 
 template< typename T >
-int Array3D< T >::width() const
+int Array2D< T >::width() const
 {
 	return m_width;
 }
 
 template< typename T >
-int Array3D< T >::height() const
+int Array2D< T >::height() const
 {
 	return m_height;
 }
 
 template< typename T >
-int Array3D< T >::depth() const
+Vector2i Array2D< T >::size() const
 {
-	return m_depth;
+	return Vector2i( m_width, m_height );
 }
 
 template< typename T >
-Vector3i Array3D< T >::size() const
+int Array2D< T >::numElements() const
 {
-	return Vector3i( m_width, m_height, m_depth );
+	return m_width * m_height;
 }
 
 template< typename T >
-int Array3D< T >::numElements() const
-{
-	return m_width * m_height * m_depth;
-}
-
-template< typename T >
-void Array3D< T >::fill( const T& val )
+void Array2D< T >::fill( const T& val )
 {
 	int ne = numElements();
 	for( int i = 0; i < ne; ++i )
@@ -186,9 +168,9 @@ void Array3D< T >::fill( const T& val )
 }
 
 template< typename T >
-void Array3D< T >::resize( int width, int height, int depth )
+void Array2D< T >::resize( int width, int height )
 {
-	if( width <= 0 || height <= 0 || depth <= 0 )
+	if( width <= 0 || height <= 0 )
 	{
 		invalidate();
 	}
@@ -196,126 +178,111 @@ void Array3D< T >::resize( int width, int height, int depth )
 	{
 		// check if the total number of elements is the same
 		// if it is, don't reallocate
-		if( width * height * depth != m_width * m_height * m_depth )
+		if( width * height != m_width * m_height )
 		{
 			if( m_array != nullptr )
 			{
 				delete[] m_array;
 			}
-			m_array = new T[ width * height * depth ];
+			m_array = new T[ width * height ];
 		}
 
 		m_width = width;
 		m_height = height;
-		m_depth = depth;
 	}
 }
 
 template< typename T >
-void Array3D< T >::resize( const Vector3i& size )
+void Array2D< T >::resize( const Vector2i& size )
 {
-	resize( size.x, size.y, size.z );
+	resize( size.x, size.y );
 }
 
 template< typename T >
-T* Array3D< T >::rowPointer( int y, int z )
+T* Array2D< T >::rowPointer( int y )
 {
-	return &( m_array[ z * m_width * m_height + y * m_width ] );
+	return &( m_array[ y * m_width ] );
 }
 
 template< typename T >
-const T* Array3D< T >::rowPointer( int y, int z ) const
+const T* Array2D< T >::rowPointer( int y ) const
 {
-	return &( m_array[ z * m_width * m_height + y * m_width ] );
+	return &( m_array[ y * m_width ] );
 }
 
 template< typename T >
-T* Array3D< T >::slicePointer( int z )
-{
-	return &( m_array[ z * m_width * m_height ] );
-}
-
-template< typename T >
-const T* Array3D< T >::slicePointer( int z ) const
-{
-	return &( m_array[ z * m_width * m_height ] );
-}
-
-template< typename T >
-Array3D< T >::operator T* () const
+Array2D< T >::operator T* ()
 {
 	return m_array;
 }
 
 template< typename T >
-const T& Array3D< T >::operator () ( int k ) const
+Array2D< T >::operator const T* () const
+{
+	return m_array;
+}
+
+template< typename T >
+const T& Array2D< T >::operator () ( int k ) const
 {
 	return m_array[ k ];
 }
 
 template< typename T >
-T& Array3D< T >::operator () ( int k )
+T& Array2D< T >::operator () ( int k )
 {
 	return m_array[ k ];
 }
 
 template< typename T >
-const T& Array3D< T >::operator () ( int x, int y, int z ) const
+const T& Array2D< T >::operator () ( int x, int y ) const
 {
-	int k = subscriptToIndex( x, y, z );
-	return m_array[ k ];
+	return m_array[ subscriptToIndex( x, y ) ];
 }
 
 template< typename T >
-T& Array3D< T >::operator () ( int x, int y, int z )
+T& Array2D< T >::operator () ( int x, int y )
 {
-	int k = subscriptToIndex( x, y, z );
-	return m_array[ k ];
+	return m_array[ subscriptToIndex( x, y ) ];
 }
 
 template< typename T >
-int Array3D< T >::subscriptToIndex( int x, int y, int z ) const
+int Array2D< T >::subscriptToIndex( int x, int y ) const
 {
-	return z * m_width * m_height + y * m_width + x;
+	return( y * m_width + x );
 }
 
 template< typename T >
-Vector3i Array3D< T >::indextoSubscript( int k ) const
+Vector2i Array2D< T >::indexToSubscript( int k ) const
 {
-	int wh = m_width * m_height;
-	int z = k / wh;
-
-	int ky = k - z * wh;
-	int y = ky / m_width;
-
-	int x = ky - y * m_width;
-	return Vector3i( x, y, z );
+	int y = k / m_width;
+	int x = k - y * m_width;
+	return Vector2i( x, y );
 }
 
 template< typename T >
-bool Array3D< T >::load( const char* filename )
+bool Array2D< T >::load( const char* filename )
 {
 	FILE* fp = fopen( filename, "rb" );
 	if( fp == nullptr )
 	{
 		return false;
 	}
-	
-	int whd[3];
+
+	int whd[2];
 	size_t elementsRead;
-	
-	elementsRead = fread( whd, sizeof( int ), 3, fp );
-	if( elementsRead != 3 )
+
+	elementsRead = fread( whd, sizeof( int ), 2, fp );
+	if( elementsRead != 2 )
 	{
 		return false;
 	}
 
 	int width = whd[0];
 	int height = whd[1];
-	int depth = whd[2];
 
 	// to make new work without default constructor
-	int nElements = width * height * depth;
+	int nElements = width * height;
 	ubyte* pBuffer = new ubyte[ nElements * sizeof( T ) ];
 	T* pArray = reinterpret_cast< T* >( pBuffer );
 
@@ -338,8 +305,7 @@ bool Array3D< T >::load( const char* filename )
 	// read succeeded, swap contents
 	m_width = width;
 	m_height = height;
-	m_depth = depth;
-	
+
 	if( m_array != nullptr )
 	{
 		delete[] m_array;
@@ -351,7 +317,7 @@ bool Array3D< T >::load( const char* filename )
 }
 
 template< typename T >
-bool Array3D< T >::save( const char* filename )
+bool Array2D< T >::save( const char* filename )
 {
 	FILE* fp = fopen( filename, "wb" );
 	if( fp == nullptr )
@@ -361,8 +327,7 @@ bool Array3D< T >::save( const char* filename )
 
 	fwrite( &m_width, sizeof( int ), 1, fp );
 	fwrite( &m_height, sizeof( int ), 1, fp );
-	fwrite( &m_depth, sizeof( int ), 1, fp );
-	fwrite( m_array, sizeof( T ), m_width * m_height * m_depth, fp );
+	fwrite( m_array, sizeof( T ), m_width * m_height, fp );
 	fclose( fp );
 
 	return true;

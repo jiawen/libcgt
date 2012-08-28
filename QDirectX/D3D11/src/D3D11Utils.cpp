@@ -215,7 +215,7 @@ std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool nor
 
 // static
 std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFrustum( ID3D11Device* pDevice,
-	const Vector3f& eye, std::vector< Vector3f > frustumCorners,
+	const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
 	const Vector4f& color )
 {
 	std::shared_ptr< DynamicVertexBuffer > pBuffer( new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() ) );

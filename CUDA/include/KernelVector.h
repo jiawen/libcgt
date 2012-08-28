@@ -15,7 +15,7 @@ struct KernelVector
 
 template< typename T >
 __host__
-KernelVector< T >::KernelVector( T* _pointer, int _width ) :
+KernelVector< T >::KernelVector( T* _pointer, int _length ) :
 
 	pointer( _pointer ),
 	length( _length )

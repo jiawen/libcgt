@@ -165,6 +165,8 @@ QKinect::QKinectEvent QKinect::pollDepth( Array2D< ushort >& depth, int waitInte
 
 	if( waitResult == WAIT_OBJECT_0 )
 	{
+		bool succeeded = handleGetDepthFrame( depth );
+		// TODO: succeeded?
 		return QKinect::QKinect_Event_Depth;
 	}
 	else

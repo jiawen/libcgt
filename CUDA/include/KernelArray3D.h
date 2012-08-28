@@ -37,6 +37,12 @@ struct KernelArray3D
 
 	__inline__ __device__
 	const T& operator () ( const int3& xyz ) const;
+
+	__inline__ __device__
+	int subscriptToIndex( int x, int y, int z ) const;
+
+	__inline__ __device__
+	int3 indexToSubscript( int k ) const;
 };
 
 template< typename T >
@@ -125,4 +131,23 @@ __inline__ __device__
 const T& KernelArray3D< T >::operator () ( const int3& xyz ) const
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
+}
+
+template< typename T >
+int KernelArray3D< T >::subscriptToIndex( int x, int y, int z ) const
+{
+	return z * width * height + y * width + x;
+}
+
+template< typename T >
+int3 KernelArray3D< T >::indexToSubscript( int k ) const
+{
+	int wh = width * height;
+	int z = k / wh;
+
+	int ky = k - z * wh;
+	int y = ky / width;
+
+	int x = ky - y * width;
+	return make_int3( x, y, z );
 }

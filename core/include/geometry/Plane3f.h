@@ -65,14 +65,13 @@ public:
     // Returns a plane parallel this this at distance z in the direction of the normal
     Plane3f offset( float z ) const;
 
-	// TODO: set an epsilon for vd = 0
     // Given a ray defined by origin + t * direction
     // (direction need not be normalized)
     // Returns:
 	//    true if the ray hits the plane for some positive t
 	//    false otherwise
     bool intersectRay( const Vector3f& origin, const Vector3f& direction,
-		float* tIntersect = nullptr );
+		float& tIntersect, float directionDotProductEpsilon = 0.0f );
 
     static float cosineDihedralAngle( const Plane3f& p0, const Plane3f& p1 );
 

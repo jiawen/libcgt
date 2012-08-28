@@ -94,8 +94,8 @@ public:
 	// TODO: use frustumLines
 	// Create a DynamicVertexBuffer< VertexPosition4fColor4f >
 	// it has length 24 (12 lines, 2 * 12 vertices)
-	static std::shared_ptr< DynamicVertexBuffer >createFrustum( ID3D11Device* pDevice,
-		const Vector3f& eye, std::vector< Vector3f > frustumCorners,
+	static std::shared_ptr< DynamicVertexBuffer > createFrustum( ID3D11Device* pDevice,
+		const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
 		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
 
 	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray );
@@ -155,16 +155,6 @@ public:
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename );
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename );	
 
-	// HACK
-	template< typename T >
-	static void saveSTLVectorToBinary( const std::vector< T >& input, const char* filename )
-	{
-		FILE* fp = fopen( filename, "wb" );
-		uint size = static_cast< uint >( input.size() );
-		fwrite( &size, sizeof( uint ), 1, fp );
-		fwrite( &( input[ 0 ] ), sizeof( T ), size, fp );
-		fflush( fp );
-		fclose( fp );
-	}
+	
 
 };

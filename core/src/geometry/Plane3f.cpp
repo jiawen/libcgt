@@ -157,25 +157,21 @@ Plane3f Plane3f::offset( float z ) const
 }
 
 bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
-	float* tIntersect )
+	float& tIntersect, float directionDotProductEpsilon )
 {
     Vector3f u = unitNormal();
     float vd = Vector3f::dot( u, direction );
             
     // ray is parallel to plane
-    if( vd == 0 )
+    if( abs( vd ) < directionDotProductEpsilon )
     {
         return false;
     }
 
     float v0 = -( Vector3f::dot( u, origin ) + d );
-    float t = v0 / vd;
+    tIntersect = v0 / vd;
 
-	if( tIntersect != nullptr )
-	{
-		*tIntersect = t;
-	}
-	return( t > 0 );
+	return( tIntersect > 0 );
 }
 
 // static
