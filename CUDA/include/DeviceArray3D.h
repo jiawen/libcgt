@@ -46,8 +46,11 @@ public:
 	// original data is not preserved
 	void resize( int width, int height, int depth );
 
-	// sets the vector to 0 (all bytes to 0)
+	// fills this array with the 0 byte pattern
 	void clear();
+
+	// fills this array with value
+	void fill( const T& value );
 
 	// copy from host array src to this
 	void copyFromHost( const Array3D< T >& src );

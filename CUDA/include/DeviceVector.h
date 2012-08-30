@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <cuda_runtime.h>
 #include <cutil.h>
 
@@ -30,14 +32,12 @@ public:
 	void resize( int length );
 
 	// copy length() elements from input --> device vector
-	void copyFromHost( void* input );
-
-	// TODO: look into this - since with Fermi, we can use pointer arithmetic
-	// copy nElements starting at input[ inputOffset ] --> device_vector[ outputOffset ]
-	// void copyFromHost( T* input, int inputOffset, int outputOffset, int nElements );
+	// this is automatically resized
+	void copyFromHost( const std::vector< T >& src );
 
 	// copy length() elements from device vector --> host
-	void copyToHost( void* output );
+	// dst is automatically resized
+	void copyToHost( std::vector< T >& dst ) const;
 
 	// implicit cast to device pointer
 	operator T* () const;
@@ -132,15 +132,18 @@ void DeviceVector< T >::resize( int length )
 }
 
 template< typename T >
-void DeviceVector< T >::copyFromHost( void* input )
+void DeviceVector< T >::copyFromHost( const std::vector< T >& src )
 {
-	CUDA_SAFE_CALL( cudaMemcpy( m_devicePtr, input, m_sizeInBytes, cudaMemcpyHostToDevice ) );
+	resize( static_cast< int >( src.size() ) );
+	CUDA_SAFE_CALL( cudaMemcpy( m_devicePtr, src.data(), m_sizeInBytes, cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
-void DeviceVector< T >::copyToHost( void* output )
+void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 {
-	CUDA_SAFE_CALL( cudaMemcpy( output, m_devicePtr, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
+	dst.resize( length() );
+	T* dstPointer = dst.data();
+	CUDA_SAFE_CALL( cudaMemcpy( dstPointer, m_devicePtr, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
 }
 
 template< typename T >

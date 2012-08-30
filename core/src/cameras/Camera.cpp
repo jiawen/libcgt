@@ -305,12 +305,20 @@ Vector3f Camera::pixelToDirection( float x, float y, const Vector2i& screenSize 
 
 Vector3f Camera::pixelToDirection( const Vector2i& xy, const Vector2i& screenSize ) const
 {
-	return pixelToDirection( Vector2f( xy.x + 0.5f, xy.y + 0.5f ), Rect2f( screenSize.x, screenSize.y ) );
+	return pixelToDirection
+	(
+		Vector2f( xy.x + 0.5f, xy.y + 0.5f ),
+		Rect2f( static_cast< float >( screenSize.x ), static_cast< float >( screenSize.y ) )
+	);
 }
 
 Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2i& screenSize ) const
 {
-	return pixelToDirection( xy, Rect2f( screenSize.x, screenSize.y ) );
+	return pixelToDirection
+	(
+		xy,
+		Rect2f( static_cast< float >( screenSize.x ), static_cast< float >( screenSize.y ) )
+	);
 }
 
 Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) const

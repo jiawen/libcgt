@@ -1,3 +1,24 @@
+#if 0
+#include "ThreadMath.cuh"
+#include "MathUtils.h"
+
+template< typename T >
+__global__
+void fillKernel( KernelArray3D< T > array, T value )
+{
+	int2 xy = libcgt::cuda::threadSubscript2DGlobal();
+	if( !( libcgt::cuda::inRectangle( xy, make_int2( array.width, array.height ) ) ) )
+	{
+		return;
+	}
+
+	for( int z = 0; z < array.depth; ++z )
+	{
+		array( xy.x, xy.y, z ) = value;
+	}
+}
+#endif
+
 template< typename T >
 DeviceArray3D< T >::DeviceArray3D() :
 
@@ -175,8 +196,33 @@ void DeviceArray3D< T >::clear()
 }
 
 template< typename T >
+void DeviceArray3D< T >::fill( const T& value )
+{
+	// TODO: use a kernel?
+
+	Array3D< T > h_array( width(), height(), depth(), value );
+	copyFromHost( h_array );
+
+#if 0
+	// TODO: this is stupid, can also memcpy from an array...
+
+	// TODO: tune the sizes
+	dim3 block( 16, 16 );
+	dim3 grid = libcgt::cuda::numBins2D( width(), height(), block );
+
+	fillKernel< T > <<< grid, block >>>
+	(
+		kernelArray(), value
+	);
+	CUT_CHECK_ERROR( "DeviceArray3D< T >::fill() kernel launch\n" );
+#endif
+}
+
+template< typename T >
 void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 {
+	resize( src.width(), src.height(), src.depth() );
+
 	cudaMemcpy3DParms params;
 
 	params.kind = cudaMemcpyHostToDevice;
@@ -199,6 +245,8 @@ void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 template< typename T >
 void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
 {
+	dst.resize( width(), height(), depth() );
+
 	cudaMemcpy3DParms params;
 
 	params.kind = cudaMemcpyDeviceToHost;

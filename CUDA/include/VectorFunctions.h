@@ -85,6 +85,30 @@ void print( const float4& v )
 
 // ========== operators ==========
 
+// ---- component-wise add with conversion
+
+__inline__ __host__ __device__
+float3 operator + ( const int3& v0, const float3& v1 )
+{
+	return make_float3
+	(
+		v0.x + v1.x,
+		v0.y + v1.y,
+		v0.z + v1.z
+	);
+}
+
+__inline__ __host__ __device__
+float3 operator + ( const int3& v, float s )
+{
+	return make_float3
+	(
+		v.x + s,
+		v.y + s,
+		v.z + s
+	);
+}
+
 // ----- component-wise multiply with conversion -----
 
 __inline__ __host__ __device__

@@ -27,6 +27,9 @@ struct KernelArray3D
 	const T* slicePointer( int z ) const;
 
 	__inline__ __device__
+	int3 size() const;
+
+	__inline__ __device__
 	const T& operator () ( int x, int y, int z ) const;
 
 	__inline__ __device__
@@ -93,6 +96,13 @@ T* KernelArray3D< T >::slicePointer( int z )
 
 	// TODO: switch pointer arithmetic to array indexing?
 	return reinterpret_cast< T* >( p + z * slicePitch );
+}
+
+template< typename T >
+__inline__ __device__
+int3 KernelArray3D< T >::size() const
+{
+	return make_int3( width, height, depth );
 }
 
 template< typename T >

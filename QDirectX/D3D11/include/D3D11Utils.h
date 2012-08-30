@@ -110,48 +110,7 @@ public:
 	// writes a set of axes into buffer
 	static void writeAxes( VertexPosition4fColor4f* vertexArray );	
 
-	// Create a DynamicVertexBuffer of 6 vertices (2 triangles) for a fullscreen quad
-	// each vertex is a VertexPosition4fTexture2f
-	// positions is set in clip coordinates clip coordinates (-1,-1) --> (1,1)
-	//   so the projection matrix should be identity (i.e., don't use one)
-	// if uv00AtTopLeft is true (default), the texture coordinates are flipped upside down ((0,0) at the top left corner)
-	static std::shared_ptr< DynamicVertexBuffer > createFullScreenQuad( ID3D11Device* pDevice, bool uv00AtTopLeft = true );
-
-	// Create a DynamicVertexBuffer of 6 vertices (2 triangles) for a screen aligned quad
-	// each vertex is a VertexPosition4fTexture2f with
-	// position is set to (x,y) --> (x+width, y+height), z = 0, w = 1, (x,y) is the bottom left corner (y-axis points up)
-	// if uv00AtTopLeft is true (default), the texture coordinates are flipped upside down ((0,0) at the top left corner)
-	static std::shared_ptr< DynamicVertexBuffer > createScreenAlignedQuad( float x, float y, float width, float height, ID3D11Device* pDevice,
-		bool uv00AtTopLeft = true );
-
-	// writes a fullscreen quadrilateral (6 vertices, 2 triangles) into buffer
-	// each vertex is a VertexPosition4fTexture2f
-	// positions is set in clip coordinates clip coordinates (-1,-1) --> (1,1)
-	//   so the projection matrix should be identity (i.e., don't use one)
-	// if uv00AtTopLeft is true (default), the texture coordinates are flipped upside down ((0,0) at the top left corner)
-	static void writeFullScreenQuad( VertexPosition4fTexture2f* vertexArray, bool uv00AtTopLeft = true );
-
-	// writes a screen aligned quadrilateral (6 vertices, 2 triangles) into buffer
-	// position is set to (x,y) --> (x+width, y+height), z = 0, w = 1, (x,y) is the bottom left corner (y-axis points up)	
-	static void writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4f* vertexArray );
-
-	template< typename T >
-	static void writeAxisAlignedQuad( float x, float y, float width, float height, T* vertexArray )
-	{
-		vertexArray[ 0 ].position = Vector4f( x, y, 0, 1 );
-		vertexArray[ 1 ].position = Vector4f( x + width, y, 0, 1 );
-		vertexArray[ 2 ].position = Vector4f( x, y + height, 0, 1 );
-
-		vertexArray[ 3 ].position = vertexArray[ 2 ].position;
-		vertexArray[ 4 ].position = vertexArray[ 1 ].position;
-		vertexArray[ 5 ].position = Vector4f( x + width, y + height, 0, 1 );
-	}
-
-	// writes a screen aligned quadrilateral (6 vertices, 2 triangles) into buffer
-	// position is set to (x,y) --> (x+width, y+height), z = 0, w = 1, (x,y) is the bottom left corner (y-axis points up)
-	// if uv00AtTopLeft is true (default), the texture coordinates are flipped upside down ((0,0) at the top left corner)
-	static void writeScreenAlignedQuad( float x, float y, float width, float height, VertexPosition4fTexture2f* vertexArray, bool uv00AtTopLeft = true );
-
+	
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename );
 	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename );	
 

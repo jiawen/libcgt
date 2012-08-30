@@ -117,15 +117,15 @@ void DeviceArray2D< T >::resize( int width, int height )
 	m_height = height;
 
 	CUDA_SAFE_CALL
-		(
+	(
 		cudaMallocPitch
 		(
-		reinterpret_cast< void** >( &m_devicePtr ),
-		&m_pitch,
-		m_width * sizeof( T ),
-		m_height
+			reinterpret_cast< void** >( &m_devicePtr ),
+			&m_pitch,
+			m_width * sizeof( T ),
+			m_height
 		)
-		);
+	);
 
 	m_sizeInBytes = m_pitch * height;
 }
@@ -140,62 +140,64 @@ template< typename T >
 void DeviceArray2D< T >::copyFromArray( cudaArray* src )
 {
 	CUDA_SAFE_CALL
-		(
+	(
 		cudaMemcpy2DFromArray
 		(
-		devicePtr(), pitch(),			
-		src,
-		0, 0,
-		widthInBytes(), height(),
-		cudaMemcpyDeviceToDevice
+			devicePtr(), pitch(),
+			src,
+			0, 0,
+			widthInBytes(), height(),
+			cudaMemcpyDeviceToDevice
 		)
-		);
+	);
 }
 
 template< typename T >
 void DeviceArray2D< T >::copyToArray( cudaArray* dst ) const
 {
 	CUDA_SAFE_CALL
-		(
+	(
 		cudaMemcpy2DToArray
 		(
-		dst,
-		0, 0,
-		devicePtr(), pitch(),
-		widthInBytes(), height(),
-		cudaMemcpyDeviceToDevice
+			dst,
+			0, 0,
+			devicePtr(), pitch(),
+			widthInBytes(), height(),
+			cudaMemcpyDeviceToDevice
 		)
-		);
+	);
 }
 
 template< typename T >
 void DeviceArray2D< T >::copyFromHost( const Array2D< T >& src )
 {
+	resize( src.width(), src.height() );
 	CUDA_SAFE_CALL
-		(
+	(
 		cudaMemcpy2D
 		(
-		devicePtr(), pitch(),
-		src, src.width() * sizeof( T ),
-		src.width() * sizeof( T ), src.height(),
-		cudaMemcpyHostToDevice
+			devicePtr(), pitch(),
+			src, src.width() * sizeof( T ),
+			src.width() * sizeof( T ), src.height(),
+			cudaMemcpyHostToDevice
 		)
-		);
+	);
 }
 
 template< typename T >
 void DeviceArray2D< T >::copyToHost( Array2D< T >& dst ) const
 {
+	dst.resize( width(), height() );
 	CUDA_SAFE_CALL
-		(
+	(
 		cudaMemcpy2D
 		(
-		dst, dst.width() * sizeof( T ),
-		devicePtr(), pitch(),
-		widthInBytes(), height(),
-		cudaMemcpyDeviceToHost
+			dst, dst.width() * sizeof( T ),
+			devicePtr(), pitch(),
+			widthInBytes(), height(),
+			cudaMemcpyDeviceToHost
 		)
-		);
+	);
 }
 
 template< typename T >

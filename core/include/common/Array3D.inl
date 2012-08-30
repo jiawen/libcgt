@@ -202,7 +202,11 @@ void Array3D< T >::resize( int width, int height, int depth )
 			{
 				delete[] m_array;
 			}
-			m_array = new T[ width * height * depth ];
+
+			int n = width * height * depth;
+			// to make new work without default constructor
+			ubyte* pBuffer = new ubyte[ n * sizeof( T ) ];
+			m_array = reinterpret_cast< T* >( pBuffer );
 		}
 
 		m_width = width;

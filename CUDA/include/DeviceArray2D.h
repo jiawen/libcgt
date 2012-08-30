@@ -50,9 +50,11 @@ public:
 	void copyToArray( cudaArray* dst ) const;
 
 	// copy from host array src to this
+	// this is automatically resized
 	void copyFromHost( const Array2D< T >& src );
 
 	// copy from this to host array dst
+	// dst is automatically resized
 	void copyToHost( Array2D< T >& dst ) const;
 	
 	// implicit cast to device pointer

@@ -1,46 +1,51 @@
 #pragma once
 
+#include <cassert>
+
+#include "DeviceVariable.h"
 #include "DeviceVector.h"
 
-// A simple queue for CUDA
-// It is *not* a circular buffer
-// and only supports enqueueing and dequeueing once
-// without proper wraparound
+#include "MathUtils.h"
+
+// An atomic producer-consumer queue for CUDA
+// implemented using a circular buffer
+// the buffer size *must be* a power of two
+
 template< typename T >
 struct KernelQueue
 {
-	__inline__ __host__
-	KernelQueue( uint* _pHead, uint* _pTail, KernelVector< T > _elements ) :
-		pHead( _pHead ),
-		pTail( _pTail ),
-		elements( _elements )
-	{
-
-	}
-
-	// add an element at the tail the queue
-	// (atomically increment the tail pointer
-	// and set the value where it used to be)
-
-	__inline__ __device__
-	void enqueue( const T& element )
-	{
-		uint oldTail = atomicInc( pTail, 0 );
-		elements[ oldTail ] = element;
-	}
-
 #if 0
-	bool tryEnqueue( const T& element )
+	__inline__ __host__
+	KernelQueue( uint2* d_pHeadTail, KernelVector< T > elements ) :
+		md_pHeadTail( d_pHeadTail ),
+		m_elements( elements )
 	{
-		// atomicInc tests:
-		// if( *pTail >= m_elements.length )
-		//   return 0
-		// else
-		//   return( *pTail + 1 );
-		uint oldTail = atomicInc( pTail, m_elements.length );
-		//elements[ oldTail % m_elements.length ] = element;
+
 	}
 #endif
+
+	__inline__ __host__
+	KernelQueue( uint* d_pHead, uint* d_pTail, KernelVector< T > elements ) :
+		md_pHead( d_pHead ),
+		md_pTail( d_pTail ),
+		m_elements( elements )
+	{
+
+	}
+
+#ifdef __CUDACC__
+
+	// enqueues a value at the tail the queue
+	// (atomically increment the tail pointer
+	// and set the value where it used to be)
+	__inline__ __device__
+	void enqueue( const T& val )
+	{
+		//printf( "enqueue: tailPointer = 0x%p\n", tailPointer() );
+		uint oldTail = atomicAdd( tailPointer(), 1 );
+		oldTail = libcgt::cuda::modPowerOfTwo( oldTail, m_elements.length );
+		m_elements[ oldTail ] = val;
+	}	
 
 	// removes an element from the head of the queue
 	// (atomically increment the head pointer
@@ -48,13 +53,77 @@ struct KernelQueue
 	__inline__ __device__
 	T dequeue()
 	{
-		uint oldHead = atomicInc( pHead, 0 );
-		elements[ oldHead ] = element;
+		uint oldHead = atomicAdd( headPointer(), 1 );
+		oldHead = libcgt::cuda::modPowerOfTwo( oldHead, m_elements.length );
+		return m_elements[ oldHead ];
 	}
 
-	uint* pHead;
-	uint* pTail;
-	KernelVector< T > elements;
+#if 0
+	// tries to enqueue a value
+	// returns false if the queue is full
+	__inline__ __device__
+	bool tryEnqueue( const T& val )
+	{
+		// use some magic trick with atomicInc with elements.length?	
+	}
+#endif
+
+	__inline__ __device__
+	bool isFull()
+	{
+		// we can distinguish between full and empty
+		// because we use absolute indices:
+		//
+		// if we ever wrote anything to the queue
+		// then if they point to the same place after wraparound
+		// then we're full
+		int tail = *( tailPointer() );
+		if( tail > 0 )
+		{
+			int head = *( headPointer() );
+			return( ( tail - head ) < m_elements.length );
+		}
+		// if we never wrote anything to the queue, then it clearly can't be full
+		else
+		{
+			return false;
+		}
+	}
+
+	__inline__ __device__
+	bool isEmpty()
+	{
+		int head = *( headPointer() );
+		int tail = *( tailPointer() );
+		return ( tail == head );
+	}
+
+	__inline__ __device__
+	KernelVector< T >& elements()
+	{
+		return m_elements;
+	}
+
+	__inline__ __device__
+	uint* headPointer()
+	{
+		return md_pHead;
+		//return &( md_pHeadTail->x );
+	}
+
+	__inline__ __device__
+	uint* tailPointer()
+	{
+		return md_pTail;
+		//return &( md_pHeadTail->y );
+	}
+#endif
+
+private:
+
+	uint* md_pHead;
+	uint* md_pTail;
+	KernelVector< T > m_elements;
 
 };
 
@@ -63,53 +132,74 @@ class DeviceQueue
 {
 public:
 
-	DeviceQueue( uint length ) :
-		m_elements( length )
-	{
-		cudaMalloc< uint >( &md_pHeadTail, 2 * sizeof( uint ) );
-		md_pHead = &( md_pHeadTail[0] );
-		md_pTail = &( md_pHeadTail[1] );
+	DeviceQueue();
+	DeviceQueue( uint length );
 
-		reset();
-	}
+	// clears the queue
+	void clear();
 
-	~DeviceQueue()
-	{
-		cudaFree( md_pHeadTail );
-		md_pHead = nullptr;
-		md_pTail = nullptr;
-	}
+	// number of enqueued items
+	int count();
 
-	// TODO: write kernels for clearing things when they're not 0
-	void reset()
-	{
-		cudaMemset( md_pHeadTail, 0, 2 * sizeof( uint ) );
-	}
+	KernelQueue< T > kernelQueue();
 
-	// numbers of enqueued items
-	int count()
-	{
-		uint headTail[2];
-		cudaMemcpy( headTail, md_pHeadTail, 2 * sizeof( uint ), cudaMemcpyDeviceToHost );
-		return headTail[1] - headTail[0];
-	}
-
-	KernelQueue< T > kernelQueue()
-	{
-		return KernelQueue< T >( md_pHead, md_pTail, m_elements.kernelVector() );
-	}
-
-	DeviceVector< T >& elements()
-	{
-		return m_elements;
-	}
+	// for debugging
+	DeviceVector< T >& elements();
 
 private:
 
-	uint* md_pHeadTail;
-		uint* md_pHead; // &( md_pHeadTail[0] )
-		uint* md_pTail; // &( md_pHeadTail[1] )
-
+	// DeviceVariable< uint2 > m_headTail;
+	DeviceVariable< uint > m_head;
+	DeviceVariable< uint > m_tail;
 	DeviceVector< T > m_elements;
 
 };
+
+template< typename T >
+DeviceQueue< T >::DeviceQueue()
+{
+
+}
+
+template< typename T >
+DeviceQueue< T >::DeviceQueue( uint length ) :
+
+	// m_headTail( make_uint2( 0, 0 ) ),
+	m_head( 0 ),
+	m_tail( 0 ),
+	m_elements( length )
+{
+	assert( libcgt::cuda::isPowerOfTwo( length ) );
+}
+
+template< typename T >
+void DeviceQueue< T >::clear()
+{
+	// m_headTail.set( make_uint2( 0, 0 ) );
+	m_head.set( 0u );
+	m_tail.set( 0u );
+}
+
+template< typename T >
+int DeviceQueue< T >::count()
+{
+	// uint2 ht = m_headTail.get();
+	// return( ht.y - ht.x );
+
+	uint h = m_head.get();
+	uint t = m_tail.get();
+	return( t - h );
+}
+
+template< typename T >
+KernelQueue< T > DeviceQueue< T >::kernelQueue()
+{
+	return KernelQueue< T >( m_head.devicePointer(), m_tail.devicePointer(), m_elements.kernelVector() );
+	//return KernelQueue< T >( m_headTail.devicePointer(), m_elements.kernelVector() );
+}
+
+template< typename T >
+DeviceVector< T >& DeviceQueue< T >::elements()
+{
+	return m_elements;
+}

@@ -17,13 +17,19 @@ struct KernelArray2D
 	T* rowPointer( int y );
 
 	__inline__ __device__
+	int2 size();
+
+	__inline__ __device__
 	T& operator () ( int x, int y );
 
 	__inline__ __device__
 	T& operator () ( int2 xy );
 
 	__inline__ __device__
-	T& operator () ( uint2 xy );
+	int subscriptToIndex( int x, int y ) const;
+
+	__inline__ __device__
+	int2 indexToSubscript( int k ) const;
 };
 
 template< typename T >
@@ -51,6 +57,13 @@ T* KernelArray2D< T >::rowPointer( int y )
 
 template< typename T >
 __inline__ __device__
+int2 KernelArray2D< T >::size()
+{
+	return make_int2( width, height );
+}
+
+template< typename T >
+__inline__ __device__
 T& KernelArray2D< T >::operator () ( int x, int y )
 {
 	return rowPointer( y )[ x ];
@@ -65,7 +78,17 @@ T& KernelArray2D< T >::operator () ( int2 xy )
 
 template< typename T >
 __inline__ __device__
-T& KernelArray2D< T >::operator () ( uint2 xy )
+int KernelArray2D< T >::subscriptToIndex( int x, int y ) const
 {
-	return rowPointer( xy.y )[ xy.x ];
+	return y * width + x;
+}
+
+template< typename T >
+__inline__ __device__
+int2 KernelArray2D< T >::indexToSubscript( int k ) const
+{
+	int y = k / width;
+
+	int x = k - y * width;
+	return make_int2( x, y );
 }

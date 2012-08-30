@@ -4,9 +4,6 @@
 
 #include <vecmath/Vector2i.h>
 
-class Image1f;
-class Image4f;
-
 class DynamicTexture2D
 {
 public:

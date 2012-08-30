@@ -68,6 +68,45 @@ namespace libcgt
 		__inline__ __host__ __device__
 		int numElementsInBin( int binIndex, int binSize, int n );
 
+		
+
+		// returns true if x < width && y < height
+		__inline__ __device__
+		bool inRectangle( int x, int y, int width, int height );
+
+		// returns true if x >= x0 && x < x0 + width && y >= y0 && y < y0 + height
+		__inline__ __device__
+		bool inRectangle( int x, int y, int x0, int y0, int width, int height );
+
+		__inline__ __device__
+		bool inRectangle( const int2& xy, int width, int height );
+
+		__inline__ __device__
+		bool inRectangle( const int2& xy, int x0, int y0, int width, int height );
+
+		__inline__ __device__
+		bool inRectangle( const int2& xy, const int2& size );
+
+		__inline__ __device__
+		bool inRectangle( const int2& xy, const int2& origin, const int2& size );
+
+		__inline__ __device__
+		bool inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth )
+		{
+			return
+			(
+				x >= x0 && x < x0 + width &&
+				y >= y0 && y < y0 + height &&
+				z >= z0 && z < z0 + depth
+			);
+		}
+
+		__inline__ __device__
+		bool inBox( const int3& xyz, const int3& size )
+		{
+			return inBox( xyz.x, xyz.y, xyz.z, 0, 0, 0, size.x, size.y, size.z );
+		}
+
 		__host__ __device__ __inline__
 		int floorToInt( float x );
 
@@ -106,12 +145,12 @@ namespace libcgt
 
 		// efficiently computes x % divisor, where divisor is a power of two
 		// by the magic formula:
-		// x % ( 2^p ) = x & ( 2^p - 1 )
+		// x % ( 2^p ) = x & ( 2^p - 1 ) = x & ( divisor - 1 )
 		__host__ __device__ __inline__
-		uint modPowerOfTwoWithDivisor( uint x, uint divisor );
+		uint modPowerOfTwo( uint x, uint divisor );
 
 		// efficiently computes x % (2^p) by the magic formula:
-		// x % ( 2^p ) = x & ( 2^p - 1 )
+		// x % ( 2^p ) = x & ( 2^p - 1 ) = x & ( ( 1 << p ) - 1 )
 		__host__ __device__ __inline__
 		uint modPowerOfTwoWithPower( uint x, uint p );
 
@@ -348,6 +387,44 @@ int libcgt::cuda::numElementsInBin( int binIndex, int binSize, int n )
 		( n % binSize ) : binSize;
 }
 
+// returns true if x < width && y < height
+__inline__ __device__
+bool libcgt::cuda::inRectangle( int x, int y, int width, int height )
+{
+	return libcgt::cuda::inRectangle( x, y, 0, 0, width, height );
+}
+
+// returns true if x >= x0 && x < x0 + width && y >= y0 && y < y0 + height
+__inline__ __device__
+bool libcgt::cuda::inRectangle( int x, int y, int x0, int y0, int width, int height )
+{
+	return( x >= x0 && x < x0 + width && y >= y0 && y < y0 + height );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inRectangle( const int2& xy, int width, int height )
+{
+	return libcgt::cuda::inRectangle( xy.x, xy.y, width, height );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inRectangle( const int2& xy, int x0, int y0, int width, int height )
+{
+	return libcgt::cuda::inRectangle( xy.x, xy.y, x0, y0, width, height );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inRectangle( const int2& xy, const int2& size )
+{
+	return libcgt::cuda::inRectangle( xy.x, xy.y, 0, 0, size.x, size.y );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inRectangle( const int2& xy, const int2& origin, const int2& size )
+{
+	return libcgt::cuda::inRectangle( xy.x, xy.y, origin.x, origin.y, size.x, size.y );
+}
+
 __host__ __device__ __inline__
 int libcgt::cuda::floorToInt( float x )
 {
@@ -421,7 +498,7 @@ int4 libcgt::cuda::roundToInt( const float4& v )
 }
 
 __host__ __device__ __inline__
-uint libcgt::cuda::modPowerOfTwoWithDivisor( uint x, uint divisor )
+uint libcgt::cuda::modPowerOfTwo( uint x, uint divisor )
 {
 	return( x & ( divisor - 1 ) );
 }
@@ -429,7 +506,7 @@ uint libcgt::cuda::modPowerOfTwoWithDivisor( uint x, uint divisor )
 __host__ __device__ __inline__
 uint libcgt::cuda::modPowerOfTwoWithPower( uint x, uint p )
 {
-	return modPowerOfTwoWithDivisor( x, 1 << p );
+	return modPowerOfTwo( x, 1 << p );
 }
 
 __host__ __device__ __inline__

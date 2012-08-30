@@ -1,5 +1,4 @@
-#ifndef RECT_2F_H
-#define RECT_2F_H
+#pragma once
 
 #include "Vector2f.h"
 
@@ -44,5 +43,3 @@ private:
 	Vector2f m_size;
 
 };
-
-#endif // RECT_2F_H

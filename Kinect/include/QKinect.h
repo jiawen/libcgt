@@ -2,6 +2,13 @@
 
 #include <QObject>
 #include <QVector>
+
+// In Visual Studio 2010
+#if ( _MSC_VER <= 1600 )
+#pragma warning( disable: 4005 ) // stdint.h and intsafe.h: disable warnings for multiply defined
+#pragma warning( disable: 4805 ) // sphelper.h: disable unsafe mix of BOOL and bool
+#endif
+
 #include <windows.h>
 #include <NuiApi.h>
 

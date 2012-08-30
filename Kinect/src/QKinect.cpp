@@ -186,7 +186,7 @@ QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgb
 	}
 
 	int eventIndex = waitMultipleResult - WAIT_OBJECT_0;
-	if( eventIndex >= nEvents )
+	if( eventIndex >= static_cast< int >( nEvents ) )
 	{
 		return QKinect_Event_Timeout;
 	}
