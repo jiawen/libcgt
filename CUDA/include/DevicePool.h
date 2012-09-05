@@ -78,6 +78,7 @@ DevicePool::DevicePool( int capacity, int elementSizeBytes ) :
 	m_pool( capacity * elementSizeBytes )
 
 {
+	printf( "0\n" );
 	reset();
 }
 
@@ -90,11 +91,14 @@ KernelPool DevicePool::kernelPool()
 __inline__ __host__
 void DevicePool::reset()
 {
+	printf( "1\n" );
 	// m_usedList.clear();
 
 	// generate free list: [0,capacity)
 	std::vector< int > h_freeList( m_capacity );
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
 
+	printf( "2\n" );
 	m_freeList.elements().copyFromHost( h_freeList );
+	printf( "3\n" );
 }

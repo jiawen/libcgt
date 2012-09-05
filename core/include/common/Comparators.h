@@ -10,9 +10,16 @@ class Comparators
 {
 public:
 	
+	// define the Vector <N>i Comparator types (function pointer type)
+	typedef bool (*Vector2iComparator)( const Vector2i&, const Vector2i& );
+	typedef bool (*Vector3iComparator)( const Vector3i&, const Vector3i& );
+	typedef bool (*Vector4iComparator)( const Vector4i&, const Vector4i& );
+
+	// compares only the first element of a pair
 	template< typename T0, typename T1 >
 	static bool pairFirstElementLess( const std::pair< T0, T1 >& a, const std::pair< T0, T1 >& b );
 
+	// compares only the second element of a pair
 	template< typename T0, typename T1 >
 	static bool pairSecondElementLess( const std::pair< T0, T1 >& a, const std::pair< T0, T1 >& b );
 

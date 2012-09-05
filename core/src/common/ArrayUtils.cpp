@@ -25,11 +25,119 @@ bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filenam
 		return false;
 	}
 
+	retVal = fprintf( fp, "Format: float\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
 	for( int i = 0; i < n; ++i )
 	{
 		fprintf( fp, "[%d]: %f\n", i, array[ i ] );
 	}
 	
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( const std::vector< Vector2f >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( array.size() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float2\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		Vector2f v = array[i];
+		fprintf( fp, "[%d]: %f %f\n", i, v.x, v.y );
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( const std::vector< Vector3f >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( array.size() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float3\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		Vector3f v = array[i];
+		fprintf( fp, "[%d]: %f %f %f\n", i, v.x, v.y, v.z );
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( array.size() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float4\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		Vector4f v = array[i];
+		fprintf( fp, "[%d]: %f %f %f %f\n", i, v.x, v.y, v.z, v.w );
+	}
+
 	retVal = fclose( fp );
 	return( retVal == 0 );
 }

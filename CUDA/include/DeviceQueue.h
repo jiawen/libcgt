@@ -169,6 +169,7 @@ DeviceQueue< T >::DeviceQueue( uint length ) :
 	m_tail( 0 ),
 	m_elements( length )
 {
+	printf( "-1\n" );
 	assert( libcgt::cuda::isPowerOfTwo( length ) );
 }
 

@@ -43,6 +43,9 @@ public:
 	// sets the vector to 0 (all bytes to 0)
 	void clear();
 
+	// fills this array with value
+	void fill( const T& value );
+
 	// copy from cudaArray src to this
 	void copyFromArray( cudaArray* src );
 
@@ -60,7 +63,7 @@ public:
 	// implicit cast to device pointer
 	operator T* () const;
 
-	T* devicePtr() const;
+	T* devicePointer() const;
 
 	KernelArray2D< T > kernelArray() const;
 
@@ -73,7 +76,7 @@ private:
 	int m_height;
 	size_t m_pitch;
 	size_t m_sizeInBytes;
-	T* m_devicePtr;
+	T* m_devicePointer;
 
 	// frees the memory if this is not null
 	void destroy();

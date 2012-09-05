@@ -85,7 +85,7 @@ void print( const float4& v )
 
 // ========== operators ==========
 
-// ---- component-wise add with conversion
+// ---- component-wise add with conversion -----
 
 __inline__ __host__ __device__
 float3 operator + ( const int3& v0, const float3& v1 )
@@ -228,5 +228,18 @@ float3 operator / ( const float3& v0, const uint3& v1 )
 		v0.x / v1.x,
 		v0.y / v1.y,
 		v0.z / v1.z
+	);
+}
+
+// ---- equals -----
+
+__inline__ __host__ __device__
+bool operator == ( const int3& v0, const int3& v1 )
+{
+	return
+	(
+		v0.x == v1.x &&
+		v0.y == v1.y &&
+		v0.z == v1.z
 	);
 }

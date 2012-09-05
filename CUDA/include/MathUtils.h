@@ -68,8 +68,6 @@ namespace libcgt
 		__inline__ __host__ __device__
 		int numElementsInBin( int binIndex, int binSize, int n );
 
-		
-
 		// returns true if x < width && y < height
 		__inline__ __device__
 		bool inRectangle( int x, int y, int width, int height );
@@ -91,21 +89,10 @@ namespace libcgt
 		bool inRectangle( const int2& xy, const int2& origin, const int2& size );
 
 		__inline__ __device__
-		bool inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth )
-		{
-			return
-			(
-				x >= x0 && x < x0 + width &&
-				y >= y0 && y < y0 + height &&
-				z >= z0 && z < z0 + depth
-			);
-		}
+		bool inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth );
 
 		__inline__ __device__
-		bool inBox( const int3& xyz, const int3& size )
-		{
-			return inBox( xyz.x, xyz.y, xyz.z, 0, 0, 0, size.x, size.y, size.z );
-		}
+		bool inBox( const int3& xyz, const int3& size );
 
 		__host__ __device__ __inline__
 		int floorToInt( float x );
@@ -423,6 +410,23 @@ __inline__ __device__
 bool libcgt::cuda::inRectangle( const int2& xy, const int2& origin, const int2& size )
 {
 	return libcgt::cuda::inRectangle( xy.x, xy.y, origin.x, origin.y, size.x, size.y );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth )
+{
+	return
+		(
+		x >= x0 && x < x0 + width &&
+		y >= y0 && y < y0 + height &&
+		z >= z0 && z < z0 + depth
+		);
+}
+
+__inline__ __device__
+bool libcgt::cuda::inBox( const int3& xyz, const int3& size )
+{
+	return inBox( xyz.x, xyz.y, xyz.z, 0, 0, 0, size.x, size.y, size.z );
 }
 
 __host__ __device__ __inline__
