@@ -22,7 +22,10 @@ namespace libcgt
 			static bool saveTXT( const Array2D< float4 >& array, const char* filename );
 
 			static bool saveTXT( const std::vector< int3 >& array, const char* filename );
+
 			static bool saveTXT( const Array3D< int2 >& array, const char* filename );
+			static bool saveTXT( const Array3D< int3 >& array, const char* filename );
+			static bool saveTXT( const Array3D< int4 >& array, const char* filename );
 
 			// device
 			static bool saveTXT( const DeviceArray2D< float >& array, const char* filename );
@@ -31,6 +34,10 @@ namespace libcgt
 			//static bool saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename );
 
 			static bool saveTXT( const DeviceVector< int3 >& array, const char* filename );
+
+			static bool saveTXT( const DeviceArray3D< int2 >& array, const char* filename );
+			static bool saveTXT( const DeviceArray3D< int3 >& array, const char* filename );
+			static bool saveTXT( const DeviceArray3D< int4 >& array, const char* filename );
 		};
 
 	}

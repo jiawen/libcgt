@@ -266,14 +266,14 @@ T& Array3D< T >::operator () ( int k )
 template< typename T >
 const T& Array3D< T >::operator () ( int x, int y, int z ) const
 {
-	int k = Indexing::subscriptToIndex( x, y, z );
+	int k = Indexing::subscriptToIndex( x, y, z, m_width, m_height );
 	return m_array[ k ];
 }
 
 template< typename T >
 T& Array3D< T >::operator () ( int x, int y, int z )
 {
-	int k = Indexing::subscriptToIndex( x, y, z );
+	int k = Indexing::subscriptToIndex( x, y, z, m_width, m_height );
 	return m_array[ k ];
 }
 
