@@ -3,6 +3,7 @@
 #include <numeric>
 
 #include <common/BasicTypes.h>
+#include <math/Arithmetic.h>
 
 #include "DeviceQueue.h"
 
@@ -12,10 +13,10 @@ struct KernelPool
 {
 	__inline__ __host__
 	KernelPool( KernelQueue< int > _freeList,
-		KernelVector< ubyte > _pool ) :
+		KernelVector< ubyte > _backingStore ) :
 
 		freeList( _freeList ),
-		pool( _pool )
+		backingStore( _backingStore )
 
 	{
 
@@ -36,7 +37,7 @@ struct KernelPool
 
 	//KernelQueue< int > usedList;
 	KernelQueue< int > freeList;
-	KernelVector< ubyte > pool;
+	KernelVector< ubyte > backingStore;
 };
 
 class DevicePool
@@ -44,61 +45,91 @@ class DevicePool
 public:
 
 	DevicePool();
-
 	DevicePool( int capacity, int elementSizeBytes );
-	
-	KernelPool kernelPool();
-	
-	void reset();
+	virtual ~DevicePool();
 
+	bool isNull() const;
+	bool notNull() const;
+	
+	// resizes the pool to a new capacity, clearing it at the same time
+	void resize( int capacity, int elementSizeBytes );
+	
+	// clears the pool: marks all elements as free
+	// does *not* touch the data
+	void clear();
+
+	KernelPool kernelPool();
+
+	
 //private:
 
 	int m_capacity;
 	int m_elementSizeBytes;
 	//DeviceQueue< int > m_usedList;
 	DeviceQueue< int > m_freeList;
-	DeviceVector< ubyte > m_pool;
+	DeviceVector< ubyte > m_backingStore;
 };
 
 __inline__ __host__
-DevicePool::DevicePool()
+DevicePool::DevicePool() :
+
+	m_capacity( -1 ),
+	m_elementSizeBytes( -1 )
+
+	//m_usedList( count ),
 {
 
 }
 
 __inline__ __host__
-DevicePool::DevicePool( int capacity, int elementSizeBytes ) :
-
-	m_capacity( capacity ),
-	m_elementSizeBytes( elementSizeBytes ),
-
+DevicePool::DevicePool( int capacity, int elementSizeBytes )
 	//m_usedList( count ),
-	m_freeList( capacity ),
-
-	m_pool( capacity * elementSizeBytes )
-
 {
-	printf( "0\n" );
-	reset();
+	resize( capacity, elementSizeBytes );
+}
+
+// virtual
+__inline__ __host__
+DevicePool::~DevicePool()
+{
+
+}
+
+__inline__ __host__
+bool DevicePool::isNull() const
+{
+	return( m_freeList.isNull() || m_backingStore.isNull() );
+}
+
+__inline__ __host__
+bool DevicePool::notNull() const
+{
+	return !isNull();
+}
+
+__inline__ __host__
+void DevicePool::resize( int capacity, int elementSizeBytes )
+{
+	m_capacity = capacity;
+	m_elementSizeBytes = elementSizeBytes;
+	m_freeList.resize( capacity );
+	m_backingStore.resize( capacity * elementSizeBytes );
+
+	clear();	
+}
+
+__inline__ __host__
+void DevicePool::clear()
+{
+	// generate free list: [0,capacity)
+	std::vector< int > h_freeList( m_capacity );
+	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
+
+	m_freeList.elements().copyFromHost( h_freeList );
 }
 
 __inline__ __host__
 KernelPool DevicePool::kernelPool()
 {
-	return KernelPool( m_freeList.kernelQueue(), m_pool.kernelVector() );
-}
-
-__inline__ __host__
-void DevicePool::reset()
-{
-	printf( "1\n" );
-	// m_usedList.clear();
-
-	// generate free list: [0,capacity)
-	std::vector< int > h_freeList( m_capacity );
-	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
-
-	printf( "2\n" );
-	m_freeList.elements().copyFromHost( h_freeList );
-	printf( "3\n" );
+	return KernelPool( m_freeList.kernelQueue(), m_backingStore.kernelVector() );
 }

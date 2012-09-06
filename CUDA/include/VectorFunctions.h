@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#include <cmath>
 
 __inline__ __host__ __device__
 uchar4 make_uchar4( ubyte s )

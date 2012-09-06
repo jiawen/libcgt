@@ -170,7 +170,7 @@ inline Vector2f operator * ( const Vector2f& v, float f )
 
 inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 )
 {
-	return Vector2f( v0.x * v1.x, v0.y * v1.y );
+	return Vector2f( v0.x / v1.x, v0.y / v1.y );
 }
 
 inline Vector2f operator / ( const Vector2f& v, float f )

@@ -19,7 +19,7 @@ public:
 	// pBuffer needs to have capacity 36
 	// TODO: start index...
 	template< typename T >
-	static void writeAxisAlignedSolidBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer );
+	static void writeAxisAlignedSolidBox( const BoundingBox3f& box, const Vector4f& color, DynamicVertexBuffer* pBuffer );
 
 	// writes vertexArray with the contents of box
 	// vertexArray needs to have capacity 36
@@ -38,7 +38,7 @@ public:
 	// pBuffer needs to have capacity 24
 	// TODO: start vertex
 	template< typename T >
-	static void writeAxisAlignedWireframeBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer );
+	static void writeAxisAlignedWireframeBox( const BoundingBox3f& box, const Vector4f& color, DynamicVertexBuffer* pBuffer );
 
 	template< typename T >
 	static void writeAxisAlignedWireframeBox( const Vector3f& origin, const Vector3f& size, T* vertexArray );
@@ -63,7 +63,7 @@ public:
 
 // static
 template< typename T >
-void D3D11Utils_Box::writeAxisAlignedSolidBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer )
+void D3D11Utils_Box::writeAxisAlignedSolidBox( const BoundingBox3f& box, const Vector4f& color, DynamicVertexBuffer* pBuffer )
 {
 	T* vertexArray = pBuffer->mapForWriteDiscardAs< T >();
 	writeAxisAlignedSolidBox( box.minimum(), box.range(), vertexArray );
@@ -138,7 +138,7 @@ void D3D11Utils_Box::writeAxisAlignedSolidBox( float x, float y, float z, float 
 
 // static
 template< typename T >
-void D3D11Utils_Box::writeAxisAlignedWireframeBox( const BoundingBox3f& box, const Vector4f& color, std::shared_ptr< DynamicVertexBuffer > pBuffer )
+void D3D11Utils_Box::writeAxisAlignedWireframeBox( const BoundingBox3f& box, const Vector4f& color, DynamicVertexBuffer* pBuffer )
 {
 	T* vertexArray = pBuffer->mapForWriteDiscardAs< T >();
 	writeAxisAlignedWireframeBox( box.minimum(), box.range(), vertexArray );

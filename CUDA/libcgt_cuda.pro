@@ -21,4 +21,5 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 DEFINES += _ITERATOR_DEBUG_LEVEL=0
 
 HEADERS += include/*.h
+HEADERS += include/*.inl
 SOURCES += src/*.cpp

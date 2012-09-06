@@ -15,7 +15,7 @@ class DeviceVector
 public:
 
 	DeviceVector();
-	DeviceVector( int length );
+	DeviceVector( int length );	
 	virtual ~DeviceVector();
 
 	bool isNull() const;

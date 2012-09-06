@@ -135,6 +135,12 @@ public:
 	DeviceQueue();
 	DeviceQueue( uint length );
 
+	bool isNull() const;
+	bool notNull() const;
+
+	// resizes the queue (destroys the existing data and clear it in the process)
+	void resize( uint length );
+
 	// clears the queue
 	void clear();
 
@@ -169,8 +175,26 @@ DeviceQueue< T >::DeviceQueue( uint length ) :
 	m_tail( 0 ),
 	m_elements( length )
 {
-	printf( "-1\n" );
 	assert( libcgt::cuda::isPowerOfTwo( length ) );
+}
+
+template< typename T >
+bool DeviceQueue< T >::isNull() const
+{
+	return m_elements.isNull();
+}
+
+template< typename T >
+bool DeviceQueue< T >::notNull() const
+{
+	return !isNull();
+}
+
+template< typename T >
+void DeviceQueue< T >::resize( uint length )
+{
+	m_elements.resize( length );
+	clear();
 }
 
 template< typename T >

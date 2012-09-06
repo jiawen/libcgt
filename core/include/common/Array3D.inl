@@ -44,7 +44,7 @@ Array3D< T >::Array3D( int width, int height, int depth, const T& fill ) :
 }
 
 template< typename T >
-Array3D< T >::Array3D( const Array3D& copy )
+Array3D< T >::Array3D( const Array3D< T >& copy )
 {
 	m_width = copy.m_width;
 	m_height = copy.m_height;
@@ -55,7 +55,7 @@ Array3D< T >::Array3D( const Array3D& copy )
 }
 
 template< typename T >
-Array3D< T >::Array3D( Array3D&& move )
+Array3D< T >::Array3D( Array3D< T >&& move )
 {
 	m_array = move.m_array;
 	m_width = move.m_width;
@@ -266,34 +266,62 @@ T& Array3D< T >::operator () ( int k )
 template< typename T >
 const T& Array3D< T >::operator () ( int x, int y, int z ) const
 {
-	int k = subscriptToIndex( x, y, z );
+	int k = Indexing::subscriptToIndex( x, y, z );
 	return m_array[ k ];
 }
 
 template< typename T >
 T& Array3D< T >::operator () ( int x, int y, int z )
 {
-	int k = subscriptToIndex( x, y, z );
+	int k = Indexing::subscriptToIndex( x, y, z );
 	return m_array[ k ];
 }
 
 template< typename T >
-int Array3D< T >::subscriptToIndex( int x, int y, int z ) const
+template< typename S >
+Array3D< S > Array3D< T >::reinterpretAs( int outputWidth, int outputHeight, int outputDepth )
 {
-	return z * m_width * m_height + y * m_width + x;
-}
+	Array3D< S > output;
 
-template< typename T >
-Vector3i Array3D< T >::indextoSubscript( int k ) const
-{
-	int wh = m_width * m_height;
-	int z = k / wh;
+	// if source is null, then return a null array
+	if( isNull() )
+	{
+		return output;
+	}
 
-	int ky = k - z * wh;
-	int y = ky / m_width;
+	// if the requested output widths are not default
+	// and the sizes don't fit
+	if( outputWidth != -1 || outputHeight != -1 || outputDepth != -1 )
+	{
+		int srcBytes = m_width * m_height * m_depth * sizeof( T );
+		int dstBytes = outputWidth * outputHeight * outputDepth * sizeof( S );
+		if( srcBytes != dstBytes )
+		{
+			return output;
+		}
+	}
 
-	int x = ky - y * m_width;
-	return Vector3i( x, y, z );
+	output.m_array = reinterpret_cast< S* >( m_array );
+
+	if( outputWidth == -1 && outputHeight == -1 && outputHeight == -1 )
+	{
+		output.m_width = m_width * sizeof( T ) / sizeof( S );
+		output.m_height = m_height;
+		output.m_depth = m_depth;
+	}
+	else
+	{
+		output.m_width = outputWidth;
+		output.m_height = outputHeight;
+		output.m_depth = outputDepth;
+	}
+
+	m_array = nullptr;
+	m_width = -1;
+	m_height = -1;
+	m_depth = -1;
+
+	return output;
 }
 
 template< typename T >

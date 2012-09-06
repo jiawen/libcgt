@@ -39,7 +39,7 @@ Array2D< T >::Array2D( int width, int height, const T& fill ) :
 }
 
 template< typename T >
-Array2D< T >::Array2D( const Array2D& copy )
+Array2D< T >::Array2D( const Array2D< T >& copy )
 {
 	m_width = copy.m_width;
 	m_height = copy.m_height;
@@ -49,7 +49,7 @@ Array2D< T >::Array2D( const Array2D& copy )
 }
 
 template< typename T >
-Array2D< T >::Array2D( Array2D&& move )
+Array2D< T >::Array2D( Array2D< T >&& move )
 {
 	m_array = move.m_array;
 	m_width = move.m_width;
@@ -237,27 +237,57 @@ T& Array2D< T >::operator () ( int k )
 template< typename T >
 const T& Array2D< T >::operator () ( int x, int y ) const
 {
-	return m_array[ subscriptToIndex( x, y ) ];
+	return m_array[ Indexing::subscriptToIndex( x, y ) ];
 }
 
 template< typename T >
 T& Array2D< T >::operator () ( int x, int y )
 {
-	return m_array[ subscriptToIndex( x, y ) ];
+	return m_array[ Indexing::subscriptToIndex( x, y ) ];
 }
 
 template< typename T >
-int Array2D< T >::subscriptToIndex( int x, int y ) const
+template< typename S >
+Array2D< S > Array2D< T >::reinterpretAs( int outputWidth, int outputHeight )
 {
-	return( y * m_width + x );
-}
+	Array2D< S > output;
 
-template< typename T >
-Vector2i Array2D< T >::indexToSubscript( int k ) const
-{
-	int y = k / m_width;
-	int x = k - y * m_width;
-	return Vector2i( x, y );
+	// if source is null, then return a null array
+	if( isNull() )
+	{
+		return output;
+	}
+
+	// if the requested output widths are not default
+	// and the sizes don't fit
+	if( outputWidth != -1 || outputHeight != -1 )
+	{
+		int srcBytes = m_width * m_height * sizeof( T );
+		int dstBytes = outputWidth * outputHeight * sizeof( S );
+		if( srcBytes != dstBytes )
+		{
+			return output;
+		}
+	}
+
+	output.m_array = reinterpret_cast< S* >( m_array );
+
+	if( outputWidth == -1 && outputHeight == -1 )
+	{
+		output.m_width = m_width * sizeof( T ) / sizeof( S );
+		output.m_height = m_height;
+	}
+	else
+	{
+		output.m_width = outputWidth;
+		output.m_height = outputHeight;
+	}
+
+	m_array = nullptr;
+	m_width = -1;
+	m_height = -1;
+
+	return output;
 }
 
 template< typename T >

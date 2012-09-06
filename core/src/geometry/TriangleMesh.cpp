@@ -244,7 +244,7 @@ bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& directi
 	bool hit = false;
 	t = MathUtils::POSITIVE_INFINITY;
 
-	for( size_t f = 0; f < numFaces(); ++f )
+	for( int f = 0; f < numFaces(); ++f )
 	{
 		Vector3i vertexIndices = m_faces[ f ];
 

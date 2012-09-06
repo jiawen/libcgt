@@ -19,11 +19,11 @@ public:
 
 	// Create a DynamicVertexBuffer< VertexPosition4fTexture2f > of 6 vertices (2 triangles)
 	static DynamicVertexBuffer* createFullScreenRectangle( ID3D11Device* pDevice,
-		bool uv00AtTopLeft = true, float z = -1, float w = 1 );
+		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
 
 	// writes a fullscreen rectangle (6 vertices, 2 triangles) into buffer
 	static void writeFullScreenRectangle( VertexPosition4fTexture2f* vertexArray,
-		bool uv00AtTopLeft = true, float z = -1, float w = 1 );
+		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
 
 	// ===== screen aligned rectangles =====
 	//
@@ -37,15 +37,15 @@ public:
 	// Create a DynamicVertexBuffer< VertexPosition4fTexture2f > of 6 vertices (2 triangles)
 	static DynamicVertexBuffer* createScreenAlignedRectangle( ID3D11Device* pDevice,
 		float x, float y, float width, float height,
-		bool uv00AtTopLeft = true, float z = -1, float w = 1 );
+		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
 
 	// writes a screen aligned rectangle (6 vertices, 2 triangles) into buffer
 	static void writeScreenAlignedRectangle( VertexPosition4f* vertexArray,
 		float x, float y, float width, float height,
-		float z = -1, float w = 1 );
+		float z = 1, float w = 1 );
 	static void writeScreenAlignedRectangle( VertexPosition4fTexture2f* vertexArray,
 		float x, float y, float width, float height,
-		bool uv00AtTopLeft = true, float z = -1, float w = 1 );
+		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
 
 	// writes the positions of a screen aligned rectangle into vertexArray
 	template< typename T >

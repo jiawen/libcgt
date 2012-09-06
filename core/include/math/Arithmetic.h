@@ -13,6 +13,10 @@ public:
 	// mod( -1, 10 ) = 9
 	static int mod( int x, int N );
 
+	static int sign( int x );
+	static int sign( float x );
+	static int sign( double x );
+
 	static float divideIntsToFloat( int numerator, int denominator );
 	static int divideIntsToFloatAndRound( int numerator, int denominator );
 
@@ -42,6 +46,7 @@ public:
 	static int roundUpToNearestMultipleOf4( int x );
 	static int roundUpToNearestMultipleOf8( int x );
 	static int roundUpToNearestMultipleOf16( int x );
+	static int roundUpToNearestMultipleOf128( int x );
 	static int roundUpToNearestMultipleOf256( int x );
 
 	// finds y where y is the next perfect square greater than or equal to x

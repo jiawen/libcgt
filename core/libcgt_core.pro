@@ -30,6 +30,7 @@ HEADERS += include/color/*.h
 SOURCES += src/color/*.cpp
 
 HEADERS += include/common/*.h
+HEADERS += include/common/*.inl
 SOURCES += src/common/*.cpp
 
 HEADERS += include/geometry/*.h
@@ -52,4 +53,5 @@ HEADERS += include/time/*.h
 SOURCES += src/time/*.cpp
 
 HEADERS += include/vecmath/*.h
+HEADERS += include/vecmath/*.inl
 SOURCES += src/vecmath/*.cpp

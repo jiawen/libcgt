@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdio>
+
+#include "common/BasicTypes.h"
 #include <vecmath/Vector3i.h>
+#include <math/Indexing.h>
 
 // TODO: switch to using std::vector as underlying representation
 
@@ -15,10 +18,10 @@ public:
 	Array3D();
 	Array3D( const char* filename );
 	Array3D( int width, int height, int depth, const T& fill = T() );
-	Array3D( const Array3D& copy );
-	Array3D( Array3D&& move );
-	Array3D& operator = ( const Array3D& copy );
-	Array3D& operator = ( Array3D&& move );
+	Array3D( const Array3D< T >& copy );
+	Array3D( Array3D< T >&& move );
+	Array3D& operator = ( const Array3D< T >& copy );
+	Array3D& operator = ( Array3D< T >&& move );
 	virtual ~Array3D();
 	
 	bool isNull() const;
@@ -53,9 +56,18 @@ public:
 	const T& operator () ( int x, int y, int z ) const; // read
 	T& operator () ( int x, int y, int z ); // write
 
-	int subscriptToIndex( int x, int y, int z ) const;
-	Vector3i indextoSubscript( int k ) const;
-	
+	// reinterprets this array as an array of another format,
+	// destroying this array
+	//
+	// by default (outputWidth and outputHeight = -1)
+	// the output width is width() * sizeof( T ) / sizeof( S )
+	// (i.e., a 3 x 4 x 5 float4 gets cast to a 12 x 4 x x 5 float1)
+	//
+	// If the source is null or the desired output size is invalid
+	// returns the null array.
+	template< typename S >
+	Array3D< S > reinterpretAs( int outputWidth = -1, int outputHeight = -1, int outputDepth = -1 );
+
 	// only works if T doesn't have pointers, with sizeof() well defined
 	bool load( const char* filename );
 
@@ -69,6 +81,9 @@ private:
 	int m_depth;
 	T* m_array;
 
+	// to allow reinterpretAs< S >
+	template< typename S >
+	friend class Array3D;
 };
 
 #include "Array3D.inl"

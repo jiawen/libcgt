@@ -10,6 +10,48 @@ int Arithmetic::mod( int x, int N )
 }
 
 // static
+int Arithmetic::sign( int x )
+{
+	if( x < 0 )
+	{
+		return -1;
+	}
+	if( x > 0 )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+// static
+int Arithmetic::sign( float x )
+{
+	if( x < 0 )
+	{
+		return -1;
+	}
+	if( x > 0 )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+// static
+int Arithmetic::sign( double x )
+{
+	if( x < 0 )
+	{
+		return -1;
+	}
+	if( x > 0 )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+// static
 float Arithmetic::divideIntsToFloat( int numerator, int denominator )
 {
 	float fNumerator = static_cast< float >( numerator );
@@ -135,6 +177,12 @@ int Arithmetic::roundUpToNearestMultipleOf8( int x )
 int Arithmetic::roundUpToNearestMultipleOf16( int x )
 {
 	return ( x + 15 ) & ( ~( 0xf ) );
+}
+
+// static
+int Arithmetic::roundUpToNearestMultipleOf128( int x )
+{
+	return ( x + 127 ) & ( ~( 0x7f ) );
 }
 
 // static
