@@ -58,6 +58,14 @@ struct KernelQueue
 		return m_elements[ oldHead ];
 	}
 
+	__inline__ __device__
+	int count()
+	{
+		int head = *( headPointer() );
+		int tail = *( tailPointer() );
+		return( tail - head );
+	}
+
 #if 0
 	// tries to enqueue a value
 	// returns false if the queue is full

@@ -10,6 +10,15 @@ namespace libcgt
 	namespace cuda
 	{
 		__host__ __device__ __inline__
+		int sign( int x );
+
+		__host__ __device__ __inline__
+		int sign( float x );
+
+		__host__ __device__ __inline__
+		int3 sign( const float3& v );
+
+		__host__ __device__ __inline__
 		bool isEven( int x );
 
 		__host__ __device__ __inline__
@@ -233,6 +242,39 @@ namespace libcgt
 	}
 }
 
+__host__ __device__ __inline__
+int libcgt::cuda::sign( int x )
+{
+	if( x < 0 )
+	{
+		return -1;
+	}
+	if( x > 0 )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+__host__ __device__ __inline__
+int libcgt::cuda::sign( float x )
+{
+	if( x < 0 )
+	{
+		return -1;
+	}
+	if( x > 0 )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+__host__ __device__ __inline__
+int3 libcgt::cuda::sign( const float3& v )
+{
+	return make_int3( sign( v.x ), sign( v.y ), sign( v.z ) );
+}
 
 __host__ __device__ __inline__
 bool libcgt::cuda::isEven( int x )
