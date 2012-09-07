@@ -14,20 +14,9 @@
 template< typename T >
 struct KernelQueue
 {
-#if 0
 	__inline__ __host__
-	KernelQueue( uint2* d_pHeadTail, KernelVector< T > elements ) :
-		md_pHeadTail( d_pHeadTail ),
-		m_elements( elements )
-	{
-
-	}
-#endif
-
-	__inline__ __host__
-	KernelQueue( uint* d_pHead, uint* d_pTail, KernelVector< T > elements ) :
-		md_pHead( d_pHead ),
-		md_pTail( d_pTail ),
+		KernelQueue( uint2* d_pHeadTail, KernelVector< T > elements ) :
+	md_pHeadTail( d_pHeadTail ),
 		m_elements( elements )
 	{
 
@@ -39,7 +28,7 @@ struct KernelQueue
 	// (atomically increment the tail pointer
 	// and set the value where it used to be)
 	__inline__ __device__
-	void enqueue( const T& val )
+		void enqueue( const T& val )
 	{
 		//printf( "enqueue: tailPointer = 0x%p\n", tailPointer() );
 		uint oldTail = atomicAdd( tailPointer(), 1 );
@@ -51,7 +40,7 @@ struct KernelQueue
 	// (atomically increment the head pointer
 	// and return the value where it used to be)
 	__inline__ __device__
-	T dequeue()
+		T dequeue()
 	{
 		uint oldHead = atomicAdd( headPointer(), 1 );
 		oldHead = libcgt::cuda::modPowerOfTwo( oldHead, m_elements.length );
@@ -59,7 +48,7 @@ struct KernelQueue
 	}
 
 	__inline__ __device__
-	int count()
+		int count()
 	{
 		int head = *( headPointer() );
 		int tail = *( tailPointer() );
@@ -70,14 +59,14 @@ struct KernelQueue
 	// tries to enqueue a value
 	// returns false if the queue is full
 	__inline__ __device__
-	bool tryEnqueue( const T& val )
+		bool tryEnqueue( const T& val )
 	{
 		// use some magic trick with atomicInc with elements.length?	
 	}
 #endif
 
 	__inline__ __device__
-	bool isFull()
+		bool isFull()
 	{
 		// we can distinguish between full and empty
 		// because we use absolute indices:
@@ -99,7 +88,7 @@ struct KernelQueue
 	}
 
 	__inline__ __device__
-	bool isEmpty()
+		bool isEmpty()
 	{
 		int head = *( headPointer() );
 		int tail = *( tailPointer() );
@@ -107,30 +96,27 @@ struct KernelQueue
 	}
 
 	__inline__ __device__
-	KernelVector< T >& elements()
+		KernelVector< T >& elements()
 	{
 		return m_elements;
 	}
 
 	__inline__ __device__
-	uint* headPointer()
+		uint* headPointer()
 	{
-		return md_pHead;
-		//return &( md_pHeadTail->x );
+		return &( md_pHeadTail->x );
 	}
 
 	__inline__ __device__
-	uint* tailPointer()
+		uint* tailPointer()
 	{
-		return md_pTail;
-		//return &( md_pHeadTail->y );
+		return &( md_pHeadTail->y );
 	}
 #endif
 
 private:
 
-	uint* md_pHead;
-	uint* md_pTail;
+	uint2* md_pHeadTail;
 	KernelVector< T > m_elements;
 
 };
@@ -176,9 +162,7 @@ public:
 
 private:
 
-	// DeviceVariable< uint2 > m_headTail;
-	DeviceVariable< uint > m_head;
-	DeviceVariable< uint > m_tail;
+	DeviceVariable< uint2 > m_headTail;
 	DeviceVector< T > m_elements;
 
 };
@@ -225,27 +209,20 @@ bool DeviceQueue< T >::resize( uint length )
 template< typename T >
 void DeviceQueue< T >::clear()
 {
-	// m_headTail.set( make_uint2( 0, 0 ) );
-	m_head.set( 0u );
-	m_tail.set( 0u );
+	m_headTail.set( make_uint2( 0, 0 ) );
 }
 
 template< typename T >
 int DeviceQueue< T >::count()
 {
-	// uint2 ht = m_headTail.get();
-	// return( ht.y - ht.x );
-
-	uint h = m_head.get();
-	uint t = m_tail.get();
-	return( t - h );
+	uint2 ht = m_headTail.get();
+	return( ht.y - ht.x );
 }
 
 template< typename T >
 KernelQueue< T > DeviceQueue< T >::kernelQueue()
 {
-	return KernelQueue< T >( m_head.devicePointer(), m_tail.devicePointer(), m_elements.kernelVector() );
-	//return KernelQueue< T >( m_headTail.devicePointer(), m_elements.kernelVector() );
+	return KernelQueue< T >( m_headTail.devicePointer(), m_elements.kernelVector() );
 }
 
 template< typename T >
@@ -268,8 +245,9 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
 	std::vector< T > h_elements;
 	m_elements.copyToHost( h_elements );
 
-	uint h = m_head.get();
-	uint t = m_tail.get();
+	uint2 ht = m_headTail.get();
+	int h = ht.x;
+	int t = ht.y;
 
 	int count = t - h;
 	int len = m_elements.length();
