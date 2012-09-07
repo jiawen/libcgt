@@ -140,14 +140,21 @@ class DeviceQueue
 {
 public:
 
+	// initializes a null queue
 	DeviceQueue();
+
+	// initializes a queue with a fixed *power of two* length
 	DeviceQueue( uint length );
 
 	bool isNull() const;
 	bool notNull() const;
 
-	// resizes the queue (destroys the existing data and clear it in the process)
-	void resize( uint length );
+	// resizes the queue:
+	//   destroys the existing data
+	//   and clears the queue in the process (head and tail set to 0)
+	//
+	// length *must be* a power of two (otherwise returns false)
+	bool resize( uint length );
 
 	// clears the queue
 	void clear();
@@ -157,8 +164,15 @@ public:
 
 	KernelQueue< T > kernelQueue();
 
-	// for debugging
-	DeviceVector< T >& elements();
+	// copies count() elements from host --> device queue
+	// this is automatically resized to src.size()
+	// src.size() *must be* a power of two
+	// and head must be first
+	bool copyFromHost( const std::vector< T >& src );
+
+	// copies count() elements from device queue --> host
+	// dst is automatically resized and the head of the queue is first
+	void copyToHost( std::vector< T >& dst ) const;
 
 private:
 
@@ -176,14 +190,9 @@ DeviceQueue< T >::DeviceQueue()
 }
 
 template< typename T >
-DeviceQueue< T >::DeviceQueue( uint length ) :
-
-	// m_headTail( make_uint2( 0, 0 ) ),
-	m_head( 0 ),
-	m_tail( 0 ),
-	m_elements( length )
+DeviceQueue< T >::DeviceQueue( uint length )
 {
-	assert( libcgt::cuda::isPowerOfTwo( length ) );
+	resize( length );
 }
 
 template< typename T >
@@ -199,10 +208,18 @@ bool DeviceQueue< T >::notNull() const
 }
 
 template< typename T >
-void DeviceQueue< T >::resize( uint length )
+bool DeviceQueue< T >::resize( uint length )
 {
-	m_elements.resize( length );
-	clear();
+	bool lengthIsValid = libcgt::cuda::isPowerOfTwo( length );
+
+	assert( lengthIsValid );
+	if( lengthIsValid )
+	{
+		m_elements.resize( length );
+		clear();
+	}
+
+	return lengthIsValid;
 }
 
 template< typename T >
@@ -232,7 +249,35 @@ KernelQueue< T > DeviceQueue< T >::kernelQueue()
 }
 
 template< typename T >
-DeviceVector< T >& DeviceQueue< T >::elements()
+bool DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
 {
-	return m_elements;
+	uint length = static_cast< uint >( src.size() );
+	bool succeeded = resize( length );
+	if( succeeded )
+	{
+		// resize clears the queue
+		m_elements.copyFromHost( src );
+	}
+
+	return succeeded;
+}
+
+template< typename T >
+void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
+{
+	std::vector< T > h_elements;
+	m_elements.copyToHost( h_elements );
+
+	uint h = m_head.get();
+	uint t = m_tail.get();
+
+	int count = t - h;
+	int len = m_elements.length();
+
+	dst.clear();
+	dst.reserve( count );
+	for( int i = h; i < t; ++i )
+	{
+		dst.push_back( h_elements[ i % len ] );
+	}
 }

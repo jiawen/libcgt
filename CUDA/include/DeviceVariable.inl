@@ -18,7 +18,7 @@ DeviceVariable< T >::~DeviceVariable()
 }
 
 template< typename T >
-T DeviceVariable< T >::get()
+T DeviceVariable< T >::get() const
 {
 	T output;
 	CUDA_SAFE_CALL( cudaMemcpy( &output, md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToHost ) );

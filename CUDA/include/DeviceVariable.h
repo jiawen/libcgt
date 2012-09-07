@@ -15,7 +15,7 @@ public:
 	// TODO: copy
 	// TODO: move
 
-	T get();
+	T get() const;
 	void set( const T& value );
 
 	const T* devicePointer() const;

@@ -12,9 +12,14 @@
 struct KernelPool
 {
 	__inline__ __host__
-	KernelPool( KernelQueue< int > _freeList,
+	KernelPool( int _capacity,
+		int _elementSizeBytes,
+
+		KernelQueue< int > _freeList,
 		KernelVector< ubyte > _backingStore ) :
 
+		capacity( _capacity ),
+		elementSizeBytes( _elementSizeBytes ),
 		freeList( _freeList ),
 		backingStore( _backingStore )
 
@@ -24,7 +29,7 @@ struct KernelPool
 
 #ifdef __CUDACC__
 
-	// gives you an index and a pointer
+	// gives you an index
 	__inline__ __device__
 	int alloc()
 	{
@@ -35,6 +40,19 @@ struct KernelPool
 
 	// void dealloc(
 
+	// given an index (returned from alloc()),
+	// returns a pointer to the beginning of the element
+	template< typename T >
+	__inline__ __device__
+	T* getElement( int index )
+	{
+		ubyte* pElementStart = &( backingStore[ index * elementSizeBytes ] );
+		return reinterpret_cast< T* >( pElementStart );
+	}
+
+	int capacity;
+	int elementSizeBytes;
+
 	//KernelQueue< int > usedList;
 	KernelQueue< int > freeList;
 	KernelVector< ubyte > backingStore;
@@ -44,6 +62,7 @@ class DevicePool
 {
 public:
 
+	// capacity must be a power of two
 	DevicePool();
 	DevicePool( int capacity, int elementSizeBytes );
 	virtual ~DevicePool();
@@ -125,11 +144,16 @@ void DevicePool::clear()
 	std::vector< int > h_freeList( m_capacity );
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
 
-	m_freeList.elements().copyFromHost( h_freeList );
+	m_freeList.copyFromHost( h_freeList );
 }
 
 __inline__ __host__
 KernelPool DevicePool::kernelPool()
 {
-	return KernelPool( m_freeList.kernelQueue(), m_backingStore.kernelVector() );
+	return KernelPool
+	(
+		m_capacity, m_elementSizeBytes,
+		m_freeList.kernelQueue(),
+		m_backingStore.kernelVector()
+	);
 }
