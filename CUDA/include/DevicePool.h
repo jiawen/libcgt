@@ -62,14 +62,26 @@ class DevicePool
 {
 public:
 
-	// capacity must be a power of two
+	// creates a null pool
 	DevicePool();
+
+	// creates a device memory pool of capacity elements,
+	// where each element occupies elementSizeBytes bytes
+	//
+	// capacity must be a power of two
 	DevicePool( int capacity, int elementSizeBytes );
 	virtual ~DevicePool();
 
 	bool isNull() const;
 	bool notNull() const;
 	
+	// returns the number of elements
+	int capacity() const;
+
+	// returns the number of free elements
+	// (potentially expensive - incurs a GPU copy)
+	int numFreeElements();
+
 	// resizes the pool to a new capacity, clearing it at the same time
 	void resize( int capacity, int elementSizeBytes );
 	
@@ -85,7 +97,7 @@ public:
 	int m_capacity;
 	int m_elementSizeBytes;
 	//DeviceQueue< int > m_usedList;
-	DeviceQueue< int > m_freeList;
+	DeviceQueue< int > md_freeList;
 	DeviceVector< ubyte > m_backingStore;
 };
 
@@ -117,7 +129,7 @@ DevicePool::~DevicePool()
 __inline__ __host__
 bool DevicePool::isNull() const
 {
-	return( m_freeList.isNull() || m_backingStore.isNull() );
+	return( md_freeList.isNull() || m_backingStore.isNull() );
 }
 
 __inline__ __host__
@@ -127,11 +139,23 @@ bool DevicePool::notNull() const
 }
 
 __inline__ __host__
+int DevicePool::capacity() const
+{
+	return m_capacity;
+}
+
+__inline__ __host__
+int DevicePool::numFreeElements()
+{
+	return md_freeList.count();
+}
+
+__inline__ __host__
 void DevicePool::resize( int capacity, int elementSizeBytes )
 {
 	m_capacity = capacity;
 	m_elementSizeBytes = elementSizeBytes;
-	m_freeList.resize( capacity );
+	md_freeList.resize( capacity );
 	m_backingStore.resize( capacity * elementSizeBytes );
 
 	clear();	
@@ -144,7 +168,7 @@ void DevicePool::clear()
 	std::vector< int > h_freeList( m_capacity );
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
 
-	m_freeList.copyFromHost( h_freeList );
+	md_freeList.copyFromHost( h_freeList );
 }
 
 __inline__ __host__
@@ -153,7 +177,7 @@ KernelPool DevicePool::kernelPool()
 	return KernelPool
 	(
 		m_capacity, m_elementSizeBytes,
-		m_freeList.kernelQueue(),
+		md_freeList.kernelQueue(),
 		m_backingStore.kernelVector()
 	);
 }

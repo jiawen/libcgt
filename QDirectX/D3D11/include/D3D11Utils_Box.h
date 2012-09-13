@@ -52,7 +52,7 @@ public:
 	//
 	// returns a DynamicVertexBuffer< VertexPosition4fColor4f > of size
 	// 2*((resolution.y+1)*(resolution.z+1)+(resolution.z+1)*(resolution.x+1)+(resolution.x+1)*(resolution.y+1))
-	static std::shared_ptr< DynamicVertexBuffer > createAxisAlignedWireframeGrid( ID3D11Device* pDevice,
+	static DynamicVertexBuffer* createAxisAlignedWireframeGrid( ID3D11Device* pDevice,
 		const Vector3f& origin, const Vector3f& size, const Vector3i& resolution,
 		const Vector4f& color );
 

@@ -7,7 +7,6 @@ struct KernelQueue
 	KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements );
 
 #ifdef __CUDACC__
-
 	// enqueues a value at the tail the queue
 	// (atomically increment the tail pointer
 	// and set the value where it used to be)
@@ -19,29 +18,6 @@ struct KernelQueue
 	// and return the value where it used to be)
 	__inline__ __device__
 	T dequeue();
-
-#if 0
-	// attempts to acquire a lock on the queue
-	// returns true if it succeeded
-	__inline__ __device__
-	bool acquire( int tid )
-	{
-		int old = atomicCAS( md_lock, -1, tid );
-		while( old != -1 )
-		{
-			old = atomicCAS( md_lock, -1, tid );
-		}
-
-		// return( old == -1 );
-	}
-
-	__inline__ __device__
-	void release()
-	{
-		*md_lock = -1;
-	}
-#endif
-
 #endif
 
 	__inline__ __device__

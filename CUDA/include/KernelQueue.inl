@@ -14,17 +14,10 @@ template< typename T >
 __inline__ __device__
 void KernelQueue< T >::enqueue( const T& val )
 {
-	// while( *( ( volatile uint* )countPointer() ) >= capacity() ) {};
-
-	//int tid = libcgt::cuda::threadSubscript1DGlobal();
-	//acquire( tid );
-
 	// assuming not full
 	//int writeIndex = ( md_pReadIndexAndCount->x + md_pReadIndexAndCount->y ) % capacity();
 	//m_elements[ writeIndex ] = val;
 	//++( md_pReadIndexAndCount->y );
-
-	//release();
 
 	uint oldCount = atomicAdd( countPointer(), 1 );
 	m_elements[ ( *( readIndexPointer() ) + oldCount ) % capacity() ] = val;
@@ -34,17 +27,7 @@ template< typename T >
 __inline__ __device__
 T KernelQueue< T >::dequeue()
 {
-	//int tid = libcgt::cuda::threadSubscript1DGlobal();
-	//acquire( tid );
-
 	T output;
-
-	// spin wait
-	//while( *( ( volatile uint* )countPointer() ) == 0 ) {};
-
-	//output = m_elements[ md_pReadIndexAndCount->x ];
-	//md_pReadIndexAndCount->x = ( md_pReadIndexAndCount->x + 1 ) % capacity();
-	//--( md_pReadIndexAndCount->y );
 
 #if 1
 	uint oldReadIndex = atomicAdd( readIndexPointer(), 1 );
@@ -52,8 +35,6 @@ T KernelQueue< T >::dequeue()
 
 	output = m_elements[ oldReadIndex % capacity() ];
 #endif
-
-	//release();
 
 	return output;
 }

@@ -53,6 +53,7 @@ void DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
 	uint length = static_cast< uint >( src.size() );
 	resize( length ); // resize clears the queue	
 	m_elements.copyFromHost( src );
+	m_readIndexAndCount.set( make_uint2( 0, length ) );
 }
 
 template< typename T >
