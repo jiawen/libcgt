@@ -13,6 +13,12 @@ public:
 	// unpacks a 32-bit Morton curve packed z value
 	// into two 16-bit x and y values
 	static void mortonUnpack( uint z, ushort& x, ushort& y );
+
+	// TODO: return a Vector2i
+
+	// TODO: 3d morton (3x10 -> int32, 3x21 -> int64)
+	// TODO: 2d, 3d hilbert
+	// http://and-what-happened.blogspot.co.uk/2011/08/fast-2d-and-3d-hilbert-curves-and.html
 };
 
 #include "math/BitPacking.inl"

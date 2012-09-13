@@ -1,9 +1,10 @@
+#include <ThreadMath.cuh>
 
 template< typename T >
 struct KernelQueue
 {
 	__inline__ __host__
-	KernelQueue( uint2* d_pHeadTail, KernelVector< T > elements );
+	KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements );
 
 #ifdef __CUDACC__
 
@@ -19,7 +20,32 @@ struct KernelQueue
 	__inline__ __device__
 	T dequeue();
 
+#if 0
+	// attempts to acquire a lock on the queue
+	// returns true if it succeeded
+	__inline__ __device__
+	bool acquire( int tid )
+	{
+		int old = atomicCAS( md_lock, -1, tid );
+		while( old != -1 )
+		{
+			old = atomicCAS( md_lock, -1, tid );
+		}
+
+		// return( old == -1 );
+	}
+
+	__inline__ __device__
+	void release()
+	{
+		*md_lock = -1;
+	}
 #endif
+
+#endif
+
+	__inline__ __device__
+	int capacity() const;
 
 	__inline__ __device__
 	int count();
@@ -36,12 +62,13 @@ struct KernelQueue
 private:
 
 	__inline__ __device__
-	uint* headPointer();
+	uint* readIndexPointer();
 
 	__inline__ __device__
-	uint* tailPointer();
+	uint* countPointer();
 
-	uint2* md_pHeadTail;
+	//int* md_lock;
+	uint2* md_pReadIndexAndCount;
 	KernelVector< T > m_elements;
 
 };

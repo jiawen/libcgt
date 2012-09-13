@@ -40,6 +40,9 @@ public:
 
 	static float log2( float x );
 	static int log2ToInt( float v );
+	
+	// From: http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+	// returns 0 if v is 0 (add v += ( v == 0 )) to return 1 in that case
 	static uint roundUpToNearestPowerOfTwo( uint v );
 
 	// leaves x alone if it's already a multiple

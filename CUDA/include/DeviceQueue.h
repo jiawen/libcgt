@@ -27,10 +27,8 @@ public:
 
 	// resizes the queue:
 	//   destroys the existing data
-	//   and clears the queue in the process (head and tail set to 0)
-	//
-	// length *must be* a power of two (otherwise returns false)
-	bool resize( uint length );
+	//   and clears the queue in the process (readIndex, writeIndex, and count set to 0)
+	void resize( uint length );
 
 	// clears the queue
 	void clear();
@@ -44,7 +42,7 @@ public:
 	// this is automatically resized to src.size()
 	// src.size() *must be* a power of two
 	// and head must be first
-	bool copyFromHost( const std::vector< T >& src );
+	void copyFromHost( const std::vector< T >& src );
 
 	// copies count() elements from device queue --> host
 	// dst is automatically resized and the head of the queue is first
@@ -52,7 +50,9 @@ public:
 
 private:
 
-	DeviceVariable< uint2 > m_headTail;
+	// stores a readIndex, writeIndex, and the number of elements in the queue
+	// and all variables are in [0, length)
+	DeviceVariable< uint2 > m_readIndexAndCount;
 	DeviceVector< T > m_elements;
 
 };

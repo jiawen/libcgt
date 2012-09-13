@@ -1,7 +1,8 @@
 template< typename T >
 __inline__ __host__
-KernelQueue< T >::KernelQueue( uint2* d_pHeadTail, KernelVector< T > elements ) :
-	md_pHeadTail( d_pHeadTail ),
+KernelQueue< T >::KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements ) :
+
+	md_pReadIndexAndCount( d_pReadIndexAndCount ),
 	m_elements( elements )
 {
 
@@ -13,18 +14,48 @@ template< typename T >
 __inline__ __device__
 void KernelQueue< T >::enqueue( const T& val )
 {
-	uint oldTail = atomicAdd( tailPointer(), 1 );
-	oldTail = libcgt::cuda::modPowerOfTwo( oldTail, m_elements.length );
-	m_elements[ oldTail ] = val;
-}	
+	// while( *( ( volatile uint* )countPointer() ) >= capacity() ) {};
+
+	//int tid = libcgt::cuda::threadSubscript1DGlobal();
+	//acquire( tid );
+
+	// assuming not full
+	//int writeIndex = ( md_pReadIndexAndCount->x + md_pReadIndexAndCount->y ) % capacity();
+	//m_elements[ writeIndex ] = val;
+	//++( md_pReadIndexAndCount->y );
+
+	//release();
+
+	uint oldCount = atomicAdd( countPointer(), 1 );
+	m_elements[ ( *( readIndexPointer() ) + oldCount ) % capacity() ] = val;
+}
 
 template< typename T >
 __inline__ __device__
 T KernelQueue< T >::dequeue()
 {
-	uint oldHead = atomicAdd( headPointer(), 1 );
-	oldHead = libcgt::cuda::modPowerOfTwo( oldHead, m_elements.length );
-	return m_elements[ oldHead ];
+	//int tid = libcgt::cuda::threadSubscript1DGlobal();
+	//acquire( tid );
+
+	T output;
+
+	// spin wait
+	//while( *( ( volatile uint* )countPointer() ) == 0 ) {};
+
+	//output = m_elements[ md_pReadIndexAndCount->x ];
+	//md_pReadIndexAndCount->x = ( md_pReadIndexAndCount->x + 1 ) % capacity();
+	//--( md_pReadIndexAndCount->y );
+
+#if 1
+	uint oldReadIndex = atomicAdd( readIndexPointer(), 1 );
+	atomicSub( countPointer(), 1 );
+
+	output = m_elements[ oldReadIndex % capacity() ];
+#endif
+
+	//release();
+
+	return output;
 }
 
 #endif
@@ -33,41 +64,28 @@ template< typename T >
 __inline__ __device__
 int KernelQueue< T >::count()
 {
-	int head = *( headPointer() );
-	int tail = *( tailPointer() );
-	return( tail - head );
+	return *( countPointer() );
+}
+
+template< typename T >
+__inline__ __device__
+int KernelQueue< T >::capacity() const
+{
+	return m_elements.length;
 }
 
 template< typename T >
 __inline__ __device__
 bool KernelQueue< T >::isFull()
 {
-	// we can distinguish between full and empty
-	// because we use absolute indices:
-	//
-	// if we ever wrote anything to the queue
-	// then if they point to the same place after wraparound
-	// then we're full
-	int tail = *( tailPointer() );
-	if( tail > 0 )
-	{
-		int head = *( headPointer() );
-		return( ( tail - head ) < m_elements.length );
-	}
-	// if we never wrote anything to the queue, then it clearly can't be full
-	else
-	{
-		return false;
-	}
+	return( count() == capacity() );
 }
 
 template< typename T >
 __inline__ __device__
 bool KernelQueue< T >::isEmpty()
 {
-	int head = *( headPointer() );
-	int tail = *( tailPointer() );
-	return ( tail == head );
+	return( count() == 0 );
 }
 
 template< typename T >
@@ -79,16 +97,16 @@ KernelVector< T >& KernelQueue< T >::elements()
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::headPointer()
+uint* KernelQueue< T >::readIndexPointer()
 {
-	return &( md_pHeadTail->x );
+	return &( md_pReadIndexAndCount->x );
 }
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::tailPointer()
+uint* KernelQueue< T >::countPointer()
 {
-	return &( md_pHeadTail->y );
+	return &( md_pReadIndexAndCount->y );
 }
 
 #if 0

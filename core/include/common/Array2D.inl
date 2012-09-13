@@ -299,17 +299,17 @@ bool Array2D< T >::load( const char* filename )
 		return false;
 	}
 
-	int whd[2];
+	int wh[2];
 	size_t elementsRead;
 
-	elementsRead = fread( whd, sizeof( int ), 2, fp );
+	elementsRead = fread( wh, sizeof( int ), 2, fp );
 	if( elementsRead != 2 )
 	{
 		return false;
 	}
 
-	int width = whd[0];
-	int height = whd[1];
+	int width = wh[0];
+	int height = wh[1];
 
 	// to make new work without default constructor
 	int nElements = width * height;

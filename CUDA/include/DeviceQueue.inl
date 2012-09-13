@@ -1,4 +1,3 @@
-
 template< typename T >
 DeviceQueue< T >::DeviceQueue()
 {
@@ -24,51 +23,36 @@ bool DeviceQueue< T >::notNull() const
 }
 
 template< typename T >
-bool DeviceQueue< T >::resize( uint length )
+void DeviceQueue< T >::resize( uint length )
 {
-	bool lengthIsValid = libcgt::cuda::isPowerOfTwo( length );
-
-	assert( lengthIsValid );
-	if( lengthIsValid )
-	{
-		m_elements.resize( length );
-		clear();
-	}
-
-	return lengthIsValid;
+	m_elements.resize( length );
+	clear();
 }
 
 template< typename T >
 void DeviceQueue< T >::clear()
 {
-	m_headTail.set( make_uint2( 0, 0 ) );
+	m_readIndexAndCount.set( make_uint2( 0, 0 ) );
 }
 
 template< typename T >
 int DeviceQueue< T >::count()
 {
-	uint2 ht = m_headTail.get();
-	return( ht.y - ht.x );
+	return m_readIndexAndCount.get().y;
 }
 
 template< typename T >
 KernelQueue< T > DeviceQueue< T >::kernelQueue()
 {
-	return KernelQueue< T >( m_headTail.devicePointer(), m_elements.kernelVector() );
+	return KernelQueue< T >( m_readIndexAndCount.devicePointer(), m_elements.kernelVector() );
 }
 
 template< typename T >
-bool DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
+void DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
 {
 	uint length = static_cast< uint >( src.size() );
-	bool succeeded = resize( length );
-	if( succeeded )
-	{
-		// resize clears the queue
-		m_elements.copyFromHost( src );
-	}
-
-	return succeeded;
+	resize( length ); // resize clears the queue	
+	m_elements.copyFromHost( src );
 }
 
 template< typename T >
@@ -77,17 +61,14 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
 	std::vector< T > h_elements;
 	m_elements.copyToHost( h_elements );
 
-	uint2 ht = m_headTail.get();
-	int h = ht.x;
-	int t = ht.y;
-
-	int count = t - h;
-	int len = m_elements.length();
+	uint2 rc = m_readIndexAndCount.get();
+	int h = rc.x;
+	int count = rc.y;
 
 	dst.clear();
 	dst.reserve( count );
-	for( int i = h; i < t; ++i )
+	for( int i = 0; i < count; ++i )
 	{
-		dst.push_back( h_elements[ i % len ] );
+		dst.push_back( h_elements[ h + i ] );
 	}
 }

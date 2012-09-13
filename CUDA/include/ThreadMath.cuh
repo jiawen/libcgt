@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __CUDACC__
+
 namespace libcgt
 {
 	namespace cuda
@@ -124,3 +126,4 @@ int3 libcgt::cuda::threadSubscript3DWithinBlock()
 	return make_int3( threadIdx.x, threadIdx.y, threadIdx.z );
 }
 
+#endif

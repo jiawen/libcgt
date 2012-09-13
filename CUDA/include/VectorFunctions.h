@@ -232,6 +232,28 @@ float3 operator / ( const float3& v0, const uint3& v1 )
 	);
 }
 
+__inline__ __host__ __device__
+float3 operator / ( float s, const int3& v )
+{
+	return make_float3
+	(
+		s / v.x,
+		s / v.y,
+		s / v.z
+	);
+}
+
+__inline__ __host__ __device__
+float3 operator / ( float s, const uint3& v )
+{
+	return make_float3
+	(
+		s / v.x,
+		s / v.y,
+		s / v.z
+	);
+}
+
 // ---- equals -----
 
 __inline__ __host__ __device__
