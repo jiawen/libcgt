@@ -214,11 +214,11 @@ std::vector< VertexPosition4fNormal3fTexture2f > D3D11Utils::createBox( bool nor
 }
 
 // static
-std::shared_ptr< DynamicVertexBuffer > D3D11Utils::createFrustum( ID3D11Device* pDevice,
+DynamicVertexBuffer* D3D11Utils::createFrustum( ID3D11Device* pDevice,
 	const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
 	const Vector4f& color )
 {
-	std::shared_ptr< DynamicVertexBuffer > pBuffer( new DynamicVertexBuffer( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() ) );
+	DynamicVertexBuffer* pBuffer = DynamicVertexBuffer::create( pDevice, 24, VertexPosition4fColor4f::sizeInBytes() );
 	
 	VertexPosition4fColor4f* vertexArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
 	writeFrustum( eye, frustumCorners, color, vertexArray );
@@ -342,7 +342,7 @@ std::vector< Vector4f > D3D11Utils::createAxes()
 // static
 DynamicVertexBuffer* D3D11Utils::createAxes( ID3D11Device* pDevice )
 {
-	DynamicVertexBuffer* buffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );
+	DynamicVertexBuffer* buffer = DynamicVertexBuffer::create( pDevice, 6, VertexPosition4fColor4f::sizeInBytes() );
 
 	VertexPosition4fColor4f* vertexArray = reinterpret_cast< VertexPosition4fColor4f* >( buffer->mapForWriteDiscard().pData );
 	writeAxes( vertexArray );

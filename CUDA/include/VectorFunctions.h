@@ -24,6 +24,12 @@ int2 yx( const int2& xy )
 }
 
 __inline__ __host__ __device__
+float2 xy( const float3& f )
+{
+	return make_float2( f.x, f.y );
+}
+
+__inline__ __host__ __device__
 float3 xyz( const float4& f )
 {
 	return make_float3( f.x, f.y, f.z );

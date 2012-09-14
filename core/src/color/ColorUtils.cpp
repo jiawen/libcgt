@@ -213,8 +213,13 @@ Vector3f ColorUtils::hsv2rgb( const Vector3f& hsv )
 
 		return Vector3f( r, g, b );
 	}
-} 
+}
 
+// static
+Vector4f ColorUtils::hsva2rgba( const Vector4f& hsva )
+{
+	return Vector4f( hsv2rgb( hsva.xyz() ), hsva.w );
+}
 
 // static
 float ColorUtils::logL( float l )

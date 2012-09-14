@@ -52,6 +52,8 @@ public:
 	static Vector3f rgb2lab( const Vector3f& rgb );
 
 	static Vector3f hsv2rgb( const Vector3f& hsv );
+	// alpha is preserved
+	static Vector4f hsva2rgba( const Vector4f& hsva );
 
 	// returns the logarithm of the L channel of an Lab image
 	// offset by LOG_LAB_EPSILON and rescaled between 0 and 100

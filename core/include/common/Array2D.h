@@ -67,7 +67,7 @@ public:
 	bool load( const char* filename );
 
 	// only works if T doesn't have pointers, with sizeof() well defined
-	bool save( const char* filename );
+	bool save( const char* filename ) const;
 
 private:
 	

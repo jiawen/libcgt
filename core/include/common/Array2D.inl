@@ -237,13 +237,13 @@ T& Array2D< T >::operator () ( int k )
 template< typename T >
 const T& Array2D< T >::operator () ( int x, int y ) const
 {
-	return m_array[ Indexing::subscriptToIndex( x, y ) ];
+	return m_array[ Indexing::subscriptToIndex( x, y, m_width ) ];
 }
 
 template< typename T >
 T& Array2D< T >::operator () ( int x, int y )
 {
-	return m_array[ Indexing::subscriptToIndex( x, y ) ];
+	return m_array[ Indexing::subscriptToIndex( x, y, m_width ) ];
 }
 
 template< typename T >
@@ -347,7 +347,7 @@ bool Array2D< T >::load( const char* filename )
 }
 
 template< typename T >
-bool Array2D< T >::save( const char* filename )
+bool Array2D< T >::save( const char* filename ) const
 {
 	FILE* fp = fopen( filename, "wb" );
 	if( fp == nullptr )

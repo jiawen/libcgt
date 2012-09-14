@@ -370,20 +370,36 @@ Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& sc
 {
 	Vector2f ndcXY = pixelToNDC( xy, screenSize );
 
+	// forward transformation:
+	//
 	// depth = -zEye
+	//
 	// xClip = xEye * ( 2 * zNear ) / ( right - left ) + zEye * ( right + left ) / ( right - left )
 	// wClip = -zEye
-	// xNDC = xClip = wClip = xClip / -zEye = xClip / depth
+	//
+	// xNDC = xClip / wClip = xClip / -zEye = xClip / depth
 	//	
 	// -->
-	// xNDC = xClip / depth
-	// xEye = ( xClip + depth * ( right + left ) / ( right - left ) ) * ( right - left ) / ( 2 * zNear )
+	// inverse transformation:	
+	//
+	// xClip = xNDC * depth
+	//
+	// xClip - zEye * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
+	// xClip + depth * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
+	//
+	// xEye = [ xClip + depth * ( right + left ) / ( right - left ) ] / [ ( 2 * zNear ) / ( right - left ) ]
 
 	float xClip = ndcXY.x * depth;
 	float yClip = ndcXY.y * depth;
 
-	float xEye = ( xClip + depth * ( m_right + m_left ) / ( m_right - m_left ) ) * ( m_right - m_left ) / ( 2 * m_zNear );
-	float yEye = ( yClip + depth * ( m_top + m_bottom ) / ( m_top - m_bottom ) ) * ( m_top - m_bottom ) / ( 2 * m_zNear );	
+	float xNumerator = xClip + depth * ( m_right + m_left ) / ( m_right - m_left );
+	float yNumerator = yClip + depth * ( m_top + m_bottom ) / ( m_top - m_bottom );
+
+	float xDenominator = ( 2 * m_zNear ) / ( m_right - m_left );
+	float yDenominator = ( 2 * m_zNear ) / ( m_top - m_bottom );
+
+	float xEye = xNumerator / xDenominator;
+	float yEye = yNumerator / yDenominator;
 	float zEye = -depth;
 
 	return Vector4f( xEye, yEye, zEye, 1 );

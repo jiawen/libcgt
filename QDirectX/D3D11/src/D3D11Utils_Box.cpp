@@ -40,7 +40,7 @@ DynamicVertexBuffer* D3D11Utils_Box::createAxisAlignedWireframeGrid( ID3D11Devic
 		( resolution.x + 1 ) * ( resolution.y + 1 )
 	);
 
-	DynamicVertexBuffer* pBuffer = new DynamicVertexBuffer( pDevice, nVertices, VertexPosition4fColor4f::sizeInBytes() );
+	DynamicVertexBuffer* pBuffer = DynamicVertexBuffer::create( pDevice, nVertices, VertexPosition4fColor4f::sizeInBytes() );
 
 	VertexPosition4fColor4f* pArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fColor4f >();
 	D3D11Utils_Box::writeAxisAlignedWireframeGrid( origin, size, resolution, color, pArray );

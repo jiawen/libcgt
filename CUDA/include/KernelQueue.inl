@@ -20,7 +20,8 @@ void KernelQueue< T >::enqueue( const T& val )
 	//++( md_pReadIndexAndCount->y );
 
 	uint oldCount = atomicAdd( countPointer(), 1 );
-	m_elements[ ( *( readIndexPointer() ) + oldCount ) % capacity() ] = val;
+	uint writeIndex = ( *( readIndexPointer() ) + oldCount ) % capacity();
+	m_elements[ writeIndex ] = val;
 }
 
 template< typename T >

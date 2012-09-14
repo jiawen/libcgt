@@ -94,7 +94,7 @@ public:
 	// TODO: use frustumLines
 	// Create a DynamicVertexBuffer< VertexPosition4fColor4f >
 	// it has length 24 (12 lines, 2 * 12 vertices)
-	static std::shared_ptr< DynamicVertexBuffer > createFrustum( ID3D11Device* pDevice,
+	static DynamicVertexBuffer* createFrustum( ID3D11Device* pDevice,
 		const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
 		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
 

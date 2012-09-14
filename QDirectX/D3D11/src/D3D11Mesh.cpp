@@ -250,7 +250,8 @@ void D3D11Mesh::updateGPUBuffer()
 	if( m_pVertexBuffer.get() == nullptr ||
 		m_pVertexBuffer->capacity() < m_vertexArray.size() )
 	{
-		m_pVertexBuffer.reset( new DynamicVertexBuffer( m_pDevice, static_cast< int >( m_vertexArray.size() ), VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() ) );
+		// TODO: use resize()
+		m_pVertexBuffer.reset( DynamicVertexBuffer::create( m_pDevice, static_cast< int >( m_vertexArray.size() ), VertexPosition4fNormal3fColor4fTexture2f::sizeInBytes() ) );
 	}
 
 	VertexPosition4fNormal3fColor4fTexture2f* gpuVertexArray = reinterpret_cast< VertexPosition4fNormal3fColor4fTexture2f* >( m_pVertexBuffer->mapForWriteDiscard().pData );

@@ -28,7 +28,7 @@ DynamicVertexBuffer* D3D11RectangleUtils::createScreenAlignedRectangle( ID3D11De
 	float x, float y, float width, float height,
 	bool uv00AtTopLeft, float z, float w )
 {
-	DynamicVertexBuffer* pBuffer = new DynamicVertexBuffer( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() );
+	DynamicVertexBuffer* pBuffer = DynamicVertexBuffer::create( pDevice, 6, VertexPosition4fTexture2f::sizeInBytes() );
 
 	VertexPosition4fTexture2f* vertexArray = pBuffer->mapForWriteDiscardAs< VertexPosition4fTexture2f >();
 	writeScreenAlignedRectangle( vertexArray, x, y, width, height, uv00AtTopLeft, z, w );
