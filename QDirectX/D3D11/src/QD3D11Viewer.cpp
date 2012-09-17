@@ -88,6 +88,9 @@ void QD3D11Viewer::updateKeyboard()
 	}
 
 	fpsControls().handleKeyboard( m_camera );
+
+	emit viewpointChanged( camera(), width(), height() );
+
 	update();
 }
 
@@ -96,8 +99,11 @@ void QD3D11Viewer::updateXboxController()
 	if( m_pXboxController0->isConnected() )
 	{
 		m_pXboxController0->sampleState();
-	}
+	}	
 	m_fpsControls.handleXboxController( m_pXboxController0, m_camera );
+
+	emit viewpointChanged( camera(), width(), height() );
+
 	update();
 }
 
@@ -109,6 +115,8 @@ void QD3D11Viewer::keyPressEvent( QKeyEvent* event )
 	{
 		qApp->quit();
 	}
+
+	emit keyPressed( event );
 
 	update();
 }
@@ -135,6 +143,8 @@ void QD3D11Viewer::mouseMoveEvent( QMouseEvent* event )
 	{
 		fpsControls().handleMouseMoveEvent( event, m_camera );
 	}
+
+	emit viewpointChanged( camera(), width(), height() );
 
 	update();
 }
@@ -172,4 +182,6 @@ void QD3D11Viewer::wheelEvent( QWheelEvent * event )
 void QD3D11Viewer::resizeD3D( int width, int height )
 {
 	m_camera.setAspect( width, height );
+	
+	emit viewpointChanged( camera(), width, height );
 }

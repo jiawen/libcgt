@@ -51,6 +51,13 @@ public:
 	// TODO: xboxController and upVector goes into FPSControls
 	XboxController* xboxController0();
 
+signals:
+
+	// Convenient signals to move scene logic outside of viewer subclasses
+	// (say, into a controller class)
+	void keyPressed( QKeyEvent* event );
+	void viewpointChanged( const PerspectiveCamera& camera, int width, int height );
+
 protected:
 
 	// keyboard handlers
