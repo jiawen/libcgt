@@ -771,15 +771,15 @@ float GeometryUtils::pointToLineSegmentDistanceSquared( const Vector3f& p, const
 	// closest approach distance is given by Pythagoras:
 	// ( length of projection )^2 + ( closest approach )^2 = |dirs0|^2
 
-	float rcpDirnormSquared = 1.0f / dir.normSquared();
+	float rcpDirNormSquared = 1.0f / dir.normSquared();
 
 	if( pClosestPoint != nullptr )
 	{
-		*pClosestPoint = dot * rcpDirnormSquared;
+		*pClosestPoint = dot * dir * rcpDirNormSquared;
 	}
 	
 	// clamp to 0 just in case
-	return std::max( 0.f, dirs0.normSquared() - dot * dot * rcpDirnormSquared );
+	return std::max( 0.f, dirs0.normSquared() - dot * dot * rcpDirNormSquared );
 }
 
 // static

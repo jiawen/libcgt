@@ -17,6 +17,9 @@ public:
 	DeviceArray2D();
 	DeviceArray2D( int width, int height );
 	DeviceArray2D( const Array2D< T >& src );
+	DeviceArray2D( const DeviceArray2D< T >& copy );
+	DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
+	// TODO: move
 	virtual ~DeviceArray2D();
 	
 	bool isNull() const;
@@ -46,11 +49,9 @@ public:
 	// fills this array with value
 	void fill( const T& value );
 
-	// copy from cudaArray src to this
-	void copyFromArray( cudaArray* src );
-
-	// copy from this to cudaArray dst
-	void copyToArray( cudaArray* dst ) const;
+	// copy from another DeviceArray2D to this
+	// this is automatically resized
+	void copyFromDevice( const DeviceArray2D< T >& src );
 
 	// copy from host array src to this
 	// this is automatically resized
@@ -60,6 +61,12 @@ public:
 	// dst is automatically resized
 	void copyToHost( Array2D< T >& dst ) const;
 	
+	// copy from cudaArray src to this
+	void copyFromArray( cudaArray* src );
+
+	// copy from this to cudaArray dst
+	void copyToArray( cudaArray* dst ) const;
+
 	// implicit cast to device pointer
 	operator T* () const;
 

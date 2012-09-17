@@ -128,6 +128,7 @@ inline Vector2f& Vector2f::operator += ( const Vector2f& v )
 {
 	x += v.x;
 	y += v.y;
+
 	return *this;
 }
 
@@ -135,6 +136,23 @@ inline Vector2f& Vector2f::operator -= ( const Vector2f& v )
 {
 	x -= v.x;
 	y -= v.y;
+
+	return *this;
+}
+
+inline Vector2f& Vector2f::operator *= ( float f )
+{
+	x *= f;
+	y *= f;
+
+	return *this;
+}
+
+inline Vector2f& Vector2f::operator /= ( float f )
+{
+	x /= f;
+	y /= f;
+
 	return *this;
 }
 

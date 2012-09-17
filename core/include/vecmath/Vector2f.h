@@ -15,8 +15,8 @@ public:
 	// TODO: conversion operators for double <--> float on Vector3f and Vector4f
 
     Vector2f(); // (0,0)
-    Vector2f( float f ); // (f,f)
-    Vector2f( float x, float y );
+    explicit Vector2f( float f ); // (f,f)
+    Vector2f( float _x, float _y );
 
 	// copy constructors
     Vector2f( const Vector2f& v );
@@ -74,6 +74,8 @@ public:
 
 	Vector2f& operator += ( const Vector2f& v );
 	Vector2f& operator -= ( const Vector2f& v );
+	Vector2f& operator *= ( float f );
+	Vector2f& operator /= ( float f );
 
 	union
 	{

@@ -10,7 +10,7 @@ class Vector3i
 public:
 
 	Vector3i();
-	Vector3i( int i ); // fills all 3 components with i
+	explicit Vector3i( int i ); // fills all 3 components with i
 	Vector3i( int x, int y, int z );
 	Vector3i( const Vector2i& xy, int z );
 	Vector3i( int x, const Vector2i& yz );

@@ -11,132 +11,92 @@
 #include "vecmath/Vector4d.h"
 #include "vecmath/Vector4i.h"
 
-Vector4f::Vector4f()
+Vector4f::Vector4f( const Vector2f& _xy, float _z, float _w ) :
+
+	x( _xy.x ),
+	y( _xy.y ),
+	z( _z ),
+	w( _w )
+
 {
-	m_elements[0] = 0;
-	m_elements[1] = 0;
-	m_elements[2] = 0;
-	m_elements[3] = 0;
+
 }
 
-// TODO: do the same for vec2 and 3 and double
-// TODO: switch to constructor initializer
-Vector4f::Vector4f( float f )
+Vector4f::Vector4f( float _x, const Vector2f& _yz, float _w ) :
+
+	x( _x ),
+	y( _yz.x ),
+	z( _yz.y ),
+	w( _w )
+
 {
-	m_elements[ 0 ] = f;
-	m_elements[ 1 ] = f;
-	m_elements[ 2 ] = f;
-	m_elements[ 3 ] = f;
+
 }
 
-Vector4f::Vector4f( float fx, float fy, float fz, float fw )
+Vector4f::Vector4f( float _x, float _y, const Vector2f& _zw ) :
+
+	x( _x ),
+	y( _y ),
+	z( _zw.x ),
+	w( _zw.y )
+
 {
-	m_elements[0] = fx;
-	m_elements[1] = fy;
-	m_elements[2] = fz;
-	m_elements[3] = fw;
+
 }
 
-Vector4f::Vector4f( float buffer[ 4 ] )
+Vector4f::Vector4f( const Vector2f& _xy, const Vector2f& _zw ) :
+
+	x( _xy.x ),
+	y( _xy.y ),
+	z( _zw.x ),
+	w( _zw.y )
+
 {
-	m_elements[ 0 ] = buffer[ 0 ];
-	m_elements[ 1 ] = buffer[ 1 ];
-	m_elements[ 2 ] = buffer[ 2 ];
-	m_elements[ 3 ] = buffer[ 3 ];
+
 }
 
-Vector4f::Vector4f( const Vector2f& xy, float z, float w )
+Vector4f::Vector4f( const Vector3f& _xyz, float _w ) :
+
+	x( _xyz.x ),
+	y( _xyz.y ),
+	z( _xyz.z ),
+	w( _w )
+
 {
-	m_elements[0] = xy.x;
-	m_elements[1] = xy.y;
-	m_elements[2] = z;
-	m_elements[3] = w;
+
 }
 
-Vector4f::Vector4f( float x, const Vector2f& yz, float w )
+Vector4f::Vector4f( float _x, const Vector3f& _yzw ) :
+
+	x( _x ),
+	y( _yzw.x ),
+	z( _yzw.y ),
+	w( _yzw.z )
+
 {
-	m_elements[0] = x;
-	m_elements[1] = yz.x;
-	m_elements[2] = yz.y;
-	m_elements[3] = w;
+
 }
 
-Vector4f::Vector4f( float x, float y, const Vector2f& zw )
+Vector4f::Vector4f( const Vector4d& v ) :
+
+	x( static_cast< float >( v.x ) ),
+	y( static_cast< float >( v.y ) ),
+	z( static_cast< float >( v.z ) ),
+	w( static_cast< float >( v.w ) )
+
 {
-	m_elements[0] = x;
-	m_elements[1] = y;
-	m_elements[2] = zw.x;
-	m_elements[3] = zw.y;
+
 }
 
-Vector4f::Vector4f( const Vector2f& xy, const Vector2f& zw )
-{
-	m_elements[0] = xy.x;
-	m_elements[1] = xy.y;
-	m_elements[2] = zw.x;
-	m_elements[3] = zw.y;
-}
+Vector4f::Vector4f( const Vector4i& v ) :
 
-Vector4f::Vector4f( const Vector3f& xyz, float w )
-{
-	m_elements[0] = xyz.x;
-	m_elements[1] = xyz.y;
-	m_elements[2] = xyz.z;
-	m_elements[3] = w;
-}
+	x( static_cast< float >( v.x ) ),
+	y( static_cast< float >( v.y ) ),
+	z( static_cast< float >( v.z ) ),
+	w( static_cast< float >( v.w ) )
 
-Vector4f::Vector4f( float x, const Vector3f& yzw )
 {
-	m_elements[0] = x;
-	m_elements[1] = yzw.x;
-	m_elements[2] = yzw.y;
-	m_elements[3] = yzw.z;
-}
 
-Vector4f::Vector4f( const Vector4f& rv )
-{
-	m_elements[0] = rv.m_elements[0];
-	m_elements[1] = rv.m_elements[1];
-	m_elements[2] = rv.m_elements[2];
-	m_elements[3] = rv.m_elements[3];
-}
-
-Vector4f::Vector4f( const Vector4d& rv )
-{
-	m_elements[ 0 ] = static_cast< float >( rv.x );
-	m_elements[ 1 ] = static_cast< float >( rv.y );
-	m_elements[ 2 ] = static_cast< float >( rv.z );
-	m_elements[ 3 ] = static_cast< float >( rv.w );
-}
-
-Vector4f::Vector4f( const Vector4i& rv )
-{
-	m_elements[ 0 ] = static_cast< float >( rv.x );
-	m_elements[ 1 ] = static_cast< float >( rv.y );
-	m_elements[ 2 ] = static_cast< float >( rv.z );
-	m_elements[ 3 ] = static_cast< float >( rv.w );
-}
-
-Vector4f& Vector4f::operator = ( const Vector4f& rv )
-{
-	if( this != &rv )
-	{
-		m_elements[0] = rv.m_elements[0];
-		m_elements[1] = rv.m_elements[1];
-		m_elements[2] = rv.m_elements[2];
-		m_elements[3] = rv.m_elements[3];
-	}
-	return *this;
-}
-
-const float& Vector4f::operator [] ( int i ) const
-{
-	return m_elements[ i ];
-}
-
-float& Vector4f::operator [] ( int i )
-{
-	return m_elements[ i ];
 }
 
 Vector2f Vector4f::xy() const
@@ -197,16 +157,6 @@ Vector3f Vector4f::zwy() const
 Vector3f Vector4f::wxz() const
 {
 	return Vector3f( w, x, z );
-}
-
-float Vector4f::abs() const
-{
-	return norm();
-}
-
-float Vector4f::absSquared() const
-{
-	return normSquared();
 }
 
 float Vector4f::norm() const
@@ -316,16 +266,6 @@ Vector4f Vector4f::maximum( const Vector4f& v0, const Vector4f& v1 )
 		std::max( v0.z, v1.z ),
 		std::max( v0.w, v1.w )
 	);
-}
-
-Vector4f::operator const float* () const
-{
-	return m_elements;
-}
-
-Vector4f::operator float* ()
-{
-	return m_elements;
 }
 
 QString Vector4f::toString() const

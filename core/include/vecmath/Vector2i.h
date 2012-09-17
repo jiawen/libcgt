@@ -12,7 +12,7 @@ public:
 	// TODO: conversion operators for double <--> int on Vector3f and Vector4f
 
 	Vector2i();
-	Vector2i( int i ); // fills both elements with i
+	explicit Vector2i( int i ); // fills both elements with i
 	Vector2i( int x, int y );
 	Vector2i( const Vector2i& rv ); // copy constructor
 	Vector2i& operator = ( const Vector2i& rv ); // assignment operator

@@ -3,6 +3,30 @@
 #include <common/ArrayUtils.h>
 
 // static
+bool libcgt::cuda::ArrayUtils::saveTXT( const std::vector< int3 >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == nullptr )
+	{
+		return false;
+	}
+
+	fprintf( fp, "Size: %d\n", array.size() );
+	fprintf( fp, "Format: int3\n" );
+
+	int length = static_cast< int >( array.size() );
+	for( int i = 0; i < length; ++i )
+	{
+		int3 v = array[i];
+		fprintf( fp, "[%d]: %d, %d, %d\n", i, v.x, v.y, v.z );
+	}
+
+	fclose( fp );
+
+	return true;
+}
+
+// static
 bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float2 >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
@@ -61,24 +85,29 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float4 >& array, const ch
 }
 
 // static
-bool libcgt::cuda::ArrayUtils::saveTXT( const std::vector< int3 >& array, const char* filename )
+bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< uchar4 >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
-	if( fp == nullptr )
+	if( fp == NULL )
 	{
 		return false;
 	}
 
-	fprintf( fp, "Size: %d\n", array.size() );
-	fprintf( fp, "Format: int3\n" );
+	fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
+	fprintf( fp, "Format: ubyte4\n" );
 
-	int length = static_cast< int >( array.size() );
-	for( int i = 0; i < length; ++i )
+	int w = array.width();
+	int h = array.height();
+
+	for( int y = 0; y < h; ++y )
 	{
-		int3 v = array[i];
-		fprintf( fp, "[%d]: %d, %d, %d\n", i, v.x, v.y, v.z );
+		for( int x = 0; x < w; ++x )
+		{
+			int index = y * array.width() + x;
+			uchar4 v = array( x, y );
+			fprintf( fp, "[%d] (%d %d): %d, %d, %d, %d\n", index, x, y, v.x, v.y, v.z, v.w );
+		}
 	}
-
 	fclose( fp );
 
 	return true;
@@ -217,9 +246,18 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array3D< int4 >& array, const char
 }
 
 // static
+bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceVector< int3 >& array, const char* filename )
+{
+	std::vector< int3 > h_array;
+	array.copyToHost( h_array );
+	return saveTXT( h_array, filename );
+}
+
+
+// static
 bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float >& array, const char* filename )
 {
-	Array2D< float > h_array( array.width(), array.height() );
+	Array2D< float > h_array;
 	array.copyToHost( h_array );
 	return ::ArrayUtils::saveTXT( h_array, filename );
 }
@@ -227,15 +265,15 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float >& array, con
 // static
 bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
 {
-	Array2D< float4 > h_array( array.width(), array.height() );
+	Array2D< float4 > h_array;
 	array.copyToHost( h_array );
 	return saveTXT( h_array, filename );
 }
 
 // static
-bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceVector< int3 >& array, const char* filename )
+bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename )
 {
-	std::vector< int3 > h_array( array.length() );
+	Array2D< uchar4 > h_array;
 	array.copyToHost( h_array );
 	return saveTXT( h_array, filename );
 }
@@ -243,7 +281,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceVector< int3 >& array, const
 // static
 bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray3D< int2 >& array, const char* filename )
 {
-	Array3D< int2 > h_array( array.width(), array.height(), array.depth() );
+	Array3D< int2 > h_array;
 	array.copyToHost( h_array );
 	return saveTXT( h_array, filename );
 }
@@ -251,7 +289,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray3D< int2 >& array, cons
 // static
 bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray3D< int3 >& array, const char* filename )
 {
-	Array3D< int3 > h_array( array.width(), array.height(), array.depth() );
+	Array3D< int3 > h_array;
 	array.copyToHost( h_array );
 	return saveTXT( h_array, filename );
 }

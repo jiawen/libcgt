@@ -10,13 +10,20 @@ class DeviceVariable
 public:
 
 	DeviceVariable( const T& initialValue = T() );
+	DeviceVariable( const DeviceVariable< T >& copy );
+	DeviceVariable< T >& operator = ( const DeviceVariable< T >& copy );
 	~DeviceVariable();
 
-	// TODO: copy
 	// TODO: move
 
+	// copy device --> host
 	T get() const;
+	
+	// copy host --> device
 	void set( const T& value );
+
+	// copy device --> device
+	void set( const DeviceVariable< T >& value );
 
 	const T* devicePointer() const;
 	T* devicePointer();

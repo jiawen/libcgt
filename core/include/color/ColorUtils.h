@@ -55,6 +55,9 @@ public:
 	// alpha is preserved
 	static Vector4f hsva2rgba( const Vector4f& hsva );
 
+	// given x in [0,1], returns an RGBA color like MATLAB's "jet" colormap
+	static Vector4f colorMapJet( float x );
+
 	// returns the logarithm of the L channel of an Lab image
 	// offset by LOG_LAB_EPSILON and rescaled between 0 and 100
 	static float logL( float l );
@@ -65,10 +68,12 @@ public:
 
 	// clamps f to [0,1]
 	static float saturate( float f );
+	static Vector3f saturate( const Vector3f& v );
 	static Vector4f saturate( const Vector4f& v );
 
 	// clamps i to [0,255]
 	static ubyte saturate( int i );
+	static Vector3i saturate( const Vector3i& v );
 	static Vector4i saturate( const Vector4i& v );
 
 };

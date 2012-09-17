@@ -6,7 +6,7 @@ DeviceArray2D< T >::DeviceArray2D() :
 
 	m_pitch( 0 ),
 	m_sizeInBytes( 0 ),
-	m_devicePointer( NULL )
+	m_devicePointer( nullptr )
 
 {
 }
@@ -19,7 +19,7 @@ DeviceArray2D< T >::DeviceArray2D( int width, int height ) :
 
 	m_pitch( 0 ),
 	m_sizeInBytes( 0 ),
-	m_devicePointer( NULL )
+	m_devicePointer( nullptr )
 
 {
 	resize( width, height );
@@ -33,11 +33,35 @@ DeviceArray2D< T >::DeviceArray2D( const Array2D< T >& src ) :
 
 	m_pitch( 0 ),
 	m_sizeInBytes( 0 ),
-	m_devicePointer( NULL )
+	m_devicePointer( nullptr )
 
-{
+{	
 	resize( src.width(), src.height() );
 	copyFromHost( src );
+}
+
+template< typename T >
+DeviceArray2D< T >::DeviceArray2D( const DeviceArray2D< T >& copy ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+
+	m_pitch( 0 ),
+	m_sizeInBytes( 0 ),
+	m_devicePointer( nullptr )
+
+{
+	copyFromDevice( copy );	
+}
+
+template< typename T >
+DeviceArray2D< T >& DeviceArray2D< T >::operator = ( const DeviceArray2D< T >& copy )
+{
+	if( this != &copy )
+	{
+		copyFromDevice( copy );
+	}
+	return *this;
 }
 
 template< typename T >
@@ -50,13 +74,13 @@ DeviceArray2D< T >::~DeviceArray2D()
 template< typename T >
 bool DeviceArray2D< T >::isNull() const
 {
-	return( m_devicePointer == NULL );
+	return( m_devicePointer == nullptr );
 }
 
 template< typename T >
 bool DeviceArray2D< T >::notNull() const
 {
-	return( m_devicePointer != NULL );
+	return( m_devicePointer != nullptr );
 }
 
 template< typename T >
@@ -144,35 +168,12 @@ void DeviceArray2D< T >::fill( const T& value )
 }
 
 template< typename T >
-void DeviceArray2D< T >::copyFromArray( cudaArray* src )
+void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 {
-	CUDA_SAFE_CALL
-	(
-		cudaMemcpy2DFromArray
-		(
-			devicePointer(), pitch(),
-			src,
-			0, 0,
-			widthInBytes(), height(),
-			cudaMemcpyDeviceToDevice
-		)
-	);
-}
+	resize( src.m_width, src.m_height );
 
-template< typename T >
-void DeviceArray2D< T >::copyToArray( cudaArray* dst ) const
-{
-	CUDA_SAFE_CALL
-	(
-		cudaMemcpy2DToArray
-		(
-			dst,
-			0, 0,
-			devicePointer(), pitch(),
-			widthInBytes(), height(),
-			cudaMemcpyDeviceToDevice
-		)
-	);
+	CUDA_SAFE_CALL( cudaMemcpy2D( m_devicePointer, m_pitch, src.m_devicePointer, src.m_pitch,
+		src.m_width, src.m_height, cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >
@@ -203,6 +204,38 @@ void DeviceArray2D< T >::copyToHost( Array2D< T >& dst ) const
 			devicePointer(), pitch(),
 			widthInBytes(), height(),
 			cudaMemcpyDeviceToHost
+		)
+	);
+}
+
+template< typename T >
+void DeviceArray2D< T >::copyFromArray( cudaArray* src )
+{
+	CUDA_SAFE_CALL
+	(
+		cudaMemcpy2DFromArray
+		(
+			devicePointer(), pitch(),
+			src,
+			0, 0,
+			widthInBytes(), height(),
+			cudaMemcpyDeviceToDevice
+		)
+	);
+}
+
+template< typename T >
+void DeviceArray2D< T >::copyToArray( cudaArray* dst ) const
+{
+	CUDA_SAFE_CALL
+	(
+		cudaMemcpy2DToArray
+		(
+			dst,
+			0, 0,
+			devicePointer(), pitch(),
+			widthInBytes(), height(),
+			cudaMemcpyDeviceToDevice
 		)
 	);
 }
@@ -250,7 +283,7 @@ void DeviceArray2D< T >::destroy()
 	if( notNull() )
 	{
 		CUDA_SAFE_CALL( cudaFree( m_devicePointer ) );
-		m_devicePointer = NULL;
+		m_devicePointer = nullptr;
 	}
 
 	m_width = -1;

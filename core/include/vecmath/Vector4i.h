@@ -10,8 +10,8 @@ class Vector4i
 {
 public:	
 
-	Vector4i();
-	Vector4i( int i ); // fills all 4 components with i
+	Vector4i(); // (0,0,0,0)
+	explicit Vector4i( int i ); // fills all 4 components with i
 	Vector4i( int x, int y, int z, int w );
 	Vector4i( const Vector2i& xy, int z, int w );
 	Vector4i( int x, const Vector2i& yz, int w );

@@ -12,27 +12,27 @@ class Vector4f
 public:
 	
 	Vector4f(); // initialized to 0
-	Vector4f( float f ); // initialized to (f, f, f, f )
-	Vector4f( float fx, float fy, float fz, float fw );
+	explicit Vector4f( float f ); // initialized to (f, f, f, f )
+	Vector4f( float _x, float _y, float _z, float _w );
 	Vector4f( float buffer[ 4 ] );
 
-	Vector4f( const Vector2f& xy, float z, float w );
-	Vector4f( float x, const Vector2f& yz, float w );
-	Vector4f( float x, float y, const Vector2f& zw );
-	Vector4f( const Vector2f& xy, const Vector2f& zw );
+	Vector4f( const Vector2f& _xy, float _z, float _w );
+	Vector4f( float _x, const Vector2f& _yz, float _w );
+	Vector4f( float _x, float _y, const Vector2f& _zw );
+	Vector4f( const Vector2f& _xy, const Vector2f& _zw );
 
-	Vector4f( const Vector3f& xyz, float w );
-	Vector4f( float x, const Vector3f& yzw );
+	Vector4f( const Vector3f& _xyz, float _w );
+	Vector4f( float _x, const Vector3f& _yzw );
 
 	// copy constructors
-	Vector4f( const Vector4f& rv );
-	Vector4f( const Vector4d& rv );
-	Vector4f( const Vector4i& rv );
+	Vector4f( const Vector4f& v );
+	Vector4f( const Vector4d& v );
+	Vector4f( const Vector4i& v );
 
 	// assignment operators
-	Vector4f& operator = ( const Vector4f& rv );
-	Vector4f& operator = ( const Vector4d& rv );
-	Vector4f& operator = ( const Vector4i& rv );
+	Vector4f& operator = ( const Vector4f& v );
+	Vector4f& operator = ( const Vector4d& v );
+	Vector4f& operator = ( const Vector4i& v );
 
 	// no destructor necessary	
 
@@ -58,10 +58,6 @@ public:
 	// TODO: the rest of the vec3 combinations
 
 	// TODO: swizzle all the vec4s
-
-	// TODO: these are deprecated, use norm() and normSquared()
-	float abs() const;
-	float absSquared() const;
 
 	float norm() const;
 	float normSquared() const;
@@ -91,10 +87,10 @@ public:
 	static float dot( const Vector4f& v0, const Vector4f& v1 );
 	static Vector4f lerp( const Vector4f& v0, const Vector4f& v1, float alpha );
 
-	inline Vector4f& operator += ( const Vector4f& v );
-	inline Vector4f& operator -= ( const Vector4f& v );
-    inline Vector4f& operator *= ( float f );
-	inline Vector4f& operator /= ( float f );
+	Vector4f& operator += ( const Vector4f& v );
+	Vector4f& operator -= ( const Vector4f& v );
+    Vector4f& operator *= ( float f );
+	Vector4f& operator /= ( float f );
 
 	union
 	{
@@ -105,68 +101,30 @@ public:
 			float z;
 			float w;
 		};
-		float m_elements[ 4 ];
+		float m_elements[4];
 	};
 };
 
-inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
-{
-	return Vector4f( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
-}
+Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 );
 
-inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
-{
-	return Vector4f( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
-}
+Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 );
+// negate
+Vector4f operator - ( const Vector4f& v );
 
-inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )
-{
-	return Vector4f( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
-}
+Vector4f operator * ( float f, const Vector4f& v );
+Vector4f operator * ( const Vector4f& v, float f );
 
-inline Vector4f operator - ( const Vector4f& v ) { return Vector4f( -v[0], -v[1], -v[2] , -v[3] ); }
-inline Vector4f operator * ( float f, const Vector4f& v ) { return Vector4f( v[0] * f, v[1] * f, v[2] * f, v[3] * f ); }
-inline Vector4f operator * ( const Vector4f& v, float f ) { return Vector4f( v[0] * f, v[1] * f, v[2] * f, v[3] * f ); }
+// component-wise multiplication
+Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 );
 
-inline Vector4f operator / ( const Vector4f& v0, const Vector4f& v1 ) { return Vector4f( v0[0] / v1[0], v0[1] / v1[1], v0[2] / v1[2], v0[3] / v1[3] ); }
-inline Vector4f operator / ( const Vector4f& v, float f ) { return Vector4f( v[0] / f, v[1] / f, v[2] / f, v[3] / f ); }
+// component-wise division
+Vector4f operator / ( const Vector4f& v0, const Vector4f& v1 );
+Vector4f operator / ( const Vector4f& v, float f );
 
-inline Vector4f& Vector4f::operator += ( const Vector4f& v )
-{
-	m_elements[ 0 ] += v.m_elements[ 0 ];
-	m_elements[ 1 ] += v.m_elements[ 1 ];
-	m_elements[ 2 ] += v.m_elements[ 2 ];
-	m_elements[ 3 ] += v.m_elements[ 3 ];
+// reciprocal of each component
+Vector4f operator / ( float f, const Vector4f& v );
 
-	return *this;
-}
+inline bool operator == ( const Vector4f& v0, const Vector4f& v1 );
+inline bool operator != ( const Vector4f& v0, const Vector4f& v1 );
 
-inline Vector4f& Vector4f::operator -= ( const Vector4f& v )
-{
-	m_elements[ 0 ] -= v.m_elements[ 0 ];
-	m_elements[ 1 ] -= v.m_elements[ 1 ];
-	m_elements[ 2 ] -= v.m_elements[ 2 ];
-	m_elements[ 3 ] -= v.m_elements[ 3 ];
-
-	return *this;
-}
-
-inline Vector4f& Vector4f::operator *= ( float f )
-{
-	m_elements[ 0 ] *= f;
-	m_elements[ 1 ] *= f;
-	m_elements[ 2 ] *= f;
-	m_elements[ 3 ] *= f;
-
-	return *this;
-}
-
-inline Vector4f& Vector4f::operator /= ( float f )
-{
-	m_elements[ 0 ] /= f;
-	m_elements[ 1 ] /= f;
-	m_elements[ 2 ] /= f;
-	m_elements[ 3 ] /= f;
-
-	return *this;
-}
+#include "Vector4f.inl"

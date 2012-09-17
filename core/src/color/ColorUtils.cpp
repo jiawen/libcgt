@@ -222,6 +222,17 @@ Vector4f ColorUtils::hsva2rgba( const Vector4f& hsva )
 }
 
 // static
+Vector4f ColorUtils::colorMapJet( float x )
+{
+	float fourX = 4 * x;
+	float r = std::min( fourX - 1.5f, -fourX + 4.5f );
+	float g = std::min( fourX - 0.5f, -fourX + 3.5f );
+	float b = std::min( fourX + 0.5f, -fourX + 2.5f );
+
+	return saturate( Vector4f( r, g, b, 1 ) );
+}
+
+// static
 float ColorUtils::logL( float l )
 {
 	const float logMin = log( LOG_LAB_EPSILON );
@@ -266,6 +277,17 @@ float ColorUtils::saturate( float f )
 }
 
 // static
+Vector3f ColorUtils::saturate( const Vector3f& v )
+{
+	return Vector3f
+	(
+		ColorUtils::saturate( v[ 0 ] ),	
+		ColorUtils::saturate( v[ 1 ] ),	
+		ColorUtils::saturate( v[ 2 ] )	
+	);
+}
+
+// static
 Vector4f ColorUtils::saturate( const Vector4f& v )
 {
 	return Vector4f
@@ -289,6 +311,17 @@ ubyte ColorUtils::saturate( int i )
 		i = 255;
 	}
 	return static_cast< ubyte >( i );
+}
+
+// static
+Vector3i ColorUtils::saturate( const Vector3i& v )
+{
+	return Vector3i
+	(
+		ColorUtils::saturate( v[ 0 ] ),	
+		ColorUtils::saturate( v[ 1 ] ),	
+		ColorUtils::saturate( v[ 2 ] )
+	);
 }
 
 // static

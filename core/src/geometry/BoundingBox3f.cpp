@@ -235,11 +235,11 @@ bool BoundingBox3f::overlaps( const BoundingBox3f& other )
 
 	for( int i = 0; i < 3; ++i )
 	{
-		bool bMinInside0 = ( otherMin[i] >= m_min[i] ) && ( otherMin[i] <= m_max[i] );
-		bool bMinInside1 = ( m_min[i] >= otherMin[i] ) && ( m_min[i] <= otherMax[i] );
+		bool bMinInside0 = ( otherMin[i] >= minimum()[i] ) && ( otherMin[i] <= maximum()[i] );
+		bool bMinInside1 = ( minimum()[i] >= otherMin[i] ) && ( minimum()[i] <= otherMax[i] );
 
-		bool bMaxInside0 = ( otherMax[i] >= m_min[i] ) && ( otherMax[i] <= m_max[i] );
-		bool bMaxInside1 = ( m_max[i] >= otherMin[i] ) && ( m_max[i] <= otherMax[i] );
+		bool bMaxInside0 = ( otherMax[i] >= minimum()[i] ) && ( otherMax[i] <= maximum()[i] );
+		bool bMaxInside1 = ( maximum()[i] >= otherMin[i] ) && ( maximum()[i] <= otherMax[i] );
 
 		bool bMinInside = bMinInside0 || bMinInside1;
 		bool bMaxInside = bMaxInside0 || bMaxInside1;
@@ -262,9 +262,9 @@ bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direct
 	float tEnter = 0;
 	float tExit = ( std::numeric_limits< float >::max )();
 
-	intersectSlab( origin.x, direction.x, m_min.x, m_max.x, tEnter, tExit );
-	intersectSlab( origin.y, direction.y, m_min.y, m_max.y, tEnter, tExit );
-	intersectSlab( origin.z, direction.z, m_min.z, m_max.z, tEnter, tExit );
+	intersectSlab( origin.x, direction.x, minimum().x, maximum().x, tEnter, tExit );
+	intersectSlab( origin.y, direction.y, minimum().y, maximum().y, tEnter, tExit );
+	intersectSlab( origin.z, direction.z, minimum().z, maximum().z, tEnter, tExit );
 
 	bool intersected = ( tEnter < tExit );
 	if( intersected )
@@ -352,12 +352,12 @@ bool BoundingBox3f::intersect( const BoundingBox3f& b0, const BoundingBox3f& b1,
 
 void BoundingBox3f::enlarge( const Vector3f& p )
 {
-	m_min.x = min( p.x, m_min.x );
-	m_min.y = min( p.y, m_min.y );
-	m_min.z = min( p.z, m_min.z );
-	m_max.x = max( p.x, m_max.x );
-	m_max.y = max( p.y, m_max.y );
-	m_max.z = max( p.z, m_max.z );
+	minimum().x = min( p.x, minimum().x );
+	minimum().y = min( p.y, minimum().y );
+	minimum().z = min( p.z, minimum().z );
+	maximum().x = max( p.x, maximum().x );
+	maximum().y = max( p.y, maximum().y );
+	maximum().z = max( p.z, maximum().z );
 }
 
 void BoundingBox3f::scale( const Vector3f& s )
@@ -366,8 +366,8 @@ void BoundingBox3f::scale( const Vector3f& s )
 	Vector3f r = range();	
 	Vector3f r2 = s * r;
 
-	m_min = c - 0.5f * r2;
-	m_max = m_min + r2;
+	minimum() = c - 0.5f * r2;
+	maximum() = minimum() + r2;
 }
 
 //////////////////////////////////////////////////////////////////////////

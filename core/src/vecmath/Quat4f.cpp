@@ -262,7 +262,7 @@ void Quat4f::setAxisAngle( float radians, const Vector3f& axis )
 	w = cos( radians / 2 );
 
 	float sinHalfTheta = sin( radians / 2 );
-	float vectorNorm = axis.abs();
+	float vectorNorm = axis.norm();
 	float reciprocalVectorNorm = 1.f / vectorNorm;
 
 	x = axis.x * sinHalfTheta * reciprocalVectorNorm;

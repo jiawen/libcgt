@@ -16,7 +16,7 @@ public:
 	static const Vector3f FORWARD;
 	
     Vector3f(); // (0,0,0)
-    Vector3f( float f ); // (f,f,f)
+    explicit Vector3f( float f ); // (f,f,f)
     Vector3f( float _x, float _y, float _z );
 
 	Vector3f( const Vector2f& xy, float z );
@@ -47,10 +47,6 @@ public:
 	Vector3f yzx() const;
 	Vector3f zxy() const;
 	// TODO: all the other combinations
-
-	// TODO: these are deprecated, use norm() and normSquared()
-	float abs() const { return norm(); }
-	float absSquared() const { return normSquared(); }
 
 	float norm() const;
 	float normSquared() const;
@@ -123,5 +119,8 @@ Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
 
 // reciprocal of each component
 Vector3f operator / ( float f, const Vector3f& v );
+
+inline bool operator == ( const Vector3f& v0, const Vector3f& v1 );
+inline bool operator != ( const Vector3f& v0, const Vector3f& v1 );
 
 #include "Vector3f.inl"
