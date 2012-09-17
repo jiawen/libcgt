@@ -45,9 +45,6 @@ public:
 	FPSControls& fpsControls();
 	TrackballControls& trackballControls();
 
-	// TODO: make fpscontrols and trackballcontrols not hold a pointer to camera
-	// but pass it in whenever there's a handle*?
-	
 	// TODO: xboxController and upVector goes into FPSControls
 	XboxController* xboxController0();
 
@@ -55,13 +52,14 @@ signals:
 
 	// Convenient signals to move scene logic outside of viewer subclasses
 	// (say, into a controller class)
-	void keyPressed( QKeyEvent* event );
+	void keyReleased( QKeyEvent* event );
 	void viewpointChanged( const PerspectiveCamera& camera, int width, int height );
 
 protected:
 
 	// keyboard handlers
 	virtual void keyPressEvent( QKeyEvent* event );
+	virtual void keyReleaseEvent( QKeyEvent* event );
 
 	// mouse handlers
 	virtual void mousePressEvent( QMouseEvent* event );

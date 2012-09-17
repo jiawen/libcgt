@@ -114,10 +114,14 @@ void QD3D11Viewer::keyPressEvent( QKeyEvent* event )
 		event->key() == Qt::Key_Q )
 	{
 		qApp->quit();
-	}
+	}	
 
-	emit keyPressed( event );
+	update();
+}
 
+void QD3D11Viewer::keyReleaseEvent( QKeyEvent* event )
+{
+	emit keyReleased( event );
 	update();
 }
 
