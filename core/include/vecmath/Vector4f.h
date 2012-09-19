@@ -71,8 +71,6 @@ public:
 
 	void negate();
 
-	Vector4i floored() const;
-	
 	float minimum() const;
 	float maximum() const;
 

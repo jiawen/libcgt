@@ -4,10 +4,14 @@
 #include <cassert>
 #include <cmath>
 
-#include "vecmath/Vector3f.h"
+#include "common/Iterators.h"
+
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
+#include "vecmath/Rect2f.h"
+#include "vecmath/Rect2i.h"
 #include "vecmath/Matrix2f.h"
+#include "vecmath/Vector3f.h"
 
 using namespace std;
 
@@ -15,7 +19,7 @@ using namespace std;
 float GeometryUtils::EPSILON = 0.0001f;
 
 // static
-BoundingBox2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+Rect2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
 	float minX = min( min( v0.x, v1.x ), v2.x );
 	float minY = min( min( v0.y, v1.y ), v2.y );
@@ -23,40 +27,32 @@ BoundingBox2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vect
 	float maxX = max( max( v0.x, v1.x ), v2.x );
 	float maxY = max( max( v0.y, v1.y ), v2.y );
 
-	return BoundingBox2f( minX, minY, maxX, maxY );
+	return Rect2f( minX, minY, maxX - minX, maxY - minY );
 }
 
 // static
 Vector2f GeometryUtils::triangleCentroid( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
-	return ( 1.f / 3.f ) * ( v0 + v1 + v2 );
+	return ( v0 + v1 + v2 ) / 3.0f;
 }
 
 // static
 std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
-	BoundingBox2f bbox = triangleBoundingBox( v0, v1, v2 );
-	int xStart = Arithmetic::floorToInt( bbox.minimum().x );
-	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x );
-	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
-	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
-
-	int nPixelsMax = ( yEnd - yStart + 1 ) * ( xEnd - xStart - 1 );
+	Rect2i bbox = triangleBoundingBox( v0, v1, v2 ).enlargedToInt();
+	
 	std::vector< Vector2f > pointsInside;
-	pointsInside.reserve( nPixelsMax );
+	pointsInside.reserve( bbox.area() );
 
-	for( int y = yStart; y <= yEnd; ++y )
+	Iterators::for2D( bbox.bottomLeft(), bbox.size(), [&]( int x, int y )
 	{
-		for( int x = xStart; x <= xEnd; ++x )
-		{
-			Vector2f p( x + 0.5f, y + 0.5f );
+		Vector2f p( x + 0.5f, y + 0.5f );
 
-			if( pointInTriangle( p, v0, v1, v2 ) )
-			{
-				pointsInside.push_back( p );
-			}
+		if( pointInTriangle( p, v0, v1, v2 ) )
+		{
+			pointsInside.push_back( p );
 		}
-	}
+	});
 
 	return pointsInside;
 }
@@ -100,34 +96,26 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vecto
 	Vector2f normal12 = edge12.normal();
 	Vector2f normal20 = edge20.normal();
 
-	BoundingBox2f bbox = triangleBoundingBox( v0, v1, v2 );
-	int xStart = Arithmetic::floorToInt( bbox.minimum().x );
-	int xEnd = Arithmetic::ceilToInt( bbox.maximum().x );
-	int yStart = Arithmetic::floorToInt( bbox.minimum().y );
-	int yEnd = Arithmetic::ceilToInt( bbox.maximum().y );
+	Rect2i bbox = triangleBoundingBox( v0, v1, v2 ).enlargedToInt();
 
-	int nPixelsMax = ( yEnd - yStart + 1 ) * ( xEnd - xStart - 1 );
 	std::vector< Vector2f > pointsInside;
-	pointsInside.reserve( nPixelsMax );
+	pointsInside.reserve( bbox.area() );
 
-	for( int y = yStart; y <= yEnd; ++y )
+	Iterators::for2D( bbox.bottomLeft(), bbox.size(), [&]( int x, int y )
 	{
-		for( int x = xStart; x <= xEnd; ++x )
+		Vector2f p( x + 0.5f, y + 0.5f );
+
+		float passed01 = edgeTestConservative( normal01, v0, p );
+		float passed12 = edgeTestConservative( normal12, v1, p );
+		float passed20 = edgeTestConservative( normal20, v2, p );
+
+		if( ( passed01 > 0 ) &&
+			( passed12 > 0 ) &&
+			( passed20 > 0 ) )
 		{
-			Vector2f p( x + 0.5f, y + 0.5f );
-
-			float passed01 = edgeTestConservative( normal01, v0, p );
-			float passed12 = edgeTestConservative( normal12, v1, p );
-			float passed20 = edgeTestConservative( normal20, v2, p );
-
-			if( ( passed01 > 0 ) &&
-				( passed12 > 0 ) &&
-				( passed20 > 0 ) )
-			{
-				pointsInside.push_back( p );
-			}
+			pointsInside.push_back( p );
 		}
-	}
+	});
 
 	return pointsInside;
 }
@@ -202,46 +190,34 @@ Vector3f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
 }
 
 // static
-void GeometryUtils::getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 )
+void GeometryUtils::getBasis( const Vector3f& n, Vector3f& b0, Vector3f& b1, float epsilon )
 {
-    if( n.normSquared() < 1e-8f )
+	// if n is tiny, just return x and y
+    if( n.normSquared() < epsilon )
 	{
-        if( b1 != nullptr )
-		{
-            *b1 = Vector3f( 1, 0, 0 );
-		}
-        if( b2 != nullptr )
-		{
-            *b2 = Vector3f( 0, 1, 0 );
-		}
+        b0 = Vector3f( 1, 0, 0 );
+        b1 = Vector3f( 0, 1, 0 );
         return;
     }
     
-    Vector3f vec;
+	// find an axis not parallel to n
+    Vector3f axis;
 
-    if( fabs( n[0] ) <= fabs( n[1] ) && fabs( n[0] ) <= fabs( n[2] ) )
+    if( abs( n.x ) <= abs( n.y ) && abs( n.x ) <= abs( n.z ) )
 	{
-        vec = Vector3f( 1, 0, 0 );
+        axis = Vector3f( 1, 0, 0 );
 	}
-    else if( fabs( n[1] ) <= fabs( n[2] ) )
+    else if( abs( n.y ) <= abs( n.z ) )
 	{
-        vec = Vector3f( 0, 1, 0 );
+        axis = Vector3f( 0, 1, 0 );
 	}
     else
 	{
-        vec = Vector3f( 0, 0, 1 );
+        axis = Vector3f( 0, 0, 1 );
 	}
     
-    vec = Vector3f::cross( n, vec ).normalized(); // first basis vector
-    if( b1 != nullptr )
-	{
-        *b1 = vec;
-	}
-    vec = Vector3f::cross( n, vec ).normalized(); // second basis vector
-    if( b2 != nullptr )
-	{
-        *b2 = vec;
-	}
+    b0 = Vector3f::cross( n, axis ).normalized(); // first basis vector    
+	b1 = Vector3f::cross( n, b0 ).normalized(); // second basis vector
 }
 
 // static
@@ -251,7 +227,7 @@ Matrix3f GeometryUtils::getRightHandedBasis( const Vector3f& z )
 	Vector3f y;
 	Vector3f z2 = z.normalized();
 
-	getBasis( z2, &x, &y );
+	getBasis( z2, x, y );
 
 	Matrix3f m( x, y, z2 );
 
@@ -266,21 +242,24 @@ Matrix3f GeometryUtils::getRightHandedBasis( const Vector3f& z )
 }
 
 // static
-void GeometryUtils::getBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY,
-											Vector3f* b1, Vector3f* b2 )
+Matrix4f GeometryUtils::getRightHandedBasis( const Vector4f& z )
 {
-	// TODO: make this robust:
-	// check if z is not unit (or really tiny)
-	// check if z isn't parallel to preferred y
+	Matrix3f m = getRightHandedBasis( z.xyz() );
+	Matrix4f output; // 0 matrix
+	output.setSubmatrix3x3( 0, 0, m );
+	output( 3, 3 ) = 1;
+	return output;
+}
 
+// static
+Matrix3f GeometryUtils::getRightHandedBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY )
+{
 	Vector3f z2 = z.normalized();
-	Vector3f y2 = preferredY.normalized();
 
-	Vector3f x = Vector3f::cross( z2, y2 );
-	Vector3f y3 = Vector3f::cross( x, z2 );
+	Vector3f x = Vector3f::cross( preferredY, z ).normalized();
+	Vector3f y2 = Vector3f::cross( z2, x );
 
-	*b1 = x;
-	*b2 = y3;
+	return Matrix3f( x, y2, z2 );
 }
 
 // static

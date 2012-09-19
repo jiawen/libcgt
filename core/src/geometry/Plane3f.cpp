@@ -137,13 +137,7 @@ Matrix3f Plane3f::basis( const Vector3f& u ) const
 
 Matrix3f Plane3f::basis() const
 {
-    auto n = unitNormal();
-
-	Vector3f u;
-	Vector3f v;
-	GeometryUtils::getBasis( n, &u, &v );
-
-    return Matrix3f( u, v, n );
+	return GeometryUtils::getRightHandedBasis( normal() );
 }
 
 Plane3f Plane3f::flipped() const

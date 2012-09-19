@@ -4,7 +4,6 @@
 
 #include <QString>
 
-#include "math/Arithmetic.h"
 #include "vecmath/Vector4f.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
@@ -221,17 +220,6 @@ void Vector4f::negate()
 	y = -y;
 	z = -z;
 	w = -w;
-}
-
-Vector4i Vector4f::floored() const
-{
-	return Vector4i
-	(
-		Arithmetic::floorToInt( x ),
-		Arithmetic::floorToInt( y ),
-		Arithmetic::floorToInt( z ),
-		Arithmetic::floorToInt( w )
-	);
 }
 
 float Vector4f::minimum() const

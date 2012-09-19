@@ -250,38 +250,30 @@ bool BoundingBox3f::overlaps( const BoundingBox3f& other )
 	return bOverlapsInDirection[0] && bOverlapsInDirection[1] && bOverlapsInDirection[2];
 }
 
-bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction )
+bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction, float tIntersect, float tMin ) const
 {
-	float tIntersect;
-	return intersectRay( origin, direction, tIntersect );
-}
-
-bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
-	float& tIntersect )
-{
-	float tEnter = 0;
-	float tExit = ( std::numeric_limits< float >::max )();
-
-	intersectSlab( origin.x, direction.x, minimum().x, maximum().x, tEnter, tExit );
-	intersectSlab( origin.y, direction.y, minimum().y, maximum().y, tEnter, tExit );
-	intersectSlab( origin.z, direction.z, minimum().z, maximum().z, tEnter, tExit );
-
-	bool intersected = ( tEnter < tExit );
-	if( intersected )
+	float tNear;
+	float tFar;
+	bool intersect = intersectRayNoClip( origin, direction, tNear, tFar );
+	if( intersect )
 	{
-		if( tEnter == 0 )
+		if( tNear >= tMin )
 		{
-			tIntersect = tExit;
+			tIntersect = tNear;
+		}
+		else if( tFar >= tMin )
+		{
+			tIntersect = tFar;
 		}
 		else
 		{
-			tIntersect = std::min( tEnter, tExit );
+			intersect = false;
 		}
 	}
-	return intersected;
+	return intersect;
 }
 
-bool BoundingBox3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
+bool BoundingBox3f::intersectRayNoClip( const Vector3f& origin, const Vector3f& direction,
 	float& tNear, float& tFar ) const
 {
 	// compute t to each face
@@ -368,30 +360,4 @@ void BoundingBox3f::scale( const Vector3f& s )
 
 	minimum() = c - 0.5f * r2;
 	maximum() = minimum() + r2;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
-
-void BoundingBox3f::intersectSlab( float origin, float direction, float s0, float s1,
-	float& tEnter, float& tExit )
-{
-	float t0 = ( s0 - origin ) / direction;
-	float t1 = ( s1 - origin ) / direction;
-
-	if( t0 > t1 )
-	{
-		std::swap( t0, t1 );
-	}
-
-	if( t0 > tEnter )
-	{
-		tEnter = t0;
-	}
-
-	if( t1 < tExit )
-	{
-		tExit = t1;
-	}
 }

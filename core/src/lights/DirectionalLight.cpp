@@ -32,12 +32,7 @@ void DirectionalLight::setDirection( const Vector3f& direction )
 // virtual
 Matrix3f DirectionalLight::lightBasis() const
 {
-	Vector3f lightB1, lightB2; // vectors normal to the light direction
-	//GeometryUtils::getBasis( m_direction, &lightB1, &lightB2 );
-
-	GeometryUtils::getBasisWithPreferredUp( m_direction, Vector3f::UP, &lightB1, &lightB2 );
-
-	return Matrix3f( lightB1, lightB2, m_direction, false );
+	return GeometryUtils::getRightHandedBasisWithPreferredUp( m_direction, Vector3f::UP );
 }
 
 // virtual

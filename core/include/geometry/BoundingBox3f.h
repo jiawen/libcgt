@@ -69,14 +69,11 @@ public:
 	// note that a overlaps b iff b overlaps a
 	bool overlaps( const BoundingBox3f& other );
 
-	// Ray is treated as a ray: negative intersections are ignored
-	// (tIntersect > 0)
-	bool intersectRay( const Vector3f& origin, const Vector3f& direction );
-	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect );
-	
-	// Intersects a ray with full intersections
-	// TODO: refactor the above ones to use this one
-	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
+	bool intersectRay( const Vector3f& origin, const Vector3f& direction, float tIntersect, float tMin = 0 ) const;
+
+	// tNear and tFar can both be < 0
+	// if it returns true, guarantees that tNear < tFar
+	bool intersectRayNoClip( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
 
 	// returns the smallest bounding box that contains both bounding boxes
 	static BoundingBox3f unite( const BoundingBox3f& b0, const BoundingBox3f& b1 );
@@ -93,13 +90,4 @@ private:
 
 	Vector3f m_min;
 	Vector3f m_max;
-
-	// TODO: if direction ~ 0, then it's parallel to that slab
-	// TODO: early out: http://www.gamedev.net/topic/309689-ray-aabb-intersection/
-
-	// intersects one axis of a ray against a "slab" (interval) defined by [s0,s1]
-	// tEnter is updated if the new tEnter is bigger
-	// tExit is updated if the new tExit is smaller
-	void intersectSlab( float origin, float direction, float s0, float s1,
-		float& tEnter, float& tExit );
 };

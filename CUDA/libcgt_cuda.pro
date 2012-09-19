@@ -15,10 +15,8 @@ CONFIG( debug, debug|release ) {
   DEFINES += _SECURE_SCL=0
 }
 
-QMAKE_CXXFLAGS += -MP4
+QMAKE_CXXFLAGS += -MP
 DEFINES += _CRT_SECURE_NO_WARNINGS
-# For PhysX
-DEFINES += _ITERATOR_DEBUG_LEVEL=0
 
 HEADERS += include/*.h
 HEADERS += include/*.inl

@@ -8,8 +8,9 @@ class Vector3f;
 #include "vecmath/Matrix3f.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector4f.h"
-#include "geometry/BoundingBox2f.h"
 #include "geometry/BoundingBox3f.h"
+
+class Rect2f;
 
 class GeometryUtils
 {
@@ -19,7 +20,7 @@ public:
 	// have most functions take in an optional epsilon
 	static float EPSILON;
 
-	static BoundingBox2f triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
+	static Rect2f triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
 	static Vector2f triangleCentroid( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
@@ -64,8 +65,11 @@ public:
 	static Vector3f barycentricToEuclidean( const Vector3f& b,
 		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2 );
 
-    // given a vector n, writes two unit vectors normal to n and to each other to b1 and b2
-    static void getBasis( const Vector3f& n, Vector3f* b1, Vector3f* b2 );
+    // given a vector n, writes two unit vectors normal to n and to each other to b0 and b1
+	// if n is nearly 0 (normSquared < epsilon), b0 is +x and b1 is +y
+	// the returned basis is not necessarily right handed (b0 x b1 might be -n)
+	// call getRightHandedBasis()
+    static void getBasis( const Vector3f& n, Vector3f& b0, Vector3f& b1, float epsilon = 1e-8f );
 
 	// given a non-zero vector z, returns a right handed basis matrix [ x y z' ]
 	// such that:
@@ -73,10 +77,15 @@ public:
 	//    x, y, and z' are all unit vectors and x cross y = z'
 	static Matrix3f getRightHandedBasis( const Vector3f& z );
 
-	// given a vector z, and a preferred up vector y,
-	// writes two unit vectors normal to z and to each other to b1 and b2
-	static void getBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY,
-		Vector3f* b1, Vector3f* b2 );
+	// same as Matrix3f version
+	static Matrix4f getRightHandedBasis( const Vector4f& z );
+
+	// given a non-zero vector z, and a preferred up vector y *not parallel to z*
+	// returns a right handed basis matrix [x' y' z'] where:
+	// z' = normalize( z )
+	// x' = normalize( cross( preferredY, z' ) )
+	// y' = cross( z', x' )
+	static Matrix3f getRightHandedBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY );
 
 	// returns true if p is inside axis aligned bbox
 	static bool pointInBox( const Vector3f& p, const Vector3f& origin, const Vector3f& size );

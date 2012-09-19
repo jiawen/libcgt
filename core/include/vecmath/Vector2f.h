@@ -50,8 +50,6 @@ public:
 
     void negate();
 
-	Vector2i floored() const;
-	Vector2i rounded() const;
 	float minimum() const;
 	float maximum() const;
 

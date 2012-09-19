@@ -56,10 +56,7 @@ Vector3f QD3D11MultiViewportViewer::upVector() const
 
 void QD3D11MultiViewportViewer::setUpVector( const Vector3f& y )
 {
-	Vector3f x;
-	Vector3f z;
-	GeometryUtils::getBasis( y, &x, &z );
-	m_groundPlaneToWorld = Matrix3f( x, y, z );
+	m_groundPlaneToWorld = GeometryUtils::getRightHandedBasis( y );
 	m_worldToGroundPlane = m_groundPlaneToWorld.inverse();
 
 	// TODO: snap camera to face up when you change the up vector to something new

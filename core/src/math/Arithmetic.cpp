@@ -85,55 +85,145 @@ bool Arithmetic::isPowerOfTwo( int x )
 }
 
 // static
-int Arithmetic::roundToInt( float val )
+int Arithmetic::roundToInt( float x )
 {
-	return static_cast< int >( val + 0.5f );
+	return static_cast< int >( x + 0.5f );
 }
 
 // static
-int Arithmetic::floatToInt( float val )
+int Arithmetic::floatToInt( float x )
 {
-	return static_cast< int >( val );
+	return static_cast< int >( x );
 }
 
 // static
-int Arithmetic::floorToInt( float val )
+int Arithmetic::floorToInt( float x )
 {
-	return static_cast< int >( floor( val ) );
+	return static_cast< int >( ::floor( x ) );
 }
 
 // static
-int Arithmetic::ceilToInt( float val )
+int Arithmetic::ceilToInt( float x )
 {
-	return static_cast< int >( ceil( val ) );
+	return static_cast< int >( ::ceil( x ) );
 }
 
 // static
-int Arithmetic::roundToInt( double val )
+int Arithmetic::roundToInt( double x )
 {
 	// 2^52 * 1.5, uses limited precision to floor
-	val	= val + Arithmetic::s_dDoubleMagic;
-	return( ( int* ) &val )[0];
+	x = x + Arithmetic::s_dDoubleMagic;
+	return( ( int* ) &x )[0];
 }
 
 // static
-int Arithmetic::doubleToInt( double val )
+int Arithmetic::doubleToInt( double x )
 {
-	return( ( val < 0 ) ?
-		Arithmetic::roundToInt( val + s_dDoubleMagicRoundEpsilon ) :
-		Arithmetic::roundToInt( val - s_dDoubleMagicRoundEpsilon ) );
+	return( ( x < 0 ) ?
+		Arithmetic::roundToInt( x + s_dDoubleMagicRoundEpsilon ) :
+		Arithmetic::roundToInt( x - s_dDoubleMagicRoundEpsilon ) );
 }
 
 // static
-int Arithmetic::floorToInt( double val )
+int Arithmetic::floorToInt( double x )
 {
-	return Arithmetic::roundToInt( val - s_dDoubleMagicRoundEpsilon );
+	return Arithmetic::roundToInt( x - s_dDoubleMagicRoundEpsilon );
 }
 
 // static
-int Arithmetic::ceilToInt( double val )
+int Arithmetic::ceilToInt( double x )
 {
-	return Arithmetic::roundToInt( val + s_dDoubleMagicRoundEpsilon );
+	return Arithmetic::roundToInt( x + s_dDoubleMagicRoundEpsilon );
+}
+
+// static
+Vector2f Arithmetic::floor( const Vector2f& v )
+{
+	return Vector2f( ::floor( v.x ), ::floor( v.y ) );
+}
+
+// static
+Vector2f Arithmetic::ceil( const Vector2f& v )
+{
+	return Vector2f( ::ceil( v.x ), ::ceil( v.y ) );
+}
+
+// static
+Vector2i Arithmetic::roundToInt( const Vector2f& v )
+{
+	return Vector2i( roundToInt( v.x ), roundToInt( v.y ) );
+}
+
+// static
+Vector2i Arithmetic::floorToInt( const Vector2f& v )
+{
+	return Vector2i( floorToInt( v.x ), floorToInt( v.y ) );
+}
+
+// static
+Vector2i Arithmetic::ceilToInt( const Vector2f& v )
+{
+	return Vector2i( ceilToInt( v.x ), ceilToInt( v.y ) );
+}
+
+// static
+Vector3f Arithmetic::floor( const Vector3f& v )
+{
+	return Vector3f( ::floor( v.x ), ::floor( v.y ), ::floor( v.z ) );
+}
+
+// static
+Vector3f Arithmetic::ceil( const Vector3f& v )
+{
+	return Vector3f( ::ceil( v.x ), ::ceil( v.y ), ::ceil( v.z ) );
+}
+
+// static
+Vector3i Arithmetic::roundToInt( const Vector3f& v )
+{
+	return Vector3i( roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) );
+}
+
+// static
+Vector3i Arithmetic::floorToInt( const Vector3f& v )
+{
+	return Vector3i( floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ) );
+}
+
+// static
+Vector3i Arithmetic::ceilToInt( const Vector3f& v )
+{
+	return Vector3i( ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ) );
+}
+
+// static
+Vector4f Arithmetic::floor( const Vector4f& v )
+{
+	return Vector4f( ::floor( v.x ), ::floor( v.y ), ::floor( v.z ), ::floor( v.w ) );
+}
+
+// static
+Vector4f Arithmetic::ceil( const Vector4f& v )
+{
+	return Vector4f( ::ceil( v.x ), ::ceil( v.y ), ::ceil( v.z ), ::ceil( v.w ) );
+}
+
+// static
+Vector4i Arithmetic::roundToInt( const Vector4f& v )
+{
+	return Vector4i( roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ), roundToInt( v.w ) );
+}
+
+// static
+Vector4i Arithmetic::floorToInt( const Vector4f& v )
+{
+	return Vector4i( floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ), floorToInt( v.w ) );
+}
+
+// static
+Vector4i Arithmetic::ceilToInt( const Vector4f& v )
+{
+	return Vector4i( ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ), ceilToInt( v.w ) );
 }
 
 // static
