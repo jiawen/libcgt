@@ -1,5 +1,6 @@
 #include "math/MathUtils.h"
 
+#include <algorithm>
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
@@ -32,18 +33,6 @@ const float MathUtils::NEGATIVE_INFINITY = -std::numeric_limits< float >::infini
 
 // static
 const float MathUtils::POSITIVE_INFINITY = std::numeric_limits< float >::infinity();
-
-// static
-float MathUtils::cot( float x )
-{
-	return 1.f / tanf( x );
-}
-
-// static
-float MathUtils::asinh( float x )
-{
-    return log(x + sqrt(x * x + 1.f));
-}
 
 // static
 int MathUtils::sign( float f )
@@ -81,6 +70,18 @@ bool MathUtils::isFinite( float x )
 {
 	// See: http://www.johndcook.com/IEEE_exceptions_in_cpp.html
 	return( x <= FLT_MAX && x >= -FLT_MAX );
+}
+
+// static
+float MathUtils::cot( float x )
+{
+	return 1.f / tanf( x );
+}
+
+// static
+float MathUtils::asinh( float x )
+{
+    return log(x + sqrt(x * x + 1.f));
 }
 
 // static
@@ -180,6 +181,186 @@ float MathUtils::signedByteToFloatNormalized( sbyte sb )
 }
 
 // static
+int MathUtils::product( const Vector2i& v )
+{
+	return v.x * v.y;
+}
+
+// static
+int MathUtils::product( const Vector3i& v )
+{
+	return v.x * v.y * v.z;
+}
+
+// static
+int MathUtils::product( const Vector4i& v )
+{
+	return v.x * v.y * v.z * v.w;
+}
+
+// static
+float MathUtils::product( const Vector2f& v )
+{
+	return v.x * v.y;
+}
+
+// static
+float MathUtils::product( const Vector3f& v )
+{
+	return v.x * v.y * v.z;
+}
+
+// static
+float MathUtils::product( const Vector4f& v )
+{
+	return v.x * v.y * v.z * v.w;
+}
+
+// static
+float MathUtils::minimum( const Vector2f& v )
+{
+	return std::min( v.x, v.y );
+}
+
+// static
+float MathUtils::minimum( const Vector3f& v )
+{
+	return std::min( v.x, std::min( v.y, v.z ) );
+}
+
+// static
+float MathUtils::minimum( const Vector4f& v )
+{
+	return std::min( v.x, std::min( v.y, std::min( v.z, v.w ) ) );
+}
+
+// static
+int MathUtils::minimum( const Vector2i& v )
+{
+	return std::min( v.x, v.y );
+}
+
+// static
+int MathUtils::minimum( const Vector3i& v )
+{
+	return std::min( v.x, std::min( v.y, v.z ) );
+}
+
+// static
+int MathUtils::minimum( const Vector4i& v )
+{
+	return std::min( v.x, std::min( v.y, std::min( v.z, v.w ) ) );
+}
+
+// static
+float MathUtils::maximum( const Vector2f& v )
+{
+	return std::max( v.x, v.y );
+}
+
+// static
+float MathUtils::maximum( const Vector3f& v )
+{
+	return std::max( v.x, std::max( v.y, v.z ) );
+}
+
+// static
+float MathUtils::maximum( const Vector4f& v )
+{
+	return std::max( v.x, std::max( v.y, std::max( v.z, v.w ) ) );
+}
+
+// static
+int MathUtils::maximum( const Vector2i& v )
+{
+	return std::max( v.x, v.y );
+}
+
+// static
+int MathUtils::maximum( const Vector3i& v )
+{
+	return std::max( v.x, std::max( v.y, v.z ) );
+}
+
+// static
+int MathUtils::maximum( const Vector4i& v )
+{
+	return std::max( v.x, std::max( v.y, std::max( v.z, v.w ) ) );
+}
+
+// static
+Vector2f MathUtils::minimum( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) );
+}
+
+// static
+Vector3f MathUtils::minimum( const Vector3f& v0, const Vector3f& v1 )
+{
+	return Vector3f( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ) );
+}
+
+// static
+Vector4f MathUtils::minimum( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ), std::min( v0.w, v1.w ) );
+}
+
+// static
+Vector2i MathUtils::minimum( const Vector2i& v0, const Vector2i& v1 )
+{
+	return Vector2i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) );
+}
+
+// static
+Vector3i MathUtils::minimum( const Vector3i& v0, const Vector3i& v1 )
+{
+	return Vector3i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ) );
+}
+
+// static
+Vector4i MathUtils::minimum( const Vector4i& v0, const Vector4i& v1 )
+{
+	return Vector4i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ), std::min( v0.w, v1.w ) );
+}
+
+// static
+Vector2f MathUtils::maximum( const Vector2f& v0, const Vector2f& v1 )
+{
+	return Vector2f( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) );
+}
+
+// static
+Vector3f MathUtils::maximum( const Vector3f& v0, const Vector3f& v1 )
+{
+	return Vector3f( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ) );
+}
+
+// static
+Vector4f MathUtils::maximum( const Vector4f& v0, const Vector4f& v1 )
+{
+	return Vector4f( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) );
+}
+
+// static
+Vector2i MathUtils::maximum( const Vector2i& v0, const Vector2i& v1 )
+{
+	return Vector2i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) );
+}
+
+// static
+Vector3i MathUtils::maximum( const Vector3i& v0, const Vector3i& v1 )
+{
+	return Vector3i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ) );
+}
+
+// static
+Vector4i MathUtils::maximum( const Vector4i& v0, const Vector4i& v1 )
+{
+	return Vector4i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) );
+}
+
+// static
 void MathUtils::rescaleRangeToScaleOffset( float inputMin, float inputMax,
 	float outputMin, float outputMax,
 	float& scale, float& offset )
@@ -243,27 +424,6 @@ int MathUtils::rescaleIntToInt( int x,
 
 	float fraction = static_cast< float >( x - inMin )  / inputRange;
 	return Arithmetic::roundToInt( outMin + fraction * outputRange );
-}
-
-// static
-float MathUtils::cubicInterpolate( float p0, float p1, float p2, float p3, float t )
-{
-	// geometric construction:
-	//            t
-	//   (t+1)/2     t/2
-	// t+1        t	        t-1
-
-	// bottom level
-	float p0p1 = lerp( p0, p1, t + 1 );
-	float p1p2 = lerp( p1, p2, t );
-	float p2p3 = lerp( p2, p3, t - 1 );
-
-	// middle level
-	float p0p1_p1p2 = lerp( p0p1, p1p2, 0.5f * ( t + 1 ) );
-	float p1p2_p2p3 = lerp( p1p2, p2p3, 0.5f * t );
-
-	// top level
-	return lerp( p0p1_p1p2, p1p2_p2p3, t );
 }
 
 // static

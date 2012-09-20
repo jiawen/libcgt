@@ -65,6 +65,12 @@ int Arithmetic::divideIntsToFloatAndRound( int numerator, int denominator )
 	return Arithmetic::roundToInt( f );
 }
 
+// static
+float Arithmetic::percentage( int numerator, int denominator )
+{
+	return 100.0f * divideIntsToFloat( numerator, denominator );
+}
+
 // static		
 int Arithmetic::numBins( int arraySize, int binSize )
 {

@@ -71,19 +71,12 @@ public:
 
 	void negate();
 
-	float minimum() const;
-	float maximum() const;
-
-	static Vector4f minimum( const Vector4f& v0, const Vector4f& v1 );
-	static Vector4f maximum( const Vector4f& v0, const Vector4f& v1 );
-
 	// implicit cast
 	operator const float* () const;
 	operator float* ();
 	QString toString() const;
 
 	static float dot( const Vector4f& v0, const Vector4f& v1 );
-	static Vector4f lerp( const Vector4f& v0, const Vector4f& v1, float alpha );
 
 	Vector4f& operator += ( const Vector4f& v );
 	Vector4f& operator -= ( const Vector4f& v );

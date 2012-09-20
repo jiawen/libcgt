@@ -161,38 +161,6 @@ void Vector3f::negate()
 	z = -z;
 }
 
-float Vector3f::minimum() const
-{
-	return std::min( x, std::min( y, z ) );
-}
-
-float Vector3f::maximum() const
-{
-	return std::max( x, std::max( y, z ) );
-}
-
-// static
-Vector3f Vector3f::minimum( const Vector3f& v0, const Vector3f& v1 )
-{
-	return Vector3f
-	(
-		std::min( v0.x, v1.x ),
-		std::min( v0.y, v1.y ),
-		std::min( v0.z, v1.z )
-	);
-}
-
-// static
-Vector3f Vector3f::maximum( const Vector3f& v0, const Vector3f& v1 )
-{
-	return Vector3f
-	(
-		std::max( v0.x, v1.x ),
-		std::max( v0.y, v1.y ),
-		std::max( v0.z, v1.z )
-	);
-}
-
 QString Vector3f::toString() const
 {
 	QString out;
@@ -205,31 +173,3 @@ QString Vector3f::toString() const
 
 	return out;
 }
-
-// static
-Vector3f Vector3f::lerp( const Vector3f& v0, const Vector3f& v1, float alpha )
-{
-	return alpha * ( v1 - v0 ) + v0;
-}
-
-// static
-Vector3f Vector3f::cubicInterpolate( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2, const Vector3f& p3, float t )
-{
-	// geometric construction:
-	//            t
-	//   (t+1)/2     t/2
-	// t+1        t	        t-1
-
-	// bottom level
-	Vector3f p0p1 = Vector3f::lerp( p0, p1, t + 1 );
-	Vector3f p1p2 = Vector3f::lerp( p1, p2, t );
-	Vector3f p2p3 = Vector3f::lerp( p2, p3, t - 1 );
-
-	// middle level
-	Vector3f p0p1_p1p2 = Vector3f::lerp( p0p1, p1p2, 0.5f * ( t + 1 ) );
-	Vector3f p1p2_p2p3 = Vector3f::lerp( p1p2, p2p3, 0.5f * t );
-
-	// top level
-	return Vector3f::lerp( p0p1_p1p2, p1p2_p2p3, t );
-}
-

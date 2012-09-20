@@ -201,6 +201,11 @@ bool Rect2i::contains( int x, int y )
 	);
 }
 
+bool Rect2i::contains( const Vector2i& p )
+{
+	return contains( p.x, p.y );
+}
+
 Rect2i Rect2i::flippedUD( int height ) const
 {
 	Vector2i origin;
@@ -208,11 +213,6 @@ Rect2i Rect2i::flippedUD( int height ) const
 	origin.y = height - topLeft().y;
 
 	return Rect2i( origin, m_size );
-}
-
-bool Rect2i::contains( const Vector2i& p )
-{
-	return contains( p.x, p.y );
 }
 
 // static

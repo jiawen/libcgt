@@ -229,7 +229,8 @@ void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 
 	// Since the source (on the host) is not pitched
 	// make a pitchedPointer for it
-	params.srcPtr = make_cudaPitchedPtr( src, src.width() * sizeof( T ), src.width(), src.height() );
+	const T* srcPointer = src; // using const_cast since CUDA is stupid and wants a void*
+	params.srcPtr = make_cudaPitchedPtr( const_cast< T* >( srcPointer ), src.width() * sizeof( T ), src.width(), src.height() );
 	params.srcArray = NULL; // we're not copying a CUDA array
 	params.srcPos = make_cudaPos( 0, 0, 0 );
 	

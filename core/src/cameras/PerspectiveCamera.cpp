@@ -374,7 +374,7 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 	bool farIsInfinite = c0.m_zFarIsInfinite;
 	bool isDirectX = c0.m_directX;
 
-	Vector3f position = Vector3f::lerp( c0.m_eye, c1.m_eye, t );
+	Vector3f position = MathUtils::lerp( c0.m_eye, c1.m_eye, t );
 
 	Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );	
 	Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );	
@@ -410,7 +410,7 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	bool farIsInfinite = c0.m_zFarIsInfinite;
 	bool isDirectX = c0.m_directX;
 
-	Vector3f position = Vector3f::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
+	Vector3f position = MathUtils::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
 
 	Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );	
 	Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );	

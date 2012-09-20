@@ -1,23 +1,23 @@
 #include "math/Indexing.h"
 
 // static
-void Indexing::indexToSubscript( int index, int width, int& x, int& y )
+void Indexing::indexToSubscript2D( int index, int width, int& x, int& y )
 {
 	y = index / width;
 	x = index - y * width;	
 }
 
 // static
-Vector2i Indexing::indexToSubscript( int index, int width )
+Vector2i Indexing::indexToSubscript2D( int index, int width )
 {
 	int x;
 	int y;
-	indexToSubscript( index, width, x, y );
+	indexToSubscript2D( index, width, x, y );
 	return Vector2i( x, y );
 }
 
 // static
-void Indexing::indexToSubscript( int index, int width, int height, int& x, int& y, int& z )
+void Indexing::indexToSubscript3D( int index, int width, int height, int& x, int& y, int& z )
 {
 	int wh = width * height;
 	z = index / wh;
@@ -29,47 +29,47 @@ void Indexing::indexToSubscript( int index, int width, int height, int& x, int& 
 }
 
 // static
-Vector3i Indexing::indexToSubscript( int index, int width, int height )
+Vector3i Indexing::indexToSubscript3D( int index, int width, int height )
 {
 	int x;
 	int y;
 	int z;
-	indexToSubscript( index, width, height, x, y, z );
+	indexToSubscript3D( index, width, height, x, y, z );
 	return Vector3i( x, y, z );
 }
 
 // static
-int Indexing::subscriptToIndex( int x, int y, int width )
+int Indexing::subscript2DToIndex( int x, int y, int width )
 {
 	return( y * width + x );
 }
 
 // static
-int Indexing::subscriptToIndex( const Vector2i& xy, int width )
+int Indexing::subscript2DToIndex( const Vector2i& xy, int width )
 {
-	return subscriptToIndex( xy.x, xy.y, width );
+	return subscript2DToIndex( xy.x, xy.y, width );
 }
 
 // static
-int Indexing::subscriptToIndex( const Vector2i& xy, const Vector2i& size )
+int Indexing::subscript2DToIndex( const Vector2i& xy, const Vector2i& size )
 {
-	return subscriptToIndex( xy.x, xy.y, size.x );
+	return subscript2DToIndex( xy.x, xy.y, size.x );
 }
 
 // static
-int Indexing::subscriptToIndex( int x, int y, int z, int width, int height )
+int Indexing::subscript3DToIndex( int x, int y, int z, int width, int height )
 {
 	return( z * width * height + y * width + x );
 }
 
 // static
-int Indexing::subscriptToIndex( const Vector3i& xy, int width, int height )
+int Indexing::subscript3DToIndex( const Vector3i& xy, int width, int height )
 {
-	return subscriptToIndex( xy.x, xy.y, xy.z, width, height );
+	return subscript3DToIndex( xy.x, xy.y, xy.z, width, height );
 }
 
 // static
-int Indexing::subscriptToIndex( const Vector3i& xy, const Vector3i& size )
+int Indexing::subscript3DToIndex( const Vector3i& xy, const Vector3i& size )
 {
-	return subscriptToIndex( xy.x, xy.y, xy.z, size.x, size.y );
+	return subscript3DToIndex( xy.x, xy.y, xy.z, size.x, size.y );
 }

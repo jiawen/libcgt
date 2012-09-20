@@ -44,9 +44,6 @@ public:
 
 	static Vector3i cross( const Vector2i& v0, const Vector2i& v1 );
 
-	// returns v0 * ( 1 - alpha ) * v1 * alpha
-	static Vector2f lerp( const Vector2i& v0, const Vector2i& v1, float alpha );
-
 	inline Vector2i& operator += ( const Vector2i& v );
 	inline Vector2i& operator -= ( const Vector2i& v );
     inline Vector2i& operator *= ( int s );

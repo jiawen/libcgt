@@ -148,12 +148,6 @@ Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 	);
 }
 
-// static
-Vector2f Vector2i::lerp( const Vector2i& v0, const Vector2i& v1, float alpha )
-{
-	return alpha * ( v1 - v0 ) + Vector2f( v0 );
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Operators
 //////////////////////////////////////////////////////////////////////////

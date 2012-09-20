@@ -171,12 +171,12 @@ Vector3i Vector4i::wxz() const
 	return Vector3i( m_elements[3], m_elements[0], m_elements[2] );
 }
 
-float Vector4i::abs() const
+float Vector4i::norm() const
 {
-	return sqrt( static_cast< float >( absSquared() ) );
+	return sqrt( static_cast< float >( normSquared() ) );
 }
 
-int Vector4i::absSquared() const
+int Vector4i::normSquared() const
 {
 	return
 	(
@@ -189,7 +189,7 @@ int Vector4i::absSquared() const
 
 Vector4f Vector4i::normalized() const
 {
-	float rLength = 1.f / abs();
+	float rLength = 1.f / norm();
 
 	return Vector4f
 	(

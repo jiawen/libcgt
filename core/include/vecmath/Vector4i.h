@@ -47,8 +47,8 @@ public:
 
 	// TODO: swizzle all the vec4s
 
-	float abs() const;
-	int absSquared() const;
+	float norm() const;
+	int normSquared() const;
 	Vector4f normalized() const;
 
 	// if v.z != 0, v = v / v.w

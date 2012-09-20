@@ -23,8 +23,12 @@ public:
 	static int sign( float x );
 	static int sign( double x );
 
+	// static_cast< float >( numerator ) / denominator
 	static float divideIntsToFloat( int numerator, int denominator );
+	// round( divideIntsToFloat( numerator, denominator ) );
 	static int divideIntsToFloatAndRound( int numerator, int denominator );
+	// 100.0f * divideIntsToFloat( numerator, denominator ) )
+	static float percentage( int numerator, int denominator );
 
 	// given an array of length "arraySize", and bins of size "binSize"
 	// computes the minimum number of bins needed to cover all arraySize elements.

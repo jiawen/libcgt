@@ -58,12 +58,6 @@ public:
 	Vector3f homogenized() const;
 
 	void negate();
-	
-	float minimum() const;
-	float maximum() const;
-
-	static Vector3f minimum( const Vector3f& v0, const Vector3f& v1 );
-	static Vector3f maximum( const Vector3f& v0, const Vector3f& v1 );
 
 	// automatic type conversion to float pointer
     operator const float* () const;
@@ -75,12 +69,6 @@ public:
 
 	// cross product
 	static Vector3f cross( const Vector3f& v0, const Vector3f& v1 );
-
-	// returns v0 * ( 1 - alpha ) * v1 * alpha
-	static Vector3f lerp( const Vector3f& v0, const Vector3f& v1, float alpha );
-
-	// Catmull-Rom interpolation
-	static Vector3f cubicInterpolate( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2, const Vector3f& p3, float t );
 
 	Vector3f& operator += ( const Vector3f& v );
 	Vector3f& operator -= ( const Vector3f& v );

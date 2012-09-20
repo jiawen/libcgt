@@ -7,6 +7,7 @@
 #include <QString>
 
 #include "geometry/GeometryUtils.h"
+#include "math/MathUtils.h"
 
 using namespace std;
 
@@ -285,14 +286,14 @@ bool BoundingBox3f::intersectRayNoClip( const Vector3f& origin, const Vector3f& 
 	Vector3f tTop = rcpDir * ( maximum() - origin );
 
 	// find the smallest and largest distances along each axis
-	Vector3f tMin = Vector3f::minimum( tBottom, tTop );
-	Vector3f tMax = Vector3f::maximum( tBottom, tTop );
+	Vector3f tMin = MathUtils::minimum( tBottom, tTop );
+	Vector3f tMax = MathUtils::maximum( tBottom, tTop );
 
 	// tNear is the largest tMin
-	tNear = tMin.maximum();
+	tNear = MathUtils::maximum( tMin );
 
 	// tFar is the smallest tMax
-	tFar = tMax.minimum();
+	tFar = MathUtils::minimum( tMax );
 	
 	return tFar > tNear;
 }

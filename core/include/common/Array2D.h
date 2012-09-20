@@ -2,11 +2,10 @@
 
 #include <cstdio>
 
+#include "common/Array2DView.h"
 #include "common/BasicTypes.h"
-#include <math/Indexing.h>
-#include <vecmath/Vector2i.h>
-
-// TODO: switch to using std::vector as underlying representation?
+#include "math/Indexing.h"
+#include "vecmath/Vector2i.h"
 
 // A simple 2D array class (with row-major storage)
 template< typename T >
@@ -17,7 +16,7 @@ public:
 	// Default null array with dimensions -1 and no data allocated
 	Array2D();
 	Array2D( const char* filename );
-	Array2D( int width, int height, const T& fill = T() );
+	Array2D( int width, int height, const T& fillValue = T() );
 	Array2D( const Array2D< T >& copy );
 	Array2D( Array2D< T >&& move );
 	Array2D& operator = ( const Array2D< T >& copy );
@@ -32,21 +31,30 @@ public:
 	int height() const;
 	Vector2i size() const;
 	int numElements() const;
+	int rowPitchBytes() const; // number of bytes between successive rows
 
-	void fill( const T& val );
+	void fill( const T& fillValue );
 
 	// resizing with width or height <= 0 will invalidate this array
 	void resize( int width, int height );
 	void resize( const Vector2i& size );
 
-	T* rowPointer( int y );
+	// a view of a rectangular subset of this array, starting at x, y to the end
+	Array2DView< T > croppedView( int x, int y );
+	// a view of a rectangular subset of this array, starting at x, y to the end
+	Array2DView< T > croppedView( int x, int y, int width, int height );
+
+	operator const Array2DView< T >() const;
+	operator Array2DView< T >();
+
 	const T* rowPointer( int y ) const;
+	T* rowPointer( int y );
 
-	operator T* ();
 	operator const T* () const;
+	operator T* ();
 
-	const T& operator () ( int k ) const; // read
-	T& operator () ( int k ); // write
+	const T& operator [] ( int k ) const; // read
+	T& operator [] ( int k ); // write
 
 	const T& operator () ( int x, int y ) const; // read
 	T& operator () ( int x, int y ); // write
@@ -61,7 +69,7 @@ public:
 	// If the source is null or the desired output size is invalid
 	// returns the null array.
 	template< typename S >
-	Array2D< S > reinterpretAs( int outputWidth = -1, int outputHeight = -1 );
+	Array2D< S > reinterpretAs( int outputWidth = -1, int outputHeight = -1, int outputRowPitchBytes = -1 );
 
 	// only works if T doesn't have pointers, with sizeof() well defined
 	bool load( const char* filename );
@@ -73,6 +81,7 @@ private:
 	
 	int m_width;
 	int m_height;
+	int m_rowPitchBytes;
 	T* m_array;
 
 	// to allow reinterpretAs< S >

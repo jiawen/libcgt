@@ -219,10 +219,10 @@ Vector4i Image4ub::bilinearSample( float x, float y ) const
 	Vector4f v10 = ColorUtils::intToFloat( pixel( x1, y0 ) );
 	Vector4f v11 = ColorUtils::intToFloat( pixel( x1, y1 ) );
 
-	Vector4f v0 = Vector4f::lerp( v00, v01, yf ); // x = 0
-	Vector4f v1 = Vector4f::lerp( v10, v11, yf ); // x = 1
+	Vector4f v0 = MathUtils::lerp( v00, v01, yf ); // x = 0
+	Vector4f v1 = MathUtils::lerp( v10, v11, yf ); // x = 1
 
-	Vector4f vf = Vector4f::lerp( v0, v1, xf );
+	Vector4f vf = MathUtils::lerp( v0, v1, xf );
 	return ColorUtils::floatToInt( vf );
 }
 
