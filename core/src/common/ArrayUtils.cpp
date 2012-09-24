@@ -41,6 +41,39 @@ bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filenam
 }
 
 // static
+bool ArrayUtils::saveTXT( const std::vector< int >& array, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( array.size() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: int\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		fprintf( fp, "[%d]: %d\n", i, array[ i ] );
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
 bool ArrayUtils::saveTXT( const std::vector< Vector2f >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );

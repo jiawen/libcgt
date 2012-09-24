@@ -19,6 +19,13 @@ DeviceVariable< T >::DeviceVariable( const DeviceVariable< T >& copy ) :
 }
 
 template< typename T >
+DeviceVariable< T >::DeviceVariable( DeviceVariable< T >&& move )
+{
+	md_pDevicePointer = move.md_pDevicePointer;
+	move.md_pDevicePointer = nullptr;
+}
+
+template< typename T >
 DeviceVariable< T >& DeviceVariable< T >::operator = ( const DeviceVariable< T >& copy )
 {
 	if( this != &copy )
@@ -29,12 +36,22 @@ DeviceVariable< T >& DeviceVariable< T >::operator = ( const DeviceVariable< T >
 }
 
 template< typename T >
+DeviceVariable< T >& DeviceVariable< T >::operator = ( DeviceVariable< T >&& move )
+{
+	if( this != &move )
+	{
+		destroy();
+
+		md_pDevicePointer = move.md_pDevicePointer;
+		move.md_pDevicePointer = nullptr;
+	}
+	return *this;
+}
+
+template< typename T >
 DeviceVariable< T >::~DeviceVariable()
 {
-	if( md_pDevicePointer != nullptr )
-	{
-		CUDA_SAFE_CALL( cudaFree( md_pDevicePointer ) );
-	}
+	destroy();	
 }
 
 template< typename T >
@@ -67,4 +84,13 @@ template< typename T >
 T* DeviceVariable< T >::devicePointer()
 {
 	return md_pDevicePointer;
+}
+
+template< typename T >
+void DeviceVariable< T >::destroy()
+{
+	if( md_pDevicePointer != nullptr )
+	{
+		CUDA_SAFE_CALL( cudaFree( md_pDevicePointer ) );
+	}
 }

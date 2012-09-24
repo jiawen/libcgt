@@ -10,8 +10,9 @@ struct KernelQueue
 	// enqueues a value at the tail the queue
 	// (atomically increment the tail pointer
 	// and set the value where it used to be)
+	// returns the index in ringBuffer() where the element was placed
 	__inline__ __device__
-	void enqueue( const T& val );
+	uint enqueue( const T& val );
 
 	// removes an element from the head of the queue
 	// (atomically increment the head pointer
@@ -27,25 +28,28 @@ struct KernelQueue
 	int count();
 
 	__inline__ __device__
-	bool isFull();
-
-	__inline__ __device__
 	bool isEmpty();
 
 	__inline__ __device__
-	KernelVector< T >& elements();
+	bool isFull();	
+
+	__inline__ __device__
+	KernelVector< T >& ringBuffer();
 
 private:
 
+	// pointer to the head index
+	// &( md_pHeadTailAbsoluteIndices->x )
 	__inline__ __device__
-	uint* readIndexPointer();
+	uint* headIndexPointer();
 
+	// pointer to the tail index
+	// &( md_pHeadTailAbsoluteIndices->y )
 	__inline__ __device__
-	uint* countPointer();
+	uint* tailIndexPointer();
 
-	//int* md_lock;
-	uint2* md_pReadIndexAndCount;
-	KernelVector< T > m_elements;
+	uint2* md_pHeadTailAbsoluteIndices;
+	KernelVector< T > md_ringBuffer;
 
 };
 

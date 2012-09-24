@@ -11,10 +11,10 @@ public:
 
 	DeviceVariable( const T& initialValue = T() );
 	DeviceVariable( const DeviceVariable< T >& copy );
+	DeviceVariable( DeviceVariable< T >&& move );
 	DeviceVariable< T >& operator = ( const DeviceVariable< T >& copy );
+	DeviceVariable< T >& operator = ( DeviceVariable< T >&& move );
 	~DeviceVariable();
-
-	// TODO: move
 
 	// copy device --> host
 	T get() const;
@@ -29,6 +29,8 @@ public:
 	T* devicePointer();
 
 private:
+
+	void destroy();
 
 	T* md_pDevicePointer;
 

@@ -8,9 +8,12 @@
 #include "MathUtils.h"
 #include "KernelQueue.h"
 
+// TODO: reserveEnqueue( n, bool predicate ), commitEnqueue( n, bool predicate )
+// returns a pointer for each thread, predicate has to eavluate to be true for...
+// same for dequeue: to relieve pressure on the atomic
+
 // An atomic producer-consumer queue for CUDA
 // implemented using a circular buffer
-// the buffer size *must be* a power of two
 template< typename T >
 class DeviceQueue
 {
@@ -19,41 +22,76 @@ public:
 	// initializes a null queue
 	DeviceQueue();
 
-	// initializes a queue with a fixed *power of two* length
-	DeviceQueue( uint length );
+	// initializes a queue with a fixed capacity
+	DeviceQueue( uint capacity );
+
+	DeviceQueue( const DeviceQueue< T >& copy );
+	DeviceQueue( DeviceQueue< T >&& move );
+	DeviceQueue< T >& operator = ( const DeviceQueue< T >& copy );
+	DeviceQueue< T >& operator = ( DeviceQueue< T >&& move );
+	// default destructor
 
 	bool isNull() const;
 	bool notNull() const;
 
+	// returns the maximum number of elements the queue can hold
+	uint capacity() const;
+
 	// resizes the queue:
 	//   destroys the existing data
-	//   and clears the queue in the process (readIndex, writeIndex, and count set to 0)
-	void resize( uint length );
+	//   and clears the queue in the process (head and tail pointers are set to 0)
+	void resize( uint capacity );
 
-	// clears the queue
-	void clear();
+	// clears the queue by setting head and tail absolute indices back to 0
+	// does not actually touch the data
+	void clear( int headIndex = 0, int tailIndex = 0 );
+
+	bool isEmpty() const;
+	bool isFull() const;
 
 	// number of enqueued items
-	int count();
+	// WARNING: slightly expensive query: incurs a copy from GPU
+	int count() const;
+
+	// returns the absolute indices of the head and tail of the queue
+	// mod by capacity() to get indices within ringBuffer()
+	// WARNING: slightly expensive: incurs a copy from GPU
+	uint2 headAndTailAbsoluteIndices() const;
+
+	void setHeadAbsoluteIndex( int headIndex );
+	void setTailAbsoluteIndex( int tailIndex );
+	void setHeadAndTailAbsoluteIndices( int headIndex, int tailIndex );
+	void setHeadAndTailAbsoluteIndices( const uint2& ht );
+
+	DeviceVector< T >& ringBuffer();
 
 	KernelQueue< T > kernelQueue();
 
+	// enqueues a value at the tail the queue from the host	
+	// returns false if it fails (the queue is full)
+	// WARNING: can be expensive: incurs copies to and from the GPU
+	bool enqueueFromHost( const T& val );
+
+	// dequeues a value at the head of the queue
+	// and copies it to the host
+	// returns false if it fails (the queue is empty)
+	// WARNING: can be expensive: incurs copies to and from the GPU
+	bool dequeueToHost( T& val );
+
 	// copies count() elements from host --> device queue
 	// this is automatically resized to src.size()
-	// src.size() *must be* a power of two
-	// and head must be first
+	// the head of the host-side src queue is src[0]
 	void copyFromHost( const std::vector< T >& src );
 
 	// copies count() elements from device queue --> host
 	// dst is automatically resized and the head of the queue is first
-	void copyToHost( std::vector< T >& dst ) const;
+	void copyToHost( std::vector< T >& dst ) const;	
 
 private:
 
-	// stores a readIndex, writeIndex, and the number of elements in the queue
-	// and all variables are in [0, length)
-	DeviceVariable< uint2 > m_readIndexAndCount;
-	DeviceVector< T > m_elements;
+	// stores an absolute head and tail pointer
+	DeviceVariable< uint2 > md_headTailAbsoluteIndices;
+	DeviceVector< T > md_ringBuffer;
 
 };
 

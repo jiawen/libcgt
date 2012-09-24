@@ -42,7 +42,15 @@ Array3D< T >::Array3D( int width, int height, int depth, const T& fillValue ) :
 }
 
 template< typename T >
-Array3D< T >::Array3D( const Array3D< T >& copy )
+Array3D< T >::Array3D( const Array3D< T >& copy ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+	m_depth( -1 ),
+	m_rowPitchBytes( -1 ),
+	m_slicePitchBytes( -1 ),
+	m_array( nullptr )
+
 {
 	resize( copy.m_width, copy.m_height, copy.m_depth );
 	memcpy( m_array, copy.m_array, m_slicePitchBytes * m_depth );

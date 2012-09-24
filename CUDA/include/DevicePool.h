@@ -1,27 +1,62 @@
 #pragma once
 
-#include <numeric>
+// STL
+#include <numeric> // for std::iota
 
+#ifdef __CUDACC__
+// cuda::thrust
+#include <thrust/remove.h>
+#endif
+
+// libcgt
 #include <common/BasicTypes.h>
 #include <math/Arithmetic.h>
 
+// local
 #include "DeviceQueue.h"
 
 // TODO: this can actually be compiled!
 
+#if 0
+#ifdef __CUDACC__
+struct IsDeleted : public thrust::unary_function< int, bool >
+{
+	__host__ __device__
+	bool operator () ( int poolIndex )
+	{
+		return poolIndex < 0;
+	}
+};
+#endif
+#endif
+
+template< typename UsedListTag >
+struct UsedListEntry
+{
+	int poolIndex;
+	int isDeleted; // TODO: can optimize later by packing it all into the tag
+	UsedListTag tag;
+};
+
+template< typename UsedListTag >
 struct KernelPool
 {
 	__inline__ __host__
-	KernelPool( int _capacity,
-		int _elementSizeBytes,
+	KernelPool
+	(
+		int capacity,
+		int elementSizeBytes,
 
-		KernelQueue< int > _freeList,
-		KernelVector< ubyte > _backingStore ) :
+		KernelQueue< int > freeList,
+		KernelQueue< UsedListEntry< UsedListTag > > usedList,
+		KernelVector< ubyte > backingStore
+	) :
 
-		capacity( _capacity ),
-		elementSizeBytes( _elementSizeBytes ),
-		freeList( _freeList ),
-		backingStore( _backingStore )
+		m_capacity( capacity ),
+		m_elementSizeBytes( elementSizeBytes ),
+		m_freeList( freeList ),
+		m_usedList( usedList ),
+		m_backingStore( backingStore )
 
 	{
 
@@ -29,16 +64,41 @@ struct KernelPool
 
 #ifdef __CUDACC__
 
-	// gives you an index
+	// gives you an entry that comes with an index
+	// and space for a tag
 	__inline__ __device__
-	int alloc()
+	UsedListEntry< UsedListTag >& alloc()
 	{
-		int index = freeList.dequeue();
-		return index;
+		int index = m_freeList.dequeue();
+
+		UsedListEntry< UsedListTag > entry;
+		entry.poolIndex = index;
+		entry.isDeleted = 0;		
+
+		uint usedListIndex = m_usedList.enqueue( entry );
+		return m_usedList.ringBuffer()[ usedListIndex ];
 	}
 #endif
+	
+	// marks the index at usedList()[ usedListIndex ] as deleted
+	__inline__ __device__
+	void markAsDeleted( int usedListIndex )
+	{
+		UsedListEntry< UsedListTag >& entry = m_usedList.ringBuffer()[ usedListIndex ];
+		entry.isDeleted = 1;
+	}
 
-	// void dealloc(
+	__inline__ __device__
+	KernelQueue< int >& freeList()
+	{
+		return m_freeList;
+	}
+
+	__inline__ __device__
+	KernelQueue< UsedListEntry< UsedListTag > >& usedList()
+	{
+		return m_usedList;
+	}
 
 	// given an index (returned from alloc()),
 	// returns a pointer to the beginning of the element
@@ -46,18 +106,19 @@ struct KernelPool
 	__inline__ __device__
 	T* getElement( int index )
 	{
-		ubyte* pElementStart = &( backingStore[ index * elementSizeBytes ] );
+		ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
 		return reinterpret_cast< T* >( pElementStart );
 	}
 
-	int capacity;
-	int elementSizeBytes;
+	int m_capacity;
+	int m_elementSizeBytes;
 
-	//KernelQueue< int > usedList;
-	KernelQueue< int > freeList;
-	KernelVector< ubyte > backingStore;
+	KernelQueue< int > m_freeList;
+	KernelQueue< UsedListEntry< UsedListTag > > m_usedList;
+	KernelVector< ubyte > m_backingStore;
 };
 
+template< typename UsedListTag >
 class DevicePool
 {
 public:
@@ -89,81 +150,107 @@ public:
 	// does *not* touch the data
 	void clear();
 
-	KernelPool kernelPool();
+	KernelPool< UsedListTag > kernelPool();
 
+	// removes all the deleted pool indices from the used list
+	// (copying them to the collected list temporarily)
+	// and returns them to the free list
+	void collectDeleted();
 	
 //private:
 
 	int m_capacity;
 	int m_elementSizeBytes;
-	//DeviceQueue< int > m_usedList;
+
+	// stores a list of free (still-available) element (not byte) indices in m_backingStore
+	// initially free
 	DeviceQueue< int > md_freeList;
+
+	// stores a list of allocated (not currently available) element indices in m_backingStore
+	// if the value is positive, then it's still in use
+	// if the value is negative, then it's been marked as freed and will be collected in the next call to collect()
+	DeviceQueue< UsedListEntry< UsedListTag > > md_usedList;
+
+	// temporary storage for the garbage collector
+	DeviceVector< UsedListEntry< UsedListTag > > md_collectedList;
+
+	// backing store of capacity * elementSizeBytes bytes
 	DeviceVector< ubyte > m_backingStore;
 };
 
+template< typename UsedListTag >
 __inline__ __host__
-DevicePool::DevicePool() :
+DevicePool< UsedListTag >::DevicePool() :
 
 	m_capacity( -1 ),
 	m_elementSizeBytes( -1 )
 
-	//m_usedList( count ),
 {
 
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-DevicePool::DevicePool( int capacity, int elementSizeBytes )
-	//m_usedList( count ),
+DevicePool< UsedListTag >::DevicePool( int capacity, int elementSizeBytes )
 {
 	resize( capacity, elementSizeBytes );
 }
 
 // virtual
+template< typename UsedListTag >
 __inline__ __host__
-DevicePool::~DevicePool()
+DevicePool< UsedListTag >::~DevicePool()
 {
 
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-bool DevicePool::isNull() const
+bool DevicePool< UsedListTag >::isNull() const
 {
 	return( md_freeList.isNull() || m_backingStore.isNull() );
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-bool DevicePool::notNull() const
+bool DevicePool< UsedListTag >::notNull() const
 {
 	return !isNull();
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-int DevicePool::capacity() const
+int DevicePool< UsedListTag >::capacity() const
 {
 	return m_capacity;
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-int DevicePool::numFreeElements()
+int DevicePool< UsedListTag >::numFreeElements()
 {
 	return md_freeList.count();
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-void DevicePool::resize( int capacity, int elementSizeBytes )
+void DevicePool< UsedListTag >::resize( int capacity, int elementSizeBytes )
 {
 	m_capacity = capacity;
 	m_elementSizeBytes = elementSizeBytes;
 	md_freeList.resize( capacity );
+	md_usedList.resize( capacity );
+	md_collectedList.resize( capacity );
 	m_backingStore.resize( capacity * elementSizeBytes );
 
 	clear();	
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-void DevicePool::clear()
+void DevicePool< UsedListTag >::clear()
 {
+	// TODO: thrust::generate?
 	// generate free list: [0,capacity)
 	std::vector< int > h_freeList( m_capacity );
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
@@ -171,13 +258,54 @@ void DevicePool::clear()
 	md_freeList.copyFromHost( h_freeList );
 }
 
+template< typename UsedListTag >
 __inline__ __host__
-KernelPool DevicePool::kernelPool()
+KernelPool< UsedListTag > DevicePool< UsedListTag >::kernelPool()
 {
-	return KernelPool
+	return KernelPool< UsedListTag >
 	(
 		m_capacity, m_elementSizeBytes,
 		md_freeList.kernelQueue(),
+		md_usedList.kernelQueue(),
 		m_backingStore.kernelVector()
 	);
 }
+
+#if 0
+#include <common/ArrayUtils.h>
+
+__inline__ __host__
+void DevicePool::collectDeleted()
+{
+	printf( "inside collectDeleted\n" );
+
+#ifdef __CUDACC__
+
+	printf( "inside collectDeleted::__CUDA_ARCH__ portion\n" );
+
+	std::vector< int > h_freeListBefore;
+	std::vector< int > h_freeListAfter;
+	std::vector< int > h_collectedListAfter;
+
+	md_freeList.elements().copyToHost( h_freeListBefore );
+
+	int* d_headPointer = md_freeList.elements().devicePointer();
+	int* d_tailPointer = d_headPointer + md_freeList.count();
+	int* d_collectedHeadPointer = md_collectedList.elements().devicePointer();
+	int* d_collectedEndPointer;
+
+	d_collectedEndPointer = thrust::remove_copy_if( d_headPointer, d_tailPointer, d_collectedHeadPointer, IsDeleted() );	
+
+	int nCollected = d_collectedEndPointer - d_collectedHeadPointer;
+
+	md_freeList.elements().copyToHost( h_freeListAfter );
+
+	md_collectedList.copyToHost( h_collectedListAfter );
+
+	ArrayUtils::saveTXT( h_freeListBefore, "c:/tmp/freeListBefore.txt" );
+	ArrayUtils::saveTXT( h_freeListAfter, "c:/tmp/freeListAfter.txt" );
+	ArrayUtils::saveTXT( h_collectedListAfter, "c:/tmp/collectedListAfter.txt" );
+#endif
+}
+
+#endif

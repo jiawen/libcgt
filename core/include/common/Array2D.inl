@@ -36,7 +36,13 @@ Array2D< T >::Array2D( int width, int height, const T& fillValue ) :
 }
 
 template< typename T >
-Array2D< T >::Array2D( const Array2D< T >& copy )
+Array2D< T >::Array2D( const Array2D< T >& copy ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+	m_rowPitchBytes( -1 ),
+	m_array( nullptr )
+
 {
 	resize( copy.m_width, copy.m_height );
 	memcpy( m_array, copy.m_array, m_rowPitchBytes * m_height );

@@ -16,6 +16,8 @@ public:
 	static bool saveBinary( const std::vector< T >& input, const char* filename );
 
 	static bool saveTXT( const std::vector< float >& array, const char* filename );
+	static bool saveTXT( const std::vector< int >& array, const char* filename );
+
 	static bool saveTXT( const std::vector< Vector2f >& array, const char* filename );
 	static bool saveTXT( const std::vector< Vector3f >& array, const char* filename );
 	static bool saveTXT( const std::vector< Vector4f >& array, const char* filename );

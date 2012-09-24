@@ -1,9 +1,9 @@
 template< typename T >
 __inline__ __host__
-KernelQueue< T >::KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements ) :
+KernelQueue< T >::KernelQueue( uint2* d_pHeadTailAbsoluteIndices, KernelVector< T > ringBuffer ) :
 
-	md_pReadIndexAndCount( d_pReadIndexAndCount ),
-	m_elements( elements )
+	md_pHeadTailAbsoluteIndices( d_pHeadTailAbsoluteIndices ),
+	md_ringBuffer( ringBuffer )
 {
 
 }
@@ -12,32 +12,21 @@ KernelQueue< T >::KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > el
 
 template< typename T >
 __inline__ __device__
-void KernelQueue< T >::enqueue( const T& val )
+uint KernelQueue< T >::enqueue( const T& val )
 {
-	// assuming not full
-	//int writeIndex = ( md_pReadIndexAndCount->x + md_pReadIndexAndCount->y ) % capacity();
-	//m_elements[ writeIndex ] = val;
-	//++( md_pReadIndexAndCount->y );
-
-	uint oldCount = atomicAdd( countPointer(), 1 );
-	uint writeIndex = ( *( readIndexPointer() ) + oldCount ) % capacity();
-	m_elements[ writeIndex ] = val;
+	uint absoluteTailIndex = atomicAdd( tailIndexPointer(), 1u );
+	uint tailIndex = absoluteTailIndex % capacity();
+	md_ringBuffer[ tailIndex ] = val;
+	return tailIndex;
 }
 
 template< typename T >
 __inline__ __device__
 T KernelQueue< T >::dequeue()
 {
-	T output;
-
-#if 1
-	uint oldReadIndex = atomicAdd( readIndexPointer(), 1 );
-	atomicSub( countPointer(), 1 );
-
-	output = m_elements[ oldReadIndex % capacity() ];
-#endif
-
-	return output;
+	uint absoluteHeadIndex = atomicAdd( headIndexPointer(), 1u );
+	uint headIndex = absoluteHeadIndex % capacity();
+	return md_ringBuffer[ headIndex ];
 }
 
 #endif
@@ -46,49 +35,65 @@ template< typename T >
 __inline__ __device__
 int KernelQueue< T >::count()
 {
-	return *( countPointer() );
+	return( md_pHeadTailAbsoluteIndices->y - md_pHeadTailAbsoluteIndices->x );
 }
 
 template< typename T >
 __inline__ __device__
 int KernelQueue< T >::capacity() const
 {
-	return m_elements.length;
-}
-
-template< typename T >
-__inline__ __device__
-bool KernelQueue< T >::isFull()
-{
-	return( count() == capacity() );
+	return md_ringBuffer.length;
 }
 
 template< typename T >
 __inline__ __device__
 bool KernelQueue< T >::isEmpty()
 {
-	return( count() == 0 );
+	int absoluteHeadIndex = *( headIndexPointer() );
+	int absoluteTailIndex = *( tailIndexPointer() );
+	return( absoluteHeadIndex == absoluteTailIndex );
 }
 
 template< typename T >
 __inline__ __device__
-KernelVector< T >& KernelQueue< T >::elements()
+bool KernelQueue< T >::isFull()
 {
-	return m_elements;
+	// we can distinguish between full and empty
+	// because we use absolute indices:
+	//
+	// if we ever wrote anything to the queue: then check if the count() is less than capacity()
+	// if they're equal, then it's full
+	int absoluteTailIndex = *( tailIndexPointer() );
+	if( absoluteTailIndex > 0 )
+	{
+		return( count() < capacity() );
+	}
+	// if we never wrote anything to the queue, then it clearly can't be full
+	else
+	{
+		return false;
+	}
 }
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::readIndexPointer()
+KernelVector< T >& KernelQueue< T >::ringBuffer()
 {
-	return &( md_pReadIndexAndCount->x );
+	return md_ringBuffer;
 }
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::countPointer()
+uint* KernelQueue< T >::headIndexPointer()
 {
-	return &( md_pReadIndexAndCount->y );
+	return &( md_pHeadTailAbsoluteIndices->x );
+}
+
+template< typename T >
+__inline__ __device__
+uint* KernelQueue< T >::tailIndexPointer()
+{
+	return &( md_pHeadTailAbsoluteIndices->y );
 }
 
 #if 0
