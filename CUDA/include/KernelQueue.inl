@@ -28,7 +28,6 @@ T KernelQueue< T >::dequeue()
 	uint headIndex = absoluteHeadIndex % capacity();
 	return md_ringBuffer[ headIndex ];
 }
-
 #endif
 
 template< typename T >

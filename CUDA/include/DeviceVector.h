@@ -16,6 +16,7 @@ public:
 
 	DeviceVector();
 	DeviceVector( int length );
+	DeviceVector( const std::vector< T >& src );
 	DeviceVector( const DeviceVector< T >& copy );
 	DeviceVector( DeviceVector< T >&& move );
 	DeviceVector< T >& operator = ( const DeviceVector< T >& copy );
@@ -46,6 +47,10 @@ public:
 	// WARNING: probably slow as it incurs a cudaMemcpy
 	void set( int index, const T& value );
 
+	// copy from another DeviceVector to this
+	// this is automatically resized
+	void copyFromDevice( const DeviceVector< T >& src );
+
 	// copy length() elements from input --> device vector
 	// this is automatically resized
 	void copyFromHost( const std::vector< T >& src );
@@ -54,10 +59,8 @@ public:
 	// dst is automatically resized
 	void copyToHost( std::vector< T >& dst ) const;
 
-	// implicit cast to device pointer
-	operator T* () const;
-
-	T* devicePointer() const;
+	const T* devicePointer() const;
+	T* devicePointer();
 
 	KernelVector< T > kernelVector() const;
 

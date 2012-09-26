@@ -18,8 +18,9 @@ public:
 	DeviceArray2D( int width, int height );
 	DeviceArray2D( const Array2D< T >& src );
 	DeviceArray2D( const DeviceArray2D< T >& copy );
+	DeviceArray2D( DeviceArray2D< T >&& move );
 	DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
-	// TODO: move
+	DeviceArray2D< T >& operator = ( DeviceArray2D< T >&& move );
 	virtual ~DeviceArray2D();
 	
 	bool isNull() const;
@@ -67,10 +68,8 @@ public:
 	// copy from this to cudaArray dst
 	void copyToArray( cudaArray* dst ) const;
 
-	// implicit cast to device pointer
-	operator T* () const;
-
-	T* devicePointer() const;
+	const T* devicePointer() const;
+	T* devicePointer();
 
 	KernelArray2D< T > kernelArray() const;
 

@@ -1,24 +1,3 @@
-#if 0
-#include "ThreadMath.cuh"
-#include "MathUtils.h"
-
-template< typename T >
-__global__
-void fillKernel( KernelArray3D< T > array, T value )
-{
-	int2 xy = libcgt::cuda::threadSubscript2DGlobal();
-	if( !( libcgt::cuda::inRectangle( xy, make_int2( array.width, array.height ) ) ) )
-	{
-		return;
-	}
-
-	for( int z = 0; z < array.depth; ++z )
-	{
-		array( xy.x, xy.y, z ) = value;
-	}
-}
-#endif
-
 template< typename T >
 DeviceArray3D< T >::DeviceArray3D() :
 
@@ -26,7 +5,9 @@ DeviceArray3D< T >::DeviceArray3D() :
 	m_height( -1 ),
 	m_depth( -1 ),
 
-	m_sizeInBytes( 0 )
+	m_sizeInBytes( 0 ),
+	m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
+	m_extent( make_cudaExtent( 0, 0, 0 ) )
 
 {
 	m_pitchedPointer.ptr = NULL;
@@ -44,16 +25,11 @@ DeviceArray3D< T >::DeviceArray3D( int width, int height, int depth ) :
 	m_height( -1 ),
 	m_depth( -1 ),
 
-	m_sizeInBytes( 0 )
+	m_sizeInBytes( 0 ),
+	m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
+	m_extent( make_cudaExtent( 0, 0, 0 ) )
 
 {
-	m_pitchedPointer.ptr = NULL;
-	m_pitchedPointer.pitch = 0;
-	m_pitchedPointer.xsize = 0;
-	m_pitchedPointer.ysize = 0;
-
-	m_extent = make_cudaExtent( 0, 0, 0 );
-
 	resize( width, height, depth );
 }
 
@@ -64,18 +40,82 @@ DeviceArray3D< T >::DeviceArray3D( const Array3D< T >& src ) :
 	m_height( -1 ),
 	m_depth( -1 ),
 
-	m_sizeInBytes( 0 )	
+	m_sizeInBytes( 0 ),
+	m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
+	m_extent( make_cudaExtent( 0, 0, 0 ) )
+{
+	copyFromHost( src );
+}
+
+template< typename T >
+DeviceArray3D< T >::DeviceArray3D( const DeviceArray3D< T >& copy ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+	m_depth( -1 ),
+
+	m_sizeInBytes( 0 ),
+	m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
+	m_extent( make_cudaExtent( 0, 0, 0 ) )
 
 {
-	m_pitchedPointer.ptr = NULL;
-	m_pitchedPointer.pitch = 0;
-	m_pitchedPointer.xsize = 0;
-	m_pitchedPointer.ysize = 0;
+	copyFromDevice( copy );
+}
 
-	m_extent = make_cudaExtent( 0, 0, 0 );
+template< typename T >
+DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
+{
+	m_width = move.m_width;
+	m_height = move.m_height;
+	m_depth = move.m_depth;
 
-	resize( src.width(), src.height(), src.depth() );
-	copyFromHost( src );
+	m_sizeInBytes = move.m_sizeInBytes;
+	m_pitchedPointer = move.m_pitchedPointer;
+	m_extent = move.m_extent;
+
+	move.m_width = -1;
+	move.m_height = -1;
+	move.m_depth = -1;
+
+	move.m_sizeInBytes = 0;
+	move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
+	move.m_extent = make_cudaExtent( 0, 0, 0 );
+}
+
+template< typename T >
+DeviceArray3D< T >& DeviceArray3D< T >::operator = ( const DeviceArray3D< T >& copy )
+{
+	if( this != &copy )
+	{
+		copyFromDevice( copy );
+	}
+	return *this;
+}
+
+template< typename T >
+DeviceArray3D< T >& DeviceArray3D< T >::operator = ( DeviceArray3D< T >&& move )
+{
+	if( this != &move )
+	{
+		destroy();
+
+		m_width = move.m_width;
+		m_height = move.m_height;
+		m_depth = move.m_depth;
+
+		m_sizeInBytes = move.m_sizeInBytes;
+		m_pitchedPointer = move.m_pitchedPointer;
+		m_extent = move.m_extent;
+
+		move.m_width = -1;
+		move.m_height = -1;
+		move.m_depth = -1;
+
+		move.m_sizeInBytes = 0;
+		move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
+		move.m_extent = make_cudaExtent( 0, 0, 0 );
+	}
+	return *this;
 }
 
 template< typename T >
@@ -198,24 +238,31 @@ void DeviceArray3D< T >::clear()
 template< typename T >
 void DeviceArray3D< T >::fill( const T& value )
 {
-	// TODO: use a kernel?
-
+	// TODO: use thrust::fill?
 	Array3D< T > h_array( width(), height(), depth(), value );
 	copyFromHost( h_array );
+}
 
-#if 0
-	// TODO: this is stupid, can also memcpy from an array...
+template< typename T >
+void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
+{
+	resize( src.m_width, src.m_height, src.m_depth );
 
-	// TODO: tune the sizes
-	dim3 block( 16, 16 );
-	dim3 grid = libcgt::cuda::numBins2D( width(), height(), block );
+	cudaMemcpy3DParms params;
 
-	fillKernel< T > <<< grid, block >>>
-	(
-		kernelArray(), value
-	);
-	CUT_CHECK_ERROR( "DeviceArray3D< T >::fill() kernel launch\n" );
-#endif
+	params.kind = cudaMemcpyDeviceToDevice;
+
+	params.srcPtr = src.m_pitchedPointer;
+	params.srcArray = nullptr; // we're not copying a CUDA array
+	params.srcPos = make_cudaPos( 0, 0, 0 );
+
+	params.dstPtr = m_pitchedPointer;
+	params.dstArray = nullptr; // we're not copying a CUDA array
+	params.dstPos = make_cudaPos( 0, 0, 0 );	
+
+	params.extent = src.m_extent;	
+
+	CUDA_SAFE_CALL( cudaMemcpy3D( &params ) );
 }
 
 template< typename T >
@@ -268,13 +315,13 @@ void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
 }
 
 template< typename T >
-DeviceArray3D< T >::operator cudaPitchedPtr() const
+const cudaPitchedPtr DeviceArray3D< T >::pitchedPointer() const
 {
 	return m_pitchedPointer;
 }
 
 template< typename T >
-cudaPitchedPtr DeviceArray3D< T >::pitchedPointer() const
+cudaPitchedPtr DeviceArray3D< T >::pitchedPointer()
 {
 	return m_pitchedPointer;
 }

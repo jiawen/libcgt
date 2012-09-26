@@ -18,6 +18,10 @@ public:
 	DeviceArray3D();
 	DeviceArray3D( int width, int height, int depth );
 	DeviceArray3D( const Array3D< T >& src );
+	DeviceArray3D( const DeviceArray3D< T >& copy );
+	DeviceArray3D( DeviceArray3D< T >&& move );
+	DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
+	DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
 	virtual ~DeviceArray3D();
 	
 	bool isNull() const;
@@ -52,16 +56,18 @@ public:
 	// fills this array with value
 	void fill( const T& value );
 
+	// copy from another DeviceArray3D to this
+	// this is automatically resized
+	void copyFromDevice( const DeviceArray3D< T >& src );
+
 	// copy from host array src to this
 	void copyFromHost( const Array3D< T >& src );
 
 	// copy from this to host array dst
 	void copyToHost( Array3D< T >& dst ) const;
 
-	// implicit cast to pitched pointer
-	operator cudaPitchedPtr() const;
-
-	cudaPitchedPtr pitchedPointer() const;
+	const cudaPitchedPtr pitchedPointer() const;
+	cudaPitchedPtr pitchedPointer();
 
 	KernelArray3D< T > kernelArray() const;
 

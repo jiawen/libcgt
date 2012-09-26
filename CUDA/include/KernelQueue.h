@@ -31,7 +31,7 @@ struct KernelQueue
 	bool isEmpty();
 
 	__inline__ __device__
-	bool isFull();	
+	bool isFull();
 
 	__inline__ __device__
 	KernelVector< T >& ringBuffer();
