@@ -24,6 +24,12 @@ public:
 	Vector2f size() const;
 	Vector2f& size();
 
+	float left() const; // origin.x
+	float right() const; // origin.x + width
+
+	float bottom() const; // origin.y
+	float top() const; // origin.y + height
+
 	Vector2f bottomLeft() const; // for convenience, same as origin
 	Vector2f bottomRight() const;
 	Vector2f topLeft() const;
@@ -67,6 +73,8 @@ public:
 	// returns the smallest integer-aligned rectangle that contains this
 	Rect2i enlargedToInt() const;
 
+	// half-open intervals in x and y
+	bool contains( float x, float y );
 	bool contains( const Vector2f& point );
 
 	// WARNING: the ray is considered a line
@@ -77,6 +85,14 @@ public:
 	// returns the smallest Rect2f that contains both r0 and r1
 	// r0 and r1 must both be valid
 	static Rect2f united( const Rect2f& r0, const Rect2f& r1 );
+
+	// returns whether two rectangles intersect
+	static bool intersect( const Rect2f& r0, const Rect2f& r1 );
+
+	// returns whether two rectangles intersect
+	// and computes the bounding box that is their intersection
+	// (intersection is unmodified if the intersection is empty)
+	static bool intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection );
 
 private:
 

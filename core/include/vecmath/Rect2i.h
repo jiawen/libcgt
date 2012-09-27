@@ -14,7 +14,7 @@ public:
 
 	Rect2i(); // (0,0,0,0), a null rectangle
 	Rect2i( int originX, int originY, int width, int height );
-	Rect2i( int width, int height );
+	explicit Rect2i( int width, int height );
 	Rect2i( const Vector2i& origin, const Vector2i& size );
 	explicit Rect2i( const Vector2i& size );
 
@@ -26,6 +26,12 @@ public:
 
 	Vector2i size() const;
 	Vector2i& size();
+
+	int left() const; // origin.x
+	int right() const; // origin.x + width
+
+	int bottom() const; // origin.y
+	int top() const; // origin.y + height
 
 	Vector2i bottomLeft() const; // for convenience, same as origin and is considered inside
 	Vector2i bottomRight() const; // x coordinate is one past the end

@@ -98,10 +98,22 @@ namespace libcgt
 		bool inRectangle( const int2& xy, const int2& origin, const int2& size );
 
 		__inline__ __device__
+		bool inBox( int x, int y, int z, int width, int height, int depth );
+
+		__inline__ __device__
 		bool inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth );
 
 		__inline__ __device__
+		bool inBox( const int3& xyz, int width, int height, int depth );
+
+		__inline__ __device__
 		bool inBox( const int3& xyz, const int3& size );
+
+		__inline__ __device__
+		bool inBox( const int3& xyz, const int3& origin, const int3& size );
+
+		__inline__ __device__
+		int3 indexToSubscript3D( int index, const int3& size );		
 
 		__host__ __device__ __inline__
 		int floorToInt( float x );
@@ -416,14 +428,12 @@ int libcgt::cuda::numElementsInBin( int binIndex, int binSize, int n )
 		( n % binSize ) : binSize;
 }
 
-// returns true if x < width && y < height
 __inline__ __device__
 bool libcgt::cuda::inRectangle( int x, int y, int width, int height )
 {
 	return libcgt::cuda::inRectangle( x, y, 0, 0, width, height );
 }
 
-// returns true if x >= x0 && x < x0 + width && y >= y0 && y < y0 + height
 __inline__ __device__
 bool libcgt::cuda::inRectangle( int x, int y, int x0, int y0, int width, int height )
 {
@@ -455,20 +465,51 @@ bool libcgt::cuda::inRectangle( const int2& xy, const int2& origin, const int2& 
 }
 
 __inline__ __device__
+bool libcgt::cuda::inBox( int x, int y, int z, int width, int height, int depth )
+{
+	return libcgt::cuda::inBox( x, y, z, 0, 0, 0, width, height, depth );
+}
+
+__inline__ __device__
 bool libcgt::cuda::inBox( int x, int y, int z, int x0, int y0, int z0, int width, int height, int depth )
 {
 	return
-		(
+	(
 		x >= x0 && x < x0 + width &&
 		y >= y0 && y < y0 + height &&
 		z >= z0 && z < z0 + depth
-		);
+	);
+}
+
+__inline__ __device__
+bool libcgt::cuda::inBox( const int3& xyz, int width, int height, int depth )
+{
+	return inBox( xyz.x, xyz.y, xyz.z, 0, 0, 0, width, height, depth );
 }
 
 __inline__ __device__
 bool libcgt::cuda::inBox( const int3& xyz, const int3& size )
 {
 	return inBox( xyz.x, xyz.y, xyz.z, 0, 0, 0, size.x, size.y, size.z );
+}
+
+__inline__ __device__
+bool libcgt::cuda::inBox( const int3& xyz, const int3& origin, const int3& size )
+{
+	return inBox( xyz.x, xyz.y, xyz.z, origin.x, origin.y, origin.z, size.x, size.y, size.z );
+}
+
+__inline__ __device__
+int3 libcgt::cuda::indexToSubscript3D( int index, const int3& size )
+{
+	int wh = size.x * size.y;
+	int z = index / wh;
+
+	int ky = index - z * wh;
+	int y = ky / size.x;
+
+	int x = ky - y * size.x;
+	return make_int3( x, y, z );
 }
 
 __host__ __device__ __inline__

@@ -10,6 +10,7 @@
 #include "math/MathUtils.h"
 #include "vecmath/Rect2f.h"
 #include "vecmath/Rect2i.h"
+#include "vecmath/Box3f.h"
 #include "vecmath/Matrix2f.h"
 #include "vecmath/Vector3f.h"
 
@@ -17,6 +18,48 @@ using namespace std;
 
 // static
 float GeometryUtils::EPSILON = 0.0001f;
+
+// static
+Box3f GeometryUtils::boundingBoxForPoints( const std::vector< Vector3f >& points )
+{
+	Vector3f minimum;
+	Vector3f maximum;
+
+	for( size_t i = 0; i < points.size(); ++i )
+	{
+		Vector3f xyz = points[i];
+		float x = xyz.x;
+		float y = xyz.y;
+		float z = xyz.z;
+
+		if( x < minimum.x )
+		{
+			minimum.x = x;
+		}
+		if( x > maximum.x )
+		{
+			maximum.x = x;
+		}
+		if( y < minimum.y )
+		{
+			minimum.y = y;
+		}
+		if( y > maximum.y )
+		{
+			maximum.y = y;
+		}
+		if( z < minimum.z )
+		{
+			minimum.z = z;
+		}
+		if( z > maximum.z )
+		{
+			maximum.z = z;
+		}
+	}
+
+	return Box3f( minimum, maximum - minimum );
+}
 
 // static
 Rect2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )

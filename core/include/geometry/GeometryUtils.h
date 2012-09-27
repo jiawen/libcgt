@@ -11,6 +11,7 @@ class Vector3f;
 #include "geometry/BoundingBox3f.h"
 
 class Rect2f;
+class Box3f;
 
 class GeometryUtils
 {
@@ -19,6 +20,8 @@ public:
 	// TODO: static const float epsilon
 	// have most functions take in an optional epsilon
 	static float EPSILON;
+
+	static Box3f boundingBoxForPoints( const std::vector< Vector3f >& points );
 
 	static Rect2f triangleBoundingBox( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
@@ -128,8 +131,9 @@ public:
 		const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
 		float& t, Vector3f& barycentrics );
 
-	static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
-		BoundingBox3f* pBox );
+	// NOT IMPLEMENTED
+	//static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
+	//	BoundingBox3f* pBox );
 
 	// given u along edge 0 -> 1 and v along edge 0 -> 2
 	// and the interpolants on the vertices

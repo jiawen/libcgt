@@ -92,6 +92,26 @@ Vector2i& Rect2i::size()
 	return m_size;
 }
 
+int Rect2i::left() const
+{
+	return m_origin.x;
+}
+
+int Rect2i::right() const
+{
+	return left() + width();
+}
+
+int Rect2i::bottom() const
+{
+	return m_origin.y;
+}
+
+int Rect2i::top() const
+{
+	return bottom() + height();
+}
+
 Vector2i Rect2i::bottomLeft() const
 {
 	return m_origin;

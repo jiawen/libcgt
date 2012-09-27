@@ -1,7 +1,7 @@
 template< typename T >
 DeviceVector< T >::DeviceVector() :
 
-	m_sizeInBytes( -1 ),
+	m_sizeInBytes( 0 ),
 	m_length( -1 ),
 	m_devicePointer( nullptr )
 
@@ -13,7 +13,7 @@ DeviceVector< T >::DeviceVector() :
 template< typename T >
 DeviceVector< T >::DeviceVector( int length ) :
 
-	m_sizeInBytes( -1 ),
+	m_sizeInBytes( 0 ),
 	m_length( -1 ),
 	m_devicePointer( nullptr )
 
@@ -24,7 +24,7 @@ DeviceVector< T >::DeviceVector( int length ) :
 template< typename T >
 DeviceVector< T >::DeviceVector( const std::vector< T >& src ) :
 
-	m_sizeInBytes( -1 ),
+	m_sizeInBytes( 0 ),
 	m_length( -1 ),
 	m_devicePointer( nullptr )
 
@@ -35,7 +35,7 @@ DeviceVector< T >::DeviceVector( const std::vector< T >& src ) :
 template< typename T >
 DeviceVector< T >::DeviceVector( const DeviceVector< T >& copy ) :
 
-	m_sizeInBytes( -1 ),
+	m_sizeInBytes( 0 ),
 	m_length( -1 ),
 	m_devicePointer( nullptr )
 
@@ -50,7 +50,7 @@ DeviceVector< T >::DeviceVector( DeviceVector< T >&& move )
 	m_length = move.m_length;
 	m_devicePointer = move.m_devicePointer;
 
-	move.m_sizeInBytes = -1;
+	move.m_sizeInBytes = 0;
 	move.m_length = -1;
 	move.m_devicePointer = nullptr;
 }
@@ -76,7 +76,7 @@ DeviceVector< T >& DeviceVector< T >::operator = ( DeviceVector< T >&& move )
 		m_length = move.m_length;
 		m_devicePointer = move.m_devicePointer;
 
-		move.m_sizeInBytes = -1;
+		move.m_sizeInBytes = 0;
 		move.m_length = -1;
 		move.m_devicePointer = nullptr;
 	}
@@ -208,7 +208,7 @@ void DeviceVector< T >::destroy()
 		m_devicePointer = nullptr;
 	}
 
-	m_sizeInBytes = -1;
+	m_sizeInBytes = 0;
 	m_length = -1;
 	m_devicePointer = nullptr;
 }

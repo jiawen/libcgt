@@ -66,7 +66,7 @@ public:
 
 private:
 
-	int m_sizeInBytes;
+	size_t m_sizeInBytes;
 	int m_length;
 	T* m_devicePointer;
 

@@ -15,21 +15,6 @@
 // local
 #include "DeviceQueue.h"
 
-// TODO: this can actually be compiled!
-
-#if 0
-#ifdef __CUDACC__
-struct IsDeleted : public thrust::unary_function< int, bool >
-{
-	__host__ __device__
-	bool operator () ( int poolIndex )
-	{
-		return poolIndex < 0;
-	}
-};
-#endif
-#endif
-
 template< typename UsedListTag >
 struct UsedListEntry
 {
@@ -139,6 +124,12 @@ public:
 	// returns the number of elements
 	int capacity() const;
 
+	// return the size of an element, in bytes
+	int elementSizeBytes() const;
+
+	// returns the total size of the pool, in bytes, including overhead
+	size_t sizeInBytes() const;
+
 	// returns the number of free elements
 	// (potentially expensive - incurs a GPU copy)
 	int numFreeElements();
@@ -150,12 +141,7 @@ public:
 	// does *not* touch the data
 	void clear();
 
-	KernelPool< UsedListTag > kernelPool();
-
-	// removes all the deleted pool indices from the used list
-	// (copying them to the collected list temporarily)
-	// and returns them to the free list
-	void collectDeleted();
+	KernelPool< UsedListTag > kernelPool();	
 	
 //private:
 
@@ -227,6 +213,24 @@ int DevicePool< UsedListTag >::capacity() const
 
 template< typename UsedListTag >
 __inline__ __host__
+int DevicePool< UsedListTag >::elementSizeBytes() const
+{
+	return m_elementSizeBytes;
+};
+
+template< typename UsedListTag >
+__inline__ __host__
+size_t DevicePool< UsedListTag >::sizeInBytes() const
+{
+	size_t esb = m_elementSizeBytes;
+	size_t poolSizeBytes = esb * capacity();
+
+	return poolSizeBytes + md_freeList.sizeInBytes() + md_usedList.sizeInBytes() + md_collectedList.sizeInBytes();
+}
+
+
+template< typename UsedListTag >
+__inline__ __host__
 int DevicePool< UsedListTag >::numFreeElements()
 {
 	return md_freeList.count();
@@ -270,42 +274,3 @@ KernelPool< UsedListTag > DevicePool< UsedListTag >::kernelPool()
 		m_backingStore.kernelVector()
 	);
 }
-
-#if 0
-#include <common/ArrayUtils.h>
-
-__inline__ __host__
-void DevicePool::collectDeleted()
-{
-	printf( "inside collectDeleted\n" );
-
-#ifdef __CUDACC__
-
-	printf( "inside collectDeleted::__CUDA_ARCH__ portion\n" );
-
-	std::vector< int > h_freeListBefore;
-	std::vector< int > h_freeListAfter;
-	std::vector< int > h_collectedListAfter;
-
-	md_freeList.elements().copyToHost( h_freeListBefore );
-
-	int* d_headPointer = md_freeList.elements().devicePointer();
-	int* d_tailPointer = d_headPointer + md_freeList.count();
-	int* d_collectedHeadPointer = md_collectedList.elements().devicePointer();
-	int* d_collectedEndPointer;
-
-	d_collectedEndPointer = thrust::remove_copy_if( d_headPointer, d_tailPointer, d_collectedHeadPointer, IsDeleted() );	
-
-	int nCollected = d_collectedEndPointer - d_collectedHeadPointer;
-
-	md_freeList.elements().copyToHost( h_freeListAfter );
-
-	md_collectedList.copyToHost( h_collectedListAfter );
-
-	ArrayUtils::saveTXT( h_freeListBefore, "c:/tmp/freeListBefore.txt" );
-	ArrayUtils::saveTXT( h_freeListAfter, "c:/tmp/freeListAfter.txt" );
-	ArrayUtils::saveTXT( h_collectedListAfter, "c:/tmp/collectedListAfter.txt" );
-#endif
-}
-
-#endif

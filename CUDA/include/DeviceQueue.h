@@ -35,12 +35,15 @@ public:
 	bool notNull() const;
 
 	// returns the maximum number of elements the queue can hold
-	uint capacity() const;
+	int capacity() const;
+
+	// returns the total size of the queue in bytes, including overhead
+	size_t sizeInBytes() const;
 
 	// resizes the queue:
 	//   destroys the existing data
 	//   and clears the queue in the process (head and tail pointers are set to 0)
-	void resize( uint capacity );
+	void resize( int capacity );
 
 	// clears the queue by setting head and tail absolute indices back to 0
 	// does not actually touch the data

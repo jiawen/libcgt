@@ -1,9 +1,9 @@
 #include "vecmath/Rect2f.h"
 
-#include <algorithm>
 #include <QString>
 
 #include "math/Arithmetic.h"
+#include "math/MathUtils.h"
 #include "vecmath/Rect2i.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -92,6 +92,26 @@ Vector2f Rect2f::size() const
 Vector2f& Rect2f::size()
 {
 	return m_size;
+}
+
+float Rect2f::left() const
+{
+	return m_origin.x;
+}
+
+float Rect2f::right() const
+{
+	return left() + width();
+}
+
+float Rect2f::bottom() const
+{
+	return m_origin.y;
+}
+
+float Rect2f::top() const
+{
+	return bottom() + height();
 }
 
 Vector2f Rect2f::bottomLeft() const
@@ -201,7 +221,7 @@ Rect2f Rect2f::flippedUD( float height ) const
 	return Rect2f( origin, m_size );
 }
 
-Rect2i Rect2f::enlargedToInt( ) const
+Rect2i Rect2f::enlargedToInt() const
 {
 	Vector2i minimum = Arithmetic::floorToInt( bottomLeft() );
 	Vector2i maximum = Arithmetic::ceilToInt( topRight() );
@@ -215,15 +235,20 @@ Rect2i Rect2f::enlargedToInt( ) const
 	return Rect2i( minimum, size );
 }
 
-bool Rect2f::contains( const Vector2f& point )
+bool Rect2f::contains( float x, float y )
 {
 	return
 	(
-		( point.x > m_origin.x ) &&
-		( point.x < ( m_origin.x + m_size.x ) ) &&
-		( point.y > m_origin.y ) &&
-		( point.y < ( m_origin.y + m_size.y ) )
+		( x >= m_origin.x ) &&
+		( x < ( m_origin.x + m_size.x ) ) &&
+		( y >= m_origin.y ) &&
+		( y < ( m_origin.y + m_size.y ) )
 	);
+}
+
+bool Rect2f::contains( const Vector2f& point )
+{
+	return contains( point.x, point.y );
 }
 
 bool Rect2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
@@ -262,4 +287,27 @@ Rect2f Rect2f::united( const Rect2f& r0, const Rect2f& r1 )
 	Vector2f unitedMax( std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) );
 
 	return Rect2f( unitedMin, unitedMax - unitedMin );
+}
+
+// static
+bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1 )
+{
+	Rect2f isect;
+	return intersect( r0, r1, isect );
+}
+
+// static
+bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection )
+{
+	Vector2f minimum = MathUtils::maximum( r0.bottomLeft(), r1.bottomLeft() );
+	Vector2f maximum = MathUtils::minimum( r0.topRight(), r1.topRight() );
+
+	if( minimum.x < maximum.x &&
+		minimum.y < maximum.y )
+	{
+		intersection.m_origin = minimum;
+		intersection.m_size = maximum - minimum;
+		return true;
+	}
+	return false;
 }
