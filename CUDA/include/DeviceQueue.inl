@@ -5,7 +5,7 @@ DeviceQueue< T >::DeviceQueue()
 }
 
 template< typename T >
-DeviceQueue< T >::DeviceQueue( uint capacity )
+DeviceQueue< T >::DeviceQueue( int capacity )
 {
 	resize( capacity );
 }

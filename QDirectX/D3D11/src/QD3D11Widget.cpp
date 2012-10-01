@@ -254,6 +254,9 @@ HRESULT QD3D11Widget::createSwapChainAndDevice( int width, int height )
 		&m_pImmediateContext // output immediate context
 	);
 
+	// TODO: check if actual feature level matches requested feature level
+	// fail if they don't match
+
 	return hr;
 }
 

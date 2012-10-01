@@ -19,6 +19,7 @@ public:
 	DeviceArray2D( const Array2D< T >& src );
 	DeviceArray2D( const DeviceArray2D< T >& copy );
 	DeviceArray2D( DeviceArray2D< T >&& move );
+	DeviceArray2D< T >& operator = ( const Array2D< T >& src );
 	DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
 	DeviceArray2D< T >& operator = ( DeviceArray2D< T >&& move );
 	virtual ~DeviceArray2D();
@@ -49,6 +50,18 @@ public:
 
 	// fills this array with value
 	void fill( const T& value );
+
+	// get an element of the array from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	T get( int x, int y ) const;
+
+	// get an element of the array from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	T operator () ( int x, int y ) const;
+
+	// sets an element of the array from the host
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	void set( int x, int y, const T& value );
 
 	// copy from another DeviceArray2D to this
 	// this is automatically resized

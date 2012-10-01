@@ -1,5 +1,4 @@
-#ifndef QUAT4D_H
-#define QUAT4D_H
+#pragma once
 
 class Quat4f;
 class Vector3d;
@@ -95,5 +94,3 @@ Quat4d operator - ( const Quat4d& q0, const Quat4d& q1 );
 Quat4d operator * ( const Quat4d& q0, const Quat4d& q1 );
 Quat4d operator * ( double d, const Quat4d& q );
 Quat4d operator * ( const Quat4d& q, double d );
-
-#endif // QUAT4D_H

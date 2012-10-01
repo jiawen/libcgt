@@ -20,6 +20,7 @@ public:
 	DeviceArray3D( const Array3D< T >& src );
 	DeviceArray3D( const DeviceArray3D< T >& copy );
 	DeviceArray3D( DeviceArray3D< T >&& move );
+	DeviceArray3D< T >& operator = ( const Array3D< T >& src );
 	DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
 	DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
 	virtual ~DeviceArray3D();
@@ -55,6 +56,18 @@ public:
 
 	// fills this array with value
 	void fill( const T& value );
+
+	// get an element of the array from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	T get( int x, int y, int z ) const;
+
+	// get an element of the array from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	T operator () ( int x, int y, int z ) const;
+
+	// sets an element of the array from the host
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	void set( int x, int y, int z, const T& value );
 
 	// copy from another DeviceArray3D to this
 	// this is automatically resized

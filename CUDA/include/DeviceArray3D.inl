@@ -83,6 +83,13 @@ DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
 }
 
 template< typename T >
+DeviceArray3D< T >& DeviceArray3D< T >::operator = ( const Array3D< T >& src )
+{
+	copyFromHost( copy );
+	return *this;
+}
+
+template< typename T >
 DeviceArray3D< T >& DeviceArray3D< T >::operator = ( const DeviceArray3D< T >& copy )
 {
 	if( this != &copy )
@@ -241,6 +248,38 @@ void DeviceArray3D< T >::fill( const T& value )
 	// TODO: use thrust::fill?
 	Array3D< T > h_array( width(), height(), depth(), value );
 	copyFromHost( h_array );
+}
+
+template< typename T >
+T DeviceArray3D< T >::get( int x, int y, int z ) const
+{
+	T output;
+
+	const ubyte* sourcePointer = reinterpret_cast< const ubyte* >( m_pitchedPointer.ptr );
+	const ubyte* slicePointer = sourcePointer + z * slicePitch();
+	const ubyte* rowPointer = slicePointer + y * rowPitch();
+	const ubyte* elementPointer = rowPointer + x * sizeof( T );
+
+	CUDA_SAFE_CALL( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
+
+	return output;
+}
+
+template< typename T >
+T DeviceArray3D< T >::operator () ( int x, int y, int z ) const
+{
+	return get( x, y, z );
+}
+
+template< typename T >
+void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
+{
+	const ubyte* destinationPointer = reinterpret_cast< const ubyte* >( m_pitchedPointer.ptr );
+	const ubyte* slicePointer = destinationPointer + z * slicePitch();
+	const ubyte* rowPointer = slicePointer + y * rowPitch();
+	const ubyte* elementPointer = rowPointer + x * sizeof( T );
+
+	CUDA_SAFE_CALL( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >

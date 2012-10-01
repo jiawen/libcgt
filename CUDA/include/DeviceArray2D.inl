@@ -70,6 +70,13 @@ DeviceArray2D< T >::DeviceArray2D( DeviceArray2D< T >&& move )
 }
 
 template< typename T >
+DeviceArray2D< T >& DeviceArray2D< T >::operator = ( const Array2D< T >& src )
+{
+	copyFromHost( src );
+	return *this;
+}
+
+template< typename T >
 DeviceArray2D< T >& DeviceArray2D< T >::operator = ( const DeviceArray2D< T >& copy )
 {
 	if( this != &copy )
@@ -202,6 +209,36 @@ void DeviceArray2D< T >::fill( const T& value )
 {
 	Array2D< T > h_array( width(), height(), value );
 	copyFromHost( h_array );
+}
+
+template< typename T >
+T DeviceArray2D< T >::get( int x, int y ) const
+{
+	T output;
+
+	const ubyte* sourcePointer = reinterpret_cast< const ubyte* >( devicePointer() );
+	const ubyte* rowPointer = sourcePointer + y * pitch();
+	const ubyte* elementPointer = rowPointer + x * sizeof( T );
+
+	CUDA_SAFE_CALL( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
+
+	return output;
+}
+
+template< typename T >
+T DeviceArray2D< T >::operator () ( int x, int y ) const
+{
+	return get( x, y );
+}
+
+template< typename T >
+void DeviceArray2D< T >::set( int x, int y, const T& value )
+{
+	const ubyte* destinationPointer = reinterpret_cast< const ubyte* >( devicePointer() );
+	const ubyte* rowPointer = destinationPointer + y * pitch();
+	const ubyte* elementPointer = rowPointer + x * sizeof( T );
+
+	CUDA_SAFE_CALL( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >

@@ -1,5 +1,4 @@
-#ifndef CLOCK_H
-#define CLOCK_H
+#pragma once
 
 #ifdef _WIN32
 #include <windows.h>
@@ -25,5 +24,3 @@ private:
 
 	float m_liFrequency;
 };
-
-#endif // CLOCK_H

@@ -3,10 +3,12 @@
 #include <cuda_runtime.h>
 #include <cutil.h>
 
-#include "Array2D.h"
+#include <common/Array2D.h>
 
 // TODO: create a D3D11CUDAInterop version
 // that exposes a CUDAArray2D interface
+
+// TODO: support CUDA surfaces: bindSurface()
 
 // Basic 2D array interface around CUDA global memory
 // Wraps around cudaMallocArray() (CUDA Array, can only be used as textures)
@@ -24,6 +26,9 @@ public:
 	int height() const;
 	int numElements() const;
 
+	// TODO: size(), resize(), isNull(), notNull()
+	// TODO: bindTexture()
+
 	// TODO: support offsets
 	void copyFromHost( void* src ) const;
 	void copyFromHost( const Array2D< T >& src ) const;
@@ -32,17 +37,15 @@ public:
 	void copyToHost( Array2D< T >& dst ) const;
 	void copyToHost( void* dst ) const;
 
-	// implicit cast to CUDAArray2D
-	operator cudaArray* () const;
-
-	cudaArray* deviceArray() const;
+	const cudaArray* deviceArray() const;
+	cudaArray* deviceArray();
 
 private:
 
 	int m_width;
 	int m_height;
 	cudaChannelFormatDesc m_cfd;
-	int m_sizeInBytes;
+	size_t m_sizeInBytes;
 	cudaArray* m_deviceArray;
 
 };
@@ -156,13 +159,13 @@ void CUDAArray2D< T >::copyToHost( void* dst ) const
 }
 
 template< typename T >
-CUDAArray2D< T >::operator cudaArray* () const
+const cudaArray* CUDAArray2D< T >::deviceArray() const
 {
 	return m_deviceArray;
 }
 
 template< typename T >
-cudaArray* CUDAArray2D< T >::deviceArray() const
+cudaArray* CUDAArray2D< T >::deviceArray()
 {
 	return m_deviceArray;
 }

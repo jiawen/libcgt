@@ -1,5 +1,4 @@
-#ifndef CROSS_PLATFORM_SLEEP_H
-#define CROSS_PLATFORM_SLEEP_H
+#pragma once
 
 #include <QThread>
 
@@ -18,5 +17,3 @@ public:
 	// yields this thread by calling usleep( 0 );
 	static void yieldThread();
 };
-
-#endif // CROSS_PLATFORM_SLEEP_H

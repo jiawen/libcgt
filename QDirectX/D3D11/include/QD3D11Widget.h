@@ -1,10 +1,9 @@
 #pragma once
 
-#include <D3D11.h>
+#include <d3d11.h>
 #include <d3dx11.h>
 
 #include <QWidget>
-#include <QStack>
 
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector4f.h>
@@ -13,7 +12,7 @@ class QD3D11Widget : public QWidget
 {
 public:
 
-	QD3D11Widget( QWidget* parent = NULL );
+	QD3D11Widget( QWidget* parent = nullptr );
 	virtual ~QD3D11Widget();
 
 	// Returns if this widget is a vaild D3D11 context.

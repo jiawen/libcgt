@@ -23,7 +23,7 @@ public:
 	DeviceQueue();
 
 	// initializes a queue with a fixed capacity
-	DeviceQueue( uint capacity );
+	DeviceQueue( int capacity );
 
 	DeviceQueue( const DeviceQueue< T >& copy );
 	DeviceQueue( DeviceQueue< T >&& move );

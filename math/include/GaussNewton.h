@@ -1,5 +1,4 @@
-#ifndef GAUSS_NEWTON_H
-#define GAUSS_NEWTON_H
+#pragma once
 
 #include <memory>
 
@@ -45,5 +44,3 @@ private:
 	FloatMatrix m_r;
 
 };
-
-#endif // GAUSS_NEWTON_H

@@ -10,6 +10,9 @@ struct KernelVector
 	KernelVector( T* _pointer, int _length );
 
 	__inline__ __device__
+	const T& operator [] ( int i ) const;
+
+	__inline__ __device__
 	T& operator [] ( int i );
 };
 
@@ -22,6 +25,13 @@ KernelVector< T >::KernelVector( T* _pointer, int _length ) :
 
 {
 
+}
+
+template< typename T >
+__inline__ __device__
+const T& KernelVector< T >::operator [] ( int i ) const
+{
+	return pointer[ i ];
 }
 
 template< typename T >

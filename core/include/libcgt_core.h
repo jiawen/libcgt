@@ -1,5 +1,4 @@
-#ifndef LIBCGT_H
-#define LIBCGT_H
+#pragma once
 
 #include "color/libcgt_color.h"
 #include "common/libcgt_common.h"
@@ -9,5 +8,3 @@
 #include "math/libcgt_math.h"
 #include "time/libcgt_time.h"
 #include "vecmath/libcgt_vecmath.h"
-
-#endif // LIBCGT_H

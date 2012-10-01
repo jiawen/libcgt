@@ -1,5 +1,4 @@
-#ifndef DEPTH_STENCIL_TARGET_H
-#define DEPTH_STENCIL_TARGET_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -8,6 +7,8 @@ class DepthStencilTarget
 public:
 
 	// TODO: test for failure in texture/view creation, return NULL
+	// TODO: add size(), resize()
+	// TODO: get QD3D11Widget to use this
 
 	static DepthStencilTarget* createDepthFloat24StencilUnsignedByte8( ID3D11Device* pDevice, int width, int height );	
 
@@ -33,5 +34,3 @@ private:
 	ID3D11DepthStencilView* m_pDepthStencilView;	
 
 };
-
-#endif // DEPTH_STENCIL_TARGET_H

@@ -148,14 +148,20 @@ template< typename T >
 T DeviceVector< T >::get( int index ) const
 {
 	T output;
-	CUDA_SAFE_CALL( cudaMemcpy( &output, m_devicePointer + index, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
+	CUDA_SAFE_CALL( cudaMemcpy( &output, m_devicePointer + index, sizeof( T ), cudaMemcpyDeviceToHost ) );
 	return output;
+}
+
+template< typename T >
+T DeviceVector< T >::operator [] ( int index ) const
+{
+	return get( index );
 }
 
 template< typename T >
 void DeviceVector< T >::set( int index, const T& value )
 {
-	CUDA_SAFE_CALL( cudaMemcpy( m_devicePointer + index, &value, m_sizeInBytes, cudaMemcpyHostToDevice ) );
+	CUDA_SAFE_CALL( cudaMemcpy( m_devicePointer + index, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >

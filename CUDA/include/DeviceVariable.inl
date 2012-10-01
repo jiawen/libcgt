@@ -49,6 +49,13 @@ DeviceVariable< T >& DeviceVariable< T >::operator = ( DeviceVariable< T >&& mov
 }
 
 template< typename T >
+DeviceVariable< T >& DeviceVariable< T >::operator = ( const T& copy )
+{
+	set( copy );
+	return *this;
+}
+
+template< typename T >
 DeviceVariable< T >::~DeviceVariable()
 {
 	destroy();	

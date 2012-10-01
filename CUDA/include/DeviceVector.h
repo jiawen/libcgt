@@ -43,9 +43,13 @@ public:
 	// WARNING: probably slow as it incurs a cudaMemcpy
 	T get( int index ) const;
 
+	// get an element of the vector from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy
+	T operator [] ( int index ) const;
+
 	// sets an element of the vector from the host
 	// WARNING: probably slow as it incurs a cudaMemcpy
-	void set( int index, const T& value );
+	void set( int index, const T& value );	
 
 	// copy from another DeviceVector to this
 	// this is automatically resized
