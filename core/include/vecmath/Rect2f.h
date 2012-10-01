@@ -11,7 +11,7 @@ public:
 	
 	Rect2f(); // (0,0,0,0), a null rectangle
 	Rect2f( float originX, float originY, float width, float height );
-	explicit Rect2f( float width, float height ); // (0, 0, width, height)
+	Rect2f( float width, float height ); // (0, 0, width, height)
 	Rect2f( const Vector2f& origin, const Vector2f& size );	
 	explicit Rect2f( const Vector2f& size ); // (0, 0, width, height)
 

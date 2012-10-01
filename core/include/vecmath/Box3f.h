@@ -12,7 +12,7 @@ public:
 
 	Box3f(); // (0,0,0,0,0,0), a null box
 	Box3f( float originX, float originY, float originZ, float width, float height, float depth );
-	explicit Box3f( float width, float height, float depth );
+	Box3f( float width, float height, float depth );
 	Box3f( const Vector3f& origin, const Vector3f& size );
 	explicit Box3f( const Vector3f& size );
 
