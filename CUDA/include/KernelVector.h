@@ -6,7 +6,10 @@ struct KernelVector
 	T* pointer;
 	int length;
 
-	__host__
+	__inline__ __host__
+	KernelVector();
+
+	__inline__ __host__
 	KernelVector( T* _pointer, int _length );
 
 	__inline__ __device__
@@ -17,7 +20,16 @@ struct KernelVector
 };
 
 template< typename T >
-__host__
+KernelVector< T >::KernelVector() :
+
+	pointer( nullptr ),
+	length( -1 )
+
+{
+
+}
+
+template< typename T >
 KernelVector< T >::KernelVector( T* _pointer, int _length ) :
 
 	pointer( _pointer ),
@@ -28,14 +40,12 @@ KernelVector< T >::KernelVector( T* _pointer, int _length ) :
 }
 
 template< typename T >
-__inline__ __device__
 const T& KernelVector< T >::operator [] ( int i ) const
 {
 	return pointer[ i ];
 }
 
 template< typename T >
-__inline__ __device__
 T& KernelVector< T >::operator [] ( int i )
 {
 	return pointer[ i ];

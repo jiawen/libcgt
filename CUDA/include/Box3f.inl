@@ -83,6 +83,12 @@ float3 libcgt::cuda::Box3f::rightTopFront() const
 	return m_origin + m_size;
 }
 
+__inline__ __host__ __device__
+float3 libcgt::cuda::Box3f::center() const
+{
+	return m_origin + 0.5f * m_size;
+}
+
 void libcgt::cuda::Box3f::getCorners( float3 corners[8] ) const
 {
 	for( int i = 0; i < 8; ++i )
