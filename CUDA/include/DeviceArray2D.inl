@@ -247,7 +247,7 @@ void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 	resize( src.m_width, src.m_height );
 
 	CUDA_SAFE_CALL( cudaMemcpy2D( m_devicePointer, m_pitch, src.m_devicePointer, src.m_pitch,
-		src.m_width, src.m_height, cudaMemcpyDeviceToDevice ) );
+		src.m_width * sizeof( T ), src.m_height, cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >
