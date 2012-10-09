@@ -4,6 +4,9 @@ template< typename T >
 struct KernelQueue
 {
 	__inline__ __host__
+	KernelQueue();
+
+	__inline__ __host__
 	KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements );
 
 #ifdef __CUDACC__
@@ -36,8 +39,6 @@ struct KernelQueue
 	__inline__ __device__
 	KernelVector< T >& ringBuffer();
 
-private:
-
 	// pointer to the head index
 	// &( md_pHeadTailAbsoluteIndices->x )
 	__inline__ __device__
@@ -47,6 +48,8 @@ private:
 	// &( md_pHeadTailAbsoluteIndices->y )
 	__inline__ __device__
 	uint* tailIndexPointer();
+
+private:	
 
 	uint2* md_pHeadTailAbsoluteIndices;
 	KernelVector< T > md_ringBuffer;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BasicTypes.h"
 #include "math/Indexing.h"
 #include "vecmath/Vector3i.h"
 #include "BasicTypes.h"

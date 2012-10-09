@@ -1,5 +1,15 @@
 template< typename T >
 __inline__ __host__
+KernelQueue< T >::KernelQueue() :
+
+	md_pHeadTailAbsoluteIndices( nullptr )
+
+{
+
+}
+
+template< typename T >
+__inline__ __host__
 KernelQueue< T >::KernelQueue( uint2* d_pHeadTailAbsoluteIndices, KernelVector< T > ringBuffer ) :
 
 	md_pHeadTailAbsoluteIndices( d_pHeadTailAbsoluteIndices ),

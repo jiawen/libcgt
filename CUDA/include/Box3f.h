@@ -55,6 +55,9 @@ namespace libcgt
 			float3 rightTopFront() const;
 
 			__inline__ __host__ __device__
+			float3 center() const;
+
+			__inline__ __host__ __device__
 			void getCorners( float3 corners[8] ) const;
 
 			__inline__ __host__ __device__

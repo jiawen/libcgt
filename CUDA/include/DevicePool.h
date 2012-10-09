@@ -27,6 +27,12 @@ template< typename UsedListTag >
 struct KernelPool
 {
 	__inline__ __host__
+	KernelPool()
+	{
+
+	}
+
+	__inline__ __host__
 	KernelPool
 	(
 		int capacity,
