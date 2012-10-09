@@ -2,6 +2,7 @@
 
 #include "math/Indexing.h"
 #include "vecmath/Vector3i.h"
+#include "BasicTypes.h"
 
 // a 3D array view that wraps around a raw pointer
 // and does not take ownership
