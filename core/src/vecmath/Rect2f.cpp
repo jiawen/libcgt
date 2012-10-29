@@ -252,27 +252,40 @@ bool Rect2f::contains( const Vector2f& point )
 }
 
 bool Rect2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
-	float& tNear, float& tFar ) const
+	float& tNear, float& tFar, int& axis ) const
 {
 	// compute t to each face
 	Vector2f rcpDir = 1.0f / direction;
 
-	// three "bottom" faces (min of the box)
-	Vector2f tBottom = rcpDir * ( bottomLeft() - origin );
-	// three "top" faces (max of the box)
-	Vector2f tTop = rcpDir * ( topRight() - origin );
+	// intersect left and bottom
+	Vector2f tBottomLeft = rcpDir * ( bottomLeft() - origin );
+	// intersect right and top
+	Vector2f tTopRight = rcpDir * ( topRight() - origin );
 
 	// find the smallest and largest distances along each axis
-	Vector2f tMin = Vector2f::minimum( tBottom, tTop );
-	Vector2f tMax = Vector2f::maximum( tBottom, tTop );
+	Vector2f tMin = MathUtils::minimum( tBottomLeft, tTopRight );
+	Vector2f tMax = MathUtils::maximum( tBottomLeft, tTopRight );
 
 	// tNear is the largest tMin
-	tNear = tMin.maximum();
+	tNear = MathUtils::maximum( tMin );
 
 	// tFar is the smallest tMax
-	tFar = tMax.minimum();
+	tFar = MathUtils::minimum( tMax );
 
-	return tFar > tNear;
+	bool intersected = ( tFar > tNear );
+	if( intersected )
+	{
+		if( tNear == tMin.x || tNear == tMax.x )
+		{
+			axis = 0;
+		}
+		else
+		{
+			axis = 1;
+		}
+	}
+
+	return intersected;
 }
 
 // static

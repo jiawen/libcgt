@@ -39,6 +39,11 @@ bool libcgt::cuda::isOdd( int x )
 	return( ( x & 0x1 ) == 1 );
 }
 
+int libcgt::cuda::flipUD( int y, int height )
+{
+	return( height - y - 1 );
+}
+
 float libcgt::cuda::log2Float( float x )
 {
 	return log( x ) / log( 2.0f );
@@ -461,6 +466,36 @@ int libcgt::cuda::rescaleRange( int x, int oldRange, int newRange )
 		g = newRange - 1;
 	}
 	return g;
+}
+
+float libcgt::cuda::minimum( const float2& v )
+{
+	return fminf( v.x, v.y );
+}
+
+float libcgt::cuda::minimum( const float3& v )
+{
+	return fminf( v.x, fminf( v.y, v.z ) );
+}
+
+float libcgt::cuda::minimum( const float4& v )
+{
+	return fminf( v.x, fminf( v.y, fminf( v.z, v.w ) ) );
+}
+
+float libcgt::cuda::maximum( const float2& v )
+{
+	return fmaxf( v.x, v.y );
+}
+
+float libcgt::cuda::maximum( const float3& v )
+{
+	return fmaxf( v.x, fmaxf( v.y, v.z ) );
+}
+
+float libcgt::cuda::maximum( const float4& v )
+{
+	return fmaxf( v.x, fmaxf( v.y, fmaxf( v.z, v.w ) ) );
 }
 
 #if 0

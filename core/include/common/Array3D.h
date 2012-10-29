@@ -66,6 +66,9 @@ public:
 	const T& operator () ( int x, int y, int z ) const; // read
 	T& operator () ( int x, int y, int z ); // write
 
+	const T& operator () ( const Vector3i& xyz ) const; // read
+	T& operator () ( const Vector3i& xyz ); // write
+
 	// reinterprets this array as an array of another format,
 	// destroying this array
 	//

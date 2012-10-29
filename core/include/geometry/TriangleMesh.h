@@ -21,6 +21,13 @@ public:
 
 	// make an empty triangle mesh
 	TriangleMesh();
+
+	// construct a triangle mesh out of a list of positions, normals
+	// and a list of triplets indexing into positions/normals
+	// positions and normals must have the same size
+	TriangleMesh( const std::vector< Vector3f >& positions,
+		const std::vector< Vector3f >& normals,
+		const std::vector< Vector3i > faces );
 	
 	// make a triangle mesh out of data from an OBJ file
 	// all groups are merged such that:

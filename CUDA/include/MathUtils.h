@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#include <cutil_math.h>
 
 #define MAX_UNSIGNED_SHORT ( 1 << 16 )
 #define SUB2IND( x, y, w ) ( ( y ) * ( w ) + ( x ) )
@@ -23,6 +24,9 @@ namespace libcgt
 
 		__inline__ __host__ __device__
 		bool isOdd( int x );
+
+		__inline__ __host__ __device__
+		int flipUD( int y, int height );
 
 		__inline__ __host__ __device__
 		float log2Float( float x );
@@ -245,6 +249,24 @@ namespace libcgt
 		// to [0,newRange)
 		__inline__ __host__ __device__
 		int rescaleRange( int x, int oldRange, int newRange );
+
+		__inline__ __host__ __device__
+		float minimum( const float2& v );
+
+		__inline__ __host__ __device__
+		float minimum( const float3& v );
+
+		__inline__ __host__ __device__
+		float minimum( const float4& v );
+
+		__inline__ __host__ __device__
+		float maximum( const float2& v );
+
+		__inline__ __host__ __device__
+		float maximum( const float3& v );
+
+		__inline__ __host__ __device__
+		float maximum( const float4& v );
 
 #if 0
 		// TODO: fix this

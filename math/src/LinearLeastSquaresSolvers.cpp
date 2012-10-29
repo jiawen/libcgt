@@ -63,9 +63,9 @@ bool LinearLeastSquaresSolvers::QRFullRankInPlace( FloatMatrix& a, FloatMatrix& 
 	// TODO: check info
 
 	lwork = static_cast< int >( workQuery );
-	float* pwork = new float[ lwork ];
+	std::vector< float > work( lwork );
 
-	sgels( &trans, &m, &n, &nrhs, pa, &lda, pb, &ldb, pwork, &lwork, &info );
+	sgels( &trans, &m, &n, &nrhs, pa, &lda, pb, &ldb, work.data(), &lwork, &info );
 
 	if( info < 0 )
 	{
@@ -117,7 +117,7 @@ void LinearLeastSquaresSolvers::SVDRankDeficientInPlace( FloatMatrix& a, FloatMa
 	float* pb = b.data();
 
 	// singular values
-	float* ps = new float[ qMin( m, n ) ];
+	std::vector< float > s( std::min( m, n ) );
 
 	int lRank;
 	float workQuery;
@@ -125,17 +125,14 @@ void LinearLeastSquaresSolvers::SVDRankDeficientInPlace( FloatMatrix& a, FloatMa
 	int info;
 
 	// work query
-	sgelss( &m, &n, &nrhs, pa, &lda, pb, &ldb, ps, &rCond, &lRank, &workQuery, &lWork, &info );
+	sgelss( &m, &n, &nrhs, pa, &lda, pb, &ldb, s.data(), &rCond, &lRank, &workQuery, &lWork, &info );
 	// TODO: check info
 
 	lWork = static_cast< int >( workQuery );
-	float* pWork = new float[ lWork ];
+	std::vector< float > work( lWork );
 
-	sgelss( &m, &n, &nrhs, pa, &lda, pb, &ldb, ps, &rCond, &lRank, pWork, &lWork, &info );
+	sgelss( &m, &n, &nrhs, pa, &lda, pb, &ldb, s.data(), &rCond, &lRank, work.data(), &lWork, &info );
 	// TODO: check info
 
 	// TODO: return rank and singular values
-
-	delete[] pWork;
-	delete[] ps;
 }

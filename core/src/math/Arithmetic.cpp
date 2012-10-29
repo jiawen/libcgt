@@ -52,6 +52,30 @@ int Arithmetic::sign( double x )
 }
 
 // static
+Vector2i Arithmetic::sign( const Vector2f& v )
+{
+	return Vector2i( sign( v.x ), sign( v.y ) );
+}
+
+// static
+Vector3i Arithmetic::sign( const Vector3f& v )
+{
+	return Vector3i( sign( v.x ), sign( v.y ), sign( v.z ) );
+}
+
+// static
+Vector4i Arithmetic::sign( const Vector4f& v )
+{
+	return Vector4i( sign( v.x ), sign( v.y ), sign( v.z ), sign( v.w ) );
+}
+
+// static
+bool Arithmetic::sameSign( float x, float y )
+{	
+	return sign( x ) == sign( y );
+}
+
+// static
 float Arithmetic::divideIntsToFloat( int numerator, int denominator )
 {
 	float fNumerator = static_cast< float >( numerator );

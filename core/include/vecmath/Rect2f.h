@@ -79,8 +79,13 @@ public:
 
 	// WARNING: the ray is considered a line
 	// (tNear and tFar can be < 0)
+	// returns true if the ray intersects this rectangle
+	//   tNear (< tFar) is the first intersection
+	//   tFar is the second intersection
+	//   axis is 0 if tNear hit the left or right edge (x-axis)
+	//   axis is 1 if tNear hit the bottom or top edge (y-axis)
 	bool intersectRay( const Vector2f& origin, const Vector2f& direction,
-		float& tNear, float& tFar ) const;
+		float& tNear, float& tFar, int& axis ) const;
 
 	// returns the smallest Rect2f that contains both r0 and r1
 	// r0 and r1 must both be valid

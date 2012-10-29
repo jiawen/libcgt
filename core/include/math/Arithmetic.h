@@ -22,6 +22,11 @@ public:
 	static int sign( int x );
 	static int sign( float x );
 	static int sign( double x );
+	static Vector2i sign( const Vector2f& v );
+	static Vector3i sign( const Vector3f& v );
+	static Vector4i sign( const Vector4f& v );
+
+	static bool sameSign( float x, float y );
 
 	// static_cast< float >( numerator ) / denominator
 	static float divideIntsToFloat( int numerator, int denominator );

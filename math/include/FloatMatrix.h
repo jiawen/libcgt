@@ -18,6 +18,9 @@ public:
 
 	FloatMatrix(); // makes a 0x0 matrix
 	FloatMatrix( int nRows, int nCols, float fillValue = 0.f );
+
+	// initialize a matrix from a row major array of values
+	FloatMatrix( int nRows, int nCols, float rowMajorValues[] );
 	FloatMatrix( const FloatMatrix& copy );
 	FloatMatrix( FloatMatrix&& move ); // move constructor
 	virtual ~FloatMatrix();
@@ -34,6 +37,7 @@ public:
 	Vector2i indexToSubscript( int idx ) const;
 	int subscriptToIndex( int i, int j ) const;
 
+	// resizes this matrix to nRows x nCols and fills it with 0
 	void resize( int nRows, int nCols );
 
 	// returns false if nRows * nCols != numElements()
@@ -51,6 +55,16 @@ public:
 	// this is resized if necessary
 	void copy( const FloatMatrix& m );
 
+	// TODO: check sizes
+	void copyTriangle( const FloatMatrix& src, MatrixTriangle srcTriangle, MatrixTriangle dstTriangle, int k = 0 );
+
+	// extracts a triangular part of this matrix starting with the k-th diagonal
+	// k = 0 includes the diagonal
+	// k > 0 is above the diagonal
+	// k < 0 is below the diagonal
+	// (see tril and triu in MATLAB)
+	FloatMatrix extractTriangle( MatrixTriangle triangle, int k = 0 ) const;
+
 	// assign a submatrix of m
 	// starting at (i0,j0)
 	// with size (nRows,nCols)
@@ -60,18 +74,19 @@ public:
 	//
 	// nRows = 0 means i1 to end
 	// nCols = 0 means j1 to end
+	// TODO: rename to copySubmatrix()
+	// extractSubmatrix
 	void assign( const FloatMatrix& m, int i0 = 0, int j0 = 0, int i1 = 0, int j1 = 0, int nRows = 0, int nCols = 0 );
 
 	const float* data() const;
 	float* data();
-
-	// TODO: use spotrf to get cholesky factors like LU
 
 	// solves the system Ax = B with LU factorization
 	// A = *this, a general square matrix
 	// B contains multiple right hand sides
 	//
 	// returns a 0x0 matrix on failure
+	// TODO: return a bool, pass in a matrix
 	FloatMatrix solve( const FloatMatrix& rhs ) const;
 	FloatMatrix solve( const FloatMatrix& rhs, bool& succeeded ) const;
 	
@@ -82,8 +97,11 @@ public:
 	// B contains multiple right hand sides
 	//
 	// returns a 0x0 matrix on failure
+	// TODO: return a bool, pass in a matrix
 	FloatMatrix solveSPD( const FloatMatrix& rhs, MatrixTriangle storedTriangle = LOWER ) const;
 	FloatMatrix solveSPD( const FloatMatrix& rhs, bool& succeeded, MatrixTriangle storedTriangle = LOWER ) const;
+
+	// TODO: solveLeastSquare?
 
 	// Returns the inverse of this using LU factorization
 	// optional out parameter indicates whether the operation succeeded
@@ -154,7 +172,7 @@ public:
 	bool loadTXT( QString filename );
 	bool saveTXT( QString filename );
 
-	void print( const char* prefix = nullptr, const char* suffix = nullptr );
+	void print( const char* prefix = nullptr, const char* suffix = nullptr ) const;
 	QString toString();	
 
 private:

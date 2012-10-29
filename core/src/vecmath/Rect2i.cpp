@@ -214,9 +214,9 @@ bool Rect2i::contains( int x, int y )
 {
 	return
 	(
-		( x > m_origin.x ) &&
+		( x >= m_origin.x ) &&
 		( x < ( m_origin.x + m_size.x ) ) &&
-		( y > m_origin.y ) &&
+		( y >= m_origin.y ) &&
 		( y < ( m_origin.y + m_size.y ) )
 	);
 }

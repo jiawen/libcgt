@@ -353,6 +353,18 @@ T& Array3D< T >::operator () ( int x, int y, int z )
 }
 
 template< typename T >
+const T& Array3D< T >::operator () ( const Vector3i& xyz ) const
+{
+	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
+}
+
+template< typename T >
+T& Array3D< T >::operator () ( const Vector3i& xyz )
+{
+	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
+}
+
+template< typename T >
 template< typename S >
 Array3D< S > Array3D< T >::reinterpretAs( int outputWidth, int outputHeight, int outputDepth,
 	int outputRowPitchBytes, int outputSlicePitchBytes )

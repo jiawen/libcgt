@@ -61,22 +61,26 @@ public:
 
 };
 
-bool operator == ( const Vector2i& v0, const Vector2i& v1 );
-bool operator != ( const Vector2i& v0, const Vector2i& v1 );
-
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 );
-Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 );
-Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 );
-Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 );
 
+Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 );
+// negate
 Vector2i operator - ( const Vector2i& v );
+
 Vector2i operator * ( int c, const Vector2i& v );
 Vector2i operator * ( const Vector2i& v, int c );
-
 Vector2f operator * ( float f, const Vector2i& v );
 Vector2f operator * ( const Vector2i& v, float f );
 
+// component-wise multiplication
+Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 );
+
+// component-wise division
+Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 );
 Vector2i operator / ( const Vector2i& v, int c );
+
+bool operator == ( const Vector2i& v0, const Vector2i& v1 );
+bool operator != ( const Vector2i& v0, const Vector2i& v1 );
 
 inline Vector2i& Vector2i::operator += ( const Vector2i& v )
 {

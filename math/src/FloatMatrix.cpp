@@ -9,6 +9,8 @@
 
 #include <QString>
 
+#include <math/MathUtils.h>
+
 #include "LUFactorization.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,6 +46,22 @@ FloatMatrix::FloatMatrix( int nRows, int nCols, float fillValue ) :
 
 {
 
+}
+
+FloatMatrix::FloatMatrix( int nRows, int nCols, float rowMajorValues[] ) :
+
+	m_nRows( nRows ),
+	m_nCols( nCols ),
+	m_data( nRows * nCols )
+
+{
+	for( int i = 0; i < nRows; ++i )
+	{
+		for( int j = 0; j < nCols; ++j )
+		{
+			( *this )( i, j ) = rowMajorValues[ i * nCols + j ];
+		}
+	}
 }
 
 FloatMatrix::FloatMatrix( const FloatMatrix& copy ) :
@@ -126,6 +144,7 @@ void FloatMatrix::resize( int nRows, int nCols )
 {
 	if( nRows == m_nRows && nCols == m_nCols )
 	{
+		fill( 0 );
 		return;
 	}
 
@@ -183,6 +202,90 @@ void FloatMatrix::copy( const FloatMatrix& m )
 {
 	resize( m.m_nRows, m.m_nCols );
 	m_data = m.m_data;
+}
+
+FloatMatrix FloatMatrix::extractTriangle( MatrixTriangle triangle, int k ) const
+{
+	FloatMatrix output( numRows(), numCols() );
+
+	if( triangle == LOWER )
+	{
+		for( int i = 0; i < numRows(); ++i )
+		{
+			int j1 = MathUtils::clampToRangeInclusive( i + k + 1, 0, numCols() );
+			for( int j = 0; j < j1; ++j )
+			{
+				output( i, j ) = ( *this )( i, j );
+			}
+		}
+	}
+	else
+	{
+		for( int j = 0; j < numCols(); ++j )
+		{
+			int i1 = MathUtils::clampToRangeInclusive( j - k + 1, 0, numRows() );
+			for( int i = 0; i < i1; ++i )
+			{
+				output( i, j ) = ( *this )( i, j );
+			}
+		}
+	}
+
+	return output;
+}
+
+void FloatMatrix::copyTriangle( const FloatMatrix& src, MatrixTriangle srcTriangle, MatrixTriangle dstTriangle, int k )
+{
+	if( srcTriangle == LOWER )
+	{
+		if( dstTriangle == LOWER )
+		{
+			for( int i = 0; i < numRows(); ++i )
+			{
+				int j1 = MathUtils::clampToRangeInclusive( i + k + 1, 0, numCols() );
+				for( int j = 0; j < j1; ++j )
+				{
+					( *this )( i, j ) = src( i, j );
+				}
+			}
+		}
+		else
+		{
+			for( int i = 0; i < numRows(); ++i )
+			{
+				int j1 = MathUtils::clampToRangeInclusive( i + k + 1, 0, numCols() );
+				for( int j = 0; j < j1; ++j )
+				{
+					( *this )( j, i ) = src( i, j );
+				}
+			}
+		}
+	}
+	else
+	{
+		if( dstTriangle == UPPER )
+		{
+			for( int j = 0; j < numCols(); ++j )
+			{
+				int i1 = MathUtils::clampToRangeInclusive( j - k + 1, 0, numRows() );
+				for( int i = 0; i < i1; ++i )
+				{
+					( *this )( i, j ) = src( i, j );
+				}
+			}
+		}
+		else
+		{
+			for( int j = 0; j < numCols(); ++j )
+			{
+				int i1 = MathUtils::clampToRangeInclusive( j - k + 1, 0, numRows() );
+				for( int i = 0; i < i1; ++i )
+				{
+					( *this )( j, i ) = src( i, j );
+				}
+			}
+		}
+	}
 }
 
 void FloatMatrix::assign( const FloatMatrix& m, int i0, int j0, int i1, int j1, int nRows, int nCols )
@@ -672,19 +775,19 @@ bool FloatMatrix::saveTXT( QString filename )
 	return succeeded;
 }
 
-void FloatMatrix::print( const char* prefix, const char* suffix )
+void FloatMatrix::print( const char* prefix, const char* suffix ) const
 {
 	if( prefix != nullptr )
 	{
 		printf( "%s\n", prefix );
 	}
 
-	int M = numRows();
-	int N = numCols();
+	int m = numRows();
+	int n = numCols();
 
-	for( int i = 0; i < M; ++i )
+	for( int i = 0; i < m; ++i )
 	{
-		for( int j = 0; j < N; ++j )
+		for( int j = 0; j < n; ++j )
 		{
 			printf( "%.4f    ", ( *this )( i, j ) );
 		}

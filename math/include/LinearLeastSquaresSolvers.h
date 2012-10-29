@@ -6,6 +6,8 @@ class LinearLeastSquaresSolvers
 {
 public:
 
+	// TODO: have a global work space...
+
 	// Calls MKL's sgels to use QR / LQ to solve a over/under-determined
 	// linear system with full rank
 	// A: m x n, is full rank

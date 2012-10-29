@@ -17,6 +17,20 @@ TriangleMesh::TriangleMesh() :
 
 }
 
+TriangleMesh::TriangleMesh( const std::vector< Vector3f >& positions,
+	const std::vector< Vector3f >& normals,
+	const std::vector< Vector3i > faces ) :
+
+	m_positions( positions ),
+	m_normals( normals ),
+	m_faces( faces ),
+
+	m_adjacencyIsDirty( true )
+
+{
+
+}
+
 TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 
 	m_adjacencyIsDirty( true )

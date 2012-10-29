@@ -29,33 +29,13 @@ const float MathUtils::TWO_PI = 2.0f * MathUtils::PI;
 #endif
 
 // static
+const float MathUtils::PHI = 0.5f * ( 1 + sqrt( 5.0f ) );
+
+// static
 const float MathUtils::NEGATIVE_INFINITY = -std::numeric_limits< float >::infinity();
 
 // static
 const float MathUtils::POSITIVE_INFINITY = std::numeric_limits< float >::infinity();
-
-// static
-int MathUtils::sign( float f )
-{
-	if( f < 0 )
-	{
-		return -1;
-	}
-	else if( f > 0 )
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-// static
-bool MathUtils::sameSign( float x, float y )
-{	
-	return sign( x ) == sign( y );
-}
 
 //static
 bool MathUtils::isNumber( float x )
@@ -181,21 +161,39 @@ float MathUtils::signedByteToFloatNormalized( sbyte sb )
 }
 
 // static
-int MathUtils::product( const Vector2i& v )
+Vector2f MathUtils::abs( const Vector2f& v )
 {
-	return v.x * v.y;
+	return Vector2f( ::abs( v.x ), ::abs( v.y ) );
 }
 
 // static
-int MathUtils::product( const Vector3i& v )
+Vector3f MathUtils::abs( const Vector3f& v )
 {
-	return v.x * v.y * v.z;
+	return Vector3f( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) );
 }
 
 // static
-int MathUtils::product( const Vector4i& v )
+Vector4f MathUtils::abs( const Vector4f& v )
 {
-	return v.x * v.y * v.z * v.w;
+	return Vector4f( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) );
+}
+
+// static
+Vector2i MathUtils::abs( const Vector2i& v )
+{
+	return Vector2i( ::abs( v.x ), ::abs( v.y ) );
+}
+
+// static
+Vector3i MathUtils::abs( const Vector3i& v )
+{
+	return Vector3i( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) );
+}
+
+// static
+Vector4i MathUtils::abs( const Vector4i& v )
+{
+	return Vector4i( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) );
 }
 
 // static
@@ -212,6 +210,24 @@ float MathUtils::product( const Vector3f& v )
 
 // static
 float MathUtils::product( const Vector4f& v )
+{
+	return v.x * v.y * v.z * v.w;
+}
+
+// static
+int MathUtils::product( const Vector2i& v )
+{
+	return v.x * v.y;
+}
+
+// static
+int MathUtils::product( const Vector3i& v )
+{
+	return v.x * v.y * v.z;
+}
+
+// static
+int MathUtils::product( const Vector4i& v )
 {
 	return v.x * v.y * v.z * v.w;
 }

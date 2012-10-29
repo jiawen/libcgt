@@ -59,6 +59,9 @@ public:
 	const T& operator () ( int x, int y ) const; // read
 	T& operator () ( int x, int y ); // write
 
+	const T& operator () ( const Vector2i& xy ) const; // read
+	T& operator () ( const Vector2i& xy ); // write
+
 	// reinterprets this array as an array of another format,
 	// destroying this array
 	//

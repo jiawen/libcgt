@@ -48,13 +48,7 @@ public:
     void normalize();
     Vector2f normalized() const;
 
-    void negate();
-
-	float minimum() const;
-	float maximum() const;
-
-	static Vector2f minimum( const Vector2f& v0, const Vector2f& v1 );
-	static Vector2f maximum( const Vector2f& v0, const Vector2f& v1 );
+    void negate();	
 
 	// ---- Utility ----
     operator const float* () const;
