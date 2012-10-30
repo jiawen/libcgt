@@ -33,6 +33,8 @@
 
 #include <common/Array2D.h>
 #include <imageproc/Image4ub.h>
+#include <vecmath/Vector3f.h>
+#include <vecmath/Vector4f.h>
 
 #include "KinectStream.h"
 
@@ -110,6 +112,16 @@ public:
 
 	bool isNearModeEnabled() const;
 	void setNearModeEnabled( bool b );
+
+	// returns the raw accelerometer reading
+	// in units of g, with y pointing down and z pointing out of the camera
+	// (w = 0)
+	bool rawAccelerometerReading( Vector4f& reading ) const;
+
+	// returns the camera "up" vector using the raw accelerometer reading
+	// with y pointing up
+	// equal to -rawAccelerometerReading.xyz().normalized()
+	Vector3f upVectorFromAccelerometer() const;
 
 public slots:
 

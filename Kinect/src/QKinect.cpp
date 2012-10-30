@@ -159,6 +159,21 @@ void QKinect::setNearModeEnabled( bool b )
 	NuiImageStreamSetImageFrameFlags( m_hDepthStreamHandle, m_depthStreamFlags );
 }
 
+bool QKinect::rawAccelerometerReading( Vector4f& reading ) const
+{
+	Vector4* pReading = reinterpret_cast< Vector4* >( reading.m_elements );
+	HRESULT hr = m_pSensor->NuiAccelerometerGetCurrentReading( pReading );
+	return SUCCEEDED( hr );
+}
+
+Vector3f QKinect::upVectorFromAccelerometer() const
+{
+	Vector4f reading;
+	Vector4* pReading = reinterpret_cast< Vector4* >( reading.m_elements );
+	HRESULT hr = m_pSensor->NuiAccelerometerGetCurrentReading( pReading );
+	return -reading.xyz().normalized();
+}
+
 QKinect::QKinectEvent QKinect::pollDepth( Array2D< ushort >& depth, int waitIntervalMilliseconds )
 {
 	DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent, waitIntervalMilliseconds );
