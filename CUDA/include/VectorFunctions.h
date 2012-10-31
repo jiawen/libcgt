@@ -36,6 +36,30 @@ float3 xyz( const float4& f )
 }
 
 __inline__ __host__ __device__
+int getComponent( const int3& v, int component )
+{
+	return reinterpret_cast< const int* >( &v )[ component ];
+}
+
+__inline__ __host__ __device__
+void setComponent( int3& v, int component, int value )
+{
+	reinterpret_cast< int* >( &v )[ component ] = value;
+}
+
+__inline__ __host__ __device__
+float getComponent( const float3& v, int component )
+{
+	return reinterpret_cast< const float* >( &v )[ component ];
+}
+
+__inline__ __host__ __device__
+void setComponent( float3& v, int component, float value )
+{
+	reinterpret_cast< float* >( &v )[ component ] = value;
+}
+
+__inline__ __host__ __device__
 float4 homogenized( const float4& f )
 {
 	float rcpW = 1.0f / f.w;

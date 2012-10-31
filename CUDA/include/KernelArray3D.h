@@ -5,6 +5,11 @@
 template< typename T >
 struct KernelArray3D
 {
+	// A cudaPitchedPtr contains
+	// xsize = elementSize * width
+	// pitch = roundUpToAlignment( xsize )
+	// ysize = height
+
 	cudaPitchedPtr pitchedPointer;
 	int width;
 	int height;
@@ -51,7 +56,16 @@ struct KernelArray3D
 	const T& operator () ( const int3& xyz ) const;
 
 	__inline__ __device__
-	T& operator () ( const int3& xyz );	
+	T& operator () ( const int3& xyz );
+
+	template< typename S >
+	__inline__ __device__ __host__
+	KernelArray3D< S > reinterpretAs( int outputWidth, int outputHeight, int outputDepth );
+
+	template< typename S >
+	__inline__ __device__ __host__
+	KernelArray3D< S > reinterpretAs( const int3& outputSize );
+
 };
 
 #include "KernelArray3D.inl"

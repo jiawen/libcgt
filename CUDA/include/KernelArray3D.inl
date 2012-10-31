@@ -118,3 +118,22 @@ const T& KernelArray3D< T >::operator () ( const int3& xyz ) const
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
 }
+
+template< typename T >
+template< typename S >
+__inline__ __device__ __host__
+KernelArray3D< S > KernelArray3D< T >::reinterpretAs( int outputWidth, int outputHeight, int outputDepth )
+{
+	return KernelArray3D< S >
+	(
+		reinterpret_cast< S* >( pitchedPointer.ptr ), outputWidth, outputHeight, outputDepth
+	);	
+}
+
+template< typename T >
+template< typename S >
+__inline__ __device__ __host__
+KernelArray3D< S > KernelArray3D< T >::reinterpretAs( const int3& outputSize )
+{
+	return reinterpretAs< S >( outputSize.x, outputSize.y, outputSize.z );
+}
