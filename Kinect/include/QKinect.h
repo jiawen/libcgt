@@ -56,12 +56,14 @@ public:
 	// and NUI_INITIALIZE_FLAG_USES_AUDIO
 
 	// NUI_INITIALIZE_FLAG_USES_DEPTH or NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX must be set if you want to recognize skeletons with NUI_INITIALIZE_FLAG_USES_SKELETON
+	// --> NUI_INITIALIZE_FLAG_USES_SKELETON must be set to use NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX
 	// NUI_INITIALIZE_FLAG_USES_DEPTH or NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX must be set if you want to enable near mode
 	// NUI_INITIALIZE_FLAG_USES_AUDIO must be set if you want to recognize any of the phrases in recognizedPhrases
 	static std::shared_ptr< QKinect > create
 	(
 		int deviceIndex = 0,
 		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,
+		bool useExtendedDepth = true,
 		QVector< QString > recognizedPhrases = QVector< QString >()
 	);
 
@@ -75,6 +77,7 @@ public:
 
 	enum QKinectEvent
 	{
+		QKinect_Event_Failed,
 		QKinect_Event_Timeout,
 		QKinect_Event_Skeleton,
 		QKinect_Event_RGB,
@@ -108,10 +111,17 @@ public:
 	virtual ~QKinect();
 
 	int elevationAngle() const;
-	void setElevationAngle( int degrees );
+	// returns whether it succeeded
+	bool setElevationAngle( int degrees );
 
 	bool isNearModeEnabled() const;
-	void setNearModeEnabled( bool b );
+	// returns whether it succeeded
+	bool setNearModeEnabled( bool b );
+
+	// set b to true to enable the emitter
+	// false to disable to emitter
+	// returns whether it succeeded
+	bool setInfraredEmitterEnabled( bool b );
 
 	// returns the raw accelerometer reading
 	// in units of g, with y pointing down and z pointing out of the camera
@@ -131,24 +141,47 @@ public slots:
 	// otherwise return nothing
 	//
 	// returns an enumerated event indicating the result
-	QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitIntervalMilliseconds = 0 );
+	QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, Array2D< ushort >& playerIndex,
+		int waitIntervalMilliseconds = 0 );
 
 	// poll the Kinect for depth data only and return the result in the depth output variable
 	// may wait up until waitIntervalMilliseconds before returning
 	// setting waitIntervalMilliseconds to 0 means check and if data is ready, return immediately
 	// otherwise return nothing
-	QKinectEvent pollDepth( Array2D< ushort >& depth, int waitIntervalMilliseconds = 0 );
+	//
+	// on output:
+	//
+	// if usingExtendedDepth():
+	//   each pixel of depth is set to the full extended depth range (16 bits, no shifting)
+	//
+	//   if usingPlayerIndex():
+	//     each pixel of playerIndex is set to the player index
+	// 	
+	// else (packed depth):
+	//   the playerIndex array is *not touched*
+	//   each pixel of depth's bits 15:3 is set to its depth in millimeters
+	//
+	//   if usingPlayerIndex();
+	//     each pixel of depth's bits 2:0 is set to the player index (0 for no player, 1-6 for tracked players)
+	//   else
+	//     each pixel of depth's bits 2:0 is set to 0
+	// 
+	QKinectEvent pollDepth( Array2D< ushort >& depth, Array2D< ushort >& playerIndex, int waitIntervalMilliseconds = 0 );
 
 	// poll the Kinect for a voice recognition command and return the results in the output variables
 	// returns false is nothing was recognized
 	bool pollSpeech( QString& phrase, float& confidence, int waitInterval = 1000 );
+
+	bool isUsingDepth() const;
+	bool isUsingPlayerIndex() const;
+	bool isUsingExtendedDepth() const;
 
 private:
 
 	QKinect( int deviceIndex );
 
 	// initialization
-	HRESULT initialize( DWORD nuiFlags, QVector< QString > recognizedPhrases );
+	HRESULT initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases );
 		HRESULT initializeDepthStream( bool trackPlayerIndex );
 		HRESULT initializeRGBStream();
 		HRESULT initializeSkeletonTracking();
@@ -160,11 +193,17 @@ private:
 	// convert data into recognizable formats
 	bool handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton );
 	bool handleGetColorFrame( Image4ub& rgba ); // returns false on an invalid frame from USB
-	bool handleGetDepthFrame( Array2D< ushort >& depth ); // returns false on an invalid frame from USB
+	bool handleGetDepthFrame( Array2D< ushort >& depth, Array2D< ushort >& playerIndex ); // returns false on an invalid frame from USB
 
 	int m_deviceIndex;
 	INuiSensor* m_pSensor;
-	
+	bool m_usingColor;
+	bool m_usingDepth;
+	bool m_usingPlayerIndex;
+	bool m_usingExtendedDepth;
+	bool m_usingSkeleton;
+	bool m_usingAudio;
+
 	std::vector< HANDLE > m_eventHandles;
 	HANDLE m_hNextSkeletonEvent;
 	HANDLE m_hNextRGBFrameEvent;

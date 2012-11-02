@@ -51,12 +51,15 @@ void QKinectThread::run()
 	int64 t0 = tStart;
 
 	NUI_SKELETON_FRAME skeletonFrame;
+	// TODO: pass in resolutions to QKinect on initialization
+	// query it to get the sizes
 	Image4ub rgba( 640, 480 );
 	Array2D< ushort > depth( 640, 480 );
+	Array2D< ushort > playerIndex( 640, 480 );
 
 	while( m_running )
 	{
-		QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, m_pollingIntervalMS );
+		QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, playerIndex, m_pollingIntervalMS );
 		int64 t1 = clock.getCounterValue();		
 
 		switch( e )

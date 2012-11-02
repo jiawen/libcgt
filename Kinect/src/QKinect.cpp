@@ -19,12 +19,12 @@ int QKinect::numDevices()
 }
 
 // static
-std::shared_ptr< QKinect > QKinect::create( int deviceIndex, DWORD nuiFlags, QVector< QString > recognizedPhrases )
+std::shared_ptr< QKinect > QKinect::create( int deviceIndex, DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
 {
 	std::shared_ptr< QKinect > pOutput;
 	QKinect* pKinect = new QKinect( deviceIndex );	
 
-	HRESULT hr = pKinect->initialize( nuiFlags, recognizedPhrases );
+	HRESULT hr = pKinect->initialize( nuiFlags, usingExtendedDepth, recognizedPhrases );
 	if( SUCCEEDED( hr ) )
 	{
 		pOutput.reset( pKinect );
@@ -135,9 +135,10 @@ int QKinect::elevationAngle() const
 	return static_cast< int >( degrees );
 }
 
-void QKinect::setElevationAngle( int degrees )
+bool QKinect::setElevationAngle( int degrees )
 {
-	m_pSensor->NuiCameraElevationSetAngle( degrees );	
+	HRESULT hr = m_pSensor->NuiCameraElevationSetAngle( degrees );	
+	return SUCCEEDED( hr );
 }
 
 bool QKinect::isNearModeEnabled() const
@@ -145,7 +146,7 @@ bool QKinect::isNearModeEnabled() const
 	return( ( m_depthStreamFlags & NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE ) != 0 );
 }
 
-void QKinect::setNearModeEnabled( bool b )
+bool QKinect::setNearModeEnabled( bool b )
 {
 	if( b )
 	{
@@ -156,7 +157,14 @@ void QKinect::setNearModeEnabled( bool b )
 		m_depthStreamFlags &= ~NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
 	}
 
-	NuiImageStreamSetImageFrameFlags( m_hDepthStreamHandle, m_depthStreamFlags );
+	HRESULT hr = NuiImageStreamSetImageFrameFlags( m_hDepthStreamHandle, m_depthStreamFlags );
+	return SUCCEEDED( hr );
+}
+
+bool QKinect::setInfraredEmitterEnabled( bool b )
+{
+	HRESULT hr = m_pSensor->NuiSetForceInfraredEmitterOff( b );
+	return SUCCEEDED( hr );
 }
 
 bool QKinect::rawAccelerometerReading( Vector4f& reading ) const
@@ -174,15 +182,21 @@ Vector3f QKinect::upVectorFromAccelerometer() const
 	return -reading.xyz().normalized();
 }
 
-QKinect::QKinectEvent QKinect::pollDepth( Array2D< ushort >& depth, int waitIntervalMilliseconds )
+QKinect::QKinectEvent QKinect::pollDepth( Array2D< ushort >& depth, Array2D< ushort >& playerIndex, int waitIntervalMilliseconds )
 {
 	DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent, waitIntervalMilliseconds );
 
 	if( waitResult == WAIT_OBJECT_0 )
 	{
-		bool succeeded = handleGetDepthFrame( depth );
-		// TODO: succeeded?
-		return QKinect::QKinect_Event_Depth;
+		bool succeeded = handleGetDepthFrame( depth, playerIndex );
+		if( succeeded )
+		{
+			return QKinect::QKinect_Event_Depth;
+		}
+		else
+		{
+			return QKinect_Event_Failed;
+		}
 	}
 	else
 	{
@@ -190,7 +204,8 @@ QKinect::QKinectEvent QKinect::pollDepth( Array2D< ushort >& depth, int waitInte
 	}
 }
 
-QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, int waitIntervalMilliseconds )
+QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, Array2D< ushort >& playerIndex,
+	int waitIntervalMilliseconds )
 {
 	DWORD nEvents = static_cast< DWORD >( m_eventHandles.size() );
 	DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_eventHandles.data(), FALSE, waitIntervalMilliseconds );
@@ -223,7 +238,7 @@ QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgb
 		}
 	case QKinect_Event_Depth:
 		{
-			succeeded = handleGetDepthFrame( depth );
+			succeeded = handleGetDepthFrame( depth, playerIndex );
 			break;
 		}
 	}
@@ -234,7 +249,7 @@ QKinect::QKinectEvent QKinect::poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgb
 	}
 	else
 	{
-		return QKinect_Event_Timeout;
+		return QKinect_Event_Failed;
 	}
 }
 
@@ -291,6 +306,21 @@ bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
 	return SUCCEEDED( hr );
 }
 
+bool QKinect::isUsingDepth() const
+{
+	return m_usingDepth;
+}
+
+bool QKinect::isUsingPlayerIndex() const
+{
+	return m_usingPlayerIndex;
+}
+
+bool QKinect::isUsingExtendedDepth() const
+{
+	return m_usingExtendedDepth;
+}
+
 QKinect::QKinect( int deviceIndex ) :
 
 	m_deviceIndex( deviceIndex ),
@@ -317,7 +347,7 @@ QKinect::QKinect( int deviceIndex ) :
 
 }
 
-HRESULT QKinect::initialize( DWORD nuiFlags, QVector< QString > recognizedPhrases )
+HRESULT QKinect::initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
 {
 	// create an instance
 	INuiSensor* pSensor;
@@ -327,33 +357,36 @@ HRESULT QKinect::initialize( DWORD nuiFlags, QVector< QString > recognizedPhrase
 		hr = pSensor->NuiInitialize( nuiFlags );
 		if( SUCCEEDED( hr ) )
 		{
-			m_pSensor = pSensor;			
+			m_pSensor = pSensor;
 
-			// if using depth
-			bool usingDepth = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
+			m_usingColor = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR );
+
+			m_usingDepth = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
 				( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX );
 
-			if( SUCCEEDED( hr ) && usingDepth )
-			{
-				bool usingPlayerIndex = nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX;
-				hr = initializeDepthStream( usingPlayerIndex );
-			}
+			m_usingPlayerIndex = nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX;
 
-			// if depth is enabled, initialize skeleton tracking
-			if( SUCCEEDED( hr ) && usingDepth &&
-				( nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON ) )
-			{
-				hr = initializeSkeletonTracking();
-			}
+			m_usingExtendedDepth = usingExtendedDepth;
 
-			if( SUCCEEDED( hr ) &&
-				( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR ) )
+			m_usingAudio = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO );
+
+			if( SUCCEEDED( hr ) && m_usingColor )
 			{
 				hr = initializeRGBStream();
 			}
 
-			if( SUCCEEDED( hr ) &&
-				( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO ) )
+			if( SUCCEEDED( hr ) && m_usingDepth )
+			{
+				hr = initializeDepthStream( m_usingPlayerIndex );
+			}
+
+			// if depth is enabled, initialize skeleton tracking
+			if( SUCCEEDED( hr ) && m_usingDepth && m_usingSkeleton )
+			{
+				hr = initializeSkeletonTracking();
+			}			
+
+			if( SUCCEEDED( hr ) && m_usingAudio )
 			{
 				hr = initializeSpeechRecognition( recognizedPhrases );
 			}
@@ -411,10 +444,19 @@ HRESULT QKinect::initializeRGBStream()
 
 HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex )
 {
-	NUI_IMAGE_TYPE imageType =
-		trackPlayerIndex ?
-		NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX :
-		NUI_IMAGE_TYPE_DEPTH;
+	NUI_IMAGE_TYPE imageType;
+	NUI_IMAGE_RESOLUTION imageResolution;
+
+	if( trackPlayerIndex )
+	{
+		imageType = NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX;
+		imageResolution = NUI_IMAGE_RESOLUTION_640x480;
+	}
+	else
+	{
+		imageType = NUI_IMAGE_TYPE_DEPTH;
+		imageResolution = NUI_IMAGE_RESOLUTION_320x240;
+	}
 
 	DWORD flags = 0; // currently ignored by the API
 	DWORD frameLimit = 2; // how many frames to buffer
@@ -425,7 +467,7 @@ HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex )
 	HRESULT hr = m_pSensor->NuiImageStreamOpen
 	(
 		imageType,
-		NUI_IMAGE_RESOLUTION_640x480,
+		imageResolution,
 		flags,
 		frameLimit,
 		m_hNextDepthFrameEvent,
@@ -725,9 +767,14 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 	return valid;
 }
 
-bool QKinect::handleGetDepthFrame( Array2D< ushort >& depth )
+bool QKinect::handleGetDepthFrame( Array2D< ushort >& depth, Array2D< ushort >& playerIndex )
 {
+	// TODO: depth.resize(), playerIndex.resize
+
 	NUI_IMAGE_FRAME imageFrame;
+	INuiFrameTexture* pTexture;	
+	NUI_LOCKED_RECT lockedRect;
+	bool valid;
 
 	HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
 	(
@@ -740,21 +787,58 @@ bool QKinect::handleGetDepthFrame( Array2D< ushort >& depth )
 		return false;
 	}
 
-	INuiFrameTexture* pTexture = imageFrame.pFrameTexture;
-
-	NUI_LOCKED_RECT lockedRect;
-	pTexture->LockRect( 0, &lockedRect, NULL, 0 );
-
-	bool valid = ( lockedRect.Pitch != 0 );
-	if( valid )
+	if( isUsingExtendedDepth() )
 	{
-		// TODO: depth.resize()
+		BOOL capturedUsingNearMode;
+		hr = m_pSensor->NuiImageFrameGetDepthImagePixelFrameTexture
+		(
+			m_hDepthStreamHandle,
+			&imageFrame,
+			&capturedUsingNearMode,
+			&pTexture
+		);
 
-		BYTE* pBuffer = ( BYTE* )( lockedRect.pBits );		
-		memcpy( depth, pBuffer, lockedRect.size );
+		if( FAILED( hr ) )
+		{
+			m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
+			return false;
+		}
+
+		pTexture->LockRect( 0, &lockedRect, NULL, 0 );
+		valid = ( lockedRect.Pitch != 0 );
+		if( valid )
+		{
+			NUI_DEPTH_IMAGE_PIXEL* pBuffer = reinterpret_cast< NUI_DEPTH_IMAGE_PIXEL* >( lockedRect.pBits );
+			for( int y = 0; y < depth.height(); ++y )
+			{
+				for( int x = 0; x < depth.width(); ++x )
+				{
+					int index = y * depth.width() + x;
+					depth( x, y ) = pBuffer[ index ].depth;
+
+					if( isUsingPlayerIndex() )
+					{
+						playerIndex( x, y ) = pBuffer[ index ].playerIndex;
+					}
+				}
+			}			
+		}
+		pTexture->UnlockRect( 0 );
+		m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
 	}
-	pTexture->UnlockRect( 0 );
-	m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
+	else
+	{
+		pTexture = imageFrame.pFrameTexture;
+		pTexture->LockRect( 0, &lockedRect, NULL, 0 );
+		valid = ( lockedRect.Pitch != 0 );
+		if( valid )
+		{
+			BYTE* pBuffer = reinterpret_cast< BYTE* >( lockedRect.pBits );		
+			memcpy( depth, pBuffer, lockedRect.size );
+		}
+		pTexture->UnlockRect( 0 );
+		m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
+	}
 
 	return valid;
 }
