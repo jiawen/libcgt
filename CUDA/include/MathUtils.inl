@@ -29,6 +29,34 @@ int3 libcgt::cuda::sign( const float3& v )
 	return make_int3( sign( v.x ), sign( v.y ), sign( v.z ) );
 }
 
+int3 libcgt::cuda::isPositive( const int3& v )
+{
+	const uint* px = reinterpret_cast< const uint* >( &( v.x ) );
+	const uint* py = reinterpret_cast< const uint* >( &( v.y ) );
+	const uint* pz = reinterpret_cast< const uint* >( &( v.z ) );
+
+	return make_int3
+	(
+		( ~( *px ) ) >> 31,
+		( ~( *py ) ) >> 31,
+		( ~( *pz ) ) >> 31
+	);
+}
+
+int3 libcgt::cuda::isPositive( const float3& v )
+{
+	const uint* px = reinterpret_cast< const uint* >( &( v.x ) );
+	const uint* py = reinterpret_cast< const uint* >( &( v.y ) );
+	const uint* pz = reinterpret_cast< const uint* >( &( v.z ) );
+
+	return make_int3
+	(
+		( ~( *px ) ) >> 31,
+		( ~( *py ) ) >> 31,
+		( ~( *pz ) ) >> 31
+	);
+}
+
 bool libcgt::cuda::isEven( int x )
 {	
 	return( ( x & 0x1 ) == 0 );
@@ -229,6 +257,92 @@ bool libcgt::cuda::inBox( const int3& xyz, const int3& origin, const int3& size 
 	return inBox( xyz.x, xyz.y, xyz.z, origin.x, origin.y, origin.z, size.x, size.y, size.z );
 }
 
+int libcgt::cuda::clampToRangeExclusive( int x, int origin, int size )
+{
+	return clamp( x, origin, origin + size - 1 );
+}
+
+int libcgt::cuda::clampToRangeExclusive( int x, int size )
+{
+	return clampToRangeExclusive( x, 0, size );
+}
+
+int2 libcgt::cuda::clampToRectangleExclusive( const int2& v, const int2& origin, const int2& size )
+{
+	return make_int2
+	(
+		clampToRangeExclusive( v.x, origin.x, size.x ),
+		clampToRangeExclusive( v.y, origin.y, size.y )
+	);
+}
+
+int2 libcgt::cuda::clampToRectangleExclusive( const int2& v, const int2& size )
+{
+	return make_int2
+	(
+		clampToRangeExclusive( v.x, 0, size.x ),
+		clampToRangeExclusive( v.y, 0, size.y )
+	);
+}
+
+int3 libcgt::cuda::clampToBoxExclusive( const int3& v, const int3& origin, const int3& size )
+{
+	return make_int3
+	(
+		clampToRangeExclusive( v.x, origin.x, size.x ),
+		clampToRangeExclusive( v.y, origin.y, size.y ),
+		clampToRangeExclusive( v.z, origin.z, size.z )
+	);
+}
+
+int3 libcgt::cuda::clampToBoxExclusive( const int3& v, const int3& size )
+{
+	return make_int3
+	(
+		clampToRangeExclusive( v.x, 0, size.x ),
+		clampToRangeExclusive( v.y, 0, size.y ),
+		clampToRangeExclusive( v.z, 0, size.z )
+	);
+}
+
+float3 libcgt::cuda::clampToBox( const float3& v, const float3& origin, const float3& size )
+{
+	float3 corner = origin + size;
+
+	return make_float3
+	(
+		clamp( v.x, origin.x, corner.x ),
+		clamp( v.y, origin.y, corner.y ),
+		clamp( v.z, origin.z, corner.z )
+	);
+}
+
+#if 0
+// TODO: this doesn't compile: wtf
+float3 libcgt::cuda::clampToBox( const float3& v, const libcgt::cuda::Box3f& box )
+{
+	float x = clamp( v.x, box.left(), box.right() );
+	float y = clamp( v.y, box.bottom(), box.top() );
+	float z = clamp( v.z, box.back(), box.front() );
+	return make_float3( x, y, z );
+}
+#endif
+
+int libcgt::cuda::subscriptToIndex2D( int x, int y, int width )
+{
+	return y * width + x;
+}
+
+int libcgt::cuda::subscriptToIndex2D( int x, int y, const int2& size )
+{
+	return subscriptToIndex2D( x, y, size.x );
+}
+
+int libcgt::cuda::subscriptToIndex2D( const int2& subscript, const int2& size )
+{
+	return subscriptToIndex2D( subscript.x, subscript.y, size.x );
+}
+
 int libcgt::cuda::subscriptToIndex3D( int x, int y, int z, int width, int height )
 {
 	return
@@ -247,6 +361,18 @@ int libcgt::cuda::subscriptToIndex3D( int x, int y, int z, const int3& size )
 int libcgt::cuda::subscriptToIndex3D( const int3& subscript, const int3& size )
 {
 	return subscriptToIndex3D( subscript.x, subscript.y, subscript.z, size.x, size.y );
+}
+
+int2 libcgt::cuda::indexToSubscript2D( int index, int width )
+{
+	int y = index / width;
+	int x = index - y * width;	
+	return make_int2( x, y );
+}
+
+int2 libcgt::cuda::indexToSubscript2D( int index, const int2& size )
+{
+	return indexToSubscript2D( index, size.x );
 }
 
 int3 libcgt::cuda::indexToSubscript3D( int index, int width, int height )
@@ -496,6 +622,69 @@ float libcgt::cuda::maximum( const float3& v )
 float libcgt::cuda::maximum( const float4& v )
 {
 	return fmaxf( v.x, fmaxf( v.y, fmaxf( v.z, v.w ) ) );
+}
+
+__inline__ __host__ __device__
+int libcgt::cuda::minimumComponent( const float2& v )
+{
+	if( v.x <= v.y )
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+__inline__ __host__ __device__
+int libcgt::cuda::minimumComponent( const float3& v )
+{
+	int mc = 0;
+	float mv = getComponent( v, 0 );
+
+#ifdef __CUDACC__
+#pragma unroll 2
+#endif
+	for( int i = 1; i < 3; ++i )
+	{
+		float value = getComponent( v, i );
+		if( value < mv )
+		{
+			mc = i;
+			mv = value;
+		}
+	}
+	
+	return mc;
+}
+
+__inline__ __host__ __device__
+int libcgt::cuda::minimumComponent( const float4& v )
+{
+	int mc = 0;
+	float mv = getComponent( v, 0 );
+
+#ifdef __CUDACC__
+#pragma unroll 3
+#endif
+	for( int i = 1; i < 4; ++i )
+	{
+		float value = getComponent( v, i );
+		if( value < mv )
+		{
+			mc = i;
+			mv = value;
+		}
+	}
+
+	return mc;
+}
+
+__inline__ __host__ __device__
+int libcgt::cuda::product( const int3& v )
+{
+	return v.x * v.y * v.z;
 }
 
 #if 0

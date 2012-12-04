@@ -154,6 +154,11 @@ void PerspectiveCamera::setFovYDegrees( float fovY )
 	updateFrustum();
 }
 
+Vector2f PerspectiveCamera::focalLengthPixels( int width, int height ) const
+{
+	return Vector2f( 0.5f * width / tanHalfFovX(), 0.5f * height / tanHalfFovY() );
+}
+
 // virtual
 Matrix4f PerspectiveCamera::projectionMatrix() const
 {

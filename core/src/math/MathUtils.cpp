@@ -8,6 +8,11 @@
 
 #include "math/Arithmetic.h"
 
+#include <vecmath/Rect2f.h>
+#include <vecmath/Rect2i.h>
+#include <vecmath/Box3f.h>
+#include <vecmath/Box3i.h>
+
 // In Visual Studio, if _MATH_DEFINES_DEFINED is defined
 // then M_PI, etc are defined, so just copy them
 #ifdef _MATH_DEFINES_DEFINED
@@ -146,6 +151,80 @@ double MathUtils::clampToRange( double x, double lo, double hi )
 	}
 
 	return x;
+}
+
+// static
+Vector2i MathUtils::clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height )
+{
+	return Vector2i
+	(
+		clampToRangeExclusive( x, left, left + width ),
+		clampToRangeExclusive( y, bottom, bottom + height )
+	);	
+}
+
+// static
+Vector2i MathUtils::clampToRectangleExclusive( const Vector2i& v, const Vector2i& origin, const Vector2i& size )
+{
+	return clampToRectangleExclusive( v.x, v.y, origin.x, origin.y, size.x, size.y );
+}
+
+// static
+Vector2i MathUtils::clampToRectangleExclusive( const Vector2i& v, const Vector2i& size )
+{
+	return clampToRectangleExclusive( v.x, v.y, 0, 0, size.x, size.y );
+}
+
+// static
+Vector2i MathUtils::clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect )
+{
+	return clampToRectangleExclusive( v, rect.origin(), rect.size() );
+}
+
+// static
+Vector2f MathUtils::clampToRectangle( const Vector2f& v, const Rect2f& rect )
+{
+	float x = clampToRange( v.x, rect.left(), rect.right() );
+	float y = clampToRange( v.y, rect.bottom(), rect.top() );
+	return Vector2f( x, y );
+}
+
+// static
+Vector3i MathUtils::clampToBoxExclusive( int x, int y, int z, int left, int bottom, int back, int width, int height, int depth )
+{
+	return Vector3i
+	(
+		clampToRangeExclusive( x, left, left + width ),
+		clampToRangeExclusive( y, bottom, bottom + height ),
+		clampToRangeExclusive( z, back, back + depth )
+	);	
+}
+
+// static
+Vector3i MathUtils::clampToBoxExclusive( const Vector3i& v, const Vector3i& origin, const Vector3i& size )
+{
+	return clampToBoxExclusive( v.x, v.y, v.z, origin.x, origin.y, origin.z, size.x, size.y, size.z );
+}
+
+// static
+Vector3i MathUtils::clampToBoxExclusive( const Vector3i& v, const Vector3i& size )
+{
+	return clampToBoxExclusive( v.x, v.y, v.z, 0, 0, 0, size.x, size.y, size.z );
+}
+
+// static
+Vector3i MathUtils::clampToBoxExclusive( const Vector3i& v, const Box3i& box )
+{
+	return clampToBoxExclusive( v, box.origin(), box.size() );
+}
+
+// static
+Vector3f MathUtils::clampToBox( const Vector3f& v, const Box3f& box )
+{
+	float x = clampToRange( v.x, box.left(), box.right() );
+	float y = clampToRange( v.y, box.bottom(), box.top() );
+	float z = clampToRange( v.z, box.back(), box.front() );
+	return Vector3f( x, y, z );
 }
 
 // static

@@ -3,6 +3,8 @@
 #include <common/BasicTypes.h>
 #include <cutil_math.h>
 
+#include "VectorFunctions.h"
+
 #define MAX_UNSIGNED_SHORT ( 1 << 16 )
 #define SUB2IND( x, y, w ) ( ( y ) * ( w ) + ( x ) )
 
@@ -18,6 +20,12 @@ namespace libcgt
 
 		__inline__ __host__ __device__
 		int3 sign( const float3& v );
+
+		__inline__ __host__ __device__
+		int3 isPositive( const int3& v );
+
+		__inline__ __host__ __device__
+		int3 isPositive( const float3& v );
 
 		__inline__ __host__ __device__
 		bool isEven( int x );
@@ -121,7 +129,40 @@ namespace libcgt
 		bool inBox( const int3& xyz, const int3& size );
 
 		__inline__ __host__ __device__
-		bool inBox( const int3& xyz, const int3& origin, const int3& size );
+		bool inBox( const int3& xyz, const int3& origin, const int3& size );		
+
+		__inline__ __host__ __device__
+		int clampToRangeExclusive( int x, int origin, int size );
+
+		__inline__ __host__ __device__
+		int clampToRangeExclusive( int x, int size );
+
+		__inline__ __host__ __device__
+		int2 clampToRectangleExclusive( const int2& v, const int2& origin, const int2& size );
+
+		__inline__ __host__ __device__
+		int2 clampToRectangleExclusive( const int2& v, const int2& size );
+
+		__inline__ __host__ __device__
+		int3 clampToBoxExclusive( const int3& v, const int3& origin, const int3& size );
+
+		__inline__ __host__ __device__
+		int3 clampToBoxExclusive( const int3& v, const int3& size );
+
+		//__inline__ __host__ __device__
+		//float3 clampToBox( const float3& v, const Box3f& box );
+
+		__inline__ __host__ __device__
+		float3 clampToBox( const float3& v, const float3& origin, const float3& size );
+
+		__inline__ __host__ __device__
+		int subscriptToIndex2D( int x, int y, int width );
+
+		__inline__ __host__ __device__
+		int subscriptToIndex2D( int x, int y, const int2& size );
+
+		__inline__ __host__ __device__
+		int subscriptToIndex2D( const int2& subscript, const int2& size );
 
 		__inline__ __host__ __device__
 		int subscriptToIndex3D( int x, int y, int z, int width, int height );
@@ -131,6 +172,12 @@ namespace libcgt
 
 		__inline__ __host__ __device__
 		int subscriptToIndex3D( const int3& subscript, const int3& size );
+
+		__inline__ __host__ __device__
+		int2 indexToSubscript2D( int index, int width );
+
+		__inline__ __host__ __device__
+		int2 indexToSubscript2D( int index, const int2& size );
 
 		__inline__ __host__ __device__
 		int3 indexToSubscript3D( int index, int width, int height );
@@ -267,6 +314,18 @@ namespace libcgt
 
 		__inline__ __host__ __device__
 		float maximum( const float4& v );
+
+		__inline__ __host__ __device__
+		int minimumComponent( const float2& v );
+
+		__inline__ __host__ __device__
+		int minimumComponent( const float3& v );
+
+		__inline__ __host__ __device__
+		int minimumComponent( const float4& v );
+
+		__inline__ __host__ __device__
+		int product( const int3& v );
 
 #if 0
 		// TODO: fix this

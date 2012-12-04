@@ -19,9 +19,9 @@ Rect2f::Rect2f() :
 
 }
 
-Rect2f::Rect2f( float originX, float originY, float width, float height ) :
+Rect2f::Rect2f( float left, float bottom, float width, float height ) :
 
-	m_origin( originX, originY ),
+	m_origin( left, bottom ),
 	m_size( width, height )
 
 {

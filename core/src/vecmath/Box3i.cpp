@@ -18,9 +18,9 @@ Box3i::Box3i() :
 
 }
 
-Box3i::Box3i( int originX, int originY, int originZ, int width, int height, int depth ) :
+Box3i::Box3i( int left, int bottom, int back, int width, int height, int depth ) :
 
-	m_origin( originX, originY, originZ ),
+	m_origin( left, bottom, back ),
 	m_size( width, height, depth )
 
 {

@@ -7,9 +7,9 @@ libcgt::cuda::Box3f::Box3f() :
 
 }
 
-libcgt::cuda::Box3f::Box3f( float originX, float originY, float originZ, float width, float height, float depth ) :
+libcgt::cuda::Box3f::Box3f( float left, float bottom, float back, float width, float height, float depth ) :
 
-	m_origin( make_float3( originX, originY, originZ ) ),
+	m_origin( make_float3( left, bottom, back ) ),
 	m_size( make_float3( width, height, depth ) )
 
 {

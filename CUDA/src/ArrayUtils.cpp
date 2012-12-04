@@ -263,6 +263,14 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float >& array, con
 }
 
 // static
+bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float2 >& array, const char* filename )
+{
+	Array2D< float2 > h_array;
+	array.copyToHost( h_array );
+	return saveTXT( h_array, filename );
+}
+
+// static
 bool libcgt::cuda::ArrayUtils::saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
 {
 	Array2D< float4 > h_array;

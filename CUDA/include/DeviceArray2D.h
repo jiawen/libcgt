@@ -29,6 +29,7 @@ public:
 
 	int width() const;
 	int height() const;
+	int2 size() const; // (width, height)
 	int numElements() const;
 
 	// indexing fun

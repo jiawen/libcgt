@@ -13,7 +13,7 @@ class Rect2i
 public:
 
 	Rect2i(); // (0,0,0,0), a null rectangle
-	Rect2i( int originX, int originY, int width, int height );
+	Rect2i( int left, int bottom, int width, int height );
 	Rect2i( int width, int height );
 	Rect2i( const Vector2i& origin, const Vector2i& size );
 	explicit Rect2i( const Vector2i& size );

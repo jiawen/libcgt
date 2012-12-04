@@ -18,7 +18,7 @@ class Box3i
 public:
 
 	Box3i(); // (0,0,0,0,0,0), a null box
-	Box3i( int originX, int originY, int originZ, int width, int height, int depth );
+	Box3i( int left, int bottom, int back, int width, int height, int depth );
 	Box3i( int width, int height, int depth );
 	Box3i( const Vector3i& origin, const Vector3i& size );
 	explicit Box3i( const Vector3i& size );

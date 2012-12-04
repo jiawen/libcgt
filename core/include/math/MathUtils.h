@@ -9,6 +9,11 @@ class Vector2i;
 class Vector3i;
 class Vector4i;
 
+class Rect2f;
+class Rect2i;
+class Box3f;
+class Box3i;
+
 class MathUtils
 {
 public:
@@ -48,6 +53,8 @@ public:
 
 	// ----- Clamping -----
 
+	// TODO: these need to be changed to [origin, size) as well
+	// clampToRectangleExclusive and clampToBoxExclusive depends on these
 	// clamps x to [lo, hi)
 	static int clampToRangeExclusive( int x, int lo, int hi );
 
@@ -57,6 +64,24 @@ public:
 	// clamps x to between min (inclusive) and max (inclusive)
 	static float clampToRange( float x, float lo, float hi );
 	static double clampToRange( double x, double lo, double hi );
+
+	// clamps v to rect (exclusive)
+	static Vector2i clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height );
+	static Vector2i clampToRectangleExclusive( const Vector2i& v, const Vector2i& origin, const Vector2i& size );
+	static Vector2i clampToRectangleExclusive( const Vector2i& v, const Vector2i& size );
+	static Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect );
+
+	// clamps v to rect (inclusive)
+	static Vector2f clampToRectangle( const Vector2f& v, const Rect2f& rect );
+
+	// clamps v to box (exclusive)
+	static Vector3i clampToBoxExclusive( int x, int y, int z, int left, int bottom, int back, int width, int height, int depth );
+	static Vector3i clampToBoxExclusive( const Vector3i& v, const Vector3i& origin, const Vector3i& size );
+	static Vector3i clampToBoxExclusive( const Vector3i& v, const Vector3i& size );
+	static Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box );
+
+	// clamps v to box (inclusive)
+	static Vector3f clampToBox( const Vector3f& v, const Box3f& box );
 
 	// ----- Format conversion -----
 

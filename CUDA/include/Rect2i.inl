@@ -7,6 +7,15 @@ libcgt::cuda::Rect2i::Rect2i() :
 
 }
 
+libcgt::cuda::Rect2i::Rect2i( int left, int bottom, int width, int height ) :
+
+	m_origin( make_int2( left, bottom ) ),
+	m_size( make_int2( width, height ) )
+
+{
+
+}
+
 libcgt::cuda::Rect2i::Rect2i( const int2& origin, const int2& size ) :
 
 	m_origin( origin ),

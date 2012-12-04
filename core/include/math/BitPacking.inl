@@ -6,7 +6,7 @@ uint BitPacking::mortonPack2D( ushort x, ushort y )
 
 	// Interleave lower 16 bits of x and y, so the bits of x
 	// are in the even positions and bits from y in the odd.
-	// z gets the resulting 32-bit Morton Number.  
+	// z gets the resulting 32-bit Morton Number.
 	uint x32 = x;
 	uint y32 = y;
 	uint index;

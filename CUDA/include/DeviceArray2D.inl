@@ -140,6 +140,12 @@ int DeviceArray2D< T >::height() const
 }
 
 template< typename T >
+int2 DeviceArray2D< T >::size() const
+{
+	return make_int2( m_width, m_height );
+}
+
+template< typename T >
 int DeviceArray2D< T >::numElements() const
 {
 	return m_width * m_height;

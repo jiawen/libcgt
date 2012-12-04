@@ -84,9 +84,11 @@ public:
 
 	// only works if T doesn't have pointers, with sizeof() well defined
 	bool load( const char* filename );
+	bool load( FILE* fp );
 
 	// only works if T doesn't have pointers, with sizeof() well defined
 	bool save( const char* filename );
+	bool save( FILE* fp );
 
 private:
 	

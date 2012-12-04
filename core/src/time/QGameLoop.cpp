@@ -37,7 +37,7 @@ void QGameLoop::start()
 	int64 sleepTime; // if we have time left in the frame, how long to sleep for
 	int64 overSleepTime = 0; // we may have overslept, keep track and deduct it from the next frame's sleep time
 	int64 excess = 0; // when we take longer to update+render than one frame period, accumulate the *excess* time here
-	int nDelays = 0; // the number of times we took longer than a frame period.  When it passes a threshold, yield the thread to not hog the CPU
+	int nDelays = 0; // the number of times we took longer than a frame period. When it passes a threshold, yield the thread to not hog the CPU
 
 	m_startTime = m_clock.getCounterValue();
 	beforeTime = m_startTime;

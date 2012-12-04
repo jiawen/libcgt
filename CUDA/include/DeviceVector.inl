@@ -182,7 +182,12 @@ template< typename T >
 void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 {
 	int len = length();
-	dst.resize( len );
+
+	if( dst.size() != len )
+	{
+		dst.resize( len );
+	}
+
 	T* dstPointer = dst.data();
 	CUDA_SAFE_CALL( cudaMemcpy( dstPointer, m_devicePointer, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
 }

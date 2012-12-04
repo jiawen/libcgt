@@ -22,10 +22,15 @@ float GeometryUtils::EPSILON = 0.0001f;
 // static
 Box3f GeometryUtils::boundingBoxForPoints( const std::vector< Vector3f >& points )
 {
-	Vector3f minimum;
-	Vector3f maximum;
+	if( points.size() == 0 )
+	{
+		return Box3f();
+	}
 
-	for( size_t i = 0; i < points.size(); ++i )
+	Vector3f minimum = points[0];
+	Vector3f maximum = points[0];
+
+	for( size_t i = 1; i < points.size(); ++i )
 	{
 		Vector3f xyz = points[i];
 		float x = xyz.x;

@@ -11,6 +11,9 @@ struct KernelArray2D
 	size_t pitch;
 
 	__host__
+	KernelArray2D();
+
+	__host__
 	KernelArray2D( T* _pointer, int _width, int _height, size_t _pitch );
 
 	__inline__ __device__
@@ -31,6 +34,19 @@ struct KernelArray2D
 	__inline__ __device__
 	int2 indexToSubscript( int k ) const;
 };
+
+template< typename T >
+__host__
+KernelArray2D< T >::KernelArray2D() :
+
+	pointer( nullptr ),
+	width( -1 ),
+	height( -1 ),
+	pitch( 0 )
+
+{
+
+}
 
 template< typename T >
 __host__

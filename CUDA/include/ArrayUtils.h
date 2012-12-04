@@ -17,7 +17,7 @@ namespace libcgt
 		{
 		public:
 			
-			// host
+			// host (only CUDA types)
 			static bool saveTXT( const std::vector< int3 >& array, const char* filename );
 
 			static bool saveTXT( const Array2D< float2 >& array, const char* filename );
@@ -33,6 +33,7 @@ namespace libcgt
 			static bool saveTXT( const DeviceVector< int3 >& array, const char* filename );
 
 			static bool saveTXT( const DeviceArray2D< float >& array, const char* filename );
+			static bool saveTXT( const DeviceArray2D< float2 >& array, const char* filename );
 			static bool saveTXT( const DeviceArray2D< float4 >& array, const char* filename );
 
 			static bool saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename );

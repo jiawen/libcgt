@@ -79,6 +79,15 @@ public:
 	float tanHalfFovX() const;
 	float tanHalfFovY() const;
 
+	// for an image of size (width x height)
+	// returns the "focal length in pixels"
+	// i.e., the (positive) z such that the frustum
+	// maps from (-width/2, -height/2) --> (width/2, height/2) in world units
+	//
+	// calculated as:
+	// tan( halfFovX ) = (width/2) / focalLengthPixelsX
+	Vector2f focalLengthPixels( int width, int height ) const;
+
 	Matrix4f projectionMatrix() const;
 
 	// returns the projection matrix P such that

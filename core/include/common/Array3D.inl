@@ -428,7 +428,22 @@ bool Array3D< T >::load( const char* filename )
 	{
 		return false;
 	}
-	
+
+	bool succeeded = load( fp );
+
+	// close file
+	int fcloseRetVal = fclose( fp );
+	if( fcloseRetVal != 0 )
+	{
+		return false;
+	}
+
+	return succeeded;
+}
+
+template< typename T >
+bool Array3D< T >::load( FILE* fp )
+{	
 	int whdrpsp[5];
 	size_t elementsRead;
 	
@@ -450,14 +465,6 @@ bool Array3D< T >::load( const char* filename )
 	// read elements
 	elementsRead = fread( pBuffer, 1, nBytes, fp );
 	if( elementsRead != nBytes )
-	{
-		delete[] pBuffer;
-		return false;
-	}
-
-	// close file
-	int fcloseRetVal = fclose( fp );
-	if( fcloseRetVal != 0 )
 	{
 		delete[] pBuffer;
 		return false;
@@ -487,6 +494,16 @@ bool Array3D< T >::save( const char* filename )
 	{
 		return false;
 	}
+	
+	bool succeeded = save( fp );
+	fclose( fp );
+	return succeeded;
+}
+
+template< typename T >
+bool Array3D< T >::save( FILE* fp )
+{
+	// TODO: error checking
 
 	fwrite( &m_width, sizeof( int ), 1, fp );
 	fwrite( &m_height, sizeof( int ), 1, fp );
@@ -494,7 +511,6 @@ bool Array3D< T >::save( const char* filename )
 	fwrite( &m_rowPitchBytes, sizeof( int ), 1, fp );
 	fwrite( &m_slicePitchBytes, sizeof( int ), 1, fp );
 	fwrite( m_array, 1, m_slicePitchBytes * m_depth, fp );
-	fclose( fp );
 
 	return true;
 }

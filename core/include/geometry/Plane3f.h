@@ -50,7 +50,7 @@ public:
     Vector3f pointOnPlane() const;
 
     // Returns an orthonormal basis u, v, and n on the plane
-    // given a *preferred* u vector.  If u is not on the plane,
+    // given a *preferred* u vector. If u is not on the plane,
     // then u is projected onto the plane first.
 	// Returns the matrix [ u v n ]
     Matrix3f basis( const Vector3f& u ) const;

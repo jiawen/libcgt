@@ -9,6 +9,18 @@ uchar4 make_uchar4( ubyte s )
 	return make_uchar4( s, s, s, s );
 }
 
+__inline__ __host__ __device__
+int3 make_int3( const char3& v )
+{
+	return make_int3( v.x, v.y, v.z );
+}
+
+__inline__ __host__ __device__
+char3 make_char3( const int3& v )
+{
+	return make_char3( v.x, v.y, v.z );
+}
+
 // makes an int2 out of a short2
 __inline__ __host__ __device__
 int2 make_int2( const short2& s )
@@ -36,6 +48,18 @@ float3 xyz( const float4& f )
 }
 
 __inline__ __host__ __device__
+sbyte getComponent( const char3& v, int component )
+{
+	return reinterpret_cast< const sbyte* >( &v )[ component ];
+}
+
+__inline__ __host__ __device__
+void setComponent( char3& v, int component, sbyte value )
+{
+	reinterpret_cast< sbyte* >( &v )[ component ] = value;
+}
+
+__inline__ __host__ __device__
 int getComponent( const int3& v, int component )
 {
 	return reinterpret_cast< const int* >( &v )[ component ];
@@ -59,6 +83,17 @@ void setComponent( float3& v, int component, float value )
 	reinterpret_cast< float* >( &v )[ component ] = value;
 }
 
+__inline__ __host__ __device__
+float getComponent( const float4& v, int component )
+{
+	return reinterpret_cast< const float* >( &v )[ component ];
+}
+
+__inline__ __host__ __device__
+void setComponent( float4& v, int component, float value )
+{
+	reinterpret_cast< float* >( &v )[ component ] = value;
+}
 __inline__ __host__ __device__
 float4 homogenized( const float4& f )
 {
@@ -141,6 +176,24 @@ float3 operator + ( const int3& v, float s )
 }
 
 // ----- component-wise multiply with conversion -----
+
+__inline__ __host__ __device__
+float3 operator * ( const char3& v0, const float3& v1 )
+{
+	return make_float3
+	(
+		v0.x * v1.x,
+		v0.y * v1.y,
+		v0.z * v1.z
+	);
+}
+
+
+__inline__ __host__ __device__
+float3 operator * ( const float3& v0, const char3& v1 )
+{
+	return v1 * v0;
+}
 
 __inline__ __host__ __device__
 float3 operator * ( const int3& v0, const float3& v1 )
@@ -259,6 +312,17 @@ float3 operator / ( const float3& v0, const uint3& v1 )
 		v0.x / v1.x,
 		v0.y / v1.y,
 		v0.z / v1.z
+	);
+}
+
+__inline__ __host__ __device__
+int3 operator / ( const int3& v, int s )
+{
+	return make_int3
+	(
+		v.x / s,
+		v.y / s,
+		v.z / s
 	);
 }
 

@@ -47,7 +47,7 @@ struct KernelPool
 		m_elementSizeBytes( elementSizeBytes ),
 		m_freeList( freeList ),
 		m_usedList( usedList ),
-		m_backingStore( backingStore )
+		md_backingStore( backingStore )
 
 	{
 
@@ -97,7 +97,7 @@ struct KernelPool
 	__inline__ __device__
 	T* getElement( int index )
 	{
-		ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
+		ubyte* pElementStart = &( md_backingStore[ index * m_elementSizeBytes ] );
 		return reinterpret_cast< T* >( pElementStart );
 	}
 
@@ -106,7 +106,7 @@ struct KernelPool
 
 	KernelQueue< int > m_freeList;
 	KernelQueue< UsedListEntry< UsedListTag > > m_usedList;
-	KernelVector< ubyte > m_backingStore;
+	KernelVector< ubyte > md_backingStore;
 };
 
 template< typename UsedListTag >
@@ -154,11 +154,11 @@ public:
 	int m_capacity;
 	int m_elementSizeBytes;
 
-	// stores a list of free (still-available) element (not byte) indices in m_backingStore
+	// stores a list of free (still-available) element (not byte) indices in md_backingStore
 	// initially free
 	DeviceQueue< int > md_freeList;
 
-	// stores a list of allocated (not currently available) element indices in m_backingStore
+	// stores a list of allocated (not currently available) element indices in md_backingStore
 	// if the value is positive, then it's still in use
 	// if the value is negative, then it's been marked as freed and will be collected in the next call to collect()
 	DeviceQueue< UsedListEntry< UsedListTag > > md_usedList;
@@ -167,7 +167,7 @@ public:
 	DeviceVector< UsedListEntry< UsedListTag > > md_collectedList;
 
 	// backing store of capacity * elementSizeBytes bytes
-	DeviceVector< ubyte > m_backingStore;
+	DeviceVector< ubyte > md_backingStore;
 };
 
 template< typename UsedListTag >
@@ -200,7 +200,7 @@ template< typename UsedListTag >
 __inline__ __host__
 bool DevicePool< UsedListTag >::isNull() const
 {
-	return( md_freeList.isNull() || m_backingStore.isNull() );
+	return( md_freeList.isNull() || md_backingStore.isNull() );
 }
 
 template< typename UsedListTag >
@@ -251,7 +251,7 @@ void DevicePool< UsedListTag >::resize( int capacity, int elementSizeBytes )
 	md_freeList.resize( capacity );
 	md_usedList.resize( capacity );
 	md_collectedList.resize( capacity );
-	m_backingStore.resize( capacity * elementSizeBytes );
+	md_backingStore.resize( capacity * elementSizeBytes );
 
 	clear();	
 }
@@ -277,6 +277,6 @@ KernelPool< UsedListTag > DevicePool< UsedListTag >::kernelPool()
 		m_capacity, m_elementSizeBytes,
 		md_freeList.kernelQueue(),
 		md_usedList.kernelQueue(),
-		m_backingStore.kernelVector()
+		md_backingStore.kernelVector()
 	);
 }

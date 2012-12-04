@@ -17,9 +17,9 @@ Rect2i::Rect2i() :
 
 }
 
-Rect2i::Rect2i( int originX, int originY, int width, int height ) :
+Rect2i::Rect2i( int left, int bottom, int width, int height ) :
 
-	m_origin( originX, originY ),
+	m_origin( left, bottom ),
 	m_size( width, height )
 
 {

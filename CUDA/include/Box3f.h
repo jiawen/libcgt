@@ -4,7 +4,6 @@
 #include <vector_functions.h>
 #include <cutil_math.h>
 
-#include "Rect2i.h"
 #include "MathUtils.h"
 
 namespace libcgt
@@ -19,7 +18,7 @@ namespace libcgt
 			Box3f();
 
 			__inline__ __host__ __device__
-			Box3f( float originX, float originY, float originZ, float width, float height, float depth );
+			Box3f( float left, float bottom, float back, float width, float height, float depth );
 
 			__inline__ __host__ __device__
 			Box3f( float width, float height, float depth );

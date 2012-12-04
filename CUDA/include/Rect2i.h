@@ -16,6 +16,9 @@ namespace libcgt
 			Rect2i();
 
 			__inline__ __host__ __device__
+			Rect2i( int left, int bottom, int width, int height );
+
+			__inline__ __host__ __device__
 			Rect2i( const int2& origin, const int2& size );
 
 			__inline__ __host__ __device__

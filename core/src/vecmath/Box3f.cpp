@@ -19,9 +19,9 @@ Box3f::Box3f() :
 
 }
 
-Box3f::Box3f( float originX, float originY, float originZ, float width, float height, float depth ) :
+Box3f::Box3f( float left, float bottom, float back, float width, float height, float depth ) :
 
-	m_origin( originX, originY, originZ ),
+	m_origin( left, bottom, back ),
 	m_size( width, height, depth )
 
 {
