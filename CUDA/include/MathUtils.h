@@ -164,6 +164,14 @@ namespace libcgt
 		__inline__ __host__ __device__
 		int subscriptToIndex2D( const int2& subscript, const int2& size );
 
+		template< typename T >
+		__inline__ __host__ __device__
+		int subscriptToIndex2DPitched( int x, int y, int rowPitch );
+
+		template< typename T >
+		__inline__ __host__ __device__
+		int subscriptToIndex2DPitched( const int2& subscript, int rowPitch );
+
 		__inline__ __host__ __device__
 		int subscriptToIndex3D( int x, int y, int z, int width, int height );
 
@@ -172,6 +180,14 @@ namespace libcgt
 
 		__inline__ __host__ __device__
 		int subscriptToIndex3D( const int3& subscript, const int3& size );
+
+		template< typename T >
+		__inline__ __host__ __device__
+		int subscriptToIndex3DPitched( int x, int y, int z, int rowPitch, int height );
+
+		template< typename T >
+		__inline__ __host__ __device__
+		int subscriptToIndex3DPitched( const int3& subscript, int rowPitch, int height );
 
 		__inline__ __host__ __device__
 		int2 indexToSubscript2D( int index, int width );

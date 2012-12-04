@@ -343,6 +343,18 @@ int libcgt::cuda::subscriptToIndex2D( const int2& subscript, const int2& size )
 	return subscriptToIndex2D( subscript.x, subscript.y, size.x );
 }
 
+template< typename T >
+int libcgt::cuda::subscriptToIndex2DPitched( int x, int y, int rowPitch )
+{
+	return y * rowPitch / sizeof( T ) + x;
+}
+
+template< typename T >
+int libcgt::cuda::subscriptToIndex2DPitched( const int2& subscript, int rowPitch )
+{
+	return subscriptToIndex2DPitched< T >( subscript.x, subscript.y, rowPitch );
+}
+
 int libcgt::cuda::subscriptToIndex3D( int x, int y, int z, int width, int height )
 {
 	return
@@ -361,6 +373,18 @@ int libcgt::cuda::subscriptToIndex3D( int x, int y, int z, const int3& size )
 int libcgt::cuda::subscriptToIndex3D( const int3& subscript, const int3& size )
 {
 	return subscriptToIndex3D( subscript.x, subscript.y, subscript.z, size.x, size.y );
+}
+
+template< typename T >
+int libcgt::cuda::subscriptToIndex3DPitched( int x, int y, int z, int rowPitch, int height )
+{
+	return z * rowPitch * height / sizeof( T ) + y * rowPitch / sizeof( T ) + x;
+}
+
+template< typename T >
+int libcgt::cuda::subscriptToIndex3DPitched( const int3& subscript, int rowPitch, int height )
+{
+	return subscriptToIndex3DPitched< T >( subscript.x, subscript.y, subscript.z, rowPitch, height );
 }
 
 int2 libcgt::cuda::indexToSubscript2D( int index, int width )

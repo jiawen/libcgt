@@ -5,94 +5,117 @@ KernelArray3D< T >::KernelArray3D()
 }
 	
 template< typename T >
-KernelArray3D< T >::KernelArray3D( cudaPitchedPtr d_pitchedPointer, int _width, int _height, int _depth ) :
+KernelArray3D< T >::KernelArray3D( cudaPitchedPtr d_pitchedPointer, int width, int height, int depth ) :
 
-	pitchedPointer( d_pitchedPointer ),
-	width( _width ),
-	height( _height ),
-	depth( _depth ),
-	slicePitch( d_pitchedPointer.pitch * d_pitchedPointer.ysize )
+	md_pitchedPointer( d_pitchedPointer ),
+	m_depth( depth )
 
 {
 
 }
 
 template< typename T >
-KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, int _width, int _height, int _depth ) :
+KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, int width, int height, int depth ) :
 
-	width( _width ),
-	height( _height ),
-	depth( _depth ),
-	slicePitch( _width * sizeof( T ) * _height )
+	m_depth( depth )
 
 {
-	pitchedPointer.ptr = d_pLinearPointer;
-	pitchedPointer.pitch = _width * sizeof( T );
-	pitchedPointer.xsize = _width;
-	pitchedPointer.ysize = _height;
+	md_pitchedPointer.ptr = d_pLinearPointer;
+	md_pitchedPointer.pitch = width * sizeof( T );
+	md_pitchedPointer.xsize = width;
+	md_pitchedPointer.ysize = height;
 }
 
 template< typename T >
 KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, const int3& size ) :
 
-	width( size.x ),
-	height( size.y ),
-	depth( size.z ),
-	slicePitch( size.x * sizeof( T ) * size.y )
+	m_depth( size.z )
 
 {
-	pitchedPointer.ptr = d_pLinearPointer;
-	pitchedPointer.pitch = size.x * sizeof( T );
-	pitchedPointer.xsize = size.x;
-	pitchedPointer.ysize = size.y;
+	md_pitchedPointer.ptr = d_pLinearPointer;
+	md_pitchedPointer.pitch = size.x * sizeof( T );
+	md_pitchedPointer.xsize = size.x * sizeof( T );
+	md_pitchedPointer.ysize = size.y;
 }
 
 template< typename T >
 T* KernelArray3D< T >::rowPointer( int y, int z )
 {
-	ubyte* p = reinterpret_cast< ubyte* >( pitchedPointer.ptr );
+	ubyte* p = reinterpret_cast< ubyte* >( md_pitchedPointer.ptr );
 
-	size_t rowPitch = pitchedPointer.pitch;
+	size_t rowPitch = md_pitchedPointer.pitch;
 
 	// TODO: switch pointer arithmetic to array indexing?
-	ubyte* pSlice = p + z * slicePitch;
+	ubyte* pSlice = p + z * slicePitch();
 	return reinterpret_cast< T* >( pSlice + y * rowPitch );
 }
 
 template< typename T >
 const T* KernelArray3D< T >::rowPointer( int y, int z ) const
 {
-	ubyte* p = reinterpret_cast< ubyte* >( pitchedPointer.ptr );
+	ubyte* p = reinterpret_cast< ubyte* >( md_pitchedPointer.ptr );
 
-	size_t rowPitch = pitchedPointer.pitch;
+	size_t rowPitch = md_pitchedPointer.pitch;
 
 	// TODO: switch pointer arithmetic to array indexing?
-	ubyte* pSlice = p + z * slicePitch;
+	ubyte* pSlice = p + z * slicePitch();
 	return reinterpret_cast< T* >( pSlice + y * rowPitch );
 }
 
 template< typename T >
 T* KernelArray3D< T >::slicePointer( int z )
 {
-	ubyte* p = reinterpret_cast< ubyte* >( pitchedPointer.ptr );
+	ubyte* p = reinterpret_cast< ubyte* >( md_pitchedPointer.ptr );
 
 	// TODO: switch pointer arithmetic to array indexing?
-	return reinterpret_cast< T* >( p + z * slicePitch );
+	return reinterpret_cast< T* >( p + z * slicePitch() );
+}
+
+template< typename T >
+int KernelArray3D< T >::width() const
+{
+	return md_pitchedPointer.xsize / sizeof( T );
+}
+
+template< typename T >
+int KernelArray3D< T >::height() const
+{
+	return md_pitchedPointer.ysize;
+}
+
+template< typename T >
+int KernelArray3D< T >::depth() const
+{
+	return m_depth;
 }
 
 template< typename T >
 int3 KernelArray3D< T >::size() const
 {
-	return make_int3( width, height, depth );
+	return make_int3( width(), height(), depth() );
+}
+
+template< typename T >
+__inline__ __device__
+size_t KernelArray3D< T >::rowPitch() const
+{
+	return md_pitchedPointer.pitch;
+}
+
+template< typename T >
+__inline__ __device__
+size_t KernelArray3D< T >::slicePitch() const
+{
+	return md_pitchedPointer.pitch * md_pitchedPointer.ysize;
 }
 
 template< typename T >
 const T* KernelArray3D< T >::slicePointer( int z ) const
 {
-	char* p = reinterpret_cast< char* >( pitchedPointer.ptr );
+	char* p = reinterpret_cast< char* >( md_pitchedPointer.ptr );
 
 	// TODO: switch pointer arithmetic to array indexing?
-	return reinterpret_cast< T* >( p + z * slicePitch );
+	return reinterpret_cast< T* >( p + z * slicePitch() );
 }
 
 template< typename T >
@@ -126,7 +149,7 @@ KernelArray3D< S > KernelArray3D< T >::reinterpretAs( int outputWidth, int outpu
 {
 	return KernelArray3D< S >
 	(
-		reinterpret_cast< S* >( pitchedPointer.ptr ), outputWidth, outputHeight, outputDepth
+		reinterpret_cast< S* >( md_pitchedPointer.ptr ), outputWidth, outputHeight, outputDepth
 	);	
 }
 
