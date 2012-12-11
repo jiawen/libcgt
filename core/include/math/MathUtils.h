@@ -191,7 +191,8 @@ public:
 
 	static float distanceSquared( float x0, float y0, float x1, float y1 );
 
-	static float gaussianWeight( float r, float sigma );
+	// evaluates a continuous normal distribution with mean u and standard deviation sigma	
+	static float gaussian( float x, float u, float sigma );
 
 	// 1/x, returns 0 if x=0
 	static inline float oo_0( float x );

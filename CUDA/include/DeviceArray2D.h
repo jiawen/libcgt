@@ -16,6 +16,7 @@ public:
 
 	DeviceArray2D();
 	DeviceArray2D( int width, int height );
+	DeviceArray2D( const int2& size );
 	DeviceArray2D( const Array2D< T >& src );
 	DeviceArray2D( const DeviceArray2D< T >& copy );
 	DeviceArray2D( DeviceArray2D< T >&& move );
@@ -32,10 +33,6 @@ public:
 	int2 size() const; // (width, height)
 	int numElements() const;
 
-	// indexing fun
-	int subscriptToIndex( int x, int y ) const;
-	int2 indexToSubscript( int index ) const;
-
 	// The number of bytes between rows
 	size_t pitch() const;	
 
@@ -45,6 +42,7 @@ public:
 	// resizes the vector
 	// original data is not preserved
 	void resize( int width, int height );
+	void resize( const int2& size );
 
 	// sets the vector to 0 (all bytes to 0)
 	void clear();

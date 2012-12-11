@@ -26,6 +26,20 @@ DeviceArray2D< T >::DeviceArray2D( int width, int height ) :
 }
 
 template< typename T >
+DeviceArray2D< T >::DeviceArray2D( const int2& size ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+
+	m_pitch( 0 ),
+	m_sizeInBytes( 0 ),
+	m_devicePointer( nullptr )
+
+{
+	resize( size );
+}
+
+template< typename T >
 DeviceArray2D< T >::DeviceArray2D( const Array2D< T >& src ) :
 
 	m_width( -1 ),
@@ -152,20 +166,6 @@ int DeviceArray2D< T >::numElements() const
 }
 
 template< typename T >
-int DeviceArray2D< T >::subscriptToIndex( int x, int y ) const
-{
-	return( y * m_width + x );
-}
-
-template< typename T >
-int2 DeviceArray2D< T >::indexToSubscript( int k ) const
-{
-	int y = k / m_width;
-	int x = k - y * m_width;
-	return make_int2( x, y );
-}
-
-template< typename T >
 size_t DeviceArray2D< T >::pitch() const
 {
 	return m_pitch;
@@ -202,6 +202,12 @@ void DeviceArray2D< T >::resize( int width, int height )
 	);
 
 	m_sizeInBytes = m_pitch * height;
+}
+
+template< typename T >
+void DeviceArray2D< T >::resize( const int2& size )
+{
+	resize( size.x, size.y );
 }
 
 template< typename T >

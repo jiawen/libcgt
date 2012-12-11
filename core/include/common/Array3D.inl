@@ -42,6 +42,21 @@ Array3D< T >::Array3D( int width, int height, int depth, const T& fillValue ) :
 }
 
 template< typename T >
+Array3D< T >::Array3D( const Vector3i& size, const T& fillValue ) :
+
+	m_width( -1 ),
+	m_height( -1 ),
+	m_depth( -1 ),
+	m_rowPitchBytes( -1 ),
+	m_slicePitchBytes( -1 ),
+	m_array( nullptr )
+
+{
+	resize( size );
+	fill( fillValue );
+}
+
+template< typename T >
 Array3D< T >::Array3D( const Array3D< T >& copy ) :
 
 	m_width( -1 ),

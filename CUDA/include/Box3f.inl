@@ -83,7 +83,6 @@ float3 libcgt::cuda::Box3f::rightTopFront() const
 	return m_origin + m_size;
 }
 
-__inline__ __host__ __device__
 float3 libcgt::cuda::Box3f::center() const
 {
 	return m_origin + 0.5f * m_size;
@@ -101,6 +100,24 @@ void libcgt::cuda::Box3f::getCorners( float3 corners[8] ) const
 				( i & 4 ) ? m_origin.z : m_origin.z + m_size.z
 			);
 	}
+}
+
+bool libcgt::cuda::Box3f::contains( float x, float y, float z ) const
+{
+	return
+	(
+		( x >= m_origin.x ) &&
+		( x < ( m_origin.x + m_size.x ) ) &&
+		( y >= m_origin.y ) &&
+		( y < ( m_origin.y + m_size.y ) ) &&
+		( z >= m_origin.z ) &&
+		( z < ( m_origin.z + m_size.z ) )
+	);
+}
+
+bool libcgt::cuda::Box3f::contains( const float3& p ) const
+{
+	return contains( p.x, p.y, p.z );
 }
 
 // static

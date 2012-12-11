@@ -7,6 +7,9 @@
 #include "vecmath/Vector3i.h"
 #include "math/Indexing.h"
 
+// TODO: implement strided/pitch/slicepitch constructor
+// TODO: sizeInBytes, pitch, etc should be size_t
+
 // A simple 3D array class (with row-major storage)
 template< typename T >
 class Array3D
@@ -17,6 +20,7 @@ public:
 	Array3D();
 	Array3D( const char* filename );
 	Array3D( int width, int height, int depth, const T& fillValue = T() );
+	Array3D( const Vector3i& size, const T& fillValue = T() );
 	Array3D( const Array3D< T >& copy );
 	Array3D( Array3D< T >&& move );
 	Array3D& operator = ( const Array3D< T >& copy );
@@ -25,7 +29,7 @@ public:
 	
 	bool isNull() const;
 	bool notNull() const;
-	void invalidate();
+	void invalidate(); // makes this array null by setting its dimensions to -1 and frees the data
 
 	int width() const;
 	int height() const;
@@ -37,7 +41,8 @@ public:
 
 	void fill( const T& fillValue );
 
-	// resizing with width, height, or depth <= 0 will invalidate this array
+	// resizes the array, original data is not preserved
+	// if width, height, or depth <= 0, the array is invalidated
 	void resize( int width, int height, int depth );
 	void resize( const Vector3i& size );
 

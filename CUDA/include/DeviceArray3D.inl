@@ -175,25 +175,6 @@ int DeviceArray3D< T >::numElements() const
 }
 
 template< typename T >
-int DeviceArray3D< T >::subscriptToIndex( int x, int y, int z ) const
-{
-	return z * m_width * m_height + y * m_width + x;
-}
-
-template< typename T >
-int3 DeviceArray3D< T >::indexToSubscript( int k ) const
-{
-	int wh = m_width * m_height;
-	int z = k / wh;
-
-	int ky = k - z * wh;
-	int y = ky / m_width;
-
-	int x = ky - y * m_width;
-	return make_int3( x, y, z );
-}
-
-template< typename T >
 size_t DeviceArray3D< T >::rowPitch() const
 {
 	return m_pitchedPointer.pitch;
@@ -234,6 +215,12 @@ void DeviceArray3D< T >::resize( int width, int height, int depth )
 	);
 
 	m_sizeInBytes = m_pitchedPointer.pitch * height * depth;
+}
+
+template< typename T >
+void DeviceArray3D< T >::resize( const int3& size )
+{
+	resize( size.x, size.y, size.z );
 }
 
 template< typename T >

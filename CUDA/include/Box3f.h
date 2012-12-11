@@ -60,6 +60,12 @@ namespace libcgt
 			void getCorners( float3 corners[8] ) const;
 
 			__inline__ __host__ __device__
+			bool contains( float x, float y, float z ) const;
+
+			__inline__ __host__ __device__
+			bool contains( const float3& p ) const;
+
+			__inline__ __host__ __device__
 			static bool intersect( const Box3f& r0, const Box3f& r1 );
 
 			__inline__ __host__ __device__

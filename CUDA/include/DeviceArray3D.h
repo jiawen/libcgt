@@ -17,6 +17,7 @@ public:
 
 	DeviceArray3D();
 	DeviceArray3D( int width, int height, int depth );
+	DeviceArray3D( const int& size );
 	DeviceArray3D( const Array3D< T >& src );
 	DeviceArray3D( const DeviceArray3D< T >& copy );
 	DeviceArray3D( DeviceArray3D< T >&& move );
@@ -34,10 +35,6 @@ public:
 	int3 size() const;
 	int numElements() const;
 
-	// indexing fun
-	int subscriptToIndex( int x, int y, int z ) const;
-	int3 indexToSubscript( int index ) const;
-
 	// The number of bytes between rows within any slice
 	size_t rowPitch() const;
 
@@ -47,9 +44,12 @@ public:
 	// Total size of the data in bytes (counting alignment)
 	size_t sizeInBytes() const;
 
-	// resizes the vector
-	// original data is not preserved
+	// resizes the array, original data is not preserved
 	void resize( int width, int height, int depth );
+	void resize( const int3& size );
+	
+	// TODO: implement get/set/operator() with int3, vector3
+	// TODO: implement constructors for strided, pitched, slicePitched
 
 	// fills this array with the 0 byte pattern
 	void clear();

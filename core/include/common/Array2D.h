@@ -17,6 +17,7 @@ public:
 	Array2D();
 	Array2D( const char* filename );
 	Array2D( int width, int height, const T& fillValue = T() );
+	Array2D( const Vector2i& size, const T& fillValue = T() );
 	Array2D( const Array2D< T >& copy );
 	Array2D( Array2D< T >&& move );
 	Array2D& operator = ( const Array2D< T >& copy );
@@ -35,7 +36,8 @@ public:
 
 	void fill( const T& fillValue );
 
-	// resizing with width or height <= 0 will invalidate this array
+	// resizes the array, original data is not preserved
+	// if width or height <= 0, the array is invalidated
 	void resize( int width, int height );
 	void resize( const Vector2i& size );
 

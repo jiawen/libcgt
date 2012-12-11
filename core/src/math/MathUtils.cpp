@@ -531,7 +531,13 @@ float MathUtils::distanceSquared( float x0, float y0, float x1, float y1 )
 }
 
 // static
-float MathUtils::gaussianWeight( float r, float sigma )
+float MathUtils::gaussian( float x, float u, float sigma )
 {
-	return exp( -( r * r ) / ( 2.f * sigma * sigma ) );
+	float z = sigma * sqrt( MathUtils::TWO_PI );
+	float r = x - u;
+	
+	float rSquared = r * r;
+	float twoSigmaSquared = 2 * sigma * sigma;
+
+	return ( 1.0f / z ) * exp( -rSquared / twoSigmaSquared );
 }
