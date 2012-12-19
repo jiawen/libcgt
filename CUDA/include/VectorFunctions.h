@@ -102,13 +102,25 @@ float4 homogenized( const float4& f )
 }
 
 __inline__ __host__ __device__
-float normL1( float2 v )
+float lengthSquared( const float2& v )
+{
+	return v.x * v.x + v.y * v.y;
+}
+
+__inline__ __host__ __device__
+float lengthSquared( const float3& v )
+{
+	return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
+__inline__ __host__ __device__
+float normL1( const float2& v )
 {
 	return abs( v.x ) + abs( v.y );
 }
 
 __inline__ __host__ __device__
-float normL1( float3 v )
+float normL1( const float3& v )
 {
 	return abs( v.x ) + abs( v.y ) + abs( v.z );
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 // STL
+#include <vector>
 #include <numeric> // for std::iota
 
 #ifdef __CUDACC__
@@ -9,6 +10,7 @@
 #endif
 
 // libcgt
+#include <common/Array1DView.h>
 #include <common/BasicTypes.h>
 #include <math/Arithmetic.h>
 
@@ -147,6 +149,10 @@ public:
 	// does *not* touch the data
 	void clear();
 
+	// get an element from the device
+	// WARNING: probably slow as it incurs a cudaMemcpy	
+	std::vector< ubyte > getElement( int index ) const;
+
 	KernelPool< UsedListTag > kernelPool();	
 	
 //private:
@@ -266,6 +272,22 @@ void DevicePool< UsedListTag >::clear()
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
 
 	md_freeList.copyFromHost( h_freeList );
+}
+
+template< typename UsedListTag >
+__inline__ __host__
+std::vector< ubyte > DevicePool< UsedListTag >::getElement( int index ) const
+{
+	// allocate memory for the otuput
+	std::vector< ubyte > output( elementSizeBytes() );
+
+	// view it as a byte array
+	Array1DView< ubyte > view( elementSizeBytes(), output.data() );
+
+	// copy it to the host
+	md_backingStore.copyToHost( view, index * elementSizeBytes() );
+
+	return output;
 }
 
 template< typename UsedListTag >

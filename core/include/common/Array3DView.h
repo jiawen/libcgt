@@ -12,12 +12,14 @@ class Array3DView
 {
 public:
 
-	// create an Array3DView with the default row pitch of _width * sizeof( T )
-	// and slice pitch of rowPitch * depth
-	Array3DView( int _width, int _height, int _depth, T* _pointer );
+	// TODO: elementsArePacked(), rowsArePacked(), slicesArePacked(), isLinear() for completely packed
 
-	Array3DView( int _width, int _height, int _depth,
-		int _rowPitchBytes, int _slicePitchBytes, T* _pointer );
+	// create an Array3DView with the default row pitch of width * sizeof( T )
+	// and slice pitch of rowPitch * depth
+	Array3DView( int width, int height, int depth, void* pPointer );
+
+	Array3DView( int width, int height, int depth,
+		int rowPitchBytes, int slicePitchBytes, void* pPointer );
 
 	const T* rowPointer( int y, int z ) const;
 	T* rowPointer( int y, int z );
@@ -34,12 +36,20 @@ public:
 	const T& operator () ( const Vector3i& xyz ) const; // read
 	T& operator () ( const Vector3i& xyz ); // write
 
-	int width;
-	int height;
-	int depth;
-	int rowPitchBytes;
-	int slicePitchBytes;
-	T* pointer;
+	int width() const;
+	int height() const;
+	int depth() const;
+	int rowPitchBytes() const;
+	int slicePitchBytes() const;
+
+private:
+
+	int m_width;
+	int m_height;
+	int m_depth;
+	int m_rowPitchBytes;
+	int m_slicePitchBytes;
+	ubyte* m_pPointer;
 };
 
 #include "Array3DView.inl"

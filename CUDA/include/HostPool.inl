@@ -99,7 +99,7 @@ void HostPool< UsedListTag >::clear()
 
 template< typename UsedListTag >
 template< typename T >
-__inline__ __device__
+__inline__ __host__
 T* HostPool< UsedListTag >::getElement( int index )
 {
 	ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
@@ -113,14 +113,14 @@ void HostPool< UsedListTag >::copyFromDevice( const DevicePool< UsedListTag >& p
 	m_capacity = pool.capacity();
 	m_elementSizeBytes = pool.elementSizeBytes();
 
-	printf( "Copying free list..." );
+	printf( "Copying free list...\n" );
 	pool.md_freeList.copyToHost( m_freeList );
-	printf( "Copying used list..." );
+	printf( "Copying used list...\n" );
 	pool.md_usedList.copyToHost( m_usedList );
-	printf( "Copying collected list..." );
+	printf( "Copying collected list...\n" );
 	pool.md_collectedList.copyToHost( m_collectedList );
 
-	printf( "Copying backing store..." );
+	printf( "Copying backing store...\n" );
 	pool.md_backingStore.copyToHost( m_backingStore );
 }
 

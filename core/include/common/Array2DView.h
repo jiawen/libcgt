@@ -12,10 +12,12 @@ class Array2DView
 {
 public:
 
-	// create an Array2DView with the default row pitch = _width * sizeof( T )
-	Array2DView( int _width, int _height, T* _pointer );
+	// TODO: elementsArePacked(), rowsArePacked(), isLinear() for completely packed
 
-	Array2DView( int _width, int _height, int _rowPitchBytes, T* _pointer );
+	// create an Array2DView with the default row pitch = width * sizeof( T )
+	Array2DView( int width, int height, void* pPointer );
+
+	Array2DView( int width, int height, int rowPitchBytes, void* pPointer );
 
 	const T* rowPointer( int y ) const;
 	T* rowPointer( int y );
@@ -29,10 +31,16 @@ public:
 	const T& operator () ( const Vector2i& xy ) const; // read
 	T& operator () ( const Vector2i& xy ); // write
 
-	int width;
-	int height;
-	int rowPitchBytes;
-	T* pointer;
+	int width() const;
+	int height() const;
+	int rowPitchBytes() const;
+
+private:
+
+	int m_width;
+	int m_height;
+	int m_rowPitchBytes;
+	ubyte* m_pPointer;
 };
 
 #include "Array2DView.inl"

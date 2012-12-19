@@ -46,7 +46,7 @@ public:
 	void clear();
 
 	template< typename T >
-	__inline__ __device__
+	__inline__ __host__
 	T* getElement( int index );
 
 	void copyFromDevice( const DevicePool< UsedListTag >& pool );

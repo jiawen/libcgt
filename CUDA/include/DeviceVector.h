@@ -1,10 +1,16 @@
 #pragma once
 
+// STL
 #include <vector>
 
+// CUDA
 #include <cuda_runtime.h>
 #include <cutil.h>
 
+// libcgt
+#include <common/Array1DView.h>
+
+// local
 #include "KernelVector.h"
 
 // Basic vector interface around CUDA global memory
@@ -62,6 +68,14 @@ public:
 	// copy length() elements from device vector --> host
 	// dst is automatically resized
 	void copyToHost( std::vector< T >& dst ) const;
+
+	// copy dst.length() elements from device vector --> host
+	// starting from srcOffset
+	// srcOffset must be >= 0
+	// length() - srcOffset must be >= dst.length()
+	// dst must be packed()
+	// return false on failure
+	bool copyToHost( Array1DView< T >& dst, int srcOffset = 0 ) const;
 
 	const T* devicePointer() const;
 	T* devicePointer();
