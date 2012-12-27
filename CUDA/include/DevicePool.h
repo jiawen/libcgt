@@ -21,87 +21,44 @@ template< typename UsedListTag >
 struct UsedListEntry
 {
 	int poolIndex;
-	int isDeleted; // TODO: can optimize later by packing it all into the tag
+	int isDeleted; // TODO: OPTIMIZE optimize later by packing it all into the tag
 	UsedListTag tag;
 };
 
 template< typename UsedListTag >
 struct KernelPool
 {
-	__inline__ __host__
-	KernelPool()
-	{
+	__host__
+	KernelPool();
 
-	}
-
-	__inline__ __host__
-	KernelPool
-	(
-		int capacity,
+	__host__
+	KernelPool( int capacity,
 		int elementSizeBytes,
 
 		KernelQueue< int > freeList,
 		KernelQueue< UsedListEntry< UsedListTag > > usedList,
-		KernelVector< ubyte > backingStore
-	) :
-
-		m_capacity( capacity ),
-		m_elementSizeBytes( elementSizeBytes ),
-		m_freeList( freeList ),
-		m_usedList( usedList ),
-		md_backingStore( backingStore )
-
-	{
-
-	}
-
-#ifdef __CUDACC__
+		KernelVector< ubyte > backingStore );
 
 	// gives you an entry that comes with an index
 	// and space for a tag
-	__inline__ __device__
-	UsedListEntry< UsedListTag >& alloc()
-	{
-		int index = m_freeList.dequeue();
-
-		UsedListEntry< UsedListTag > entry;
-		entry.poolIndex = index;
-		entry.isDeleted = 0;		
-
-		uint usedListIndex = m_usedList.enqueue( entry );
-		return m_usedList.ringBuffer()[ usedListIndex ];
-	}
-#endif
+	__device__
+	UsedListEntry< UsedListTag >& alloc();
 	
 	// marks the index at usedList()[ usedListIndex ] as deleted
-	__inline__ __device__
-	void markAsDeleted( int usedListIndex )
-	{
-		UsedListEntry< UsedListTag >& entry = m_usedList.ringBuffer()[ usedListIndex ];
-		entry.isDeleted = 1;
-	}
+	__device__
+	void markAsDeleted( int usedListIndex );
 
-	__inline__ __device__
-	KernelQueue< int >& freeList()
-	{
-		return m_freeList;
-	}
+	__device__
+	KernelQueue< int >& freeList();
 
-	__inline__ __device__
-	KernelQueue< UsedListEntry< UsedListTag > >& usedList()
-	{
-		return m_usedList;
-	}
+	__device__
+	KernelQueue< UsedListEntry< UsedListTag > >& usedList();
 
 	// given an index (returned from alloc()),
 	// returns a pointer to the beginning of the element
 	template< typename T >
-	__inline__ __device__
-	T* getElement( int index )
-	{
-		ubyte* pElementStart = &( md_backingStore[ index * m_elementSizeBytes ] );
-		return reinterpret_cast< T* >( pElementStart );
-	}
+	__device__
+	T* getElement( int index );
 
 	int m_capacity;
 	int m_elementSizeBytes;
@@ -110,6 +67,82 @@ struct KernelPool
 	KernelQueue< UsedListEntry< UsedListTag > > m_usedList;
 	KernelVector< ubyte > md_backingStore;
 };
+
+template< typename UsedListTag >
+__inline__ __host__
+KernelPool< UsedListTag >::KernelPool()
+{
+
+}
+
+template< typename UsedListTag >
+__inline__ __host__
+KernelPool< UsedListTag >::KernelPool
+(
+	int capacity,
+	int elementSizeBytes,
+
+	KernelQueue< int > freeList,
+	KernelQueue< UsedListEntry< UsedListTag > > usedList,
+	KernelVector< ubyte > backingStore
+) :
+
+	m_capacity( capacity ),
+	m_elementSizeBytes( elementSizeBytes ),
+	m_freeList( freeList ),
+	m_usedList( usedList ),
+	md_backingStore( backingStore )
+
+{
+
+}
+
+#ifdef __CUDACC__
+template< typename UsedListTag >
+__inline__ __device__
+UsedListEntry< UsedListTag >& KernelPool< UsedListTag >::alloc()
+{
+	int index = m_freeList.dequeue();
+
+	UsedListEntry< UsedListTag > entry;
+	entry.poolIndex = index;
+	entry.isDeleted = 0;		
+
+	uint usedListIndex = m_usedList.enqueue( entry );
+	return m_usedList.ringBuffer()[ usedListIndex ];
+}
+#endif
+
+template< typename UsedListTag >
+__inline__ __device__
+void KernelPool< UsedListTag >::markAsDeleted( int usedListIndex )
+{
+	UsedListEntry< UsedListTag >& entry = m_usedList.ringBuffer()[ usedListIndex ];
+	entry.isDeleted = 1;
+}
+
+template< typename UsedListTag >
+__inline__ __device__
+KernelQueue< int >& KernelPool< UsedListTag >::freeList()
+{
+	return m_freeList;
+}
+
+template< typename UsedListTag >
+__inline__ __device__
+KernelQueue< UsedListEntry< UsedListTag > >& KernelPool< UsedListTag >::usedList()
+{
+	return m_usedList;
+}
+
+template< typename UsedListTag >
+template< typename T >
+__inline__ __device__
+T* KernelPool< UsedListTag >::getElement( int index )
+{
+	ubyte* pElementStart = &( md_backingStore[ index * m_elementSizeBytes ] );
+	return reinterpret_cast< T* >( pElementStart );
+}
 
 template< typename UsedListTag >
 class DevicePool

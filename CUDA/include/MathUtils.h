@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common/BasicTypes.h>
-#include <cutil_math.h>
+#include <helper_math.h>
 
 #include "VectorFunctions.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cutil.h>
+#include <helper_cuda.h>
 
 // A simple wrapper for a single device variable
 // T should be a plain old data type or a struct where sizeof() is well defined

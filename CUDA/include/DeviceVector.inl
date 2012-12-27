@@ -127,14 +127,14 @@ void DeviceVector< T >::resize( int length )
 	m_length = length;
 	m_sizeInBytes = length * sizeof( T );
 
-	CUDA_SAFE_CALL( cudaMalloc( reinterpret_cast< void** >( &m_devicePointer ), m_sizeInBytes ) );
+	checkCudaErrors( cudaMalloc( reinterpret_cast< void** >( &m_devicePointer ), m_sizeInBytes ) );
 }
 
 
 template< typename T >
 void DeviceVector< T >::clear()
 {
-	CUDA_SAFE_CALL( cudaMemset( m_devicePointer, 0, m_sizeInBytes ) );
+	checkCudaErrors( cudaMemset( m_devicePointer, 0, m_sizeInBytes ) );
 }
 
 template< typename T >
@@ -148,7 +148,7 @@ template< typename T >
 T DeviceVector< T >::get( int index ) const
 {
 	T output;
-	CUDA_SAFE_CALL( cudaMemcpy( &output, m_devicePointer + index, sizeof( T ), cudaMemcpyDeviceToHost ) );
+	checkCudaErrors( cudaMemcpy( &output, m_devicePointer + index, sizeof( T ), cudaMemcpyDeviceToHost ) );
 	return output;
 }
 
@@ -161,21 +161,21 @@ T DeviceVector< T >::operator [] ( int index ) const
 template< typename T >
 void DeviceVector< T >::set( int index, const T& value )
 {
-	CUDA_SAFE_CALL( cudaMemcpy( m_devicePointer + index, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
+	checkCudaErrors( cudaMemcpy( m_devicePointer + index, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
 void DeviceVector< T >::copyFromDevice( const DeviceVector< T >& src )
 {
 	resize( src.length() );
-	CUDA_SAFE_CALL( cudaMemcpy( m_devicePointer, src.m_devicePointer, src.m_sizeInBytes, cudaMemcpyDeviceToDevice ) );
+	checkCudaErrors( cudaMemcpy( m_devicePointer, src.m_devicePointer, src.m_sizeInBytes, cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >
 void DeviceVector< T >::copyFromHost( const std::vector< T >& src )
 {
 	resize( static_cast< int >( src.size() ) );
-	CUDA_SAFE_CALL( cudaMemcpy( m_devicePointer, src.data(), m_sizeInBytes, cudaMemcpyHostToDevice ) );
+	checkCudaErrors( cudaMemcpy( m_devicePointer, src.data(), m_sizeInBytes, cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
@@ -189,7 +189,7 @@ void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 	}
 
 	T* dstPointer = dst.data();
-	CUDA_SAFE_CALL( cudaMemcpy( dstPointer, m_devicePointer, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
+	checkCudaErrors( cudaMemcpy( dstPointer, m_devicePointer, m_sizeInBytes, cudaMemcpyDeviceToHost ) );
 }
 
 template< typename T >
@@ -237,7 +237,7 @@ void DeviceVector< T >::destroy()
 {
 	if( notNull() )
 	{
-		CUDA_SAFE_CALL( cudaFree( m_devicePointer ) );
+		checkCudaErrors( cudaFree( m_devicePointer ) );
 		m_devicePointer = nullptr;
 	}
 

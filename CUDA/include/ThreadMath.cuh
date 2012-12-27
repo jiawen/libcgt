@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef __CUDACC__
-
 namespace libcgt
 {
 	namespace cuda
@@ -67,6 +65,7 @@ namespace libcgt
 
 } // libcgt
 
+#ifdef __CUDACC__
 
 __inline__ __device__
 int libcgt::cuda::blockIndexGlobal()

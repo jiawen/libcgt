@@ -2,7 +2,7 @@
 
 #include <vector_types.h>
 #include <vector_functions.h>
-#include <cutil_math.h>
+#include <helper_math.h>
 
 #include "Rect2i.h"
 #include "MathUtils.h"
@@ -19,7 +19,7 @@ namespace libcgt
 			Rect2f();
 
 			__inline__ __host__ __device__
-			Rect2f( float originX, float originY, float width, float height );
+			Rect2f( float left, float bottom, float width, float height );
 
 			__inline__ __host__ __device__
 			Rect2f( float width, float height );
@@ -53,15 +53,26 @@ namespace libcgt
 
 			__inline__ __host__ __device__
 			float2 topRight() const;
+			
+			__inline__ __host__ __device__
+			float2 origin() const;
+
+			__inline__ __host__ __device__
+			float2 size() const;
+
+			__inline__ __host__ __device__
+			float area() const;
 
 			__inline__ __host__ __device__
 			Rect2i enlargedToInt() const;
 
 			__inline__ __host__ __device__
 			static bool intersect( const Rect2f& r0, const Rect2f& r1 );
-			
+
 			__inline__ __host__ __device__
 			static bool intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection );
+
+		private:
 
 			float2 m_origin;
 			float2 m_size;

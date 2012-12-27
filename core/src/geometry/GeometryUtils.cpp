@@ -862,6 +862,14 @@ bool GeometryUtils::raySphereIntersection( const Vector3f& rayOrigin, const Vect
 	return true;
 }
 
+// static
+bool GeometryUtils::sphereSphereIntersection( const Vector3f& c0, float r0, const Vector3f& c1, float r1 )
+{
+	float centerDistanceSquared = ( c0 - c1 ).normSquared();
+	float radiusSum = r0 + r1;
+	return centerDistanceSquared <= radiusSum * radiusSum;
+}
+
 #if 0
 // static
 void GeometryUtils::tripleSphereIntersection( Vector3f* c0, float r0,

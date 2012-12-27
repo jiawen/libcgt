@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <cutil.h>
+#include <helper_cuda.h>
 
 #include <common/Array2D.h>
 
@@ -60,7 +60,7 @@ CUDAArray2D< T >::CUDAArray2D( int width, int height ) :
 {	
 	m_cfd = cudaCreateChannelDesc< T >();
 
-	CUDA_SAFE_CALL( cudaMallocArray( &m_deviceArray, &m_cfd, width, height ) );
+	checkCudaErrors( cudaMallocArray( &m_deviceArray, &m_cfd, width, height ) );
 }
 
 template< typename T >
@@ -97,7 +97,7 @@ int CUDAArray2D< T >::numElements() const
 template< typename T >
 void CUDAArray2D< T >::copyFromHost( void* src ) const
 {
-	CUDA_SAFE_CALL
+	checkCudaErrors
 	(
 		cudaMemcpyToArray
 		(
@@ -113,7 +113,7 @@ void CUDAArray2D< T >::copyFromHost( void* src ) const
 template< typename T >
 void CUDAArray2D< T >::copyFromHost( const Array2D< T >& src ) const
 {
-	CUDA_SAFE_CALL
+	checkCudaErrors
 	(
 		cudaMemcpyToArray
 		(
@@ -129,7 +129,7 @@ void CUDAArray2D< T >::copyFromHost( const Array2D< T >& src ) const
 template< typename T >
 void CUDAArray2D< T >::copyToHost( Array2D< T >& dst ) const
 {
-	CUDA_SAFE_CALL
+	checkCudaErrors
 	(
 		cudaMemcpyFromArray
 		(
@@ -145,7 +145,7 @@ void CUDAArray2D< T >::copyToHost( Array2D< T >& dst ) const
 template< typename T >
 void CUDAArray2D< T >::copyToHost( void* dst ) const
 {
-	CUDA_SAFE_CALL
+	checkCudaErrors
 	(
 		cudaMemcpyFromArray
 		(

@@ -4,7 +4,7 @@ DeviceVariable< T >::DeviceVariable( const T& initialValue ) :
 	md_pDevicePointer( nullptr )
 
 {
-	CUDA_SAFE_CALL( cudaMalloc< T >( &md_pDevicePointer, sizeof( T ) ) );
+	checkCudaErrors( cudaMalloc< T >( &md_pDevicePointer, sizeof( T ) ) );
 	set( initialValue );
 }
 
@@ -14,7 +14,7 @@ DeviceVariable< T >::DeviceVariable( const DeviceVariable< T >& copy ) :
 	md_pDevicePointer( nullptr )
 
 {
-	CUDA_SAFE_CALL( cudaMalloc< T >( &md_pDevicePointer, sizeof( T ) ) );
+	checkCudaErrors( cudaMalloc< T >( &md_pDevicePointer, sizeof( T ) ) );
 	set( copy );
 }
 
@@ -65,20 +65,20 @@ template< typename T >
 T DeviceVariable< T >::get() const
 {
 	T output;
-	CUDA_SAFE_CALL( cudaMemcpy( &output, md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
+	checkCudaErrors( cudaMemcpy( &output, md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
 	return output;
 }
 
 template< typename T >
 void DeviceVariable< T >::set( const T& value )
 {
-	CUDA_SAFE_CALL( cudaMemcpy( md_pDevicePointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
+	checkCudaErrors( cudaMemcpy( md_pDevicePointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
 void DeviceVariable< T >::set( const DeviceVariable< T >& value )
 {
-	CUDA_SAFE_CALL( cudaMemcpy( md_pDevicePointer, value.md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToDevice ) );
+	checkCudaErrors( cudaMemcpy( md_pDevicePointer, value.md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >
@@ -98,6 +98,6 @@ void DeviceVariable< T >::destroy()
 {
 	if( md_pDevicePointer != nullptr )
 	{
-		CUDA_SAFE_CALL( cudaFree( md_pDevicePointer ) );
+		checkCudaErrors( cudaFree( md_pDevicePointer ) );
 	}
 }

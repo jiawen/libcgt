@@ -7,9 +7,9 @@ libcgt::cuda::Rect2f::Rect2f() :
 
 }
 
-libcgt::cuda::Rect2f::Rect2f( float originX, float originY, float width, float height ) :
+libcgt::cuda::Rect2f::Rect2f( float left, float bottom, float width, float height ) :
 
-	m_origin( make_float2( originX, originY ) ),
+	m_origin( make_float2( left, bottom ) ),
 	m_size( make_float2( width, height ) )
 
 {
@@ -81,6 +81,21 @@ float2 libcgt::cuda::Rect2f::topLeft() const
 float2 libcgt::cuda::Rect2f::topRight() const
 {
 	return m_origin + m_size;
+}
+
+float2 libcgt::cuda::Rect2f::origin() const
+{
+	return m_origin;
+}
+
+float2 libcgt::cuda::Rect2f::size() const
+{
+	return m_size;
+}
+
+float libcgt::cuda::Rect2f::area() const
+{
+	return m_size.x * m_size.y;
 }
 
 libcgt::cuda::Rect2i libcgt::cuda::Rect2f::enlargedToInt() const

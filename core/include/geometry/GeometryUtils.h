@@ -159,6 +159,11 @@ public:
 	static bool raySphereIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
 		const Vector3f& sphereCenter, float sphereRadius, float* t );
 
+	// returns true if the two sphere intersect
+	// (returning the point/circle of intersection is more complicated and can be found here:
+	// http://www.geometrictools.com/LibMathematics/Intersection/Wm5IntrSphere3Sphere3.cpp)
+	static bool sphereSphereIntersection( const Vector3f& c0, float r0, const Vector3f& c1, float r1 );
+
 #if 0
 	// TODO: make this non-nasty
 	static void tripleSphereIntersection( Vector3f* c0, float r0,

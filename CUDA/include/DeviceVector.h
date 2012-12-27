@@ -5,7 +5,7 @@
 
 // CUDA
 #include <cuda_runtime.h>
-#include <cutil.h>
+#include <helper_cuda.h>
 
 // libcgt
 #include <common/Array1DView.h>

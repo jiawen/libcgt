@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <cutil.h>
+#include <helper_cuda.h>
 
 #include <common/Array2D.h>
 

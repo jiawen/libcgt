@@ -19,34 +19,4 @@ struct KernelVector
 	T& operator [] ( int i );
 };
 
-template< typename T >
-KernelVector< T >::KernelVector() :
-
-	pointer( nullptr ),
-	length( -1 )
-
-{
-
-}
-
-template< typename T >
-KernelVector< T >::KernelVector( T* _pointer, int _length ) :
-
-	pointer( _pointer ),
-	length( _length )
-
-{
-
-}
-
-template< typename T >
-const T& KernelVector< T >::operator [] ( int i ) const
-{
-	return pointer[ i ];
-}
-
-template< typename T >
-T& KernelVector< T >::operator [] ( int i )
-{
-	return pointer[ i ];
-}
+#include "KernelVector.inl"

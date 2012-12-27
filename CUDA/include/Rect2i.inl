@@ -65,6 +65,21 @@ int2 libcgt::cuda::Rect2i::topRight() const
 	return m_origin + m_size;
 }
 
+int2 libcgt::cuda::Rect2i::origin() const
+{
+	return m_origin;
+}
+
+int2 libcgt::cuda::Rect2i::size() const
+{
+	return m_size;
+}
+
+int libcgt::cuda::Rect2i::area() const
+{
+	return m_size.x * m_size.y;
+}
+
 libcgt::cuda::Rect2i libcgt::cuda::Rect2i::flippedUD( int height ) const
 {
 	int2 origin;

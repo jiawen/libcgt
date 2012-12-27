@@ -38,6 +38,25 @@ T KernelQueue< T >::dequeue()
 	uint headIndex = absoluteHeadIndex % capacity();
 	return md_ringBuffer[ headIndex ];
 }
+
+template< typename T >
+__inline__ __device__
+T* KernelQueue< T >::enqueueN( uint n )
+{
+	uint absoluteTailIndex = atomicAdd( tailIndexPointer(), n );
+	uint tailIndex = absoluteTailIndex % capacity();
+	return md_ringBuffer.pointer + tailIndex;
+}
+
+template< typename T >
+__inline__ __device__
+T* KernelQueue< T >::dequeueN( uint n )
+{
+	uint absoluteHeadIndex = atomicAdd( headIndexPointer(), n );
+	uint headIndex = absoluteHeadIndex % capacity();
+	return md_ringBuffer.pointer + headIndex;
+}
+
 #endif
 
 template< typename T >

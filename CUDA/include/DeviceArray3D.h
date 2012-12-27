@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 #include <vector_types.h>
-#include <cutil.h>
+#include <helper_cuda.h>
 
 #include <common/Array3D.h>
 

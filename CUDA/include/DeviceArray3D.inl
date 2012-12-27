@@ -209,7 +209,7 @@ void DeviceArray3D< T >::resize( int width, int height, int depth )
 	m_depth = depth;
 	m_extent = make_cudaExtent( width * sizeof( T ), height, depth );
 
-	CUDA_SAFE_CALL
+	checkCudaErrors
 	(
 		cudaMalloc3D( &m_pitchedPointer, m_extent )
 	);
@@ -226,7 +226,7 @@ void DeviceArray3D< T >::resize( const int3& size )
 template< typename T >
 void DeviceArray3D< T >::clear()
 {
-	CUDA_SAFE_CALL( cudaMemset3D( m_pitchedPointer, 0, m_extent ) );
+	checkCudaErrors( cudaMemset3D( m_pitchedPointer, 0, m_extent ) );
 }
 
 template< typename T >
@@ -247,7 +247,7 @@ T DeviceArray3D< T >::get( int x, int y, int z ) const
 	const ubyte* rowPointer = slicePointer + y * rowPitch();
 	const ubyte* elementPointer = rowPointer + x * sizeof( T );
 
-	CUDA_SAFE_CALL( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
+	checkCudaErrors( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
 
 	return output;
 }
@@ -266,7 +266,7 @@ void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
 	const ubyte* rowPointer = slicePointer + y * rowPitch();
 	const ubyte* elementPointer = rowPointer + x * sizeof( T );
 
-	CUDA_SAFE_CALL( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
+	checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
@@ -288,7 +288,7 @@ void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
 
 	params.extent = src.m_extent;	
 
-	CUDA_SAFE_CALL( cudaMemcpy3D( &params ) );
+	checkCudaErrors( cudaMemcpy3D( &params ) );
 }
 
 template< typename T >
@@ -313,7 +313,7 @@ void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 
 	params.extent = m_extent;	
 
-	CUDA_SAFE_CALL( cudaMemcpy3D( &params ) );
+	checkCudaErrors( cudaMemcpy3D( &params ) );
 }
 
 template< typename T >
@@ -337,7 +337,7 @@ void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
 	
 	params.extent = m_extent;
 
-	CUDA_SAFE_CALL( cudaMemcpy3D( &params ) );
+	checkCudaErrors( cudaMemcpy3D( &params ) );
 }
 
 template< typename T >
@@ -382,7 +382,7 @@ void DeviceArray3D< T >::destroy()
 {
 	if( notNull() )
 	{
-		CUDA_SAFE_CALL( cudaFree( m_pitchedPointer.ptr ) );
+		checkCudaErrors( cudaFree( m_pitchedPointer.ptr ) );
 		m_pitchedPointer.ptr = NULL;
 		m_pitchedPointer.pitch = 0;
 		m_pitchedPointer.xsize = 0;
