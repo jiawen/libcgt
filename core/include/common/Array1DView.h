@@ -11,10 +11,10 @@ class Array1DView
 {
 public:
 
-	// create an Array1DView with the default stride = sizeof( T )
+	// create an Array1DView with the default stride of sizeof( T )
 	Array1DView( int length, void* pPointer );
 
-	// create an Array1DView with the specified stride between elements in bytes
+	// create an Array1DView with the specified size and stride
 	Array1DView( int length, int strideBytes, void* pPointer );
 	
 	const T* pointer() const;
@@ -23,7 +23,11 @@ public:
 	const T& operator [] ( int k ) const; // read
 	T& operator [] ( int k ); // write
 
+	// the logical length of the array view
+	// (i.e., how many elements of type T there are)
 	int length() const;
+
+	// the space between the start of elements in bytes
 	int strideBytes() const;
 	
 	// returns true if the array is tightly packed

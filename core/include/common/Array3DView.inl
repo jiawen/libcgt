@@ -5,6 +5,7 @@ Array3DView< T >::Array3DView( int width, int height, int depth,
 	m_width( width ),
 	m_height( height ),
 	m_depth( depth ),
+	m_strideBytes( sizeof( T ) ),
 	m_rowPitchBytes( width * sizeof( T ) ),
 	m_slicePitchBytes( width * height * sizeof( T ) ),
 	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
@@ -14,12 +15,44 @@ Array3DView< T >::Array3DView( int width, int height, int depth,
 }
 
 template< typename T >
+Array3DView< T >::Array3DView( const Vector3i& size, void* pPointer ) :
+
+	m_width( size.x ),
+	m_height( size.y ),
+	m_depth( size.z ),
+	m_strideBytes( sizeof( T ) ),
+	m_rowPitchBytes( size.x * sizeof( T ) ),
+	m_slicePitchBytes( size.x * size.y * sizeof( T ) ),
+	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+
+{
+
+}
+
+template< typename T >
 Array3DView< T >::Array3DView( int width, int height, int depth,
-	int rowPitchBytes, int slicePitchBytes, void* pPointer ) :
+	int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer ) :
 
 	m_width( width ),
 	m_height( height ),
 	m_depth( depth ),
+	m_strideBytes( strideBytes ),
+	m_rowPitchBytes( rowPitchBytes ),
+	m_slicePitchBytes( slicePitchBytes ),
+	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+
+{
+
+}
+
+template< typename T >
+Array3DView< T >::Array3DView( const Vector3i& size,
+	int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer ) :
+
+	m_width( size.x ),
+	m_height( size.y ),
+	m_depth( size.z ),
+	m_strideBytes( strideBytes ),
 	m_rowPitchBytes( rowPitchBytes ),
 	m_slicePitchBytes( slicePitchBytes ),
 	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
@@ -87,25 +120,31 @@ T& Array3DView< T >::operator [] ( int k )
 template< typename T >
 const T& Array3DView< T >::operator () ( int x, int y, int z ) const
 {
-	return rowPointer( y, z )[ x ];
+	const ubyte* pRowPointer = reinterpret_cast< const ubyte* >( rowPointer( y, z ) );
+	const ubyte* pElementPointer = pRowPointer + x * m_strideBytes;
+	const T* q = reinterpret_cast< const T* >( pElementPointer );
+	return *q;
 }
 
 template< typename T >
 T& Array3DView< T >::operator () ( int x, int y, int z )
 {
-	return rowPointer( y, z )[ x ];
+	ubyte* pRowPointer = reinterpret_cast< ubyte* >( rowPointer( y, z ) );
+	ubyte* pElementPointer = pRowPointer + x * m_strideBytes;
+	T* q = reinterpret_cast< T* >( pElementPointer );
+	return *q;
 }
 
 template< typename T >
 const T& Array3DView< T >::operator [] ( const Vector3i& xyz ) const
 {
-	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
+	return ( *this )( xyz.x, xyz.y, xyz.z );
 }
 
 template< typename T >
 T& Array3DView< T >::operator [] ( const Vector3i& xyz )
 {
-	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
+	return ( *this )( xyz.x, xyz.y, xyz.z );
 }
 
 template< typename T >
@@ -127,6 +166,18 @@ int Array3DView< T >::depth() const
 }
 
 template< typename T >
+Vector3i Array3DView< T >::size() const
+{
+	return Vector3i( m_width, m_height, m_depth );
+}
+
+template< typename T >
+int Array3DView< T >::strideBytes() const
+{
+	return m_strideBytes;
+}
+
+template< typename T >
 int Array3DView< T >::rowPitchBytes() const
 {
 	return m_rowPitchBytes;
@@ -136,4 +187,28 @@ template< typename T >
 int Array3DView< T >::slicePitchBytes() const
 {
 	return m_slicePitchBytes;
+}
+
+template< typename T >
+bool Array3DView< T >::elementsArePacked() const
+{
+	return m_strideBytes == sizeof( T );
+}
+
+template< typename T >
+bool Array3DView< T >::rowsArePacked() const
+{
+	return m_rowPitchBytes == ( m_width * m_strideBytes );
+}
+
+template< typename T >
+bool Array3DView< T >::slicesArePacked() const
+{
+	return m_slicePitchBytes == ( m_height * m_rowPitchBytes );
+}
+
+template< typename T >
+bool Array3DView< T >::packed() const
+{
+	return elementsArePacked() && rowsArePacked() && slicesArePacked();
 }
