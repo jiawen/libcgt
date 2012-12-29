@@ -97,13 +97,13 @@ T& Array3DView< T >::operator () ( int x, int y, int z )
 }
 
 template< typename T >
-const T& Array3DView< T >::operator () ( const Vector3i& xyz ) const
+const T& Array3DView< T >::operator [] ( const Vector3i& xyz ) const
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
 }
 
 template< typename T >
-T& Array3DView< T >::operator () ( const Vector3i& xyz )
+T& Array3DView< T >::operator [] ( const Vector3i& xyz )
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
 }

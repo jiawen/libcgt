@@ -253,9 +253,21 @@ T DeviceArray3D< T >::get( int x, int y, int z ) const
 }
 
 template< typename T >
+T DeviceArray3D< T >::get( const int3& subscript ) const
+{
+	return get( subscript.x, subscript.y, subscript.z );
+}
+
+template< typename T >
 T DeviceArray3D< T >::operator () ( int x, int y, int z ) const
 {
 	return get( x, y, z );
+}
+
+template< typename T >
+T DeviceArray3D< T >::operator [] ( const int3& subscript ) const
+{
+	return get( subscript );
 }
 
 template< typename T >

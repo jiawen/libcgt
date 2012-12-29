@@ -238,9 +238,21 @@ T DeviceArray2D< T >::get( int x, int y ) const
 }
 
 template< typename T >
+T DeviceArray2D< T >::get( const int2& subscript ) const
+{
+	return get( subscript.x, subscript.y );
+}
+
+template< typename T >
 T DeviceArray2D< T >::operator () ( int x, int y ) const
 {
 	return get( x, y );
+}
+
+template< typename T >
+T DeviceArray2D< T >::operator [] ( const int2& subscript ) const
+{
+	return get( subscript );
 }
 
 template< typename T >

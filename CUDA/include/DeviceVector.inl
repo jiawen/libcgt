@@ -179,6 +179,28 @@ void DeviceVector< T >::copyFromHost( const std::vector< T >& src )
 }
 
 template< typename T >
+bool DeviceVector< T >::copyFromHost( const Array1DView< T >& src, int dstOffset )
+{
+	if( dstOffset < 0 )
+	{
+		return false;
+	}
+	if( m_devicePointer == nullptr ||
+		!( src.packed() ) ||
+		length() - dstOffset < src.length() )
+	{
+		return false;
+	}
+
+	const T* srcPointer = src.pointer();
+	T* dstPointer = m_devicePointer + dstOffset;
+	size_t countInBytes = src.length() * sizeof( T );
+
+	cudaError_t err = cudaMemcpy( dstPointer, srcPointer, countInBytes, cudaMemcpyHostToDevice );
+	return( err == cudaSuccess );
+}
+
+template< typename T >
 void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 {
 	int len = length();

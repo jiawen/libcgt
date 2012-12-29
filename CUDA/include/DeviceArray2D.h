@@ -53,10 +53,12 @@ public:
 	// get an element of the array from the device
 	// WARNING: probably slow as it incurs a cudaMemcpy
 	T get( int x, int y ) const;
+	T get( const int2& subscript ) const;
 
 	// get an element of the array from the device
 	// WARNING: probably slow as it incurs a cudaMemcpy
 	T operator () ( int x, int y ) const;
+	T operator [] ( const int2& subscript ) const;
 
 	// sets an element of the array from the host
 	// WARNING: probably slow as it incurs a cudaMemcpy

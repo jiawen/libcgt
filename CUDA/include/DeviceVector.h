@@ -65,6 +65,17 @@ public:
 	// this is automatically resized
 	void copyFromHost( const std::vector< T >& src );
 
+	// copy src.length() elements from host --> device vector
+	// starting at dstOffset
+	// this vector is *not* resized
+	// 
+	// dstOffset must be >= 0
+	// src.length() - dstOffset must be >= dst.length()
+	// src must be packed()
+	//
+	// returns false on failure
+	bool copyFromHost( const Array1DView< T >& src, int dstOffset = 0 );
+
 	// copy length() elements from device vector --> host
 	// dst is automatically resized
 	void copyToHost( std::vector< T >& dst ) const;

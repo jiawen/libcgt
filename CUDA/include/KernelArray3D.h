@@ -6,9 +6,10 @@ template< typename T >
 struct KernelArray3D
 {
 	// A cudaPitchedPtr contains
-	// xsize = elementSize * width
-	// pitch = roundUpToAlignment( xsize )
-	// ysize = height
+	// width: logical width of the array in elements
+	// xsize = elementSize * width, in bytes
+	// ysize = height of the array in elements
+	// pitch = roundUpToAlignment( xsize ), in bytes
 
 	cudaPitchedPtr md_pitchedPointer;
 	int m_depth;

@@ -28,8 +28,8 @@ public:
 	const T& operator () ( int x, int y ) const; // read
 	T& operator () ( int x, int y ); // write
 
-	const T& operator () ( const Vector2i& xy ) const; // read
-	T& operator () ( const Vector2i& xy ); // write
+	const T& operator [] ( const Vector2i& xy ) const; // read
+	T& operator [] ( const Vector2i& xy ); // write
 
 	int width() const;
 	int height() const;

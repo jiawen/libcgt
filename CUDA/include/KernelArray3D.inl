@@ -25,7 +25,7 @@ KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, int width, int height, i
 {
 	md_pitchedPointer.ptr = d_pLinearPointer;
 	md_pitchedPointer.pitch = width * sizeof( T );
-	md_pitchedPointer.xsize = width;
+	md_pitchedPointer.xsize = width * sizeof( T );
 	md_pitchedPointer.ysize = height;
 }
 

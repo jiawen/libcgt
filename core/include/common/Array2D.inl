@@ -305,13 +305,13 @@ T& Array2D< T >::operator () ( int x, int y )
 }
 
 template< typename T >
-const T& Array2D< T >::operator () ( const Vector2i& xy ) const
+const T& Array2D< T >::operator [] ( const Vector2i& xy ) const
 {
 	return rowPointer( xy.y )[ xy.x ];
 }
 
 template< typename T >
-T& Array2D< T >::operator () ( const Vector2i& xy )
+T& Array2D< T >::operator [] ( const Vector2i& xy )
 {
 	return rowPointer( xy.y )[ xy.x ];
 }

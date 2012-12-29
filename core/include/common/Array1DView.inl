@@ -23,13 +23,13 @@ Array1DView< T >::Array1DView( int length, int strideBytes, void* pPointer ) :
 template< typename T >
 const T* Array1DView< T >::pointer() const
 {
-	return m_pPointer;
+	return reinterpret_cast< const T* >( m_pPointer );
 }
 
 template< typename T >
 T* Array1DView< T >::pointer()
 {
-	return m_pPointer;
+	return reinterpret_cast< T* >( m_pPointer );
 }
 
 template< typename T >
