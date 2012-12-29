@@ -58,7 +58,10 @@ Array2D< T >::Array2D( const Array2D< T >& copy ) :
 
 {
 	resize( copy.m_width, copy.m_height );
-	memcpy( m_array, copy.m_array, m_rowPitchBytes * m_height );
+	if( copy.notNull() )
+	{
+		memcpy( m_array, copy.m_array, m_rowPitchBytes * m_height );
+	}
 }
 
 template< typename T >
@@ -81,7 +84,10 @@ Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 	if( this != &copy )
 	{
 		resize( copy.m_width, copy.m_height );
-		memcpy( m_array, copy.m_array, m_rowPitchBytes * m_height );
+		if( copy.notNull() )
+		{
+			memcpy( m_array, copy.m_array, m_rowPitchBytes * m_height );
+		}
 	}
 	return *this;
 }

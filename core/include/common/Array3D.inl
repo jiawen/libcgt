@@ -68,7 +68,10 @@ Array3D< T >::Array3D( const Array3D< T >& copy ) :
 
 {
 	resize( copy.m_width, copy.m_height, copy.m_depth );
-	memcpy( m_array, copy.m_array, m_slicePitchBytes * m_depth );
+	if( copy.notNull() )
+	{
+		memcpy( m_array, copy.m_array, m_slicePitchBytes * m_depth );
+	}
 }
 
 template< typename T >
@@ -95,7 +98,10 @@ Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 	if( this != &copy )
 	{
 		resize( copy.m_width, copy.m_height, copy.m_depth );
-		memcpy( m_array, copy.m_array, m_slicePitchBytes * m_depth );
+		if( copy.notNull() )
+		{
+			memcpy( m_array, copy.m_array, m_slicePitchBytes * m_depth );
+		}
 	}
 	return *this;
 }
