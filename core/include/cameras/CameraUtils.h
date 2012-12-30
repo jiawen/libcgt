@@ -7,6 +7,8 @@ class CameraUtils
 {
 public:
 
+	// note that y points up, for both the crop window
+	// and the principal point
 	static void adjustIntrinsicsToCrop
 	(
 		int imageWidth,
@@ -42,7 +44,8 @@ public:
 	static float fovRadiansToFocalLengthPixels( float fovRadians, float imageSize );
 
 	// given potentially off-center intrinsics
-	// (principal point != imageSize / 2)
+	// (principal point != imageSize / 2,
+	//  note that *y points up*, even for the principal point)
 	// returns frustum parameters
 	static void intrinsicsToFrustum
 	(

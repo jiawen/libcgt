@@ -27,7 +27,6 @@
 #include <sapi.h>
 #include <sphelper.h>
 
-#include <memory>
 #include <map>
 #include <vector>
 
@@ -59,7 +58,7 @@ public:
 	// --> NUI_INITIALIZE_FLAG_USES_SKELETON must be set to use NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX
 	// NUI_INITIALIZE_FLAG_USES_DEPTH or NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX must be set if you want to enable near mode
 	// NUI_INITIALIZE_FLAG_USES_AUDIO must be set if you want to recognize any of the phrases in recognizedPhrases
-	static std::shared_ptr< QKinect > create
+	static QKinect* create
 	(
 		int deviceIndex = 0,
 		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,

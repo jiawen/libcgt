@@ -19,22 +19,22 @@ int QKinect::numDevices()
 }
 
 // static
-std::shared_ptr< QKinect > QKinect::create( int deviceIndex, DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
+QKinect* QKinect::create( int deviceIndex, DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
 {
-	std::shared_ptr< QKinect > pOutput;
 	QKinect* pKinect = new QKinect( deviceIndex );	
 
 	HRESULT hr = pKinect->initialize( nuiFlags, usingExtendedDepth, recognizedPhrases );
 	if( SUCCEEDED( hr ) )
 	{
-		pOutput.reset( pKinect );
+		return pKinect;
 	}
 	else
 	{
 		delete pKinect;
+		pKinect = nullptr;
 	}
 	
-	return pOutput;
+	return pKinect;
 }
 
 // static
@@ -364,7 +364,13 @@ HRESULT QKinect::initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< Q
 			m_usingDepth = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
 				( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX );
 
+			m_usingSkeleton = nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON;
 			m_usingPlayerIndex = nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX;
+			if( m_usingPlayerIndex && !m_usingSkeleton )
+			{
+				fprintf( stderr, "Warning: player index is requested but skeleton tracking is not enabled: enabling...\n" );
+				m_usingSkeleton = true;
+			}
 
 			m_usingExtendedDepth = usingExtendedDepth;
 
@@ -455,7 +461,7 @@ HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex )
 	else
 	{
 		imageType = NUI_IMAGE_TYPE_DEPTH;
-		imageResolution = NUI_IMAGE_RESOLUTION_320x240;
+		imageResolution = NUI_IMAGE_RESOLUTION_640x480;
 	}
 
 	DWORD flags = 0; // currently ignored by the API
@@ -734,7 +740,7 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 	bool valid = ( lockedRect.Pitch != 0 );
 	if( valid )
 	{
-		// TODO: rgba.resize()
+		// TODO: rgba.resize(), based on chosen resolution
 
 		BYTE* pBuffer = ( BYTE* )( lockedRect.pBits );
 
@@ -769,7 +775,7 @@ bool QKinect::handleGetColorFrame( Image4ub& rgba )
 
 bool QKinect::handleGetDepthFrame( Array2D< ushort >& depth, Array2D< ushort >& playerIndex )
 {
-	// TODO: depth.resize(), playerIndex.resize
+	// TODO: depth.resize(), playerIndex.resize, based on chosen resolution
 
 	NUI_IMAGE_FRAME imageFrame;
 	INuiFrameTexture* pTexture;	
@@ -815,13 +821,20 @@ bool QKinect::handleGetDepthFrame( Array2D< ushort >& depth, Array2D< ushort >& 
 				{
 					int index = y * depth.width() + x;
 					depth( x, y ) = pBuffer[ index ].depth;
+				}
+			}
 
-					if( isUsingPlayerIndex() )
+			if( isUsingPlayerIndex() )
+			{
+				for( int y = 0; y < depth.height(); ++y )
+				{
+					for( int x = 0; x < depth.width(); ++x )
 					{
+						int index = y * depth.width() + x;
 						playerIndex( x, y ) = pBuffer[ index ].playerIndex;
 					}
 				}
-			}			
+			}
 		}
 		pTexture->UnlockRect( 0 );
 		m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );

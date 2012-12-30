@@ -428,7 +428,9 @@ FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded, Matr
 	}
 	else if( info > 0 )
 	{
-		fprintf( stderr, "FloatMatrix::solveSPD(): Matrix is not positive definite.\n" );
+		// TODO: make a set of error codes...
+		// HACK
+		// fprintf( stderr, "FloatMatrix::solveSPD(): Matrix is not positive definite.\n" );
 		return FloatMatrix();
 	}
 
