@@ -8,7 +8,10 @@ class Parameters
 {
 public:
 
+	// returns the singleton
 	static Parameters* instance();
+
+	// parses parameters in filename and overwrites it in the singleton
 	static bool parse( QString filename );
 
 	bool hasBool( QString name );

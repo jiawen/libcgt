@@ -35,76 +35,79 @@ bool Parameters::parse( QString filename )
 	line = inputTextStream.readLine();
 	while( !( line.isNull() ) )
 	{
-		if( line != "" )
+		if( line == "" ||
+			line.startsWith( "#" ) ||
+			line.startsWith( "//" ) )
 		{
-			if( line[0] != '#' )
+			++lineNumber;
+			line = inputTextStream.readLine();
+			continue;
+		}
+
+		QStringList tokens = line.split( delim, QString::SkipEmptyParts );
+
+		QString type = tokens[0];				
+
+		if( type == "bool" )
+		{
+			QString name = tokens[1];
+			QString value = tokens[2];
+			bool v = ( value == "true" );
+			p->setBool( name, v );
+		}
+		else if( type == "int" )
+		{
+			QString name = tokens[1];
+			QString value = tokens[2];
+			int v = value.toInt();
+			p->setInt( name, v );
+		}
+		else if( type == "int[]" )
+		{
+			QString name = tokens[1];
+			QVector< int > values;
+			for( int i = 2; i < tokens.size(); ++i )
 			{
-				QStringList tokens = line.split( delim, QString::SkipEmptyParts );
-
-				QString type = tokens[0];				
-
-				if( type == "bool" )
-				{
-					QString name = tokens[1];
-					QString value = tokens[2];
-					bool v = ( value == "true" );
-					p->setBool( name, v );
-				}
-				else if( type == "int" )
-				{
-					QString name = tokens[1];
-					QString value = tokens[2];
-					int v = value.toInt();
-					p->setInt( name, v );
-				}
-				else if( type == "int[]" )
-				{
-					QString name = tokens[1];
-					QVector< int > values;
-					for( int i = 2; i < tokens.size(); ++i )
-					{
-						values.append( tokens[i].toInt() );
-					}
-					p->setIntArray( name, values );
-				}
-				else if( type == "float" )
-				{
-					QString name = tokens[1];
-					QString value = tokens[2];
-					float v = value.toFloat();
-					p->setFloat( name, v );
-				}
-				else if( type == "float[]" )
-				{
-					QString name = tokens[1];
-					QVector< float > values;
-					for( int i = 2; i < tokens.size(); ++i )
-					{
-						values.append( tokens[i].toFloat() );
-					}
-					p->setFloatArray( name, values );
-				}
-				else if( type == "string" )
-				{
-					QString name = tokens[1];
-					QString value = tokens[2];
-					p->setString( name, value );
-				}
-				else if( type == "string[]" )
-				{
-					QString name = tokens[1];
-					QVector< QString > values;
-					for( int i = 2; i < tokens.size(); ++i )
-					{
-						values.append( tokens[i] );
-					}
-					p->setStringArray( name, values );
-				}
-				else
-				{
-					printf( "Ignoring unknown type: %s\n", qPrintable( type ) );
-				}
+				values.append( tokens[i].toInt() );
 			}
+			p->setIntArray( name, values );
+		}
+		else if( type == "float" )
+		{
+			QString name = tokens[1];
+			QString value = tokens[2];
+			float v = value.toFloat();
+			p->setFloat( name, v );
+		}
+		else if( type == "float[]" )
+		{
+			QString name = tokens[1];
+			QVector< float > values;
+			for( int i = 2; i < tokens.size(); ++i )
+			{
+				values.append( tokens[i].toFloat() );
+			}
+			p->setFloatArray( name, values );
+		}
+		else if( type == "string" )
+		{
+			QString name = tokens[1];
+			QString value = tokens[2];
+			p->setString( name, value );
+		}
+		else if( type == "string[]" )
+		{
+			QString name = tokens[1];
+			QVector< QString > values;
+			for( int i = 2; i < tokens.size(); ++i )
+			{
+				values.append( tokens[i] );
+			}
+			p->setStringArray( name, values );
+		}
+		else
+		{
+			printf( "Ignoring unknown type: %s\n", qPrintable( type ) );
 		}
 
 		++lineNumber;
