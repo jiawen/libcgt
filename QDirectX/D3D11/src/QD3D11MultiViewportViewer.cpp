@@ -292,8 +292,11 @@ void QD3D11MultiViewportViewer::wheelEvent( QWheelEvent* event )
 
 void QD3D11MultiViewportViewer::resizeD3D( int width, int height )
 {
-    float fovY, aspect, zNear, zFar;
-    m_perspectiveCamera.getPerspective( &fovY, &aspect, &zNear, &zFar );
+    float fovY;
+	float aspect;
+	float zNear;
+	float zFar;
+    m_perspectiveCamera.getPerspective( fovY, aspect, zNear, zFar );
 
     aspect = static_cast< float >( width ) / height;
 	m_perspectiveCamera.setPerspective( fovY, aspect, zNear, zFar );

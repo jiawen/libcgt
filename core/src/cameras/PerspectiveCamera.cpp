@@ -4,9 +4,10 @@
 #include <QString>
 #include <QTextStream>
 
-#include <math/Arithmetic.h>
-#include <math/MathUtils.h>
-#include <vecmath/Quat4f.h>
+#include "cameras/CameraUtils.h"
+#include "math/Arithmetic.h"
+#include "math/MathUtils.h"
+#include "vecmath/Quat4f.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -33,19 +34,23 @@ PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& cente
 	setDirectX( isDirectX );
 }
 
-void PerspectiveCamera::getPerspective( float* pfFovYRadians, float* pfAspect,
-	float* pfZNear, float* pfZFar, bool* pbZFarIsInfinite )
+void PerspectiveCamera::getPerspective( float& fovYRadians, float aspect,
+	float& zNear, float& zFar )
 {
-	*pfFovYRadians = m_fovYRadians;
-	*pfAspect = m_aspect;
+	bool zFarIsInfinite;
+	getPerspective( fovYRadians, aspect, zNear, zFar, zFarIsInfinite );
+}
 
-	*pfZNear = m_zNear;
-	*pfZFar = m_zFar;
+void PerspectiveCamera::getPerspective( float& fovYRadians, float aspect,
+	float& zNear, float& zFar, bool& zFarIsInfinite )
+{
+	fovYRadians = m_fovYRadians;
+	aspect = m_aspect;
 
-	if( pbZFarIsInfinite != nullptr )
-	{
-		*pbZFarIsInfinite = m_zFarIsInfinite;
-	}
+	zNear = m_zNear;
+	zFar = m_zFar;
+
+	zFarIsInfinite = m_zFarIsInfinite;
 }
 
 void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
@@ -63,16 +68,22 @@ void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 }
 
 void PerspectiveCamera::setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
-	float imageWidth, float imageHeight,
+	const Vector2f& imageSize )
+{
+	m_fovYRadians = CameraUtils::focalLengthPixelsToFoVRadians( focalLengthPixels.y, imageSize.y );	
+	m_aspect = imageSize.x / imageSize.y;
+
+	updateFrustum();
+}
+
+void PerspectiveCamera::setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
+	const Vector2f& imageSize,
 	float zNear, float zFar )
 {
-	m_fovYRadians = 2 * atan( 0.5f * imageHeight / focalLengthPixels.y );
-	m_aspect = imageWidth / imageHeight;
-
 	m_zNear = zNear;
 	m_zFar = zFar;
 
-	updateFrustum();	
+	setPerspectiveFromIntrinsics( focalLengthPixels, imageSize );
 }
 
 float PerspectiveCamera::aspect() const

@@ -19,6 +19,7 @@ public:
 	// 50 degree field of view, 1:1 aspect ratio
 	static const PerspectiveCamera FRONT;
 
+	// TODO:
 	// LEFT
 	// TOP
 	
@@ -39,20 +40,27 @@ public:
 	//
 	// TODO: maybe a PerspectiveCamera should disallow setting of top, right, etc
 	// a skewed perspective camera for depth of field should return a general camera...
-	void getPerspective( float* pfFovYDegrees, float* pfAspect,
-		float* pfZNear, float* pfZFar,
-		bool* pbZFarIsInfinite = nullptr );
+	void getPerspective( float& fovYRadians, float aspect,
+		float& zNear, float& zFar );
+
+	void getPerspective( float& fovYRadians, float aspect,
+		float& zNear, float& zFar,
+		bool& zFarIsInfinite );
 
 	void setPerspective( float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
 		bool zFarIsInfinite = false );
 
+	// same as below, but uses existing zNear and zFar
+	void setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
+		const Vector2f& imageSize );
+
 	// Sets the perspective projection given computer-vision style intrinsics:
 	// focal length and image size in pixels
 	// Does not allow for radial distortion
 	void setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
-		float imageWidth, float imageHeight,
-		float zNear = 1.0f, float zFar = 100.0f );
+		const Vector2f& imageSize,
+		float zNear, float zFar );
 
 	// get/set the aspect ratio of the screen,
 	// defined as width / height
@@ -96,7 +104,10 @@ public:
 	// by (eyeX, eyeY) *in the plane of the lens*
 	// i.e. eyeX is in the direction of right()
 	// and eyeY is in the direction of up()
+	
 	// TODO: jittered orthographic projection?
+	// OpenGL / DirectX probably doesn't allow a parallelopiped as a viewing volume
+	// could also just shift everything over
 	Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
 
 	// equivalent to jitteredProjectionMatrix() * jitteredViewMatrix()

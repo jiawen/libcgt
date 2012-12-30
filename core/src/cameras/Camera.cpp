@@ -4,9 +4,10 @@
 #include <cmath>
 #include <cstdio>
 
-#include <math/MathUtils.h>
-#include <vecmath/Vector4f.h>
-#include <vecmath/Quat4f.h>
+#include "cameras/CameraUtils.h"
+#include "math/MathUtils.h"
+#include "vecmath/Vector4f.h"
+#include "vecmath/Quat4f.h"
 
 #include "geometry/BoundingBox3f.h"
 
@@ -19,24 +20,29 @@ void Camera::setDirectX( bool directX )
 	m_directX = directX;
 }
 
-void Camera::getFrustum( float* pfLeft, float* pfRight,
-	float* pfBottom, float* pfTop,
-	float* pfZNear, float* pfZFar,
-	bool* pbZFarIsInfinite ) const
+void Camera::getFrustum( float& left, float& right,
+	float& bottom, float& top,
+	float& zNear, float& zFar ) const
 {
-	*pfLeft = m_left;
-	*pfRight = m_right;
+	bool zFarIsInfinite;
+	getFrustum( left, right, bottom, top, zNear, zFar, zFarIsInfinite );
+}
 
-	*pfBottom = m_bottom;
-	*pfTop = m_top;
+void Camera::getFrustum( float& left, float& right,
+	float& bottom, float& top,
+	float& zNear, float& zFar,
+	bool& zFarIsInfinite ) const
+{
+	left = m_left;
+	right = m_right;
 
-	*pfZNear = m_zNear;
-	*pfZFar = m_zFar;
+	bottom = m_bottom;
+	top = m_top;
 
-	if( pbZFarIsInfinite != NULL )
-	{
-		*pbZFarIsInfinite = m_zFarIsInfinite;
-	}
+	zNear = m_zNear;
+	zFar = m_zFar;
+
+	zFarIsInfinite = m_zFarIsInfinite;
 }
 
 std::vector< Vector3f > Camera::frustumCorners() const
@@ -108,6 +114,32 @@ void Camera::setFrustum( float left, float right,
 	m_zFar = zFar;
 
 	m_zFarIsInfinite = zFarIsInfinite;
+}
+
+void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
+	const Vector2f& imageSize )
+{
+	CameraUtils::intrinsicsToFrustum
+	(
+		focalLengthPixels, principalPointPixels,
+		imageSize,
+
+		m_zNear,
+		m_left, m_right,
+		m_bottom, m_top
+	);
+}
+
+void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
+	const Vector2f& imageSize,
+	float zNear, float zFar )
+{
+	assert( zNear > 0 );	
+
+	m_zNear = zNear;
+	m_zFar = zFar;
+
+	setFrustumFromIntrinsics( focalLengthPixels, principalPointPixels, imageSize );
 }
 
 void Camera::getLookAt( Vector3f* pEye,
