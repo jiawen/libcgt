@@ -34,6 +34,12 @@ namespace libcgt
 		bool isOdd( int x );
 
 		__inline__ __host__ __device__
+		int mod( int x, int N );
+
+		__inline__ __host__ __device__
+		int3 mod( const int3& v0, const int3& v1 );
+
+		__inline__ __host__ __device__
 		int flipUD( int y, int height );
 
 		__inline__ __host__ __device__

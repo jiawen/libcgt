@@ -94,13 +94,6 @@ const T& KernelArray2D< T >::operator () ( int x, int y ) const
 
 template< typename T >
 __inline__  __device__
-const T& KernelArray2D< T >::operator () ( const int2& xy ) const
-{
-	return rowPointer( xy.y )[ xy.x ];
-}
-
-template< typename T >
-__inline__  __device__
 T& KernelArray2D< T >::operator () ( int x, int y )
 {
 	return rowPointer( y )[ x ];
@@ -108,7 +101,14 @@ T& KernelArray2D< T >::operator () ( int x, int y )
 
 template< typename T >
 __inline__  __device__
-T& KernelArray2D< T >::operator () ( const int2& xy )
+const T& KernelArray2D< T >::operator [] ( const int2& xy ) const
+{
+	return rowPointer( xy.y )[ xy.x ];
+}
+
+template< typename T >
+__inline__  __device__
+T& KernelArray2D< T >::operator [] ( const int2& xy )
 {
 	return rowPointer( xy.y )[ xy.x ];
 }

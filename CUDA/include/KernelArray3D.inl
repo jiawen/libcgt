@@ -146,14 +146,14 @@ T& KernelArray3D< T >::operator () ( int x, int y, int z )
 
 template< typename T >
 __inline__ __device__
-T& KernelArray3D< T >::operator () ( const int3& xyz )
+T& KernelArray3D< T >::operator [] ( const int3& xyz )
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
 }
 
 template< typename T >
 __inline__ __device__
-const T& KernelArray3D< T >::operator () ( const int3& xyz ) const
+const T& KernelArray3D< T >::operator [] ( const int3& xyz ) const
 {
 	return rowPointer( xyz.y, xyz.z )[ xyz.x ];
 }

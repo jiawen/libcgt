@@ -41,16 +41,16 @@ struct KernelArray2D
 	int2 size() const;
 
 	__inline__ __device__
-	const T& operator () ( int x, int y ) const;
-
-	__inline__ __device__
-	const T& operator () ( const int2& xy ) const;
+	const T& operator () ( int x, int y ) const;	
 
 	__inline__ __device__
 	T& operator () ( int x, int y );
 
 	__inline__ __device__
-	T& operator () ( const int2& xy );
+	const T& operator [] ( const int2& xy ) const;
+
+	__inline__ __device__
+	T& operator [] ( const int2& xy );
 };
 
 #include "KernelArray2D.inl"

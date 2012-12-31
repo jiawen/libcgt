@@ -66,10 +66,10 @@ struct KernelArray3D
 	T& operator () ( int x, int y, int z );
 
 	__inline__ __device__
-	const T& operator () ( const int3& xyz ) const;
+	const T& operator [] ( const int3& xyz ) const;
 
 	__inline__ __device__
-	T& operator () ( const int3& xyz );
+	T& operator [] ( const int3& xyz );
 
 	template< typename S >
 	__inline__ __device__ __host__

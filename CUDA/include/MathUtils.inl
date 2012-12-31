@@ -67,6 +67,21 @@ bool libcgt::cuda::isOdd( int x )
 	return( ( x & 0x1 ) == 1 );
 }
 
+int libcgt::cuda::mod( int x, int N )
+{
+	return ( ( x % N ) + N ) % N;
+}
+
+int3 libcgt::cuda::mod( const int3& v0, const int3& v1 )
+{
+	return make_int3
+	(
+		mod( v0.x, v1.x ),
+		mod( v0.y, v1.y ),
+		mod( v0.z, v1.z )
+	);
+}
+
 int libcgt::cuda::flipUD( int y, int height )
 {
 	return( height - y - 1 );
