@@ -29,6 +29,8 @@ public:
 
 	bool isNull() const; // a matrix is null if either nRows or nCols is 0
 
+	// TODO: add an invalidate() that makes it -1 x -1 (or 0x0)
+
 	void fill( float d );
 
 	int numRows() const;
@@ -102,6 +104,13 @@ public:
 	FloatMatrix solveSPD( const FloatMatrix& rhs, bool& succeeded, MatrixTriangle storedTriangle = LOWER ) const;
 
 	// TODO: solveLeastSquare?
+
+	// TODO: this crashes in release mode: somehow the matrix is destroyed before it gets moved
+	// and the move constructor copies in a 6 x 1418418343 matrix, oh well
+	//FloatMatrix eigenvaluesSymmetric( MatrixTriangle storedTriangle = LOWER ) const;
+	//FloatMatrix eigenvaluesSymmetric( bool& succeeded, MatrixTriangle storedTriangle = LOWER ) const;
+
+	bool eigenvaluesSymmetric( FloatMatrix& eigenvalues, MatrixTriangle storedTriangle = LOWER ) const;
 
 	// Returns the inverse of this using LU factorization
 	// optional out parameter indicates whether the operation succeeded

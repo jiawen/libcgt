@@ -36,7 +36,7 @@ bool SingularValueDecomposition::SVD( const FloatMatrix& a, FloatMatrix& u, Floa
 	sgesvd( &jobu, &jobvt, &m, &n, b.data(), &lda, s.data(), u.data(), &ldu, vt.data(), &ldvt, work.data(), &lWork, &info );
 	if( info < 0 )
 	{
-		fprintf( stderr, "SVD: Illegal parameter value.\n" );
+		fprintf( stderr, "SVD: Illegal parameter value: %d.\n", -info );
 	}
 	else if( info > 0 )
 	{

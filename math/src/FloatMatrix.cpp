@@ -87,7 +87,6 @@ FloatMatrix::FloatMatrix( FloatMatrix&& move )
 // virtual
 FloatMatrix::~FloatMatrix()
 {
-
 }
 
 FloatMatrix& FloatMatrix::operator = ( const FloatMatrix& copy )
@@ -435,6 +434,122 @@ FloatMatrix FloatMatrix::solveSPD( const FloatMatrix& rhs, bool& succeeded, Matr
 	}
 
 	return B;
+}
+
+#if 0
+FloatMatrix FloatMatrix::eigenvaluesSymmetric( MatrixTriangle storedTriangle ) const
+{
+	bool succeeded;
+	return eigenvaluesSymmetric( succeeded, storedTriangle );
+}
+
+FloatMatrix FloatMatrix::eigenvaluesSymmetric( bool& succeeded, MatrixTriangle storedTriangle ) const
+{
+	// check that this matrix is square
+	int m = m_nRows;
+	int n = m_nCols;
+
+	if( m != n )
+	{
+		fprintf( stderr, "FloatMatrix::eigenvaluesSymmetric requires the matrix to be square\n" );
+		return FloatMatrix();
+	}
+
+	// make a copy of this
+	FloatMatrix A( *this );
+	FloatMatrix eigenvalues( n, 1 );
+
+	char jobz = 'N'; // eigenvalues only
+	char uplo = ( storedTriangle == LOWER ) ? 'L' : 'U';
+
+	float workQuery;
+	int lWork = -1;
+	int info;
+
+	// work space query
+	ssyev( &jobz, &uplo, &n, A.data(), &m, eigenvalues.data(), &workQuery, &lWork, &info );
+	
+	lWork = static_cast< int >( workQuery );
+
+	printf( "0: size %d x %d\n", eigenvalues.numRows(), eigenvalues.numCols() );
+
+	printf( "lWork = %d\n", lWork );
+
+	std::vector< float > work( lWork );
+	
+	printf( "1: size %d x %d\n", eigenvalues.numRows(), eigenvalues.numCols() );
+
+	ssyev( &jobz, &uplo, &n, A.data(), &m, eigenvalues.data(), &workQuery, &lWork, &info );
+	
+	printf( "2: size %d x %d\n", eigenvalues.numRows(), eigenvalues.numCols() );
+
+	if( info < 0 )
+	{
+		fprintf( stderr, "ssyev: Illegal parameter value: %d.\n", -info );
+	}
+	else if( info > 0 )
+	{
+		fprintf( stderr, "ssyev: did not converge.\n" );
+	}
+
+	succeeded = ( info == 0 );
+
+	printf( "3: size %d x %d\n", eigenvalues.numRows(), eigenvalues.numCols() );
+
+	if( !succeeded )
+	{
+		return FloatMatrix();
+	}
+	else
+	{
+		printf( "returning: size %d x %d\n", eigenvalues.numRows(), eigenvalues.numCols() );
+		return eigenvalues;
+	}
+}
+#endif
+
+bool FloatMatrix::eigenvaluesSymmetric( FloatMatrix& eigenvalues, MatrixTriangle storedTriangle ) const
+{
+	// check that this matrix is square
+	int m = m_nRows;
+	int n = m_nCols;
+
+	if( m != n )
+	{
+		fprintf( stderr, "FloatMatrix::eigenvaluesSymmetric requires the matrix to be square\n" );
+		return false;
+	}
+
+	// make a copy of this
+	FloatMatrix A( *this );
+	eigenvalues.resize( n, 1 );
+
+	char jobz = 'N'; // eigenvalues only
+	char uplo = ( storedTriangle == LOWER ) ? 'L' : 'U';
+
+	float workQuery;
+	int lWork = -1;
+	int info;
+
+	// work space query
+	ssyev( &jobz, &uplo, &n, A.data(), &m, eigenvalues.data(), &workQuery, &lWork, &info );
+
+	lWork = static_cast< int >( workQuery );
+	std::vector< float > work( lWork );
+
+	ssyev( &jobz, &uplo, &n, A.data(), &m, eigenvalues.data(), &workQuery, &lWork, &info );
+
+	if( info < 0 )
+	{
+		fprintf( stderr, "ssyev: Illegal parameter value: %d.\n", -info );
+	}
+	else if( info > 0 )
+	{
+		fprintf( stderr, "ssyev: did not converge.\n" );
+	}
+
+	bool succeeded = ( info == 0 );
+	return succeeded;
 }
 
 FloatMatrix FloatMatrix::inverted( bool* pSucceeded ) const
