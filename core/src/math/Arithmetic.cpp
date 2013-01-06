@@ -4,9 +4,42 @@
 #include "math/Arithmetic.h"
 
 // static
-int Arithmetic::mod( int x, int N )
+int Arithmetic::mod( int x, int n )
 {
-	return ( ( x % N ) + N ) % N;
+	return ( ( x % n ) + n ) % n;
+}
+
+// static
+Vector2i Arithmetic::mod( const Vector2i& v, const Vector2i& n )
+{
+	return Vector2i
+	(
+		mod( v.x, n.x ),
+		mod( v.y, n.y )
+	);
+}
+
+// static
+Vector3i Arithmetic::mod( const Vector3i& v, const Vector3i& n )
+{
+	return Vector3i
+	(
+		mod( v.x, n.x ),
+		mod( v.y, n.y ),
+		mod( v.z, n.z )
+	);
+}
+
+// static
+Vector4i Arithmetic::mod( const Vector4i& v, const Vector4i& n )
+{
+	return Vector4i
+	(
+		mod( v.x, n.x ),
+		mod( v.y, n.y ),
+		mod( v.z, n.z ),
+		mod( v.w, n.w )
+	);
 }
 
 // static

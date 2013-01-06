@@ -1,16 +1,16 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#include <common/Array2DView.h>
 
-class Vector3f;
 class QString;
+class Vector3f;
 
 class PortablePixelMapIO
 {
 public:
 
 	// TODO: text vs binary
-	// TODO: stride to skip alpha channel
 
 	/*
 	// scale > 0 is big endian, < 0 is little endian
@@ -20,16 +20,9 @@ public:
 		float scale = -1.0f );
 		*/
 
-	// set yAxisPointsUp to true if the *input array* is in OpenGL order	
-	static bool writeRGB( QString filename,
-		ubyte* aubRGBArray,
-		int width, int height,		
-		bool yAxisPointsUp = false );
+	// TODO: can optimize this by checking stride for packed
+	static bool writeRGB( QString filename, Array2DView< ubyte3 > image );		
 
-	// set yAxisPointsUp to true if the *input array* is in OpenGL order
-	// the float values are clamped to [0,1] and rescaled to [0,255]
-	static bool writeRGB( QString filename,
-		float* afRGBArray,
-		int width, int height,		
-		bool yAxisPointsUp = false );
+	// elements of image needs to be in [0,1]^3
+	static bool writeRGB( QString filename, Array2DView< Vector3f > image );
 };

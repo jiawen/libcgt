@@ -7,13 +7,8 @@
 #include <color/ColorUtils.h>
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename,								  
-								  ubyte* aubRGBArray,
-								  int width, int height,								  
-								  bool yAxisPointsUp )
+bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< ubyte3 > image )
 {
-	assert( aubRGBArray != NULL );
-
 	QFile outputFile( filename );
 
 	// try to open the file in write only mode
@@ -25,55 +20,29 @@ bool PortablePixelMapIO::writeRGB( QString filename,
 	QTextStream outputTextStream( &outputFile );
 	outputTextStream.setCodec( "ISO-8859-1" );
 	outputTextStream << "P6\n";
-	outputTextStream << width << " " << height << "\n";
+	outputTextStream << image.width() << " " << image.height() << "\n";
 	outputTextStream << "255\n";
 
 	outputTextStream.flush();
 
-	QDataStream outputDataStream( &outputFile );	
+	QDataStream outputDataStream( &outputFile );
 
-	if( yAxisPointsUp )
+	for( int y = 0; y < image.height(); ++y )
 	{
-		for( int y = 0; y < height; ++y )
+		for( int x = 0; x < image.width(); ++x )
 		{
-			for( int x = 0; x < width; ++x )
-			{
-				int yy = height - y - 1;
-
-				int k = 3 * ( yy * width + x );
-
-				outputDataStream << aubRGBArray[ k ];
-				outputDataStream << aubRGBArray[ k + 1 ];
-				outputDataStream << aubRGBArray[ k + 2 ];
-			}
+			ubyte3 rgb = image( x, y );
+			outputDataStream << rgb.x << rgb.y << rgb.z;			
 		}
 	}
-	else
-	{
-		for( int y = 0; y < height; ++y )
-		{
-			for( int x = 0; x < width; ++x )
-			{
-				int k = 3 * ( y * width + x );
-
-				outputDataStream << aubRGBArray[ k ];
-				outputDataStream << aubRGBArray[ k + 1 ];
-				outputDataStream << aubRGBArray[ k + 2 ];
-			}
-		}
-	}	
-
+	
+	// TODO: error check
 	return true;
 }
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename,								  
-								  float* afRGBArray,
-								  int width, int height,								  
-								  bool yAxisPointsUp )
+bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< Vector3f > image )								  
 {
-	assert( afRGBArray != NULL );
-
 	QFile outputFile( filename );
 
 	// try to open the file in write only mode
@@ -85,43 +54,24 @@ bool PortablePixelMapIO::writeRGB( QString filename,
 	QTextStream outputTextStream( &outputFile );
 	outputTextStream.setCodec( "ISO-8859-1" );
 	outputTextStream << "P6\n";
-	outputTextStream << width << " " << height << "\n";
+	outputTextStream << image.width() << " " << image.height() << "\n";
 	outputTextStream << "255\n";
 
 	outputTextStream.flush();
 
 	QDataStream outputDataStream( &outputFile );	
 
-	if( yAxisPointsUp )
+	for( int y = 0; y < image.height(); ++y )
 	{
-		for( int y = 0; y < height; ++y )
+		for( int x = 0; x < image.width(); ++x )
 		{
-			for( int x = 0; x < width; ++x )
-			{
-				int yy = height - y - 1;
+			Vector3f rgb = image( x, y );
 
-				int k = 3 * ( yy * width + x );
-
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k ] );
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k + 1 ] );
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k + 2 ] );
-			}
+			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.x );
+			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.y );
+			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.z );
 		}
 	}
-	else
-	{
-		for( int y = 0; y < height; ++y )
-		{
-			for( int x = 0; x < width; ++x )
-			{
-				int k = 3 * ( y * width + x );
-
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k ] );
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k + 1 ] );
-				outputDataStream << ColorUtils::floatToUnsignedByte( afRGBArray[ k + 2 ] );
-			}
-		}
-	}	
 
 	return true;
 }

@@ -32,6 +32,7 @@ public:
 	int height() const;
 	Vector2i size() const;
 	int numElements() const;
+	int strideBytes() const; // the space between the start of elements in bytes
 	int rowPitchBytes() const; // number of bytes between successive rows
 
 	void fill( const T& fillValue );
@@ -86,6 +87,7 @@ private:
 	
 	int m_width;
 	int m_height;
+	int m_strideBytes;
 	int m_rowPitchBytes;
 	T* m_array;
 

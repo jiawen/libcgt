@@ -3,6 +3,7 @@ Array2D< T >::Array2D() :
 
 	m_width( -1 ),
 	m_height( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_array( nullptr )
 
@@ -15,6 +16,7 @@ Array2D< T >::Array2D( const char* filename ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_array( nullptr )
 
@@ -27,6 +29,7 @@ Array2D< T >::Array2D( int width, int height, const T& fillValue ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_array( nullptr )
 
@@ -40,6 +43,7 @@ Array2D< T >::Array2D( const Vector2i& size, const T& fillValue ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_array( nullptr )
 
@@ -53,6 +57,7 @@ Array2D< T >::Array2D( const Array2D< T >& copy ) :
 
 	m_width( -1 ),
 	m_height( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_array( nullptr )
 
@@ -69,11 +74,13 @@ Array2D< T >::Array2D( Array2D< T >&& move )
 {
 	m_width = move.m_width;
 	m_height = move.m_height;
+	m_strideBytes = move.m_strideBytes;
 	m_rowPitchBytes = move.m_rowPitchBytes;
 	m_array = move.m_array;
 
 	move.m_width = -1;
 	move.m_height = -1;
+	move.m_strideBytes = -1;
 	move.m_rowPitchBytes = -1;
 	move.m_array = nullptr;
 }
@@ -104,11 +111,13 @@ Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
 
 		m_width = move.m_width;
 		m_height = move.m_height;
+		m_strideBytes = move.m_strideBytes;
 		m_rowPitchBytes = move.m_rowPitchBytes;
 		m_array = move.m_array;
 
 		move.m_width = -1;
 		move.m_height = -1;
+		move.m_strideBytes = -1;
 		move.m_rowPitchBytes = -1;
 		move.m_array = nullptr;
 	}
@@ -142,6 +151,7 @@ void Array2D< T >::invalidate()
 {
 	m_width = -1;
 	m_height = -1;
+	m_strideBytes = -1;
 	m_rowPitchBytes = -1;
 
 	if( m_array != nullptr )
@@ -175,6 +185,12 @@ int Array2D< T >::numElements() const
 }
 
 template< typename T >
+int Array2D< T >::strideBytes() const
+{
+	return m_strideBytes;
+}
+
+template< typename T >
 int Array2D< T >::rowPitchBytes() const
 {
 	return m_rowPitchBytes;
@@ -204,7 +220,8 @@ void Array2D< T >::resize( int width, int height )
 	{
 		// check if the total number of elements is the same
 		// if it is, don't reallocate
-		int rowPitchBytes = width * sizeof( T ); // TODO: round up / align
+		int strideBytes = sizeof( T );
+		int rowPitchBytes = width * strideBytes; // TODO: round up / align
 		if( rowPitchBytes * height != m_rowPitchBytes * m_height )
 		{
 			if( m_array != nullptr )
@@ -219,6 +236,7 @@ void Array2D< T >::resize( int width, int height )
 		// if the number of elements is the same, the dimensions may be different
 		m_width = width;
 		m_height = height;
+		m_strideBytes = strideBytes;
 		m_rowPitchBytes = rowPitchBytes;
 	}
 }
@@ -239,19 +257,19 @@ template< typename T >
 Array2DView< T > Array2D< T >::croppedView( int x, int y, int width, int height )
 {
 	T* cornerPointer = &( rowPointer( y )[ x ] );
-	return Array2DView< T >( width, height, rowPitchBytes(), cornerPointer );
+	return Array2DView< T >( width, height, strideBytes(), rowPitchBytes(), cornerPointer );
 }
 
 template< typename T >
 Array2D< T >::operator const Array2DView< T >() const
 {
-	return Array2DView< T >( width(), height(), rowPitchBytes(), m_array );
+	return Array2DView< T >( width(), height(), strideBytes(), rowPitchBytes(), m_array );
 }
 
 template< typename T >
 Array2D< T >::operator Array2DView< T >()
 {
-	return Array2DView< T >( width(), height(), rowPitchBytes(), m_array );
+	return Array2DView< T >( width(), height(), strideBytes(), rowPitchBytes(), m_array );
 }
 
 template< typename T >

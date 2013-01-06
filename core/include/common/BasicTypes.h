@@ -10,6 +10,33 @@ typedef signed char			sbyte;
 typedef unsigned char		ubyte;
 #endif
 
+#ifndef ubyte2
+typedef struct
+{
+	ubyte x;
+	ubyte y;
+} ubyte2;
+#endif
+
+#ifndef ubyte3
+typedef struct
+{
+	ubyte x;
+	ubyte y;
+	ubyte z;
+} ubyte3;
+#endif
+
+#ifndef ubyte4
+typedef struct
+{
+	ubyte x;
+	ubyte y;
+	ubyte z;
+	ubyte w;
+} ubyte4;
+#endif
+
 #ifndef ushort
 typedef unsigned short		ushort;
 #endif

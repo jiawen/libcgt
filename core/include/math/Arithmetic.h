@@ -17,7 +17,10 @@ public:
 	// e.g.
 	// -1 % 10 = -1
 	// mod( -1, 10 ) = 9
-	static int mod( int x, int N );
+	static int mod( int x, int n );
+	static Vector2i mod( const Vector2i& v, const Vector2i& n );
+	static Vector3i mod( const Vector3i& v, const Vector3i& n );
+	static Vector4i mod( const Vector4i& v, const Vector4i& n );
 
 	static int sign( int x );
 	static int sign( float x );
@@ -87,7 +90,7 @@ public:
 	static int roundUpToNearestMultipleOf256( int x );
 
 	// finds y where y is the next perfect square greater than or equal to x
-	// and optionally reqturns the square root
+	// and optionally returns the square root
 	static int findNextPerfectSquare( int x );
 	static int findNextPerfectSquare( int x, int& sqrtOut );
 

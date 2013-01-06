@@ -4,6 +4,7 @@ Array3D< T >::Array3D() :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_slicePitchBytes( -1 ),
 	m_array( nullptr )
@@ -18,6 +19,7 @@ Array3D< T >::Array3D( const char* filename ) :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_slicePitchBytes( -1 ),
 	m_array( nullptr )
@@ -32,6 +34,7 @@ Array3D< T >::Array3D( int width, int height, int depth, const T& fillValue ) :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_slicePitchBytes( -1 ),
 	m_array( nullptr )
@@ -47,6 +50,7 @@ Array3D< T >::Array3D( const Vector3i& size, const T& fillValue ) :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_slicePitchBytes( -1 ),
 	m_array( nullptr )
@@ -62,6 +66,7 @@ Array3D< T >::Array3D( const Array3D< T >& copy ) :
 	m_width( -1 ),
 	m_height( -1 ),
 	m_depth( -1 ),
+	m_strideBytes( -1 ),
 	m_rowPitchBytes( -1 ),
 	m_slicePitchBytes( -1 ),
 	m_array( nullptr )
@@ -80,6 +85,7 @@ Array3D< T >::Array3D( Array3D< T >&& move )
 	m_width = move.m_width;
 	m_height = move.m_height;
 	m_depth = move.m_depth;
+	m_strideBytes = move.m_strideBytes;
 	m_rowPitchBytes = move.m_rowPitchBytes;
 	m_slicePitchBytes = move.m_slicePitchBytes;
 	m_array = move.m_array;
@@ -87,6 +93,7 @@ Array3D< T >::Array3D( Array3D< T >&& move )
 	move.m_width = -1;
 	move.m_height = -1;
 	move.m_depth = -1;
+	move.m_strideBytes = -1;
 	move.m_rowPitchBytes = -1;
 	move.m_slicePitchBytes = -1;
 	move.m_array = nullptr;
@@ -119,6 +126,7 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 		m_width = move.m_width;
 		m_height = move.m_height;
 		m_depth = move.m_depth;
+		m_strideBytes = move.m_strideBytes;
 		m_rowPitchBytes = move.m_rowPitchBytes;
 		m_slicePitchBytes = move.m_slicePitchBytes;
 		m_array = move.m_array;
@@ -126,6 +134,7 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 		move.m_width = -1;
 		move.m_height = -1;
 		move.m_depth = -1;
+		move.m_strideBytes = -1;
 		move.m_rowPitchBytes = -1;
 		move.m_slicePitchBytes = -1;
 		move.m_array = nullptr;
@@ -236,8 +245,9 @@ void Array3D< T >::resize( int width, int height, int depth )
 	{
 		// check if the total number of elements is the same
 		// if it is, don't reallocate
-		int rowPitchBytes = width * sizeof( T ); // TODO: round up / align
-		int slicePitchBytes = rowPitchBytes * height; // TODO: round up / align
+		int strideBytes = sizeof( T );
+		int rowPitchBytes = width * strideBytes; // TODO: round up / align
+		int slicePitchBytes = height * rowPitchBytes; // TODO: round up / align
 
 		if( slicePitchBytes * depth != m_slicePitchBytes * m_depth )
 		{
@@ -253,6 +263,7 @@ void Array3D< T >::resize( int width, int height, int depth )
 		m_width = width;
 		m_height = height;
 		m_depth = depth;
+		m_strideBytes = strideBytes;
 		m_rowPitchBytes = rowPitchBytes;
 		m_slicePitchBytes = slicePitchBytes;
 	}
@@ -274,19 +285,19 @@ template< typename T >
 Array3DView< T > Array3D< T >::croppedView( int x, int y, int z, int width, int height, int depth )
 {
 	T* cornerPointer = &( rowPointer( y, z )[ x ] );
-	return Array3DView< T >( width, height, depth, rowPitchBytes(), slicePitchBytes(), cornerPointer );
+	return Array3DView< T >( width, height, depth, strideBytes(), rowPitchBytes(), slicePitchBytes(), cornerPointer );
 }
 
 template< typename T >
 Array3D< T >::operator const Array3DView< T >() const
 {
-	return Array3DView< T >( width(), height(), depth(), rowPitchBytes(), slicePitchBytes(), m_array );
+	return Array3DView< T >( width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes(), m_array );
 }
 
 template< typename T >
 Array3D< T >::operator Array3DView< T >()
 {
-	return Array3DView< T >( width(), height(), depth(), rowPitchBytes(), slicePitchBytes(), m_array );
+	return Array3DView< T >( width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes(), m_array );
 }
 
 template< typename T >

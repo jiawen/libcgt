@@ -36,6 +36,7 @@ public:
 	int depth() const;
 	Vector3i size() const;
 	int numElements() const;
+	int strideBytes() const; // number of bytes between successive elements
 	int rowPitchBytes() const; // number of bytes between successive rows on any slice
 	int slicePitchBytes() const; // number of bytes between successive slices
 
@@ -100,6 +101,7 @@ private:
 	int m_width;
 	int m_height;
 	int m_depth;
+	int m_strideBytes;
 	int m_rowPitchBytes;
 	int m_slicePitchBytes;
 	T* m_array;
