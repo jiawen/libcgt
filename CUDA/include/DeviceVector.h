@@ -12,6 +12,7 @@
 
 // local
 #include "KernelVector.h"
+#include "ErrorChecking.h"
 
 // Basic vector interface around CUDA global memory
 // Wraps around cudaMalloc() (linear allocation)

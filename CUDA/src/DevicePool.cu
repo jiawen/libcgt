@@ -1,5 +1,12 @@
 #include "DevicePool.h"
 
+// thrust
+#include <thrust/device_ptr.h>
+#include <thrust/sequence.h>
+
+// libcgt
+#include <common/Array1DView.h>
+
 DevicePool::DevicePool() :
 
 	m_capacity( -1 ),
@@ -65,15 +72,6 @@ void DevicePool::resize( int capacity, int elementSizeBytes )
 
 void DevicePool::clear()
 {
-#if 0
-	// TODO: thrust::generate?
-	// generate free list: [0,capacity)
-	std::vector< int > h_freeList( m_capacity );
-	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
-
-	md_freeList.copyFromHost( h_freeList );
-#endif
-
 	int* pDevicePointer = md_freeList.ringBuffer().devicePointer();
 	thrust::device_ptr< int > pBegin = thrust::device_pointer_cast( pDevicePointer );
 	thrust::device_ptr< int > pEnd = thrust::device_pointer_cast( pDevicePointer + m_capacity );

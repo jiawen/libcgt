@@ -3,8 +3,6 @@
 #include <cstdio>
 #include <vector>
 
-#include <common/ArrayUtils.h>
-
 #include "DevicePool.h"
 
 class HostPool
@@ -69,4 +67,10 @@ public:
 	std::vector< ubyte > m_backingStore;
 };
 
-#include "HostPool.inl"
+template< typename T >
+__inline__ __host__
+T* HostPool::getElement( int index )
+{
+	ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
+	return reinterpret_cast< T* >( pElementStart );
+}

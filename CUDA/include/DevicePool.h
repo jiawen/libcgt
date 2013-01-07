@@ -3,14 +3,8 @@
 // STL
 #include <vector>
 
-// thrust
-#include <thrust/device_ptr.h>
-#include <thrust/sequence.h>
-
 // libcgt
-#include <common/Array1DView.h>
 #include <common/BasicTypes.h>
-#include <math/Arithmetic.h>
 
 // local
 #include "DeviceQueue.h"
