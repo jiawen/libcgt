@@ -1,16 +1,12 @@
 #include "time/Clock.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 #ifdef _WIN32
 
 Clock::Clock()
 {
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency( &frequency );
-	m_liFrequency = ( float )( frequency.QuadPart );
+	m_frequency = static_cast< float >( frequency.QuadPart );
 }
 
 int64 Clock::getCounterValue() const
@@ -22,19 +18,19 @@ int64 Clock::getCounterValue() const
 
 float Clock::getFrequency() const
 {
-	return m_liFrequency;
+	return m_frequency;
 }
 
 float Clock::convertIntervalToMillis( int64 interval ) const
 {
-	float seconds = ( ( float )interval ) / m_liFrequency;
+	float seconds = ( ( float )interval ) / m_frequency;
 	return( seconds * 1000.f );
 }
 
 int64 Clock::convertMillisToCounterInterval( float millis ) const
 {
 	float seconds = millis / 1000.f;
-	float counts = seconds * m_liFrequency;
+	float counts = seconds * m_frequency;
 	return( ( int64 )counts );
 }
 
@@ -42,7 +38,7 @@ int64 Clock::convertMillisToCounterInterval( float millis ) const
 
 Clock::Clock()
 {
-	m_liFrequency = 1000000.f;
+	m_frequency = 1000000.f;
 }
 
 int64 Clock::getCounterValue()
@@ -61,19 +57,19 @@ int64 Clock::getCounterValue()
 
 float Clock::getFrequency()
 {
-	return m_liFrequency;
+	return m_frequency;
 }
 
 float Clock::convertIntervalToMillis( int64 interval )
 {
-	float seconds = ( ( float )interval ) / m_liFrequency;
+	float seconds = ( ( float )interval ) / m_frequency;
 	return( seconds * 1000.f );
 }
 
 int64 Clock::convertMillisToCounterInterval( float millis )
 {
 	float seconds = millis / 1000.f;
-	float counts = seconds * m_liFrequency;
+	float counts = seconds * m_frequency;
 	return( ( int64 )counts );
 }
 

@@ -203,11 +203,15 @@ bool DeviceVector< T >::copyFromHost( const Array1DView< T >& src, int dstOffset
 template< typename T >
 void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 {
-	int len = length();
-
-	if( dst.size() != len )
+	if( isNull() )
 	{
-		dst.resize( len );
+		return;
+	}
+
+	// because STL does some stupid copying even when the lengths are the same
+	if( dst.size() != length() )
+	{
+		dst.resize( length() );
 	}
 
 	T* dstPointer = dst.data();

@@ -48,13 +48,13 @@ public:
 	static bool isPowerOfTwo( int x );
 	
 	static int roundToInt( float x );
-	static int floatToInt( float x ); // same as a static cast
-	static int floorToInt( float x ); // same as floor(x), followed by static cast
+	static int floatToInt( float x ); // same as a static cast (truncates toward 0)
+	static int floorToInt( float x ); // same as floor(x), followed by static cast (actually does floor)
 	static int ceilToInt( float x );
 
 	static int roundToInt( double x );
-	static int doubleToInt( double x ); // same as a static cast
-	static int floorToInt( double x ); // same as floor(x), followed by static cast
+	static int doubleToInt( double x ); // same as a static cast (truncates toward 0)
+	static int floorToInt( double x ); // same as floor(x), followed by static cast (actually does floor)
 	static int ceilToInt( double x );
 
 	static Vector2f floor( const Vector2f& v );

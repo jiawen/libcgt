@@ -217,17 +217,18 @@ void DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
 	md_headTailAbsoluteIndices.set( make_uint2( 0, length ) );
 }
 
+#include <ErrorChecking.h>
+
 template< typename T >
 void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
 {
-	std::vector< T > h_elements;
-	md_ringBuffer.copyToHost( h_elements );
-
 	uint2 ht = md_headTailAbsoluteIndices.get();
+
 	int h = ht.x;
 	int t = ht.y;
 	int count = t - h;
-	
+
+#if 0
 	int elementsLength = md_ringBuffer.length();
 
 	dst.clear();
@@ -236,5 +237,43 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
 	{
 		int ringBufferIndex = ( h + i ) % elementsLength;
 		dst.push_back( h_elements[ ringBufferIndex ] );
+	}
+#endif
+
+	dst.resize( count );
+
+	int hIndex = h % capacity();
+	int tIndex = t % capacity();
+
+	// no wraparound: single copy
+	if( hIndex < tIndex )
+	{
+		Array1DView< T > dstView( count, dst.data() );
+		md_ringBuffer.copyToHost( dstView, hIndex );
+	}
+	// wrap around: two copies
+	else
+	{
+		// suppose there was wraparound
+		// count = 3, capacity = 5
+		// hIndex = 3, tIndex = 1
+		// [ 0 1 2 3 4 ]
+		//     t   h
+		//
+		// nElementsHeadToEnd = 5 - 3 = 2
+		// output:
+		// [ 0 1 2 ]
+		//
+		// copy md_ringBuffer[ 3, 4 ] to output[ 0, 1 ]
+		//
+		// count - nElementsHeadToEnd = 3 - 2 = 1
+		// copy md_ringBuffer[ 0 ] to output[ 2 ]
+
+		int nElementsHeadToEnd = capacity() - hIndex;
+		Array1DView< T > dstHeadToEndView( nElementsHeadToEnd, dst.data() );
+		md_ringBuffer.copyToHost( dstHeadToEndView, hIndex );
+
+		Array1DView< T > dstZeroToTailView( count - nElementsHeadToEnd, dst.data() + nElementsHeadToEnd );
+		md_ringBuffer.copyToHost( dstZeroToTailView, 0 );
 	}
 }

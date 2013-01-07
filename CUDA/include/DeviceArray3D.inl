@@ -204,6 +204,8 @@ void DeviceArray3D< T >::resize( int width, int height, int depth )
 
 	destroy();
 
+	// TODO: make myself null if sizes are <= 0
+
 	m_width = width;
 	m_height = height;
 	m_depth = depth;
@@ -284,6 +286,11 @@ void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
 template< typename T >
 void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
 {
+	if( isNull() || src.isNull() )
+	{
+		return;
+	}
+
 	resize( src.m_width, src.m_height, src.m_depth );
 
 	cudaMemcpy3DParms params;
@@ -306,6 +313,8 @@ void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
 template< typename T >
 void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 {
+	// TODO: check if source is length zero: how well does resize handle it?
+
 	resize( src.width(), src.height(), src.depth() );
 
 	cudaMemcpy3DParms params;
@@ -331,6 +340,11 @@ void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
 template< typename T >
 void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
 {
+	if( isNull() )
+	{
+		return;
+	}
+
 	dst.resize( width(), height(), depth() );
 
 	cudaMemcpy3DParms params;

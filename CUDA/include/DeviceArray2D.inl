@@ -180,6 +180,8 @@ size_t DeviceArray2D< T >::sizeInBytes() const
 template< typename T >
 void DeviceArray2D< T >::resize( int width, int height )
 {
+	// TODO: make myself null if sizes are <= 0
+
 	if( width == m_width && height == m_height )
 	{
 		return;
@@ -268,6 +270,11 @@ void DeviceArray2D< T >::set( int x, int y, const T& value )
 template< typename T >
 void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 {
+	if( isNull() || src.isNull() )
+	{
+		return;
+	}
+
 	resize( src.m_width, src.m_height );
 
 	checkCudaErrors( cudaMemcpy2D( m_devicePointer, m_pitch, src.m_devicePointer, src.m_pitch,
@@ -277,6 +284,8 @@ void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 template< typename T >
 void DeviceArray2D< T >::copyFromHost( const Array2D< T >& src )
 {
+	// TODO: check if src.isNull(): how well does memcpy handle zero size?
+
 	resize( src.width(), src.height() );
 	checkCudaErrors
 	(
@@ -293,6 +302,11 @@ void DeviceArray2D< T >::copyFromHost( const Array2D< T >& src )
 template< typename T >
 void DeviceArray2D< T >::copyToHost( Array2D< T >& dst ) const
 {
+	if( isNull() )
+	{
+		return;
+	}
+
 	dst.resize( width(), height() );
 	checkCudaErrors
 	(

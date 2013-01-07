@@ -1,21 +1,21 @@
 #include "time/StopWatch.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 StopWatch::StopWatch()
 {
 	reset();
 }
 
-void StopWatch::reset()
+float StopWatch::reset()
 {
-	m_iResetTime = m_clock.getCounterValue();
+	float elapsed = millisecondsElapsed();
+
+	m_resetTime = m_clock.getCounterValue();
+
+	return elapsed;
 }
 
 float StopWatch::millisecondsElapsed()
 {
 	int64 now = m_clock.getCounterValue();
-	return m_clock.convertIntervalToMillis( now - m_iResetTime );
+	return m_clock.convertIntervalToMillis( now - m_resetTime );
 }
