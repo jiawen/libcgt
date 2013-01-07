@@ -43,6 +43,10 @@ struct KernelPool
 	// and space for a tag
 	__device__
 	UsedListEntry< UsedListTag >& alloc();
+
+	// returns an index back to the pool
+	__device__
+	void free( int index );
 	
 	// marks the index at usedList()[ usedListIndex ] as deleted
 	__device__
@@ -110,6 +114,13 @@ UsedListEntry< UsedListTag >& KernelPool< UsedListTag >::alloc()
 
 	uint usedListIndex = m_usedList.enqueue( entry );
 	return m_usedList.ringBuffer()[ usedListIndex ];
+}
+
+template< typename UsedListTag >
+__inline__ __device__
+void KernelPool< UsedListTag >::free( int index )
+{
+	m_freeList.enqueue( index );
 }
 #endif
 
