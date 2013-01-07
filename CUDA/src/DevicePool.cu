@@ -1,36 +1,107 @@
 #include "DevicePool.h"
 
-DevicePool::DevicePool()
+DevicePool::DevicePool() :
+
+	m_capacity( -1 ),
+	m_elementSizeBytes( -1 )
+
 {
 
 }
 
-DevicePool::DevicePool( int capacity, int elementSizeBytes ) :
-
-	m_capacity( capacity ),
-	m_elementSizeBytes( elementSizeBytes ),
-
-	//m_usedList( count ),
-	m_freeList( capacity ),
-
-	m_pool( capacity * elementSizeBytes )
-
+DevicePool::DevicePool( int capacity, int elementSizeBytes )
 {
-	reset();
+	resize( capacity, elementSizeBytes );
 }
 
-KernelPool DevicePool::kernelPool()
+// virtual
+DevicePool::~DevicePool()
 {
-	return KernelPool( m_freeList.kernelQueue(), m_pool.kernelVector() );
+
 }
 
-void DevicePool::reset()
+bool DevicePool::isNull() const
 {
-	// m_usedList.clear();
+	return( md_freeList.isNull() || md_backingStore.isNull() );
+}
 
+bool DevicePool::notNull() const
+{
+	return !isNull();
+}
+
+int DevicePool::capacity() const
+{
+	return m_capacity;
+}
+
+int DevicePool::elementSizeBytes() const
+{
+	return m_elementSizeBytes;
+};
+
+size_t DevicePool::sizeInBytes() const
+{
+	size_t esb = m_elementSizeBytes;
+	size_t poolSizeBytes = esb * capacity();
+
+	return poolSizeBytes + md_freeList.sizeInBytes();
+}
+
+int DevicePool::numFreeElements()
+{
+	return md_freeList.count();
+}
+
+void DevicePool::resize( int capacity, int elementSizeBytes )
+{
+	m_capacity = capacity;
+	m_elementSizeBytes = elementSizeBytes;
+	md_freeList.resize( capacity );
+	md_backingStore.resize( capacity * elementSizeBytes );
+
+	clear();	
+}
+
+void DevicePool::clear()
+{
+#if 0
+	// TODO: thrust::generate?
 	// generate free list: [0,capacity)
 	std::vector< int > h_freeList( m_capacity );
 	std::iota( h_freeList.begin(), h_freeList.end(), 0 );
 
-	m_freeList.elements().copyFromHost( h_freeList );
+	md_freeList.copyFromHost( h_freeList );
+#endif
+
+	int* pDevicePointer = md_freeList.ringBuffer().devicePointer();
+	thrust::device_ptr< int > pBegin = thrust::device_pointer_cast( pDevicePointer );
+	thrust::device_ptr< int > pEnd = thrust::device_pointer_cast( pDevicePointer + m_capacity );
+
+	thrust::sequence( pBegin, pEnd, 0 );
+}
+
+std::vector< ubyte > DevicePool::getElement( int index ) const
+{
+	// allocate memory for the output
+	std::vector< ubyte > output( elementSizeBytes() );
+
+	// view it as a byte array
+	Array1DView< ubyte > view( elementSizeBytes(), output.data() );
+
+	// copy it to the host
+	md_backingStore.copyToHost( view, index * elementSizeBytes() );
+
+	return output;
+}
+
+KernelPool DevicePool::kernelPool()
+{
+	return KernelPool
+	(
+		m_capacity,
+		m_elementSizeBytes,
+		md_freeList.kernelQueue(),
+		md_backingStore.kernelVector()
+	);
 }

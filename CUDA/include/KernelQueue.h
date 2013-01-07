@@ -3,10 +3,10 @@
 template< typename T >
 struct KernelQueue
 {
-	__inline__ __host__
+	__inline__ __host__ __device__
 	KernelQueue();
 
-	__inline__ __host__
+	__inline__ __host__ __device__
 	KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements );
 
 	// enqueues a value at the tail the queue

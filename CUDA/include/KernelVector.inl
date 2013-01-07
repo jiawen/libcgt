@@ -1,5 +1,5 @@
 template< typename T >
-__inline__ __host__
+__inline__ __host__ __device__
 KernelVector< T >::KernelVector() :
 
 	pointer( nullptr ),
@@ -10,7 +10,7 @@ KernelVector< T >::KernelVector() :
 }
 
 template< typename T >
-__inline__ __host__
+__inline__ __host__ __device__
 KernelVector< T >::KernelVector( T* _pointer, int _length ) :
 
 pointer( _pointer ),

@@ -7,7 +7,6 @@
 
 #include "DevicePool.h"
 
-template< typename UsedListTag >
 class HostPool
 {
 public:
@@ -49,8 +48,8 @@ public:
 	__inline__ __host__
 	T* getElement( int index );
 
-	void copyFromDevice( const DevicePool< UsedListTag >& pool );
-	void copyToDevice( DevicePool< UsedListTag >& pool );
+	void copyFromDevice( const DevicePool& pool );
+	void copyToDevice( DevicePool& pool );
 
 	void loadBinary( FILE* fp );
 	void saveBinary( FILE* fp );
@@ -60,17 +59,11 @@ public:
 	int m_capacity;
 	int m_elementSizeBytes;
 
-	// stores a list of free (still-available) element (not byte) indices in m_backingStore
-	// initially free
+	// stores a list of free (still-available) element (not byte) indices in md_backingStore
+	// initially, every element is free
+	// and so is an entirely full queue of [0 1 2 3 ... m_capacity)
+	// head = 0, tail = m_capacity
 	std::vector< int > m_freeList;
-
-	// stores a list of allocated (not currently available) element indices in m_backingStore
-	// if the value is positive, then it's still in use
-	// if the value is negative, then it's been marked as freed and will be collected in the next call to collect()
-	std::vector< UsedListEntry< UsedListTag > > m_usedList;
-
-	// temporary storage for the garbage collector
-	std::vector< UsedListEntry< UsedListTag > > m_collectedList;
 
 	// backing store of capacity * elementSizeBytes bytes
 	std::vector< ubyte > m_backingStore;

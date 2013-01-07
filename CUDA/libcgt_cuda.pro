@@ -21,3 +21,5 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 HEADERS += include/*.h
 HEADERS += include/*.inl
 SOURCES += src/*.cpp
+SOURCES += src/*.cu
+
