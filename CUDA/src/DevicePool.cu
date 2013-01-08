@@ -77,6 +77,8 @@ void DevicePool::clear()
 	thrust::device_ptr< int > pEnd = thrust::device_pointer_cast( pDevicePointer + m_capacity );
 
 	thrust::sequence( pBegin, pEnd, 0 );
+
+	md_freeList.setHeadAndTailAbsoluteIndices( 0, m_capacity );
 }
 
 std::vector< ubyte > DevicePool::getElement( int index ) const
