@@ -1,5 +1,5 @@
 template< typename T >
-Array1DView< T >::Array1DView( int length, void* pPointer ) :
+Array1DView< T >::Array1DView( void* pPointer, int length ) :
 
 	m_length( length ),
 	m_strideBytes( sizeof( T ) ),
@@ -10,7 +10,7 @@ Array1DView< T >::Array1DView( int length, void* pPointer ) :
 }
 
 template< typename T >
-Array1DView< T >::Array1DView( int length, int strideBytes, void* pPointer ) :
+Array1DView< T >::Array1DView( void* pPointer, int length, int strideBytes ) :
 
 	m_length( length ),
 	m_strideBytes( strideBytes ),

@@ -15,12 +15,12 @@ public:
 	// create an Array2DView with
 	// the default stride of sizeof( T )
 	// and the default row pitch of width * sizeof( T )
-	Array2DView( int width, int height, void* pPointer );
-	Array2DView( const Vector2i& size, void* pPointer );
+	Array2DView( void* pPointer, int width, int height );
+	Array2DView( void* pPointer, const Vector2i& size );
 
 	// create an Array2DView with specified size, stride, and pitch
-	Array2DView( int width, int height, int strideBytes, int rowPitchBytes, void* pPointer );
-	Array2DView( const Vector2i& size, int strideBytes, int rowPitchBytes, void* pPointer );
+	Array2DView( void* pPointer, int width, int height, int strideBytes, int rowPitchBytes );
+	Array2DView( void* pPointer, const Vector2i& size, int strideBytes, int rowPitchBytes );
 
 	const T* rowPointer( int y ) const;
 	T* rowPointer( int y );

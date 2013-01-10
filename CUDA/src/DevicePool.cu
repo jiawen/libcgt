@@ -87,7 +87,7 @@ std::vector< ubyte > DevicePool::getElement( int index ) const
 	std::vector< ubyte > output( elementSizeBytes() );
 
 	// view it as a byte array
-	Array1DView< ubyte > view( elementSizeBytes(), output.data() );
+	Array1DView< ubyte > view( output.data(), elementSizeBytes() );
 
 	// copy it to the host
 	md_backingStore.copyToHost( view, index * elementSizeBytes() );

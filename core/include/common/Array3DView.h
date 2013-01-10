@@ -16,14 +16,16 @@ public:
 	// the default stride of sizeof( T )
 	// the default row pitch of width * sizeof( T )
 	// and the default slice pitch of width * height * sizeof( T )
-	Array3DView( int width, int height, int depth, void* pPointer );
-	Array3DView( const Vector3i& size, void* pPointer );
+	Array3DView( void* pPointer, int width, int height, int depth );
+	Array3DView( void* pPointer, const Vector3i& size );
 
-	// create an Array3DView with specified size, stride, and pitch
-	Array3DView( int width, int height, int depth,
-		int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer );
-	Array3DView( const Vector3i& size,
-		int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer );
+	// create an Array3DView with specified size, stride, and pitches
+	Array3DView( void* pPointer,
+		int width, int height, int depth,
+		int strideBytes, int rowPitchBytes, int slicePitchBytes );
+	Array3DView( void* pPointer,
+		const Vector3i& size,
+		int strideBytes, int rowPitchBytes, int slicePitchBytes );
 
 	const T* rowPointer( int y, int z ) const;
 	T* rowPointer( int y, int z );

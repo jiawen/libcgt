@@ -1,5 +1,5 @@
 template< typename T >
-Array2DView< T >::Array2DView( int width, int height, void* pPointer ) :
+Array2DView< T >::Array2DView( void* pPointer, int width, int height ) :
 
 	m_width( width ),
 	m_height( height ),
@@ -12,7 +12,7 @@ Array2DView< T >::Array2DView( int width, int height, void* pPointer ) :
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( const Vector2i& size, void* pPointer ) :
+Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
@@ -25,7 +25,7 @@ Array2DView< T >::Array2DView( const Vector2i& size, void* pPointer ) :
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( int width, int height, int strideBytes, int rowPitchBytes, void* pPointer ) :
+Array2DView< T >::Array2DView( void* pPointer, int width, int height, int strideBytes, int rowPitchBytes ) :
 
 	m_width( width ),
 	m_height( height ),
@@ -38,7 +38,7 @@ Array2DView< T >::Array2DView( int width, int height, int strideBytes, int rowPi
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( const Vector2i& size, int strideBytes, int rowPitchBytes, void* pPointer ) :
+Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size, int strideBytes, int rowPitchBytes ) :
 
 	m_width( size.x ),
 	m_height( size.y ),

@@ -1,6 +1,6 @@
 template< typename T >
-Array3DView< T >::Array3DView( int width, int height, int depth,
-	void* pPointer ) :
+Array3DView< T >::Array3DView( void* pPointer,
+	int width, int height, int depth ) :
 
 	m_width( width ),
 	m_height( height ),
@@ -15,7 +15,7 @@ Array3DView< T >::Array3DView( int width, int height, int depth,
 }
 
 template< typename T >
-Array3DView< T >::Array3DView( const Vector3i& size, void* pPointer ) :
+Array3DView< T >::Array3DView( void* pPointer, const Vector3i& size ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
@@ -30,8 +30,9 @@ Array3DView< T >::Array3DView( const Vector3i& size, void* pPointer ) :
 }
 
 template< typename T >
-Array3DView< T >::Array3DView( int width, int height, int depth,
-	int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer ) :
+Array3DView< T >::Array3DView( void* pPointer,
+	int width, int height, int depth,
+	int strideBytes, int rowPitchBytes, int slicePitchBytes ) :
 
 	m_width( width ),
 	m_height( height ),
@@ -46,8 +47,9 @@ Array3DView< T >::Array3DView( int width, int height, int depth,
 }
 
 template< typename T >
-Array3DView< T >::Array3DView( const Vector3i& size,
-	int strideBytes, int rowPitchBytes, int slicePitchBytes, void* pPointer ) :
+Array3DView< T >::Array3DView( void* pPointer,
+	const Vector3i& size,
+	int strideBytes, int rowPitchBytes, int slicePitchBytes ) :
 
 	m_width( size.x ),
 	m_height( size.y ),

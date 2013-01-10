@@ -285,19 +285,19 @@ template< typename T >
 Array3DView< T > Array3D< T >::croppedView( int x, int y, int z, int width, int height, int depth )
 {
 	T* cornerPointer = &( rowPointer( y, z )[ x ] );
-	return Array3DView< T >( width, height, depth, strideBytes(), rowPitchBytes(), slicePitchBytes(), cornerPointer );
+	return Array3DView< T >( cornerPointer, width, height, depth, strideBytes(), rowPitchBytes(), slicePitchBytes() );
 }
 
 template< typename T >
 Array3D< T >::operator const Array3DView< T >() const
 {
-	return Array3DView< T >( width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes(), m_array );
+	return Array3DView< T >( m_array, width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes() );
 }
 
 template< typename T >
 Array3D< T >::operator Array3DView< T >()
 {
-	return Array3DView< T >( width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes(), m_array );
+	return Array3DView< T >( m_array, width(), height(), depth(), strideBytes(), rowPitchBytes(), slicePitchBytes() );
 }
 
 template< typename T >

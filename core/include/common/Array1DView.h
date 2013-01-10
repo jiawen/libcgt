@@ -12,10 +12,12 @@ class Array1DView
 public:
 
 	// create an Array1DView with the default stride of sizeof( T )
-	Array1DView( int length, void* pPointer );
+	Array1DView( const void* pPointer, int length );
+	Array1DView( void* pPointer, int length );
 
 	// create an Array1DView with the specified size and stride
-	Array1DView( int length, int strideBytes, void* pPointer );
+	Array1DView( const void* pPointer, int length, int strideBytes );
+	Array1DView( void* pPointer, int length, int strideBytes );
 	
 	const T* pointer() const;
 	T* pointer();
