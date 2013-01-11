@@ -18,6 +18,9 @@ class SequenceExporter
 {
 public:
 
+	// prefix can be relative like "frame_"
+	// or absolute, like "c:/tmp/frame_"
+	//
 	// extension can be either "png" or "pfm"
 	SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, QString extension = "png", int startFrameIndex = 0 );
 	virtual ~SequenceExporter();
@@ -41,8 +44,11 @@ public:
 	// restores the render target, depth stencil target, and viewport for UI
 	void end();
 
+	// resets the prefix
+	void setPrefix( QString prefix );
+
 	// resets the frame index,
-	// in case user wants to start somewhere else, or re-start and overwrite
+	// in case the user wants to start somewhere else, or re-start and overwrite
 	void setFrameIndex( int i );
 
 private:
@@ -51,6 +57,7 @@ private:
 	int m_width;
 	int m_height;
 	NumberedFilenameBuilder m_builder;
+	QString m_prefix;
 	QString m_extension;
 
 	ID3D11Device* m_pDevice;

@@ -27,6 +27,7 @@ public:
 	static Vector3i floatToInt( const Vector3f& f );
 	static Vector3f intToFloat( const Vector3i& i );
 
+	static ubyte4 floatToUnsignedByte( const Vector4f& f );
 	static Vector4i floatToInt( const Vector4f& f );
 	static Vector4f intToFloat( const Vector4i& i );
 

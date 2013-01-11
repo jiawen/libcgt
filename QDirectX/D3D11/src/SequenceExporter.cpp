@@ -15,6 +15,7 @@ SequenceExporter::SequenceExporter( ID3D11Device* pDevice, int width, int height
 	m_width( width ),
 	m_height( height ),
 	m_frameIndex( startFrameIndex ),
+	m_prefix( prefix ),
 	m_extension( extension ),
 	m_builder( prefix, QString( "." ) + extension )
 {
@@ -77,9 +78,6 @@ void SequenceExporter::begin()
 
 	// set new viewport
 	m_pImmediateContext->RSSetViewports( 1, &m_viewport );
-
-	m_pSavedRTV->Release();
-	m_pSavedDSV->Release();
 }
 
 void SequenceExporter::beginFrame()
@@ -141,6 +139,12 @@ void SequenceExporter::end()
 	m_pImmediateContext->OMSetRenderTargets( 1, &m_pSavedRTV, m_pSavedDSV );
 	m_pSavedDSV->Release();
 	m_pSavedRTV->Release();
+}
+
+void SequenceExporter::setPrefix( QString prefix )
+{
+	m_prefix = prefix;
+	m_builder = NumberedFilenameBuilder( prefix, QString( "." ) + m_extension );
 }
 
 void SequenceExporter::setFrameIndex( int i )

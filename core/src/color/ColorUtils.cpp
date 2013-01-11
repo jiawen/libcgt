@@ -25,6 +25,17 @@ float ColorUtils::intToFloat( int i )
 }
 
 // static
+ubyte4 ColorUtils::floatToUnsignedByte( const Vector4f& f )
+{
+	ubyte4 output;
+	output.x = ColorUtils::floatToUnsignedByte( f.x );
+	output.y = ColorUtils::floatToUnsignedByte( f.y );
+	output.z = ColorUtils::floatToUnsignedByte( f.z );
+	output.w = ColorUtils::floatToUnsignedByte( f.w );
+	return output;
+}
+
+// static
 Vector3i ColorUtils::floatToInt( const Vector3f& f )
 {
 	return Vector3i
