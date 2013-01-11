@@ -3,9 +3,12 @@
 #include <memory>
 #include <d3d11.h>
 
-#include <imageproc/Image4ub.h>
-#include <imageproc/Image4f.h>
+#include <common/BasicTypes.h>
+#include <common/Array2D.h>
+
 #include <io/NumberedFilenameBuilder.h>
+
+#include <vecmath/Vector4f.h>
 
 class RenderTarget;
 class DepthStencilTarget;
@@ -20,8 +23,8 @@ public:
 	virtual ~SequenceExporter();
 
 	D3D11_VIEWPORT viewport();
-	std::shared_ptr< RenderTarget > renderTarget();
-	std::shared_ptr< DepthStencilTarget > depthStencilTarget();
+	RenderTarget* renderTarget();
+	DepthStencilTarget* depthStencilTarget();
 
 	// saves the current render target, depth stencil target, and viewport
 	// so frames can be saved out without destroying UI state
@@ -50,15 +53,16 @@ private:
 	NumberedFilenameBuilder m_builder;
 	QString m_extension;
 
+	ID3D11Device* m_pDevice;
 	ID3D11DeviceContext* m_pImmediateContext;
 
-	// TODO: switch to unique_ptr and return const unique_ptr reference
-	std::shared_ptr< RenderTarget > m_pRT;
-	std::shared_ptr< DepthStencilTarget > m_pDST;
-	std::shared_ptr< StagingTexture2D > m_pStagingTexture;
+	std::unique_ptr< RenderTarget > m_pRT;
+	std::unique_ptr< DepthStencilTarget > m_pDST;
+	std::unique_ptr< StagingTexture2D > m_pStagingTexture;
 	D3D11_VIEWPORT m_viewport;
-	Image4ub m_image4ub;
-	Image4f m_image4f;
+
+	Array2D< ubyte4 > m_image4ub;
+	Array2D< Vector4f > m_image4f;
 
 	// saved for begin / end
 	D3D11_VIEWPORT m_savedViewport;

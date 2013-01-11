@@ -1,7 +1,10 @@
 #include "D3D11Utils_Texture.h"
 
+#include <common/ArrayUtils.h>
+
 #include <color/ColorUtils.h>
 
+#include "DynamicTexture2D.h"
 #include "StagingTexture2D.h"
 
 // static
@@ -239,10 +242,6 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 	if( desc.Format == DXGI_FORMAT_R8G8B8A8_UNORM )
 	{
 		pST.reset( StagingTexture2D::createUnsignedByte4( pDevice, width, height ) );
-	}
-
-	if( desc.Format == DXGI_FORMAT_R8G8B8A8_UNORM )
-	{
 		pST->copyFrom( pTexture );
 		D3D11_MAPPED_SUBRESOURCE mapping = pST->mapForReadWrite();
 		ubyte* sourceData = reinterpret_cast< ubyte* >( mapping.pData );
@@ -266,6 +265,125 @@ void D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Textur
 	{
 		printf( "Warning: unable to copy texture to image, format is unsupported\n" );
 	}
+}
+
+// static
+bool D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pSrc, Array2DView< ubyte4 > dstView )
+{
+	D3D11_TEXTURE2D_DESC desc;
+	pSrc->GetDesc( &desc );
+
+	if( desc.Format != DXGI_FORMAT_R8G8B8A8_UNORM &&
+		desc.Format != DXGI_FORMAT_R8G8B8A8_UINT )
+	{
+		return false;
+	}
+
+	if( desc.Width != dstView.width() ||
+		desc.Height != dstView.height() )
+	{
+		return false;
+	}
+
+	// Copy into staging texture first
+	std::unique_ptr< StagingTexture2D > pST( StagingTexture2D::createUnsignedByte4( pDevice, desc.Width, desc.Height ) );
+	pST->copyFrom( pSrc );
+
+	bool succeeded = copyTextureToImage( pST.get(), dstView );
+
+	pST->unmap();
+
+	return succeeded;
+}
+
+// static
+bool D3D11Utils_Texture::copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pSrc, Array2DView< Vector4f > dstView )
+{
+	D3D11_TEXTURE2D_DESC desc;
+	pSrc->GetDesc( &desc );
+
+	if( desc.Format != DXGI_FORMAT_R32G32B32A32_FLOAT )
+	{
+		return false;
+	}
+
+	if( desc.Width != dstView.width() ||
+		desc.Height != dstView.height() )
+	{
+		return false;
+	}
+
+	// Copy into staging texture first
+	std::unique_ptr< StagingTexture2D > pST( StagingTexture2D::createFloat4( pDevice, desc.Width, desc.Height ) );
+	pST->copyFrom( pSrc );
+
+	bool succeeded = copyTextureToImage( pST.get(), dstView );
+
+	pST->unmap();
+
+	return succeeded;
+}
+
+// static
+bool D3D11Utils_Texture::copyTextureToImage( StagingTexture2D* pSrc, Array2DView< ubyte4 > dstView )
+{
+	if( pSrc == nullptr )
+	{
+		return false;
+	}
+
+	if( pSrc->width() != dstView.width() ||
+		pSrc->height() != dstView.height() )
+	{
+		return false;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE srcMapping = pSrc->mapForReadWrite();
+
+	Array2DView< ubyte4 > srcView
+	(
+		srcMapping.pData,
+		pSrc->width(), pSrc->height(),
+		4,
+		srcMapping.RowPitch
+	);
+
+	bool succeeded = ArrayUtils::copy( srcView, dstView );
+
+	pSrc->unmap();
+
+	return succeeded;
+}
+
+// static
+bool D3D11Utils_Texture::copyTextureToImage( StagingTexture2D* pSrc, Array2DView< Vector4f > dstView )
+{
+	if( pSrc == nullptr )
+	{
+		return false;
+	}
+
+	if( pSrc->width() != dstView.width() ||
+		pSrc->height() != dstView.height() )
+	{
+		return false;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE srcMapping = pSrc->mapForReadWrite();
+
+	Array2DView< Vector4f > srcView
+	(
+		srcMapping.pData,
+		pSrc->width(), pSrc->height(),
+		16, // stride
+		srcMapping.RowPitch
+	);
+
+	bool succeeded = ArrayUtils::copy( srcView, dstView );
+
+	pSrc->unmap();
+
+	return succeeded;
 }
 
 // static

@@ -1,32 +1,38 @@
 #include "SequenceExporter.h"
 
+#include <io/PNGIO.h>
+#include <io/PortableFloatMapIO.h>
+
 #include "RenderTarget.h"
 #include "DepthStencilTarget.h"
 #include "StagingTexture2D.h"
 #include "D3D11Utils.h"
+#include "D3D11Utils_Texture.h"
 
 SequenceExporter::SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, QString extension, int startFrameIndex ) :
 
+	m_pDevice( pDevice ),
 	m_width( width ),
 	m_height( height ),
 	m_frameIndex( startFrameIndex ),
 	m_extension( extension ),
 	m_builder( prefix, QString( "." ) + extension )
 {
+	pDevice->AddRef();
 
 	if( extension == "png" )
 	{
-		m_pRT.reset( RenderTarget::createUnsignedByte4( pDevice, width, height ) );
-		m_pStagingTexture.reset( StagingTexture2D::createUnsignedByte4( pDevice, width, height ) );
-		m_image4ub = Image4ub( width, height );
+		m_pRT = std::unique_ptr< RenderTarget >( RenderTarget::createUnsignedByte4( pDevice, width, height ) );
+		m_pStagingTexture = std::unique_ptr< StagingTexture2D >( StagingTexture2D::createUnsignedByte4( pDevice, width, height ) );
+		m_image4ub.resize( width, height );
 	}
 	else if( extension == "pfm" )
 	{
-		m_pRT.reset( RenderTarget::createFloat4( pDevice, width, height ) );
-		m_pStagingTexture.reset( StagingTexture2D::createFloat4( pDevice, width, height ) );
-		m_image4f = Image4f( width, height );
+		m_pRT = std::unique_ptr< RenderTarget >( RenderTarget::createFloat4( pDevice, width, height ) );
+		m_pStagingTexture = std::unique_ptr< StagingTexture2D >( StagingTexture2D::createFloat4( pDevice, width, height ) );
+		m_image4f.resize( width, height );
 	}
-	m_pDST.reset( DepthStencilTarget::createDepthFloat24StencilUnsignedByte8( pDevice, width, height ) );
+	m_pDST = std::unique_ptr< DepthStencilTarget >( DepthStencilTarget::createDepthFloat24StencilUnsignedByte8( pDevice, width, height ) );
 
 	m_viewport = D3D11Utils::createViewport( width, height );
 
@@ -37,6 +43,7 @@ SequenceExporter::SequenceExporter( ID3D11Device* pDevice, int width, int height
 SequenceExporter::~SequenceExporter()
 {
 	m_pImmediateContext->Release();
+	m_pDevice->Release();
 }
 
 D3D11_VIEWPORT SequenceExporter::viewport()
@@ -44,14 +51,14 @@ D3D11_VIEWPORT SequenceExporter::viewport()
 	return m_viewport;
 }
 
-std::shared_ptr< RenderTarget > SequenceExporter::renderTarget()
+RenderTarget* SequenceExporter::renderTarget()
 {
-	return m_pRT;
+	return m_pRT.get();
 }
 
-std::shared_ptr< DepthStencilTarget > SequenceExporter::depthStencilTarget()
+DepthStencilTarget* SequenceExporter::depthStencilTarget()
 {
-	return m_pDST;
+	return m_pDST.get();
 }
 
 void SequenceExporter::begin()
@@ -70,6 +77,9 @@ void SequenceExporter::begin()
 
 	// set new viewport
 	m_pImmediateContext->RSSetViewports( 1, &m_viewport );
+
+	m_pSavedRTV->Release();
+	m_pSavedDSV->Release();
 }
 
 void SequenceExporter::beginFrame()
@@ -82,49 +92,42 @@ void SequenceExporter::beginFrame()
 
 void SequenceExporter::endFrame()
 {
-	m_pStagingTexture->copyFrom( m_pRT->texture() );
-		
-	// TODO: D3D11Utils_Texture should have this
-	// or StagingTexture should take this
-	D3D11_MAPPED_SUBRESOURCE mt = m_pStagingTexture->mapForReadWrite();
+	m_pStagingTexture->copyFrom( m_pRT->texture() );	
 
-	// HACK
 	if( m_extension == "png" )
 	{
-		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
-
-		for( int y = 0; y < m_height; ++y )
-		{
-			ubyte* srcRow = &( sourceData[ y * mt.RowPitch ] );
-			ubyte* dstRow = m_image4ub.rowPointer( y );
-			memcpy( dstRow, srcRow, 4 * m_width );
-		}
+		D3D11Utils_Texture::copyTextureToImage
+		(
+			m_pStagingTexture.get(),
+			m_image4ub
+		);
 	}
 	else
 	{
-		ubyte* sourceData = reinterpret_cast< ubyte* >( mt.pData );
-
-		for( int y = 0; y < m_height; ++y )
-		{
-			float* srcRow = reinterpret_cast< float* >( &( sourceData[ y * mt.RowPitch ] ) );
-			float* dstRow = m_image4f.rowPointer( y );
-			memcpy( dstRow, srcRow, 4 * m_width * sizeof( float ) );
-		}
+		D3D11Utils_Texture::copyTextureToImage
+		(
+			m_pStagingTexture.get(),
+			m_image4f
+		);	
 	}
-
-	m_pStagingTexture->unmap();
-
-
+	
 	QString filename = m_builder.filenameForNumber( m_frameIndex );
 	printf( "Saving frame %d as %s\n", m_frameIndex, qPrintable( filename ) );
 
 	if( m_extension == "png" )
 	{
-		m_image4ub.save( filename );
+		PNGIO::writeRGBA( filename, m_image4ub );
 	}
 	else
 	{
-		m_image4f.save( filename );
+		Array2DView< Vector3f > rgbView
+		(
+			m_image4f.rowPointer( 0 ),
+			m_image4f.size(),
+			16, // stride
+			m_image4f.rowPitchBytes()
+		);
+		PortableFloatMapIO::writeRGB( filename, rgbView );
 	}
 
 	++m_frameIndex;

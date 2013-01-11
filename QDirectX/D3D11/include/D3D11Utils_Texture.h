@@ -4,12 +4,17 @@
 #include <D3D11.h>
 #include <D3DX11.h>
 
+#include <common/Array2DView.h>
+
 #include <imageproc/Image1f.h>
 #include <imageproc/Image1i.h>
 #include <imageproc/Image4f.h>
 #include <imageproc/Image4ub.h>
 
-#include "DynamicTexture2D.h"
+#include <vecmath/Vector4f.h>
+
+class DynamicTexture2D;
+class StagingTexture2D;
 
 class D3D11Utils_Texture
 {
@@ -35,6 +40,18 @@ public:
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image1i& im );
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image4ub& im );
 	static void copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, Image4f& im );
+
+	// texture (gpu) --> image (cpu)
+	// src->format() must be DXGI_FORMAT_R8G8B8A8_UNORM
+	// src->size() must match dst->size()
+	static bool copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pSrc, Array2DView< ubyte4 > dstView );
+	static bool copyTextureToImage( ID3D11Device* pDevice, ID3D11Texture2D* pSrc, Array2DView< Vector4f > dstView );
+	
+	// TODO: templatize StagingTexture2D on the format
+	// src->format() must be DXGI_FORMAT_R8G8B8A8_UNORM
+	static bool copyTextureToImage( StagingTexture2D* pSrc, Array2DView< ubyte4 > dstView );
+	// src->format() must be DXGI_FORMAT_R32G32B32A32_FLOAT
+	static bool copyTextureToImage( StagingTexture2D* pSrc, Array2DView< Vector4f > dstView );
 
 	// texture (gpu) --> file (disk)
 	static void saveTextureToPFM( ID3D11Device* pDevice, ID3D11Texture2D* pTexture, QString filename );

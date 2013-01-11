@@ -34,48 +34,14 @@ public:
 	static bool saveTXT( const Array3D< Vector2f >& array, const char* filename );
 
 	static bool saveTXT( const Array2D< Vector4f >& array, const char* filename );
+
+	// copy between two Array2DViews, with potentially varying stride and pitch
+	// if both are packed(), uses memcpy to copy quickly
+	// if both strides are the same, then uses memcpy row by row
+	// otherwise, iterates
+	// returns false if the dimensions don't match, or if either is null
+	template< typename T >
+	static bool copy( Array2DView< T > src, Array2DView< T > dst );
 };
 
-template< typename T >
-// static
-bool ArrayUtils::loadBinary( FILE* fp, std::vector< T >& output )
-{
-	int length;
-
-	fread( &length, sizeof( int ), 1, fp );
-	output.resize( length );
-
-	fread( output.data(), sizeof( T ), length, fp );
-
-	// TODO: error checking
-	return true;
-}
-
-template< typename T >
-// static
-bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename )
-{
-	FILE* fp = fopen( filename, "wb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
-
-	bool succeeded = saveBinary( input, fp );	
-	fclose( fp );
-	return succeeded;
-}
-
-template< typename T >
-// static
-bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
-{
-	// TODO: error check
-
-	int length = static_cast< int >( input.size() );
-	fwrite( &length, sizeof( int ), 1, fp );
-
-	fwrite( input.data(), sizeof( T ), length, fp );
-	
-	return true;
-}
+#include "common/ArrayUtils.inl"
