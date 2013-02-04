@@ -35,6 +35,32 @@ public:
 
 	static bool saveTXT( const Array2D< Vector4f >& array, const char* filename );
 
+	// returns a view that's flipped up <--> down
+	// using it twice flips it back to normal
+	template< typename T >
+	static Array2DView< T > flippedUpDownView( Array2DView< T > view );	
+
+	// returns a view that's flipped left <--> right
+	// using it twice flips it back to normal
+	template< typename T >
+	static Array2DView< T > flippedLeftRightView( Array2DView< T > view );	
+
+	// a view of a rectangular subset of a Array3DView, starting at x, y to the end
+	template< typename T >
+	static Array2DView< T > croppedView( Array2DView< T > view, int x, int y );
+
+	// a view of a rectangular subset of a Array3DView, starting at x, y
+	template< typename T >
+	static Array2DView< T > croppedView( Array2DView< T > view, int x, int y, int width, int height );	
+
+	// a view of a box subset of a Array3DView, starting at x, y, z to the end
+	template< typename T >
+	static Array3DView< T > croppedView( Array3DView< T > view, int x, int y, int z );
+
+	// a view of a box subset of a Array3DView, starting at x, y, z
+	template< typename T >
+	static Array3DView< T > croppedView( Array3DView< T > view, int x, int y, int z, int width, int height, int depth );
+
 	// copy between two Array2DViews, with potentially varying stride and pitch
 	// if both are packed(), uses memcpy to copy quickly
 	// if both strides are the same, then uses memcpy row by row

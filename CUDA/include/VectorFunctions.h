@@ -42,9 +42,15 @@ float2 xy( const float3& f )
 }
 
 __inline__ __host__ __device__
-float3 xyz( const float4& f )
+int3 xyz( const int4& v )
 {
-	return make_float3( f.x, f.y, f.z );
+	return make_int3( v.x, v.y, v.z );
+}
+
+__inline__ __host__ __device__
+float3 xyz( const float4& v )
+{
+	return make_float3( v.x, v.y, v.z );
 }
 
 __inline__ __host__ __device__
@@ -67,6 +73,18 @@ int getComponent( const int3& v, int component )
 
 __inline__ __host__ __device__
 void setComponent( int3& v, int component, int value )
+{
+	reinterpret_cast< int* >( &v )[ component ] = value;
+}
+
+__inline__ __host__ __device__
+int getComponent( const int4& v, int component )
+{
+	return reinterpret_cast< const int* >( &v )[ component ];
+}
+
+__inline__ __host__ __device__
+void setComponent( int4& v, int component, int value )
 {
 	reinterpret_cast< int* >( &v )[ component ] = value;
 }

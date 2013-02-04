@@ -45,12 +45,7 @@ public:
 	// resizes the array, original data is not preserved
 	// if width, height, or depth <= 0, the array is invalidated
 	void resize( int width, int height, int depth );
-	void resize( const Vector3i& size );
-
-	// a view of a box subset of this array, starting at x, y, z to the end
-	Array3DView< T > croppedView( int x, int y, int z );
-	// a view of a box subset of this array
-	Array3DView< T > croppedView( int x, int y, int z, int width, int height, int depth );
+	void resize( const Vector3i& size );	
 
 	operator const Array3DView< T >() const;
 	operator Array3DView< T >();

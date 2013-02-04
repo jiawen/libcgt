@@ -248,19 +248,6 @@ void Array2D< T >::resize( const Vector2i& size )
 }
 
 template< typename T >
-Array2DView< T > Array2D< T >::croppedView( int x, int y )
-{
-	return croppedView( x, y, width() - x, height() - y );
-}
-
-template< typename T >
-Array2DView< T > Array2D< T >::croppedView( int x, int y, int width, int height )
-{
-	T* cornerPointer = &( rowPointer( y )[ x ] );
-	return Array2DView< T >( cornerPointer, width, height, strideBytes(), rowPitchBytes() );
-}
-
-template< typename T >
 Array2D< T >::operator const Array2DView< T >() const
 {
 	return Array2DView< T >( m_array, width(), height(), strideBytes(), rowPitchBytes() );

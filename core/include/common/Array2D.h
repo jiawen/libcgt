@@ -42,11 +42,6 @@ public:
 	void resize( int width, int height );
 	void resize( const Vector2i& size );
 
-	// a view of a rectangular subset of this array, starting at x, y to the end
-	Array2DView< T > croppedView( int x, int y );
-	// a view of a rectangular subset of this array, starting at x, y to the end
-	Array2DView< T > croppedView( int x, int y, int width, int height );
-
 	operator const Array2DView< T >() const;
 	operator Array2DView< T >();
 

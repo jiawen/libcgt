@@ -12,9 +12,11 @@ class Array2DView
 {
 public:
 
+	Array2DView(); // pointer = NULL, width = height = 0
+
 	// create an Array2DView with
 	// the default stride of sizeof( T )
-	// and the default row pitch of width * sizeof( T )
+	// and the default row pitch of width * sizeof( T )	
 	Array2DView( void* pPointer, int width, int height );
 	Array2DView( void* pPointer, const Vector2i& size );
 

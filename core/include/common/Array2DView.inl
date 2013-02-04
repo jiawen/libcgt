@@ -1,4 +1,17 @@
 template< typename T >
+Array2DView< T >::Array2DView() :
+
+	m_width( 0 ),
+	m_height( 0 ),
+	m_strideBytes( 0 ),
+	m_rowPitchBytes( 0 ),
+	m_pPointer( nullptr )
+
+{
+
+}
+
+template< typename T >
 Array2DView< T >::Array2DView( void* pPointer, int width, int height ) :
 
 	m_width( width ),
