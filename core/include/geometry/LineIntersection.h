@@ -1,5 +1,4 @@
-#ifndef LINE_INTERSECTION_H
-#define LINE_INTERSECTION_H
+#pragma once
 
 #include "vecmath/Vector2f.h"
 
@@ -38,5 +37,3 @@ private:
 
 
 };
-
-#endif // LINE_INTERSECTION_H

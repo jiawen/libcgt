@@ -1,9 +1,6 @@
-#ifndef BINARY_FILE_INPUT_STREAM_H
-#define BINARY_FILE_INPUT_STREAM_H
+#pragma once
 
 #include <cstdio>
-
-// TODO: replace with QDataStream and QTextStream
 
 class BinaryFileInputStream
 {
@@ -26,5 +23,3 @@ private:
 
 	FILE* m_pFilePointer;
 };
-
-#endif

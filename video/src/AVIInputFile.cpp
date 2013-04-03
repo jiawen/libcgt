@@ -9,7 +9,7 @@ AVIInputFile* AVIInputFile::open( QString filename )
 	HRESULT hr = AVIFileOpen
 	(
 		&pAVIFile,
-		filename.utf16(), // wcharFilename.data(),
+		reinterpret_cast< LPCWSTR >( filename.utf16() ), // wcharFilename.data(),
 		OF_READ,
 		NULL // default handler
 	);

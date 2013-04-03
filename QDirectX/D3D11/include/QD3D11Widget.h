@@ -10,6 +10,8 @@
 
 class QD3D11Widget : public QWidget
 {
+	Q_OBJECT
+
 public:
 
 	QD3D11Widget( QWidget* parent = nullptr );

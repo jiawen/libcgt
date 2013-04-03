@@ -1,5 +1,4 @@
-#ifndef STAGING_STRUCTURED_BUFFER_H
-#define STAGING_STRUCTURED_BUFFER_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -61,5 +60,3 @@ private:
 	ID3D11Buffer* m_pBuffer;
 	ID3D11DeviceContext* m_pContext;
 };
-
-#endif // STAGING_STRUCTURED_BUFFER_H

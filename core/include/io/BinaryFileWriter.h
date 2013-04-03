@@ -1,9 +1,8 @@
-#ifndef BINARY_FILE_WRITER_H
-#define BINARY_FILE_WRITER_H
+#pragma once
 
 #include <cstdio>
 
-// TODO: binary file output stream
+// TODO: rename to binary file output stream
 class BinaryFileWriter
 {
 public:
@@ -23,5 +22,3 @@ private:
 
 	FILE* m_pFilePointer;
 };
-
-#endif BINARY_FILE_WRITER_H

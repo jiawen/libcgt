@@ -1,5 +1,4 @@
-#ifndef LIBCGT_IO_H
-#define LIBCGT_IO_H
+#pragma once
 
 #include "FileReader.h"
 #include "OBJData.h"
@@ -8,5 +7,3 @@
 #include "OpenEXRIO.h"
 #include "PortableFloatMapIO.h"
 #include "PortablePixelMapIO.h"
-
-#endif // LIBCGT_IO_H

@@ -1,5 +1,4 @@
-#ifndef VECTOR_4D_H
-#define VECTOR_4D_H
+#pragma once
 
 class Vector2d;
 class Vector3d;
@@ -84,5 +83,3 @@ Vector4d operator / ( const Vector4d& v0, const Vector4d& v1 );
 Vector4d operator - ( const Vector4d& v );
 Vector4d operator * ( double d, const Vector4d& v );
 Vector4d operator * ( const Vector4d& v, double d );
-
-#endif // VECTOR_4D_H

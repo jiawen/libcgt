@@ -1,5 +1,4 @@
-#ifndef STATIC_STRUCTURED_BUFFER_H
-#define STATIC_STRUCTURED_BUFFER_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -33,5 +32,3 @@ private:
 	ID3D11ShaderResourceView* m_pSRV;
 	ID3D11UnorderedAccessView* m_pUAV;
 };
-
-#endif // STATIC_STRUCTURED_BUFFER_H

@@ -1,7 +1,6 @@
 #if 0
 
-#ifndef Q_IMAGE_UTILS_H
-#define Q_IMAGE_UTILS_H
+#pragma once
 
 #include <QImage>
 
@@ -58,8 +57,5 @@ public:
 	static void convertRGBAArrayToQImage( UnsignedByteArray rgbaArray, int width, int height, QImage* pImage );
 	static void convertRGBAArrayToQImage( FloatArray rgbaArray, int width, int height, QImage* pImage );
 };
-
-#endif // Q_IMAGE_UTILS_H
-
 
 #endif

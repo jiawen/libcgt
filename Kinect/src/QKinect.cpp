@@ -286,7 +286,7 @@ bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
 						// apparently, the properties form a tree...
 						// but the tree is NULL
 						// confidence = pPhrase->pProperties->SREngineConfidence;
-						phrase = QString::fromWCharArray( pwszText );
+						phrase = QString::fromUtf16( reinterpret_cast< const ushort* >( pwszText ) );
 						::CoTaskMemFree( pwszText );
 					}
 					::CoTaskMemFree( pPhrase );
@@ -595,9 +595,6 @@ HRESULT QKinect::initializePhrases( QVector< QString > recognizedPhrases )
 		}
 	}
 	
-	// make a WCHAR vector of the same size
-	std::vector< WCHAR > wcArray( maxLength + 2 );
-
 	// create the rule and add
 	SPSTATEHANDLE hTopLevelRule;
 	HRESULT hr = m_pGrammar->GetRule( L"TopLevel", 0, SPRAF_TopLevel | SPRAF_Active, TRUE, &hTopLevelRule );
@@ -606,9 +603,9 @@ HRESULT QKinect::initializePhrases( QVector< QString > recognizedPhrases )
 	{
 		if( SUCCEEDED( hr ) )
 		{
-			std::fill( wcArray.begin(), wcArray.end(), 0 );
-			recognizedPhrases[i].toWCharArray( wcArray.data() );
-			hr = m_pGrammar->AddWordTransition( hTopLevelRule, NULL, wcArray.data(), L" ", SPWT_LEXICAL, 1.0f, NULL );
+			hr = m_pGrammar->AddWordTransition( hTopLevelRule, NULL,
+				reinterpret_cast< LPCWSTR >( recognizedPhrases[i].utf16() ),
+				L" ", SPWT_LEXICAL, 1.0f, NULL );
 		}
 	}
 

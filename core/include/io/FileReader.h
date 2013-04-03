@@ -1,5 +1,4 @@
-#ifndef FILE_READER_H
-#define FILE_READER_H
+#pragma once
 
 #include "common/BasicTypes.h"
 
@@ -17,5 +16,3 @@ public:
 
 	static bool readBinaryFile( const char* filename, ubyte** ppBuffer, long* size );
 };
-
-#endif

@@ -1,7 +1,5 @@
-#ifndef Q_ATOMIC_QUEUE_H
-#define Q_ATOMIC_QUEUE_H
+#pragma once
 
-#include <QQueue>
 #include <QSemaphore>
 
 #include "common/ReferenceCountedArray.h"
@@ -83,5 +81,3 @@ int QAtomicQueue< T >::available()
 {
 	return m_nSlotsFilled.available();
 }
-
-#endif // Q_ATOMIC_QUEUE_H

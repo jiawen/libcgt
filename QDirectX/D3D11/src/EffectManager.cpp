@@ -36,7 +36,7 @@ bool EffectManager::loadFromFile( QString name, QString filename )
 	// compile effect	
 	HRESULT hr = D3DX11CompileFromFile
 	(
-		filename.utf16(), // filename
+		reinterpret_cast< LPCWSTR >( filename.utf16() ), // filename
 		NULL, // #defines
 		NULL, // includes
 		NULL, // function name,

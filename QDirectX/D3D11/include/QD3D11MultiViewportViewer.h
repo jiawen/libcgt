@@ -1,5 +1,4 @@
-#ifndef QD3D11_MULTI_VIEWPORT_VIEWER_H
-#define QD3D11_MULTI_VIEWPORT_VIEWER_H
+#pragma once
 
 #include "QD3D11Widget.h"
 #include <cameras/OrthographicCamera.h>
@@ -82,6 +81,3 @@ private:
 
 	Vector2i m_prevPos;	
 };
-
-
-#endif // QD3D11_MULTI_VIEWPORT_VIEWER_H

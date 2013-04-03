@@ -1,5 +1,4 @@
-#ifndef REFERENCE_COUNTED_ARRAY_H
-#define REFERENCE_COUNTED_ARRAY_H
+#pragma once
 
 #include <cassert>
 
@@ -213,5 +212,3 @@ void ReferenceCountedArray< T >::destroy()
 		}
 	}	
 }
-
-#endif

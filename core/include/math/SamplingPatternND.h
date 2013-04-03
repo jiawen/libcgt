@@ -1,5 +1,4 @@
-#ifndef SAMPLING_PATTERN_ND_H
-#define SAMPLING_PATTERN_ND_H
+#pragma once
 
 class SamplingPatternND
 {
@@ -28,7 +27,5 @@ private:
 
 	int m_nSamples;
 	int m_nDimensions;
-	float* m_afSamples;
+	float* m_afSamples; // TODO: use std::vector
 };
-
-#endif

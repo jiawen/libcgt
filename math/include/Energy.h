@@ -1,5 +1,4 @@
-#ifndef ENERGY_H
-#define ENERGY_H
+#pragma once
 
 class FloatMatrix;
 
@@ -22,5 +21,3 @@ public:
 	virtual void evaluateJacobian( const FloatMatrix& beta, FloatMatrix& J ) = 0;
 
 };
-
-#endif // ENERGY_H

@@ -1,5 +1,4 @@
-#ifndef VECTOR_2D_H
-#define VECTOR_2D_H
+#pragma once
 
 class Vector2i;
 class Vector3d;
@@ -63,5 +62,3 @@ Vector2d operator / ( const Vector2d& v0, const Vector2d& v1 );
 Vector2d operator - ( const Vector2d& v );
 Vector2d operator * ( double d, const Vector2d& v );
 Vector2d operator * ( const Vector2d& v, double d );
-
-#endif // VECTOR_2D_H

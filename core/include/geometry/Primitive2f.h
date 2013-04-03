@@ -1,5 +1,4 @@
-#ifndef PRIMITIVE_2F_H
-#define PRIMITIVE_2F_H
+#pragma once
 
 #include "vecmath/Rect2f.h"
 
@@ -11,5 +10,3 @@ public:
 	virtual Rect2f boundingBox() = 0;
 
 };
-
-#endif // PRIMITIVE_2F_H

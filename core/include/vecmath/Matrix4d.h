@@ -1,5 +1,4 @@
-#ifndef Matrix4d_H
-#define Matrix4d_H
+#pragma once
 
 #include <cstdio>
 
@@ -115,5 +114,3 @@ Vector4d operator * ( const Matrix4d& m, const Vector4d& v );
 
 // Matrix-Matrix multiplication
 Matrix4d operator * ( const Matrix4d& x, const Matrix4d& y );
-
-#endif // Matrix4d_H

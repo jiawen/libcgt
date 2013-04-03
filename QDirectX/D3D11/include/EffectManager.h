@@ -1,5 +1,4 @@
-#ifndef EFFECT_MANAGER_H
-#define EFFECT_MANAGER_H
+#pragma once
 
 #include <D3D11.h>
 #include <d3dx11.h>
@@ -30,5 +29,3 @@ private:
 	QHash< QString, ID3DX11Effect* > m_effects;
 
 };
-
-#endif // EFFECT_MANAGER_H

@@ -287,7 +287,11 @@ MediaFoundationOutputVideoStream::MediaFoundationOutputVideoStream(
 {
 	MFFrameRateToAverageTimePerFrame( framesPerSecondNumerator, framesPerSecondDenominator, &m_sampleDuration );
 
-	HRESULT hr = MFCreateSinkWriterFromURL( filename.utf16(), nullptr, nullptr, &m_pSinkWriter );
+	HRESULT hr = MFCreateSinkWriterFromURL
+	(
+		reinterpret_cast< LPCWSTR >( filename.utf16() ),
+		nullptr, nullptr, &m_pSinkWriter
+	);
 
 	if( SUCCEEDED( hr ) )
 	{

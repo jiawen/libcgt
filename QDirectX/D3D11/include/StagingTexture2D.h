@@ -1,5 +1,4 @@
-#ifndef STAGING_TEXTURE_2D_H
-#define STAGING_TEXTURE_2D_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -47,5 +46,3 @@ private:
 	ID3D11Texture2D* m_pTexture;
 
 };
-
-#endif // STAGING_TEXTURE_2D_H

@@ -1,5 +1,4 @@
-#ifndef QGAMELOOP_H
-#define QGAMELOOP_H
+#pragma once
 
 #include <QObject>
 #include <time/Clock.h>
@@ -70,5 +69,3 @@ private:
 	int64 m_period;
 	Clock m_clock;
 };
-
-#endif // QGAMELOOP_H

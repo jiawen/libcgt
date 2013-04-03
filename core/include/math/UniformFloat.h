@@ -1,5 +1,4 @@
-#ifndef UNIFORM_FLOAT_H
-#define UNIFORM_FLOAT_H
+#pragma once
 
 #include <common/BasicTypes.h>
 #include <random>
@@ -21,5 +20,3 @@ private:
 	std::mt19937 m_engine;
 	std::uniform_real_distribution< float > m_distribution;
 };
-
-#endif // UNIFORM_FLOAT_H

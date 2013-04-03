@@ -1,5 +1,4 @@
-#ifndef UNIFORM_INT_H
-#define UNIFORM_INT_H
+#pragma once
 
 #include <common/BasicTypes.h>
 #include <random>
@@ -30,5 +29,3 @@ private:
 	std::mt19937 m_engine;
 	std::uniform_int_distribution< int > m_distribution;
 };
-
-#endif // UNIFORM_INT_H

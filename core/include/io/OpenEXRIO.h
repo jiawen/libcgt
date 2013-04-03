@@ -1,7 +1,6 @@
-#ifndef OPEN_EXR_IO_H
-#define OPEN_EXR_IO_H
-
 #if 0
+
+#pragma once
 
 #include <QPair>
 #include <QVector>
@@ -32,7 +31,5 @@ public:
 		int& width, int& height );
 #endif
 };
-
-#endif
 
 #endif

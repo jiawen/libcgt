@@ -1,5 +1,4 @@
-#ifndef OPEN_NATURAL_CUBIC_SPLINE
-#define OPEN_NATURAL_CUBIC_SPLINE
+#pragma once
 
 #include <QVector>
 #include <vecmath/Vector4f.h>
@@ -41,5 +40,3 @@ private:
 	QVector< Vector4f > m_vCoefficients;
 
 };
-
-#endif

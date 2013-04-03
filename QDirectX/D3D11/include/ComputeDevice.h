@@ -1,5 +1,4 @@
-#ifndef COMPUTE_DEVICE_H
-#define COMPUTE_DEVICE_H
+#pragma once
 
 #include <D3D11.h>
 
@@ -22,5 +21,3 @@ private:
 	ID3D11Device* m_pDevice;
 	ID3D11DeviceContext* m_pImmediateContext;
 };
-
-#endif // COMPUTE_DEVICE_H
