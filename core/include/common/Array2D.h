@@ -7,6 +7,10 @@
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
+// TODO:
+// reinterpret should only be automatic if isLinear()
+// stride should be settable?
+
 // A simple 2D array class (with row-major storage)
 template< typename T >
 class Array2D

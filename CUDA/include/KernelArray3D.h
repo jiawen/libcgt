@@ -4,21 +4,14 @@
 
 template< typename T >
 struct KernelArray3D
-{
-	// A cudaPitchedPtr contains
-	// width: logical width of the array in elements
-	// xsize = elementSize * width, in bytes
-	// ysize = height of the array in elements
-	// pitch = roundUpToAlignment( xsize ), in bytes
-
-	cudaPitchedPtr md_pitchedPointer;
-	int m_depth;
+{	
+public:
 
 	__inline__ __device__ __host__
 	KernelArray3D();
 
 	__inline__ __device__ __host__
-	KernelArray3D( cudaPitchedPtr d_pitchedPointer, int width, int height, int depth );
+	KernelArray3D( cudaPitchedPtr d_pitchedPointer, int depth );
 
 	// wraps a KernelArray3D (with pitchedPointer) around linear device memory
 	// (assumes that the memory pointed to by d_pLinearPointer is tightly packed,
@@ -78,6 +71,14 @@ struct KernelArray3D
 	template< typename S >
 	__inline__ __device__ __host__
 	KernelArray3D< S > reinterpretAs( const int3& outputSize );
+
+private:
+
+	T* md_pPitchedPointer;
+	int m_width;
+	int m_height;
+	int m_depth;
+	size_t m_rowPitch;
 
 };
 

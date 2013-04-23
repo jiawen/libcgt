@@ -1,10 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include <D3D11.h>
 #include <D3DX11.h>
 #include <d3dx11effect.h>
-
-#include <vector>
 #include <DXGI.h>
 
 #include <cameras/Camera.h>

@@ -19,11 +19,19 @@ int QKinect::numDevices()
 }
 
 // static
-QKinect* QKinect::create( int deviceIndex, DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
+QKinect* QKinect::create
+(
+	int deviceIndex,
+	DWORD nuiFlags,
+	NUI_IMAGE_RESOLUTION rgbResolution,
+	NUI_IMAGE_RESOLUTION depthResolution,
+	bool usingExtendedDepth,
+	QVector< QString > recognizedPhrases
+)
 {
 	QKinect* pKinect = new QKinect( deviceIndex );	
 
-	HRESULT hr = pKinect->initialize( nuiFlags, usingExtendedDepth, recognizedPhrases );
+	HRESULT hr = pKinect->initialize( nuiFlags, rgbResolution, depthResolution, usingExtendedDepth, recognizedPhrases );
 	if( SUCCEEDED( hr ) )
 	{
 		return pKinect;
@@ -347,7 +355,14 @@ QKinect::QKinect( int deviceIndex ) :
 
 }
 
-HRESULT QKinect::initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases )
+HRESULT QKinect::initialize
+(
+	DWORD nuiFlags,
+	NUI_IMAGE_RESOLUTION rgbResolution,
+	NUI_IMAGE_RESOLUTION depthResolution,
+	bool usingExtendedDepth,
+	QVector< QString > recognizedPhrases
+)
 {
 	// create an instance
 	INuiSensor* pSensor;
@@ -383,7 +398,7 @@ HRESULT QKinect::initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< Q
 
 			if( SUCCEEDED( hr ) && m_usingDepth )
 			{
-				hr = initializeDepthStream( m_usingPlayerIndex );
+				hr = initializeDepthStream( m_usingPlayerIndex, depthResolution, usingExtendedDepth );
 			}
 
 			// if depth is enabled, initialize skeleton tracking
@@ -448,20 +463,17 @@ HRESULT QKinect::initializeRGBStream()
 	return hr;
 }
 
-HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex )
+HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex, NUI_IMAGE_RESOLUTION resolution, bool usingExtendedDepth )
 {
 	NUI_IMAGE_TYPE imageType;
-	NUI_IMAGE_RESOLUTION imageResolution;
 
 	if( trackPlayerIndex )
 	{
-		imageType = NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX;
-		imageResolution = NUI_IMAGE_RESOLUTION_640x480;
+		imageType = NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX;		
 	}
 	else
 	{
 		imageType = NUI_IMAGE_TYPE_DEPTH;
-		imageResolution = NUI_IMAGE_RESOLUTION_640x480;
 	}
 
 	DWORD flags = 0; // currently ignored by the API
@@ -473,7 +485,7 @@ HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex )
 	HRESULT hr = m_pSensor->NuiImageStreamOpen
 	(
 		imageType,
-		imageResolution,
+		resolution,
 		flags,
 		frameLimit,
 		m_hNextDepthFrameEvent,

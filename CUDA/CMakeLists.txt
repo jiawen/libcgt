@@ -20,8 +20,13 @@ file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
 file( GLOB_RECURSE SOURCES_CU src/*.cu )
 
 set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30 )
-set( CUDA_NVCC_FLAGS_DEBUG -g;-DTHRUST_DEBUG )
-set( CUDA_NVCC_FLAGS_RELEASE -use_fast_math )
+
+#if( MSVC11 )
+#    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--cl-version 2010 )
+#endif()
+
+set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
+set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
 add_definitions( -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DUNICODE -D_UNICODE )
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QThread>
 
 #include "QKinect.h"

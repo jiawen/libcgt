@@ -146,10 +146,7 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 template< typename T >
 Array3D< T >::~Array3D()
 {
-	if( m_array != nullptr )
-	{
-		delete[] m_array;
-	}
+	invalidate();
 }
 
 template< typename T >
@@ -176,6 +173,7 @@ void Array3D< T >::invalidate()
 	if( m_array != nullptr )
 	{
 		delete[] m_array;
+		m_array = NULL;
 	}
 }
 
@@ -417,8 +415,8 @@ Array3D< S > Array3D< T >::reinterpretAs( int outputWidth, int outputHeight, int
 		output.m_width = m_width * sizeof( T ) / sizeof( S );
 		output.m_height = m_height;
 		output.m_depth = m_depth;
-		output.m_rowPitchBytes = outputRowPitchBytes;
-		output.m_slicePitchBytes = outputSlicePitchBytes;
+		output.m_rowPitchBytes = m_rowPitchBytes;
+		output.m_slicePitchBytes = m_slicePitchBytes;
 	}
 	else
 	{

@@ -381,7 +381,7 @@ cudaPitchedPtr DeviceArray3D< T >::pitchedPointer()
 template< typename T >
 KernelArray3D< T > DeviceArray3D< T >::kernelArray() const
 {
-	return KernelArray3D< T >( m_pitchedPointer, m_width, m_height, m_depth );
+	return KernelArray3D< T >( m_pitchedPointer, m_depth );
 }
 
 template< typename T >

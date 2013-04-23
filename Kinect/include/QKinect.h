@@ -61,7 +61,9 @@ public:
 	static QKinect* create
 	(
 		int deviceIndex = 0,
-		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,
+		DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,		
+		NUI_IMAGE_RESOLUTION rgbResolution = NUI_IMAGE_RESOLUTION_640x480,
+		NUI_IMAGE_RESOLUTION depthResolution = NUI_IMAGE_RESOLUTION_640x480,
 		bool useExtendedDepth = true,
 		QVector< QString > recognizedPhrases = QVector< QString >()
 	);
@@ -180,8 +182,16 @@ private:
 	QKinect( int deviceIndex );
 
 	// initialization
-	HRESULT initialize( DWORD nuiFlags, bool usingExtendedDepth, QVector< QString > recognizedPhrases );
-		HRESULT initializeDepthStream( bool trackPlayerIndex );
+	HRESULT initialize
+	(
+		DWORD nuiFlags,
+		NUI_IMAGE_RESOLUTION rgbResolution,
+		NUI_IMAGE_RESOLUTION depthResolution,
+		bool usingExtendedDepth,
+		QVector< QString > recognizedPhrases
+	);
+		HRESULT initializeDepthStream( bool trackPlayerIndex, NUI_IMAGE_RESOLUTION depthResolution, bool usingExtendedDepth );
+
 		HRESULT initializeRGBStream();
 		HRESULT initializeSkeletonTracking();
 	
@@ -199,6 +209,8 @@ private:
 	bool m_usingColor;
 	bool m_usingDepth;
 	bool m_usingPlayerIndex;
+	NUI_IMAGE_RESOLUTION m_rgbResolution;
+	NUI_IMAGE_RESOLUTION m_depthResolution;
 	bool m_usingExtendedDepth;
 	bool m_usingSkeleton;
 	bool m_usingAudio;

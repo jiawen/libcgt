@@ -1,11 +1,15 @@
 #pragma once
 
-#include <QThread>
-#include <imageproc/Image4ub.h>
-#include <common/Array2D.h>
+#include <memory>
 
 #include <Windows.h>
 #include <NuiApi.h>
+
+#include <QThread>
+
+#include <imageproc/Image4ub.h>
+#include <common/Array2D.h>
+
 #include "QKinect.h"
 
 class QKinectThread : public QThread

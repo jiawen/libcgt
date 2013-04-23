@@ -128,10 +128,7 @@ template< typename T >
 // virtual
 Array2D< T >::~Array2D()
 {
-	if( m_array != nullptr )
-	{
-		delete[] m_array;
-	}
+	invalidate();
 }
 
 template< typename T >
@@ -157,6 +154,7 @@ void Array2D< T >::invalidate()
 	if( m_array != nullptr )
 	{
 		delete[] m_array;
+		m_array = nullptr;
 	}
 }
 
@@ -357,7 +355,8 @@ Array2D< S > Array2D< T >::reinterpretAs( int outputWidth, int outputHeight, int
 	{
 		output.m_width = m_width * sizeof( T ) / sizeof( S );
 		output.m_height = m_height;
-		output.m_rowPitchBytes = outputRowPitchBytes;
+		output.m_strideBytes = m_strideBytes * sizeof( S ) / sizeof( T );
+		output.m_rowPitchBytes = m_rowPitchBytes;
 	}
 	else
 	{
