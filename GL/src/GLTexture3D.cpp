@@ -5,8 +5,8 @@
 
 #include <QImage>
 
-#include "GL/GLTexture3D.h"
-#include "GL/GLUtilities.h"
+#include "GLTexture3D.h"
+#include "GLUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

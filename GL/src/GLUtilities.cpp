@@ -1,8 +1,10 @@
 #include <cstdio>
 
+#if defined _WIN32 || defined _WIN64
 #include <windows.h>
+#endif
 
-#include "GL/GLUtilities.h"
+#include "GLUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

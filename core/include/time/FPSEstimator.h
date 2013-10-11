@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <time/Clock.h>
+#include <QElapsedTimer>
 
 class QString;
 
@@ -30,12 +30,12 @@ public:
 
 private:
 
-	Clock m_clock;
+  QElapsedTimer m_clock;
 	
 	bool m_isFirstUpdate;
-	int64 m_lastUpdateTime;
+	qint64 m_lastUpdateTime;
 	int m_nextSampleIndex;
 	int m_nActualSamples;
-	std::vector< int64 > m_frameTimeSamples;
+	std::vector< qint64 > m_frameTimeSamples;
 
 };

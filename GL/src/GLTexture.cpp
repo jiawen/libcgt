@@ -1,8 +1,8 @@
-#include "GL/GLTexture.h"
+#include "GLTexture.h"
 
 #include <cstdio>
 
-#include "GL/GLUtilities.h"
+#include "GLUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

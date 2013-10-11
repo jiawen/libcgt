@@ -5,6 +5,7 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
+// TODO: use std RNG
 #include "MersenneTwister.h"
 
 // simple wrapper around the Mersenne Twister

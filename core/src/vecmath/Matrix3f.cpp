@@ -12,6 +12,8 @@
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
 
+using namespace std;
+
 Matrix3f::Matrix3f( float fill )
 {
 	for( int i = 0; i < 9; ++i )

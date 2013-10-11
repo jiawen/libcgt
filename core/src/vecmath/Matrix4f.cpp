@@ -14,6 +14,8 @@
 #include "vecmath/Vector4f.h"
 #include "vecmath/Rect2f.h"
 
+using namespace std;
+
 Matrix4f::Matrix4f( float fill )
 {
 	for( int i = 0; i < 16; ++i )

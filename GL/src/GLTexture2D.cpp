@@ -6,10 +6,11 @@
 #include <QFile>
 #include <QImage>
 
-#include "GL/GLTexture2D.h"
-#include "GL/GLUtilities.h"
-#include "io/PortableFloatMapIO.h"
-#include "io/PortablePixelMapIO.h"
+#include <io/PortableFloatMapIO.h>
+#include <io/PortablePixelMapIO.h>
+
+#include "GLTexture2D.h"
+#include "GLUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

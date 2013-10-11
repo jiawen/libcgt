@@ -7,6 +7,8 @@
 
 #include "vecmath/Vector2f.h"
 
+using namespace std;
+
 Matrix2f::Matrix2f( float fill )
 {
 	for( int i = 0; i < 4; ++i )

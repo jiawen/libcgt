@@ -1,8 +1,8 @@
+#include "GLShader.h"
+
 #include <cstdio>
 
-#include "GL/GLShader.h"
-
-#include "io/FileReader.h"
+#include <io/FileReader.h>
 
 GLShader* GLShader::vertexShaderFromFile( const char* filename )
 {

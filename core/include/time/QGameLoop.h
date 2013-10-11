@@ -1,7 +1,9 @@
-#pragma once
+#ifndef QGAMELOOP_H
+#define QGAMELOOP_H
 
 #include <QObject>
-#include <time/Clock.h>
+#include <QElapsedTimer>
+//#include <time/Clock.h>
 
 class QGameLoop : public QObject
 {
@@ -65,7 +67,8 @@ private:
 	int m_nDelaysPerYield;
 	int m_iMaxFrameSkips;
 
-	int64 m_startTime;
-	int64 m_period;
-	Clock m_clock;
+  float m_period;
+  QElapsedTimer m_timer;
 };
+
+#endif // QGAMELOOP_H

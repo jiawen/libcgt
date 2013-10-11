@@ -112,7 +112,7 @@ Array2DView< T > ArrayUtils::flippedLeftRightView( Array2DView< T > view )
 template< typename T >
 Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, int x, int y )
 {
-	return croppedView( view, x, y, width() - x, height() - y );
+	return croppedView( view, x, y, view.width() - x, view.height() - y );
 }
 
 // static
@@ -120,14 +120,14 @@ template< typename T >
 Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, int x, int y, int width, int height )
 {
 	T* cornerPointer = &( view.rowPointer( y )[ x ] );
-	return Array2DView< T >( cornerPointer, width, height, strideBytes(), rowPitchBytes() );
+	return Array2DView< T >( cornerPointer, width, height, view.strideBytes(), view.rowPitchBytes() );
 }
 
 // static
 template< typename T >
 Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, int x, int y, int z )
 {
-	return croppedView( view, x, y, z, width() - x, height() - y, depth() - z );
+	return croppedView( view, x, y, z, view.width() - x, view.height() - y, view.depth() - z );
 }
 
 // static
@@ -135,5 +135,5 @@ template< typename T >
 Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, int x, int y, int z, int width, int height, int depth )
 {
 	T* cornerPointer = &( view.rowPointer( y, z )[ x ] );
-	return Array3DView< T >( cornerPointer, width, height, depth, strideBytes(), rowPitchBytes(), slicePitchBytes() );
+	return Array3DView< T >( cornerPointer, width, height, depth, view.strideBytes(), view.rowPitchBytes(), view.slicePitchBytes() );
 }

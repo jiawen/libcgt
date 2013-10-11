@@ -2,13 +2,15 @@
 #include <cstdio>
 
 #include <GL/glew.h>
-#include <math/MathUtils.h>
+
 #include <QImage>
 
-#include "GL/GLTextureRectangle.h"
-#include "GL/GLUtilities.h"
-#include "io/PortableFloatMapIO.h"
-#include "io/PortablePixelMapIO.h"
+#include <io/PortableFloatMapIO.h>
+#include <io/PortablePixelMapIO.h>
+#include <math/MathUtils.h>
+
+#include "GLTextureRectangle.h"
+#include "GLUtilities.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

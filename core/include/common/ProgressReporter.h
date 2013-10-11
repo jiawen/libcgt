@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QString>
+#include <QElapsedTimer>
 
 #include "math/Arithmetic.h"
-#include "time/StopWatch.h"
 
 // TODO: use a mutex on notifications to make the parallel version work
 
@@ -41,9 +41,9 @@ private:
 	int m_nTasks;
 	float m_reportRatePercent;
 
-	float m_totalMillisecondsElapsed;
-	StopWatch m_stopwatch;
-	float m_previousTaskCompletedTime;
+	qint64 m_totalMillisecondsElapsed;
+  QElapsedTimer m_stopwatch;
+	qint64 m_previousTaskCompletedTime;
 
 	float m_nextReportedPercent;
 	int m_nTasksCompleted;

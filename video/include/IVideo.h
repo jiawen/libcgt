@@ -2,7 +2,6 @@
 #define IVIDEO_H
 
 #include <common/BasicTypes.h>
-#include <common/ReferenceCountedArray.h>
 
 // interface
 class IVideo

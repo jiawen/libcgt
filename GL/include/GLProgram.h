@@ -23,15 +23,15 @@ public:
 	
 	GLint getNumActiveUniforms();
 	GLint getUniformLocation( const GLchar* szName );
-	void getUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix );
+  void getUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix );
 		
 	void setUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix );
-	void setUniformSampler( GLint iUniformLocation, GLTexture* pTexture );
-	void setUniformSampler( const GLchar* szName, GLTexture* pTexture );
-	void setUniformVector2f( const GLchar* szName, float x, float y );
-	void setUniformVector2f( const GLchar* szName, Vector2f* pv );
-	void setUniformVector3f( const GLchar* szName, float x, float y, float z );
-	void setUniformVector3f( const GLchar* szName, Vector3f* pv );
+  void setUniformSampler( GLint iUniformLocation, GLTexture* pTexture );
+  void setUniformSampler( const GLchar* szName, GLTexture* pTexture );
+  void setUniformVector2f( const GLchar* szName, float x, float y );
+  void setUniformVector2f( const GLchar* szName, Vector2f* pv );
+  void setUniformVector3f( const GLchar* szName, float x, float y, float z );
+  void setUniformVector3f( const GLchar* szName, Vector3f* pv );
 
 	bool link();
 	bool isLinked();

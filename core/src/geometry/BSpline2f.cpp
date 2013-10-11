@@ -1,5 +1,7 @@
 #include "geometry/BSpline2f.h"
 
+#include <limits>
+
 #include "math/MathUtils.h"
 
 BSpline2f::BSpline2f() :

@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0
+
 #include "Clock.h"
 
 class StopWatch
@@ -22,3 +24,4 @@ private:
 	int64 m_resetTime;
 
 };
+#endif

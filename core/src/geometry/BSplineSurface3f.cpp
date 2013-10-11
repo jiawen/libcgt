@@ -1,5 +1,7 @@
 #include "geometry/BSplineSurface3f.h"
 
+#include <limits>
+
 #include "math/MathUtils.h"
 #include "vecmath/Vector3f.h"
 

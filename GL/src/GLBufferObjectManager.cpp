@@ -1,4 +1,4 @@
-#include "GL/GLBufferObjectManager.h"
+#include "GLBufferObjectManager.h"
 
 #include <cassert>
 

@@ -12,6 +12,8 @@
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector3d.h"
 
+using namespace std;
+
 Matrix3d::Matrix3d()
 {
 	memset( m_elements, 0, 9 * sizeof( double ) );

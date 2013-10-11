@@ -3,7 +3,7 @@
 #include <cassert>
 #include <QApplication>
 
-#include "math/Arithmetic.h"
+#include "math/Arithmetic.h""
 #include "time/CrossPlatformSleep.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -14,13 +14,13 @@ QGameLoop::QGameLoop( float periodMillis, int nDelaysPerYield, int iMaxFrameSkip
 
 	m_bRunning( false ),
 	m_bIsPaused( false ),
+  m_period( periodMillis ),
 
 	m_nDelaysPerYield( nDelaysPerYield ),
 	m_iMaxFrameSkips( iMaxFrameSkips ),
 
 	QObject( parent )
 {
-	m_period = m_clock.convertMillisToCounterInterval( periodMillis );
 }
 
 // virtual
@@ -31,16 +31,16 @@ QGameLoop::~QGameLoop()
 
 void QGameLoop::start()
 {
-	int64 beforeTime; // time before update and render
-	int64 afterTime; // time after update and render
-	int64 timeDiff; // how long it took to update and render
-	int64 sleepTime; // if we have time left in the frame, how long to sleep for
-	int64 overSleepTime = 0; // we may have overslept, keep track and deduct it from the next frame's sleep time
-	int64 excess = 0; // when we take longer to update+render than one frame period, accumulate the *excess* time here
-	int nDelays = 0; // the number of times we took longer than a frame period. When it passes a threshold, yield the thread to not hog the CPU
+	qint64 beforeTime; // time before update and render
+	qint64 afterTime; // time after update and render
+	qint64 timeDiff; // how long it took to update and render
+	qint64 sleepTime; // if we have time left in the frame, how long to sleep for
+	qint64 overSleepTime = 0; // we may have overslept, keep track and deduct it from the next frame's sleep time
+	qint64 excess = 0; // when we take longer to update+render than one frame period, accumulate the *excess* time here
+	int nDelays = 0; // the number of times we took longer than a frame period.  When it passes a threshold, yield the thread to not hog the CPU
 
-	m_startTime = m_clock.getCounterValue();
-	beforeTime = m_startTime;
+  m_timer.start();
+	beforeTime = m_timer.elapsed();
 
 	m_bRunning = true;
 	QCoreApplication* pApp = QApplication::instance();
@@ -55,15 +55,14 @@ void QGameLoop::start()
 		updateState();
 		draw();
 
-		afterTime = m_clock.getCounterValue();
+		afterTime = m_timer.elapsed();
 		timeDiff = afterTime - beforeTime;
 		sleepTime = ( m_period - timeDiff ) - overSleepTime;		
 
 		if( sleepTime > 0 ) // sleeptime > 0: some time left in this frame (hopefully the usual case)
 		{
-			float sleepTimeMillis = m_clock.convertIntervalToMillis( sleepTime );
-			CrossPlatformSleep::msleep( Arithmetic::roundToInt( sleepTimeMillis ) );
-			overSleepTime = ( m_clock.getCounterValue() - afterTime ) - sleepTime;
+			CrossPlatformSleep::msleep( sleepTime );
+			overSleepTime = ( m_timer.elapsed() - afterTime ) - sleepTime;
 		}
 		else // sleeptime <= 0: the frame took longer than the period allowed
 		{
@@ -83,7 +82,7 @@ void QGameLoop::start()
 			}
 		}
 
-		beforeTime = m_clock.getCounterValue();
+		beforeTime = m_timer.elapsed();
 
 		// if the accumulated excess time exceeds one frame period
 		// then at least one frame has been lost
@@ -129,7 +128,7 @@ bool QGameLoop::isPaused()
 
 void QGameLoop::setFramePeriod( float millis )
 {
-	m_period = m_clock.convertMillisToCounterInterval( millis );
+	m_period = millis;
 }
 
 //////////////////////////////////////////////////////////////////////////

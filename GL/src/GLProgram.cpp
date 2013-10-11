@@ -1,8 +1,9 @@
-#include "GL/GLProgram.h"
+#include "GLProgram.h"
 
-#include "GL/GLShader.h"
-#include "GL/GLTexture.h"
-#include "vecmath/libcgt_vecmath.h"
+#include <vecmath/libcgt_vecmath.h>
+
+#include "GLShader.h"
+#include "GLTexture.h"
 
 GLProgram::GLProgram() :
 	m_bIsLinked( false )
@@ -42,9 +43,11 @@ GLint GLProgram::getUniformLocation( const GLchar* szName )
 	return glGetUniformLocation( m_iProgramHandle, szName );
 }
 
-void GLProgram::getUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix )
+Matrix4f GLProgram::getUniformMatrix4f( GLint iUniformLocation )
 {
-	glGetUniformfv( m_iProgramHandle, iUniformLocation, *pMatrix );
+    Matrix4f m;
+    glGetUniformfv( m_iProgramHandle, iUniformLocation, m );
+    return m;
 }
 
 void GLProgram::setUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix )
@@ -57,32 +60,30 @@ void GLProgram::setUniformSampler( GLint iUniformLocation, GLTexture* pTexture )
 	glUniform1i( iUniformLocation, 0 /*pTexture->getTextureUnit()*/ );
 }
 
-void GLProgram::setUniformSampler( const GLchar* szName, GLTexture* pTexture )
+void GLProgram::setUniformSampler( const GLchar* variableName, GLTexture* pTexture )
 {
 	// TODO: do error checking
-	setUniformSampler( getUniformLocation( szName ), pTexture );
+    setUniformSampler( getUniformLocation( variableName ), pTexture );
 }
 
-void GLProgram::setUniformVector2f( const GLchar* szName, float x, float y )
-{
-	int uniformLocation = getUniformLocation( szName );
-	glUniform2f( uniformLocation, x, y );
+void GLProgram::setUniformVector2f( const GLchar* variableName, float x, float y )
+{    
+    glUniform2f( getUniformLocation( variableName ), x, y );
 }
 
-void GLProgram::setUniformVector2f( const GLchar* szName, Vector2f* pv )
+void GLProgram::setUniformVector2f( const GLchar* variableName, const Vector2f& v )
 {
-	int uniformLocation = getUniformLocation( szName );
-    glUniform2f( uniformLocation, pv->x(), pv->y() );
+    glUniform2fv( getUniformLocation( variableName ), 1, v );
 }
 
-void GLProgram::setUniformVector3f( const GLcharARB* szName, float x, float y, float z )
+void GLProgram::setUniformVector3f( const GLchar* variableName, float x, float y, float z )
 {
-	glUniform3f( getUniformLocation( szName ), x, y, z );
+    glUniform3f( getUniformLocation( variableName ), x, y, z );
 }
 
-void GLProgram::setUniformVector3f( const GLcharARB* szName, Vector3f* pv )
+void GLProgram::setUniformVector3f( const GLchar* variableName, const Vector3f& v )
 {
-    glUniform3f( getUniformLocation( szName ), pv->x(), pv->y(), pv->z() );
+    glUniform3fv( getUniformLocation( variableName ), 1, v );
 }
 
 bool GLProgram::link()

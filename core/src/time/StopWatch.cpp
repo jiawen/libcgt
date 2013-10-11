@@ -1,4 +1,5 @@
 #include "time/StopWatch.h"
+#if 0
 
 StopWatch::StopWatch()
 {
@@ -19,3 +20,4 @@ float StopWatch::millisecondsElapsed()
 	int64 now = m_clock.getCounterValue();
 	return m_clock.convertIntervalToMillis( now - m_resetTime );
 }
+#endif

@@ -2,7 +2,7 @@
 
 PerformanceCollector::PerformanceCollector()
 {
-
+  m_clock.start();
 }
 
 void PerformanceCollector::registerEvent( QString name )
@@ -21,15 +21,15 @@ void PerformanceCollector::unregisterEvent( QString name )
 
 void PerformanceCollector::beginEvent( QString name )
 {
-	int64 now = m_clock.getCounterValue();
+	qint64 now = m_clock.elapsed();
 	m_eventStartTimes[ name ] = now;
 }
 
 void PerformanceCollector::endEvent( QString name )
 {
-	int64 now = m_clock.getCounterValue();
-	int64 last = m_eventStartTimes[ name ];
-	int64 dt = now - last;
+	qint64 now = m_clock.elapsed();
+	qint64 last = m_eventStartTimes[ name ];
+	qint64 dt = now - last;
 
 	m_eventTotalElapsedTime[ name ] += dt;
 	++m_eventCounts[ name ];
@@ -37,8 +37,8 @@ void PerformanceCollector::endEvent( QString name )
 
 float PerformanceCollector::averageTimeMilliseconds( QString name )
 {
-	int64 dt = m_eventTotalElapsedTime[ name ];
+	qint64 dt = m_eventTotalElapsedTime[ name ];
 	int count = m_eventCounts[ name ];
-	float dtMillis = m_clock.convertIntervalToMillis( dt );
+	float dtMillis = static_cast< float >( dt );
 	return dtMillis / count;
 }

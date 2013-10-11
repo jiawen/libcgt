@@ -2,8 +2,7 @@
 
 #include <QString>
 #include <QHash>
-
-#include "Clock.h"
+#include <QElapsedTimer>
 
 class PerformanceCollector
 {
@@ -33,9 +32,9 @@ public:
 
 private:
 
-	Clock m_clock;
-	QHash< QString, int64 > m_eventStartTimes;	
-	QHash< QString, int64 > m_eventTotalElapsedTime;
+  QElapsedTimer m_clock;
+	QHash< QString, qint64 > m_eventStartTimes;	
+	QHash< QString, qint64 > m_eventTotalElapsedTime;
 	QHash< QString, int > m_eventCounts;
 
 };

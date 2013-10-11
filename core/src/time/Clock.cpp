@@ -1,5 +1,7 @@
 #include "time/Clock.h"
 
+#if 0
+
 #ifdef _WIN32
 
 Clock::Clock()
@@ -72,5 +74,7 @@ int64 Clock::convertMillisToCounterInterval( float millis )
 	float counts = seconds * m_frequency;
 	return( ( int64 )counts );
 }
+
+#endif
 
 #endif

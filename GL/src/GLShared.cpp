@@ -1,10 +1,9 @@
-#include "GL/GLShared.h"
+#include "GLShared.h"
 
-#include "GL/GLBufferObject.h"
-#include "GL/GLFramebufferObject.h"
-#include "GL/GLTextureRectangle.h"
-
-#include "GL/GLVertexBufferObject.h"
+#include "GLBufferObject.h"
+#include "GLFramebufferObject.h"
+#include "GLTextureRectangle.h"
+#include "GLVertexBufferObject.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

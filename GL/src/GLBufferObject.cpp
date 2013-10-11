@@ -3,7 +3,7 @@
 #include <common/ArrayWithLength.h>
 #include <common/ArrayUtils.h>
 
-#include "GL/GLBufferObject.h"
+#include "GLBufferObject.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public

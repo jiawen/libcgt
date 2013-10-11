@@ -9,6 +9,8 @@
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2d.h"
 
+using namespace std;
+
 Matrix2d::Matrix2d()
 {
 	memset( m_elements, 0, 4 * sizeof( double ) );

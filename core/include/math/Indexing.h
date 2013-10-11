@@ -8,6 +8,7 @@ class Indexing
 {
 public:
 
+    // TODO: inline
 	// unwraps a 1D linear index into a 2D subscript
 	static void indexToSubscript2D( int index, int width, int& x, int& y );
 	static Vector2i indexToSubscript2D( int index, int width );

@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -34,3 +35,4 @@ private:
 
 	float m_frequency;
 };
+#endif

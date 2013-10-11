@@ -4,8 +4,8 @@
 #include <GL/glew.h>
 #include <math/MathUtils.h>
 
-#include "GL/GLTexture1D.h"
-#include "GL/GLUtilities.h"
+#include "GLTexture1D.h"
+#include "GLUtilities.h"
 
 // ========================================
 // Public

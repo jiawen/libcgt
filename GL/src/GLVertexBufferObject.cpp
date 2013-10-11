@@ -1,4 +1,4 @@
-#include "GL/GLVertexBufferObject.h"
+#include "GLVertexBufferObject.h"
 
 #include <cassert>
 #include <vecmath/Vector2f.h>

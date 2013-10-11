@@ -9,7 +9,6 @@
 #include <QFileInfo>
 
 #include "common/Reference.h"
-#include "common/ReferenceCountedArray.h"
 #include "imageproc/Image3ub.h"
 #include "imageproc/Image4f.h"
 #include "video/IVideo.h"

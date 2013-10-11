@@ -14,6 +14,8 @@
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector4d.h"
 
+using namespace std;
+
 Matrix4d::Matrix4d()
 {
 	memset( m_elements, 0, 16 * sizeof( double ) );

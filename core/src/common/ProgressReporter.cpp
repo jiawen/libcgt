@@ -37,8 +37,8 @@ void ProgressReporter::notifyAndPrintProgressString()
 
 void ProgressReporter::notifyTaskCompleted()
 {
-	float now = m_stopwatch.millisecondsElapsed();
-	float millisecondsForTask = now - m_previousTaskCompletedTime;
+	qint64 now = m_stopwatch.elapsed();
+	qint64 millisecondsForTask = now - m_previousTaskCompletedTime;
 	m_previousTaskCompletedTime = now;
 
 	m_totalMillisecondsElapsed += millisecondsForTask;
@@ -126,7 +126,8 @@ void ProgressReporter::initialize( QString prefix, int nTasks, float reportRateP
 	m_reportRatePercent = reportRatePercent;
 
 	m_totalMillisecondsElapsed = 0;		
-	m_previousTaskCompletedTime = m_stopwatch.millisecondsElapsed();
+  m_stopwatch.start();
+	m_previousTaskCompletedTime = m_stopwatch.elapsed();
 
 	m_nextReportedPercent = 0;
 	m_nTasksCompleted = 0;
