@@ -3,7 +3,7 @@
 #include <cassert>
 #include <QApplication>
 
-#include "math/Arithmetic.h""
+#include "math/Arithmetic.h"
 #include "time/CrossPlatformSleep.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -12,15 +12,18 @@
 
 QGameLoop::QGameLoop( float periodMillis, int nDelaysPerYield, int iMaxFrameSkips, QObject* parent ) :
 
+    QObject( parent ),
+
 	m_bRunning( false ),
 	m_bIsPaused( false ),
-  m_period( periodMillis ),
 
 	m_nDelaysPerYield( nDelaysPerYield ),
 	m_iMaxFrameSkips( iMaxFrameSkips ),
 
-	QObject( parent )
+    m_period( periodMillis )
+
 {
+    
 }
 
 // virtual
@@ -39,7 +42,7 @@ void QGameLoop::start()
 	qint64 excess = 0; // when we take longer to update+render than one frame period, accumulate the *excess* time here
 	int nDelays = 0; // the number of times we took longer than a frame period.  When it passes a threshold, yield the thread to not hog the CPU
 
-  m_timer.start();
+    m_timer.start();
 	beforeTime = m_timer.elapsed();
 
 	m_bRunning = true;

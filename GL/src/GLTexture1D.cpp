@@ -1,7 +1,6 @@
 #include <cassert>
 #include <cstdio>
 
-#include <GL/glew.h>
 #include <math/MathUtils.h>
 
 #include "GLTexture1D.h"
@@ -25,53 +24,53 @@ void GLTexture1D::setEnabled( bool bEnabled )
 }
 
 // static
-GLTexture1D* GLTexture1D::createUnsignedByte1Texture( int width, const ubyte* aubData )
+GLTexture1D* GLTexture1D::createUnsignedByte1Texture( int width, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::LUMINANCE_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::R_8_BYTE_UNORM;
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RED, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture1D* GLTexture1D::createUnsignedByte3Texture( int width, const ubyte* aubData )
+GLTexture1D* GLTexture1D::createUnsignedByte3Texture( int width, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_8_BYTE_UNORM;
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGB, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture1D* GLTexture1D::createUnsignedByte4Texture( int width, const ubyte* aubData )
+GLTexture1D* GLTexture1D::createUnsignedByte4Texture( int width, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_8_BYTE_UNORM;
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGBA, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture1D* GLTexture1D::createFloat1Texture( int width, int nBitsPerComponent, const float* afData )
+GLTexture1D* GLTexture1D::createFloat1Texture( int width, int nBitsPerComponent, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBitsPerComponent )
 	{
 	case 16:
-		internalFormat = GLTexture::LUMINANCE_FLOAT_16;
+		internalFormat = GLTexture::R_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::LUMINANCE_FLOAT_32;
+		internalFormat = GLTexture::R_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -80,23 +79,23 @@ GLTexture1D* GLTexture1D::createFloat1Texture( int width, int nBitsPerComponent,
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width,0, GL_LUMINANCE, GL_FLOAT, afData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RED, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture1D* GLTexture1D::createFloat3Texture( int width, int nBits, const float* afData )
+GLTexture1D* GLTexture1D::createFloat3Texture( int width, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGB_FLOAT_16;
+		internalFormat = GLTexture::RGB_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGB_FLOAT_32;
+		internalFormat = GLTexture::RGB_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -105,23 +104,23 @@ GLTexture1D* GLTexture1D::createFloat3Texture( int width, int nBits, const float
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGB, GL_FLOAT, afData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGB, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture1D* GLTexture1D::createFloat4Texture( int width, int nBits, const float* afData )
+GLTexture1D* GLTexture1D::createFloat4Texture( int width, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGBA_FLOAT_16;
+		internalFormat = GLTexture::RGBA_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGBA_FLOAT_32;
+		internalFormat = GLTexture::RGBA_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -130,83 +129,84 @@ GLTexture1D* GLTexture1D::createFloat4Texture( int width, int nBits, const float
 
 	GLTexture1D* pTexture = GLTexture1D::createTexture1D( width, internalFormat );
 
-	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGBA, GL_FLOAT, afData );
+	glTexImage1D( GL_TEXTURE_1D, 0, internalFormat, width, 0, GL_RGBA, GL_FLOAT, data );
 
 	return pTexture;
 }
 
-void GLTexture1D::setFloat1Data( const float* afData, int xOffset, int width )
+void GLTexture1D::setFloat1Data( const float* data, int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_LUMINANCE, GL_FLOAT, afData );
+    // TODO: glTexSubImage
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RED, GL_FLOAT, data );
 }
 
-void GLTexture1D::setFloat3Data( const float* afData, int xOffset, int width )
+void GLTexture1D::setFloat3Data( const float* data, int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGB, GL_FLOAT, afData );
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGB, GL_FLOAT, data );
 }
 
-void GLTexture1D::setFloat4Data( const float* afData, int xOffset, int width )
+void GLTexture1D::setFloat4Data( const float* data, int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGBA, GL_FLOAT, afData );
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGBA, GL_FLOAT, data );
 }
 
-void GLTexture1D::setUnsignedByte1Data( const GLubyte* aubData,
+void GLTexture1D::setUnsignedByte1Data( const uint8_t* data,
 									   int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RED, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTexture1D::setUnsignedByte3Data( const GLubyte* aubData,
+void GLTexture1D::setUnsignedByte3Data( const uint8_t* data,
 									   int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGB, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTexture1D::setUnsignedByte4Data( const GLubyte* aubData,
+void GLTexture1D::setUnsignedByte4Data( const uint8_t* data,
 									   int xOffset, int width )
 {
 	bind();
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 
-	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGBA, GL_UNSIGNED_BYTE, aubData );
+	glTexImage1D( GL_TEXTURE_1D, 0, getInternalFormat(), width, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 }
 
 int GLTexture1D::getWidth()
 {
-	return m_iWidth;
+	return m_width;
 }
 
 void GLTexture1D::setAllWrapModes( GLint iMode )
@@ -217,7 +217,7 @@ void GLTexture1D::setAllWrapModes( GLint iMode )
 }
 
 // virtual
-ubyte* GLTexture1D::getUByteData( GLint level )
+uint8_t* GLTexture1D::getUByteData( GLint level )
 {
 	// TODO: set for other levels
 	assert( level == 0 );
@@ -239,7 +239,7 @@ ubyte* GLTexture1D::getUByteData( GLint level )
 		break;
 	}
 
-	ubyte* pixels = new ubyte[ nComponents * m_iWidth ];
+	uint8_t* pixels = new ubyte[ nComponents * m_width ];
 	glGetTexImage( GL_TEXTURE_1D, level, format, GL_UNSIGNED_BYTE, pixels );
 	return pixels;
 }
@@ -257,7 +257,7 @@ float* GLTexture1D::getFloatData( GLint level )
 	switch( nComponents )
 	{
 	case 1:
-		format = GL_LUMINANCE;
+		format = GL_RED;
 		break;
 	case 3:
 		format = GL_RGB;
@@ -267,7 +267,7 @@ float* GLTexture1D::getFloatData( GLint level )
 		break;
 	}
 
-	float* pixels = new float[ nComponents * m_iWidth ];
+	float* pixels = new float[ nComponents * m_width ];
 	glGetTexImage( GL_TEXTURE_1D, level, format, GL_FLOAT, pixels );
 	return pixels;
 }
@@ -287,9 +287,8 @@ GLTexture1D* GLTexture1D::createTexture1D( int width, GLTexture::GLTextureIntern
 
 GLTexture1D::GLTexture1D( int width, GLTexture::GLTextureInternalFormat internalFormat ) :
 
-	m_iWidth( width ),
-
-	GLTexture( GL_TEXTURE_1D, internalFormat )	
+    GLTexture( GL_TEXTURE_1D, internalFormat ),
+	m_width( width )
 {
 	assert( width > 0 );
 }

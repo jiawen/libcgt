@@ -4,9 +4,7 @@
 #include <GL/glew.h>
 
 #include "common/BasicTypes.h"
-#include "common/Reference.h"
 #include "imageproc/Image1f.h"
-#include "imageproc/Image3ub.h"
 #include "imageproc/Image4f.h"
 #include "imageproc/Image4ub.h"
 #include "vecmath/Vector2i.h"
@@ -19,32 +17,36 @@ public:
 
 	// TODO: getFloatData() --> pass in a buffer and return a buffer.  If one passed in is NULL, creates a new one
 	// TODO: make nBitsPercomponent an enum
-	// TODO: integer texture: nBits = 8 (ubyte), 16, 32, signed/unsigned
+	// TODO: integer texture: nBits = 8 (uint8_t), 16, 32, signed/unsigned
 	// TODO: getIntegerFormat( int nBits, bool signed )
 
 	static void setEnabled( bool bEnabled );	
 
-	static Reference< GLTextureRectangle > create( Reference< Image4ub > image );
-	static Reference< GLTextureRectangle > create( Reference< Image1f > image, int nBitsPerComponent = 32 );
-	static Reference< GLTextureRectangle > create( Reference< Image4f > image, int nBitsPerComponent = 32 );
+    // TODO: pass in a view, not an image
+	static GLTextureRectangle* create( std::shared_ptr< Image4ub > image );
+	static GLTextureRectangle* create( std::shared_ptr< Image1f > image, int nBitsPerComponent = 32 );
+	static GLTextureRectangle* create( std::shared_ptr< Image4f > image, int nBitsPerComponent = 32 );
 
 	// creates a depth texture	
-	static Reference< GLTextureRectangle > createDepthTexture( int width, int height, int nBits = 32, const float* data = 0 );
+	static GLTextureRectangle* createDepthTexture( int width, int height, int nBits = 32, const float* data = 0 );
 
-	// creates a ubyte1 (8 bits luminance for each pixel) texture
-	static GLTextureRectangle* createUnsignedByte1Texture( int width, int height, const ubyte* aubData = 0);
+	// creates a uint8_t1 (8 bits luminance for each pixel) texture
+	static GLTextureRectangle* createUnsignedByte1Texture( int width, int height, const uint8_t* data = 0);
 
-	// creates a ubyte3 (8 bits for each component) texture
-	static Reference< GLTextureRectangle > createUnsignedByte3Texture( int width, int height, const ubyte* data = 0 );
-	static Reference< GLTextureRectangle > createUnsignedByte3Texture( const Vector2i& size, const ubyte* data = 0 );
+#if 0
+	// creates a uint8_t3 (8 bits for each component) texture
+	static std::shared_ptr< GLTextureRectangle > createUnsignedByte3Texture( int width, int height, const uint8_t* data = 0 );
+	static std::shared_ptr< GLTextureRectangle > createUnsignedByte3Texture( const Vector2i& size, const uint8_t* data = 0 );
+#endif
 
-	// creates a ubyte4 (8 bits for each component) texture
-	static Reference< GLTextureRectangle > createUnsignedByte4Texture( int width, int height, const ubyte* data = 0 );
-	static Reference< GLTextureRectangle > createUnsignedByte4Texture( const Vector2i& size, const ubyte* data = 0 );
+    // TODO: get rid of data - these create empty?
+	// creates a uint8_t4 (8 bits for each component) texture
+	static GLTextureRectangle* createUnsignedByte4Texture( int width, int height, const uint8_t* data = 0 );
+	static GLTextureRectangle* createUnsignedByte4Texture( const Vector2i& size, const uint8_t* data = 0 );
 
 	// creates a float1 texture
-	static Reference< GLTextureRectangle > createFloat1Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
-	static Reference< GLTextureRectangle > createFloat1Texture( const Vector2i& size, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTextureRectangle* createFloat1Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTextureRectangle* createFloat1Texture( const Vector2i& size, int nBitsPerComponent = 32, const float* afData = 0 );
 
 	// creates a float2 texture
 	static GLTextureRectangle* createFloat2Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
@@ -53,27 +55,33 @@ public:
 	static GLTextureRectangle* createFloat3Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
 
 	// creates a float4 texture	
-	static Reference< GLTextureRectangle > createFloat4Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
-	static Reference< GLTextureRectangle > createFloat4Texture( const Vector2i& size, int nBitsPerComponent = 32, const float* data = 0 );	
+	static GLTextureRectangle* createFloat4Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTextureRectangle* createFloat4Texture( const Vector2i& size, int nBitsPerComponent = 32, const float* data = 0 );
 
 	// uploads data to hardware
-	void setData( Reference< Image1f > image );
-	void setData( Reference< Image3ub > image );
-	void setData( Reference< Image4ub > image );
-	void setData( Reference< Image4f > image );
+	void setData( std::shared_ptr< Image1f > image );
+#if 0
+	void setData( std::shared_ptr< Image3ub > image );
+#endif
+	void setData( std::shared_ptr< Image4ub > image );
+	void setData( std::shared_ptr< Image4f > image );
 	
-	Reference< Image3ub > getImage3ub( Reference< Image3ub > output = NULL );
+#if 0
+	std::shared_ptr< Image3ub > getImage3ub( std::shared_ptr< Image3ub > output = NULL );
+#endif
 
-	Reference< Image1f > getImage1f( Reference< Image1f > output = NULL );
-	Reference< Image4f > getImage4f( Reference< Image4f > output = NULL );
+	std::shared_ptr< Image1f > getImage1f( std::shared_ptr< Image1f > output = nullptr );
+	std::shared_ptr< Image4f > getImage4f( std::shared_ptr< Image4f > output = nullptr );
 
+    // TODO: use a view<const T>, not raw data!
+    // do range checking, return false
 	void setFloat1Data( const float* data );
 	void setFloat3Data( const float* data );
 	void setFloat4Data( const float* data );		
 
-	void setUnsignedByte1Data( const GLubyte* data );
-	void setUnsignedByte3Data( const GLubyte* data );
-	void setUnsignedByte4Data( const GLubyte* data );
+	void setUnsignedByte1Data( const uint8_t* data );
+	void setUnsignedByte3Data( const uint8_t* data );
+	void setUnsignedByte4Data( const uint8_t* data );
 
 	// numElements = width * height
 	int numElements();

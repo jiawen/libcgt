@@ -143,7 +143,8 @@ void OBJData::removeEmptyGroups()
 
 bool OBJData::save( QString filename )
 {
-	FILE* fp = fopen( filename.toAscii().constData(), "w" );
+	QByteArray ba = filename.toUtf8();
+	FILE* fp = fopen( ba.data(), "w" );
 
 	for( int i = 0; i < m_positions.size(); ++i )
 	{

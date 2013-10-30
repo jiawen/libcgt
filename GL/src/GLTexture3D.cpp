@@ -8,6 +8,8 @@
 #include "GLTexture3D.h"
 #include "GLUtilities.h"
 
+using namespace std;
+
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
@@ -26,53 +28,53 @@ void GLTexture3D::setEnabled( bool bEnabled )
 }
 
 // static
-GLTexture3D* GLTexture3D::createUnsignedByte1Texture( int width, int height, int depth, const ubyte* aubData )
+GLTexture3D* GLTexture3D::createUnsignedByte1Texture( int width, int height, int depth, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::LUMINANCE_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::R_8_BYTE_UNORM;
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RED, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture3D* GLTexture3D::createUnsignedByte3Texture( int width, int height, int depth, const ubyte* aubData )
+GLTexture3D* GLTexture3D::createUnsignedByte3Texture( int width, int height, int depth, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_8_BYTE_UNORM;
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture3D* GLTexture3D::createUnsignedByte4Texture( int width, int height, int depth, const ubyte* aubData )
+GLTexture3D* GLTexture3D::createUnsignedByte4Texture( int width, int height, int depth, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_8_BYTE_UNORM;
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture3D* GLTexture3D::createFloat1Texture( int width, int height, int depth, int nBitsPerComponent, const float* afData )
+GLTexture3D* GLTexture3D::createFloat1Texture( int width, int height, int depth, int nBitsPerComponent, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBitsPerComponent )
 	{
 	case 16:
-		internalFormat = GLTexture::LUMINANCE_FLOAT_16;
+		internalFormat = GLTexture::R_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::LUMINANCE_FLOAT_32;
+		internalFormat = GLTexture::R_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -81,23 +83,23 @@ GLTexture3D* GLTexture3D::createFloat1Texture( int width, int height, int depth,
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_LUMINANCE, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RED, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture3D* GLTexture3D::createFloat3Texture( int width, int height, int depth, int nBits, const float* afData )
+GLTexture3D* GLTexture3D::createFloat3Texture( int width, int height, int depth, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGB_FLOAT_16;
+		internalFormat = GLTexture::RGB_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGB_FLOAT_32;
+		internalFormat = GLTexture::RGB_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -106,23 +108,23 @@ GLTexture3D* GLTexture3D::createFloat3Texture( int width, int height, int depth,
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGB, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGB, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-GLTexture3D* GLTexture3D::createFloat4Texture( int width, int height, int depth, int nBits, const float* afData )
+GLTexture3D* GLTexture3D::createFloat4Texture( int width, int height, int depth, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGBA_FLOAT_16;
+		internalFormat = GLTexture::RGBA_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGBA_FLOAT_32;
+		internalFormat = GLTexture::RGBA_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -131,72 +133,72 @@ GLTexture3D* GLTexture3D::createFloat4Texture( int width, int height, int depth,
 
 	GLTexture3D* pTexture = GLTexture3D::createTexture3D( width, height, depth, internalFormat );
 
-	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGBA, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, GL_RGBA, GL_FLOAT, data );
 
 	return pTexture;
 }
 
-void GLTexture3D::setFloat1Data( const float* afData, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
+void GLTexture3D::setFloat1Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
 	bind();
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_LUMINANCE, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RED, GL_FLOAT, data );
 }
 
-void GLTexture3D::setFloat3Data( const float* afData, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
+void GLTexture3D::setFloat3Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
 	bind();
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGB, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGB, GL_FLOAT, data );
 }
 
-void GLTexture3D::setFloat4Data( const float* afData, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
+void GLTexture3D::setFloat4Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
 	bind();
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGBA, GL_FLOAT, afData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGBA, GL_FLOAT, data );
 }
 
-void GLTexture3D::setUnsignedByte1Data( const GLubyte* aubData,
+void GLTexture3D::setUnsignedByte1Data( const uint8_t* data,
 									   int xOffset, int yOffset, int zOffset,
 									   int width, int height, int depth )
 {
@@ -204,21 +206,21 @@ void GLTexture3D::setUnsignedByte1Data( const GLubyte* aubData,
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RED, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTexture3D::setUnsignedByte3Data( const GLubyte* aubData,
+void GLTexture3D::setUnsignedByte3Data( const uint8_t* data,
 									   int xOffset, int yOffset, int zOffset,
 									   int width, int height, int depth )
 {
@@ -226,21 +228,21 @@ void GLTexture3D::setUnsignedByte3Data( const GLubyte* aubData,
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTexture3D::setUnsignedByte4Data( const GLubyte* aubData,
+void GLTexture3D::setUnsignedByte4Data( const uint8_t* data,
 									   int xOffset, int yOffset, int zOffset,
 									   int width, int height, int depth )
 {
@@ -248,33 +250,33 @@ void GLTexture3D::setUnsignedByte4Data( const GLubyte* aubData,
 
 	if( width == 0 )
 	{
-		width = m_iWidth;
+		width = m_width;
 	}
 	if( height == 0 )
 	{
-		height = m_iHeight;
+		height = m_height;
 	}
 	if( depth == 0 )
 	{
-		depth = m_iDepth;
+		depth = m_depth;
 	}
 
-	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, aubData );
+	glTexImage3D( GL_TEXTURE_3D, 0, getInternalFormat(), width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 }
 
 int GLTexture3D::getWidth()
 {
-	return m_iWidth;
+	return m_width;
 }
 
 int GLTexture3D::getHeight()
 {
-	return m_iHeight;
+	return m_height;
 }
 
 int GLTexture3D::getDepth()
 {
-	return m_iDepth;
+	return m_depth;
 }
 
 // virtual
@@ -295,58 +297,55 @@ void GLTexture3D::dumpToCSV( QString filename )
 // virtual
 void GLTexture3D::dumpToTXT( QString filename, GLint level, GLenum format, GLenum type )
 {
-	float* pixels = new float[ 4 * m_iWidth * m_iHeight * m_iDepth ];
-	getFloat4Data( pixels );
+    vector< float > pixels( 4 * m_width * m_height * m_depth );
+	getFloat4Data( pixels.data() );
 
 	FILE* fp = fopen( qPrintable( filename ), "w" );
-	fprintf( fp, "width = %d, height = %d, depth = %d\n", m_iWidth, m_iHeight, m_iDepth );
+	fprintf( fp, "width = %d, height = %d, depth = %d\n", m_width, m_height, m_depth );
 
-	for( int z = 0; z < m_iDepth; ++z )
+	for( int z = 0; z < m_depth; ++z )
 	{
-		for( int y = 0; y < m_iHeight; ++y )
+		for( int y = 0; y < m_height; ++y )
 		{
-			for( int x = 0; x < m_iWidth; ++x )
+			for( int x = 0; x < m_width; ++x )
 			{
-				int k = 4 * ( z * m_iWidth * m_iHeight + y * m_iWidth + x );
+				int k = 4 * ( z * m_width * m_height + y * m_width + x );
 
-				fprintf( fp, "{%d} [%d] (%d, %d, %d): <%f, %f, %f, %f>\n", k / 4, k, x, y, z, pixels[k], pixels[k+1], pixels[k+2], pixels[k+3] );
+				fprintf( fp, "{%d} [%d] (%d, %d, %d): <%f, %f, %f, %f>\n",
+                        k / 4, k, x, y, z, pixels[k], pixels[k+1], pixels[k+2], pixels[k+3] );
 				k += 4;
 			}
 		}
 	}
-
-	delete[] pixels;
 	fclose( fp );
 }
 
 void GLTexture3D::dumpToPNG( QString filename )
 {
-	ubyte* pixels = new ubyte[ 4 * m_iWidth * m_iHeight * m_iDepth ];
-	getUnsignedByte4Data( pixels );
+	vector< uint8_t > pixels( 4 * m_width * m_height * m_depth );
+	getUnsignedByte4Data( pixels.data() );
 
-	QImage q( m_iWidth * m_iDepth, m_iHeight, QImage::Format_ARGB32 );	
+	QImage q( m_width * m_depth, m_height, QImage::Format_ARGB32 );	
 
 	// tile across in x
-	for( int z = 0; z < m_iDepth; ++z )
+	for( int z = 0; z < m_depth; ++z )
 	{
-		for( int y = 0; y < m_iHeight; ++y )
+		for( int y = 0; y < m_height; ++y )
 		{
-			for( int x = 0; x < m_iWidth; ++x )
+			for( int x = 0; x < m_width; ++x )
 			{
-				int yy = m_iHeight - y - 1;
-				int k = 4 * ( z * m_iWidth * m_iHeight + y * m_iWidth + x );
+				int yy = m_height - y - 1;
+				int k = 4 * ( z * m_width * m_height + y * m_width + x );
 
-				ubyte r = pixels[ k ];
-				ubyte g = pixels[ k + 1 ];
-				ubyte b = pixels[ k + 2 ];
-				ubyte a = pixels[ k + 3 ];
+				uint8_t r = pixels[ k ];
+				uint8_t g = pixels[ k + 1 ];
+				uint8_t b = pixels[ k + 2 ];
+				uint8_t a = pixels[ k + 3 ];
 
-				q.setPixel( z * m_iWidth + x, yy, qRgba( r, g, b, a ) );
+				q.setPixel( z * m_width + x, yy, qRgba( r, g, b, a ) );
 			}
 		}
 	}
-
-	delete[] pixels;
 	q.save( filename, "PNG" );
 }
 
@@ -367,11 +366,12 @@ GLTexture3D* GLTexture3D::createTexture3D( int width, int height, int depth,
 GLTexture3D::GLTexture3D( int width, int height, int depth,
 						 GLTexture::GLTextureInternalFormat internalFormat ) :
 
-	m_iWidth( width ),
-	m_iHeight( height ),
-	m_iDepth( depth ),
+	GLTexture( GL_TEXTURE_3D, internalFormat ),
 
-	GLTexture( GL_TEXTURE_3D, internalFormat )
+    m_width( width ),
+    m_height( height ),
+    m_depth( depth )
+
 {
 	assert( width > 0 );
 	assert( height > 0 );

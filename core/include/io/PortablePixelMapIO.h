@@ -20,9 +20,10 @@ public:
 		float scale = -1.0f );
 		*/
 
-	// TODO: can optimize this by checking stride for packed
+	// TODO: can optimize this by checking stride for packed to write binary
 	static bool writeRGB( QString filename, Array2DView< ubyte3 > image );		
 
+    // TODO: clamp to [0,1]
 	// elements of image needs to be in [0,1]^3
 	static bool writeRGB( QString filename, Array2DView< Vector3f > image );
 };

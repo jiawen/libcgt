@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdio>
+#include <memory>
 
 #include <GL/glew.h>
 
@@ -8,9 +9,12 @@
 #include <io/PortableFloatMapIO.h>
 #include <io/PortablePixelMapIO.h>
 #include <math/MathUtils.h>
+#include <vecmath/Vector3f.h>
 
 #include "GLTextureRectangle.h"
 #include "GLUtilities.h"
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -21,123 +25,126 @@ void GLTextureRectangle::setEnabled( bool bEnabled )
 {
 	if( bEnabled )
 	{
-		glEnable( GL_TEXTURE_RECTANGLE_ARB );
+		glEnable( GL_TEXTURE_RECTANGLE );
 	}
 	else
 	{
-		glDisable( GL_TEXTURE_RECTANGLE_ARB );
+		glDisable( GL_TEXTURE_RECTANGLE );
 	}
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::create( Reference< Image4ub > image )
+GLTextureRectangle* GLTextureRectangle::create( shared_ptr< Image4ub > image )
 {
 	return GLTextureRectangle::createUnsignedByte4Texture( image->size(), image->pixels() );
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::create( Reference< Image1f > image, int nBitsPerComponent )
+GLTextureRectangle* GLTextureRectangle::create( shared_ptr< Image1f > image, int nBitsPerComponent )
 {
 	return GLTextureRectangle::createFloat1Texture( image->size(), nBitsPerComponent, image->pixels() );
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::create( Reference< Image4f > image, int nBitsPerComponent )
+GLTextureRectangle* GLTextureRectangle::create( shared_ptr< Image4f > image, int nBitsPerComponent )
 {
 	return GLTextureRectangle::createFloat4Texture( image->size(), nBitsPerComponent, image->pixels() );
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createDepthTexture( int width, int height, int nBits, const float* data )
+GLTextureRectangle* GLTextureRectangle::createDepthTexture( int width, int height, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::DEPTH_COMPONENT_FLOAT_16;
+		internalFormat = GLTexture::DEPTH_COMPONENT_16;
 		break;
 	case 24:
-		internalFormat = GLTexture::DEPTH_COMPONENT_FLOAT_24;
+		internalFormat = GLTexture::DEPTH_COMPONENT_24;
 		break;
 	case 32:
-		internalFormat = GLTexture::DEPTH_COMPONENT_FLOAT_32;
+		internalFormat = GLTexture::DEPTH_COMPONENT_32;
 		break;
 	default:
 		fprintf( stderr, "Depth texture precision must be 16, 24, or 32 bits" );
 		assert( false );
 		break;
-	}	
+	}
+    
+    // TODO: float32, depthstencil
 
-	Reference< GLTextureRectangle > texture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
+	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 	
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, data );
 	
-	return texture;
+	return pTexture;
 }
 
 // static
-GLTextureRectangle* GLTextureRectangle::createUnsignedByte1Texture( int width, int height, const ubyte* aubData )
+GLTextureRectangle* GLTextureRectangle::createUnsignedByte1Texture( int width, int height, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::LUMINANCE_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::R_8_BYTE_UNORM;
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height,
 		internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, aubData );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
+#if 0
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createUnsignedByte3Texture( int width, int height, const ubyte* data )
+GLTextureRectangle* GLTextureRectangle::createUnsignedByte3Texture( int width, int height, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_UNSIGNED_BYTE_8;
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGB_8_BYTE_UNORM;
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 
 	return pTexture;
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createUnsignedByte3Texture( const Vector2i& size, const ubyte* data )
+GLTextureRectangle* GLTextureRectangle::createUnsignedByte3Texture( const Vector2i& size, const uint8_t* data )
 {
-	return createUnsignedByte3Texture( size.x(), size.y(), data );
+	return createUnsignedByte3Texture( size.x, size.y, data );
+}
+#endif
+
+// static
+GLTextureRectangle* GLTextureRectangle::createUnsignedByte4Texture( int width, int height, const uint8_t* data )
+{
+	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_8_BYTE_UNORM;
+
+	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
+
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+
+	return pTexture;
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createUnsignedByte4Texture( int width, int height, const ubyte* aubData )
+GLTextureRectangle* GLTextureRectangle::createUnsignedByte4Texture( const Vector2i& size, const uint8_t* data )
 {
-	GLTexture::GLTextureInternalFormat internalFormat = GLTexture::RGBA_UNSIGNED_BYTE_8;
-
-	Reference< GLTextureRectangle > texture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
-
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, aubData );
-
-	return texture;
+	return GLTextureRectangle::createUnsignedByte4Texture( size.x, size.y, data );
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createUnsignedByte4Texture( const Vector2i& size, const ubyte* data )
-{
-	return GLTextureRectangle::createUnsignedByte4Texture( size.x(), size.y(), data );
-}
-
-// static
-Reference< GLTextureRectangle > GLTextureRectangle::createFloat1Texture( int width, int height, int nBitsPerComponent, const float* afData )
+GLTextureRectangle* GLTextureRectangle::createFloat1Texture( int width, int height, int nBitsPerComponent, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBitsPerComponent )
 	{
 	case 16:
-		internalFormat = GLTexture::LUMINANCE_FLOAT_16;
+		internalFormat = GLTexture::R_16_FLOAT;
 		break;
 	case 32:
-		//internalFormat = GLTexture::LUMINANCE_FLOAT_32;
-        internalFormat = GLTexture::RED_FLOAT_32;
+        internalFormat = GLTexture::R_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -146,29 +153,29 @@ Reference< GLTextureRectangle > GLTextureRectangle::createFloat1Texture( int wid
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_LUMINANCE, GL_FLOAT, afData );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RED, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createFloat1Texture( const Vector2i& size, int nBitsPerComponent, const float* afData )
+GLTextureRectangle* GLTextureRectangle::createFloat1Texture( const Vector2i& size, int nBitsPerComponent, const float* data )
 {
-	return createFloat1Texture( size.x(), size.y(), nBitsPerComponent, afData );
+	return createFloat1Texture( size.x, size.y, nBitsPerComponent, data );
 }
 
 // static
-GLTextureRectangle* GLTextureRectangle::createFloat2Texture( int width, int height, int nBitsPerComponent, const float* afData )
+GLTextureRectangle* GLTextureRectangle::createFloat2Texture( int width, int height, int nBitsPerComponent, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBitsPerComponent )
 	{
 	case 16:
-		internalFormat = GLTexture::LUMINANCE_ALPHA_FLOAT_16;
+    	internalFormat = GLTexture::RG_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::LUMINANCE_ALPHA_FLOAT_32;
+		internalFormat = GLTexture::RG_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -177,23 +184,23 @@ GLTextureRectangle* GLTextureRectangle::createFloat2Texture( int width, int heig
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_LUMINANCE, GL_FLOAT, afData );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RG, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-GLTextureRectangle* GLTextureRectangle::createFloat3Texture( int width, int height, int nBits, const float* afData )
+GLTextureRectangle* GLTextureRectangle::createFloat3Texture( int width, int height, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGB_FLOAT_16;
+		internalFormat = GLTexture::RGB_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGB_FLOAT_32;
+		internalFormat = GLTexture::RGB_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -202,23 +209,23 @@ GLTextureRectangle* GLTextureRectangle::createFloat3Texture( int width, int heig
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_RGB, GL_FLOAT, afData );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RGB, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createFloat4Texture( int width, int height, int nBits, const float* afData )
+GLTextureRectangle* GLTextureRectangle::createFloat4Texture( int width, int height, int nBits, const float* data )
 {
 	GLTexture::GLTextureInternalFormat internalFormat;
 
 	switch( nBits )
 	{
 	case 16:
-		internalFormat = GLTexture::RGBA_FLOAT_16;
+		internalFormat = GLTexture::RGBA_16_FLOAT;
 		break;
 	case 32:
-		internalFormat = GLTexture::RGBA_FLOAT_32;
+		internalFormat = GLTexture::RGBA_32_FLOAT;
 		break;
 	default:
 		fprintf( stderr, "Floating point texture nBits must be 16 or 32 bits!\n" );
@@ -227,40 +234,43 @@ Reference< GLTextureRectangle > GLTextureRectangle::createFloat4Texture( int wid
 
 	GLTextureRectangle* pTexture = GLTextureRectangle::createTextureRectangle( width, height, internalFormat );
 
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, internalFormat, width, height, 0, GL_RGBA, GL_FLOAT, afData );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, internalFormat, width, height, 0, GL_RGBA, GL_FLOAT, data );
 
 	return pTexture;
 }
 
 // static
-Reference< GLTextureRectangle > GLTextureRectangle::createFloat4Texture( const Vector2i& size, int nBitsPerComponent, const float* data )
+GLTextureRectangle* GLTextureRectangle::createFloat4Texture( const Vector2i& size, int nBitsPerComponent, const float* data )
 {
-	return GLTextureRectangle::createFloat4Texture( size.x(), size.y(), nBitsPerComponent, data );
+	return GLTextureRectangle::createFloat4Texture( size.x, size.y, nBitsPerComponent, data );
 }
 
-void GLTextureRectangle::setData( Reference< Image1f > image )
+void GLTextureRectangle::setData( shared_ptr< Image1f > image )
 {
 	return setFloat1Data( image->pixels() );
 }
 
-void GLTextureRectangle::setData( Reference< Image3ub > image )
+#if 0
+void GLTextureRectangle::setData( shared_ptr< Image3ub > image )
 {
 	return setUnsignedByte3Data( image->pixels() );
 }
+#endif
 
-void GLTextureRectangle::setData( Reference< Image4ub > image )
+void GLTextureRectangle::setData( shared_ptr< Image4ub > image )
 {
 	return setUnsignedByte4Data( image->pixels() );
 }
 
-void GLTextureRectangle::setData( Reference< Image4f > image )
+void GLTextureRectangle::setData( shared_ptr< Image4f > image )
 {
 	return setFloat4Data( image->pixels() );
 }
 
-Reference< Image3ub > GLTextureRectangle::getImage3ub( Reference< Image3ub > output )
+#if 0
+shared_ptr< Image3ub > GLTextureRectangle::getImage3ub( shared_ptr< Image3ub > output )
 {
-	if( output.isNull() )
+	if( output.get() == NULL )
 	{
 		output = new Image3ub( size() );
 	}
@@ -270,12 +280,13 @@ Reference< Image3ub > GLTextureRectangle::getImage3ub( Reference< Image3ub > out
 
 	return output;
 }
+#endif
 
-Reference< Image1f > GLTextureRectangle::getImage1f( Reference< Image1f > output )
+shared_ptr< Image1f > GLTextureRectangle::getImage1f( shared_ptr< Image1f > output )
 {
-	if( output.isNull() )
+	if( !output )
 	{
-		output = new Image1f( size() );
+		output.reset( new Image1f( size() ) );
 	}
 
 	// TODO: level, etc
@@ -284,11 +295,11 @@ Reference< Image1f > GLTextureRectangle::getImage1f( Reference< Image1f > output
 	return output;
 }
 
-Reference< Image4f > GLTextureRectangle::getImage4f( Reference< Image4f > output )
+shared_ptr< Image4f > GLTextureRectangle::getImage4f( shared_ptr< Image4f > output )
 {
-	if( output.isNull() )
+	if( !output )
 	{
-		output = new Image4f( size() );
+		output.reset( new Image4f( size() ) );
 	}
 
 	// TODO: level, etc
@@ -300,37 +311,37 @@ Reference< Image4f > GLTextureRectangle::getImage4f( Reference< Image4f > output
 void GLTextureRectangle::setFloat1Data( const float* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_LUMINANCE, GL_FLOAT, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_LUMINANCE, GL_FLOAT, data );
 }
 
 void GLTextureRectangle::setFloat3Data( const float* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_FLOAT, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_FLOAT, data );
 }
 
 void GLTextureRectangle::setFloat4Data( const float* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_FLOAT, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_FLOAT, data );
 }
 
-void GLTextureRectangle::setUnsignedByte1Data( const GLubyte* data )
+void GLTextureRectangle::setUnsignedByte1Data( const uint8_t* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTextureRectangle::setUnsignedByte3Data( const GLubyte* data )
+void GLTextureRectangle::setUnsignedByte3Data( const uint8_t* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 }
 
-void GLTextureRectangle::setUnsignedByte4Data( const GLubyte* data )
+void GLTextureRectangle::setUnsignedByte4Data( const uint8_t* data )
 {
 	bind();
-	glTexImage2D( GL_TEXTURE_RECTANGLE_ARB, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+	glTexImage2D( GL_TEXTURE_RECTANGLE, 0, getInternalFormat(), m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 }
 
 int GLTextureRectangle::numElements()
@@ -356,8 +367,8 @@ Vector2i GLTextureRectangle::size()
 void GLTextureRectangle::setAllWrapModes( GLint iMode )
 {
 	bind();
-	glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, iMode );
-	glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, iMode );
+	glTexParameteri( GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, iMode );
+	glTexParameteri( GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, iMode );
 }
 
 // virtual
@@ -365,8 +376,8 @@ void GLTextureRectangle::dumpToCSV( QString filename )
 {
 	// TODO: use getData(), use it to get the right formats
 
-	FloatArray pixels( 4 * m_width * m_height );
-	getFloat4Data( pixels );
+    vector< float > pixels( 4 * m_width * m_height );
+	getFloat4Data( pixels.data() );
 
 	int k = 0;
 	FILE* fp = fopen( qPrintable( filename ), "w" );
@@ -388,17 +399,15 @@ void GLTextureRectangle::dumpToCSV( QString filename )
 // virtual
 void GLTextureRectangle::dumpToTXT( QString filename, GLint level, GLenum format, GLenum type )
 {
-	// TODO: use getData(), use it to get the right formats
-
 	assert( level == 0 );
 	assert( format == GL_RGBA );
 	assert( type == GL_FLOAT );
 
 	bind();
 
-	FloatArray pixels( 4 * m_width * m_height );
-
-	glGetTexImage( GL_TEXTURE_RECTANGLE_ARB, level, format, type, pixels );
+    vector< float > pixels( 4 * m_width * m_height );
+	// TODO: use getData(), use it to get the right formats
+	glGetTexImage( GL_TEXTURE_RECTANGLE, level, format, type, pixels.data() );
 
 	FILE* fp = fopen( qPrintable( filename ), "w" );
 	fprintf( fp, "width = %d, height = %d\n", m_width, m_height );
@@ -420,18 +429,21 @@ void GLTextureRectangle::dumpToTXT( QString filename, GLint level, GLenum format
 void GLTextureRectangle::savePPM( QString filename )
 {
 	bind();
+	// TODO: use getData(), use it to get the right formats
+    // TODO: bindless graphics
 
-	UnsignedByteArray pixels( 3 * m_width * m_height );
-	getUnsignedByte3Data( pixels );
-	PortablePixelMapIO::writeRGB( filename, pixels, m_width, m_height, true );
-	delete[] pixels;
+    vector< uint8_t > pixels( 3 * m_width * m_height );
+	getUnsignedByte3Data( pixels.data() );
+    Array2DView< ubyte3 > view( pixels.data(), m_width, m_height );
+    PortablePixelMapIO::writeRGB( filename, view );
 }
 
 void GLTextureRectangle::savePNG( QString filename )
 {
-	UnsignedByteArray pixels( 4 * m_width * m_height );
-	getUnsignedByte4Data( pixels );
+    vector< uint8_t > pixels( 4 * m_width * m_height );
+	getUnsignedByte4Data( pixels.data() );
 
+    // TODO: use a view
 	QImage q( m_width, m_height, QImage::Format_ARGB32 );
 	for( int y = 0; y < m_height; ++y )
 	{
@@ -440,10 +452,10 @@ void GLTextureRectangle::savePNG( QString filename )
 			int yy = m_height - y - 1;
 			int k = 4 * ( yy * m_width + x );
 
-			ubyte r = pixels[ k ];
-			ubyte g = pixels[ k + 1 ];
-			ubyte b = pixels[ k + 2 ];
-			ubyte a = pixels[ k + 3 ];
+			uint8_t r = pixels[ k ];
+			uint8_t g = pixels[ k + 1 ];
+			uint8_t b = pixels[ k + 2 ];
+			uint8_t a = pixels[ k + 3 ];
 
 			q.setPixel( x, y, qRgba( r, g, b, a ) );
 		}
@@ -454,11 +466,10 @@ void GLTextureRectangle::savePNG( QString filename )
 
 void GLTextureRectangle::savePFM( QString filename )
 {
-	FloatArray pixels( 3 * m_width * m_height );
-	getFloat3Data( pixels );
-
-	PortableFloatMapIO::writeRGB( filename, pixels, m_width, m_height, -1.f,
-		true );
+	vector< float > pixels( 3 * m_width * m_height );
+	getFloat3Data( pixels.data() );
+    Array2DView< Vector3f > view( pixels.data(), m_width, m_height );
+	PortableFloatMapIO::writeRGB( filename, view );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -478,9 +489,9 @@ GLTextureRectangle* GLTextureRectangle::createTextureRectangle( int width, int h
 GLTextureRectangle::GLTextureRectangle( int width, int height,
 						 GLTexture::GLTextureInternalFormat internalFormat ) :
 
-GLTexture( GL_TEXTURE_RECTANGLE_ARB, internalFormat ),
-m_width( width ),
-m_height( height )
+    GLTexture( GL_TEXTURE_RECTANGLE, internalFormat ),
+    m_width( width ),
+    m_height( height )
 
 {
 	assert( width > 0 );

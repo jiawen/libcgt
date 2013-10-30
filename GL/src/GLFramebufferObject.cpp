@@ -1,6 +1,6 @@
 #include "GLFramebufferObject.h"
 
-#include "GLTexture2D.h"
+#include "GLTexture.h"
 
 #include <cassert>
 #include <cstdio>

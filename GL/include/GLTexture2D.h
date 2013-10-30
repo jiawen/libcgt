@@ -13,45 +13,45 @@ public:
 	static void setEnabled( bool bEnabled );
 
 	// creates a depth texture	
-	static GLTexture2D* createDepthTexture( int width, int height, int nBits = 32, const uint* auiData = 0 );
+	static GLTexture2D* createDepthTexture( int width, int height, int nBits = 32, const uint* data = 0 );
 
 	// creates a ubyte1 (8 bits luminance for each pixel) texture
-	static GLTexture2D* createUnsignedByte1Texture( int width, int height, const ubyte* aubData = 0 );
+	static GLTexture2D* createUnsignedByte1Texture( int width, int height, const uint8_t* data = 0 );
 
 	// creates a ubyte3 (8 bits for each component) texture
-	static GLTexture2D* createUnsignedByte3Texture( int width, int height, const ubyte* aubData = 0 );
+	static GLTexture2D* createUnsignedByte3Texture( int width, int height, const uint8_t* data = 0 );
 
 	// creates a ubyte4 (8 bits for each component) texture
-	static GLTexture2D* createUnsignedByte4Texture( int width, int height, const ubyte* aubData = 0 );
+	static GLTexture2D* createUnsignedByte4Texture( int width, int height, const uint8_t* data = 0 );
 
 	// creates a float1 texture
-	static GLTexture2D* createFloat1Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTexture2D* createFloat1Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
 
 	// creates a float3 texture
-	static GLTexture2D* createFloat3Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTexture2D* createFloat3Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
 
 	// creates a float4 texture	
-	static GLTexture2D* createFloat4Texture( int width, int height, int nBitsPerComponent = 32, const float* afData = 0 );
+	static GLTexture2D* createFloat4Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
 
 	// uploads float array to hardware
 	// by default, assumes that the entire texture is being updated
 	// (pass in width and height = 0)
 	// otherwise, specify the rectangle
-	void setFloat1Data( const float* afData, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
-	void setFloat3Data( const float* afData, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
-	void setFloat4Data( const float* afData, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
+	void setFloat1Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
+	void setFloat3Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
+	void setFloat4Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
 
 	// uploads unsigned byte array to hardware
 	// by default, assumes that the entire texture is being updated
 	// (pass in width and height = 0)
 	// otherwise, specify the rectangle
-	void setUnsignedByte1Data( const GLubyte* aubData,
+	void setUnsignedByte1Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0,
 		int width = 0, int height = 0 );
-	void setUnsignedByte3Data( const GLubyte* aubData,
+	void setUnsignedByte3Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0,
 		int width = 0, int height = 0 );	
-	void setUnsignedByte4Data( const GLubyte* aubData,
+	void setUnsignedByte4Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0,
 		int width = 0, int height = 0 );
 
@@ -82,8 +82,8 @@ private:
 	GLTexture2D( int width, int height,
 		GLTexture::GLTextureInternalFormat internalFormat );
 
-	int m_iWidth;
-	int m_iHeight;
+	int m_width;
+	int m_height;
 };
 
 #endif

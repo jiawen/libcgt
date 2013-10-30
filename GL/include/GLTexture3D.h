@@ -1,11 +1,14 @@
 #ifndef GL_TEXTURE_3D_H
 #define GL_TEXTURE_3D_H
 
+#include <cstdint>
+
 #include <GL/glew.h>
 #include <QImage>
 #include <QString>
 
 #include <common/BasicTypes.h>
+
 #include "GLTexture.h"
 
 class GLTexture3D : public GLTexture
@@ -15,13 +18,13 @@ public:
 	static void setEnabled( bool bEnabled );
 
 	// creates a ubyte1 (8 bits luminance for each pixel) texture
-	static GLTexture3D* createUnsignedByte1Texture( int width, int height, int depth, const ubyte* aubData = 0 );
+	static GLTexture3D* createUnsignedByte1Texture( int width, int height, int depth, const uint8_t* data = 0 );
 
 	// creates a ubyte3 (8 bits for each component) texture
-	static GLTexture3D* createUnsignedByte3Texture( int width, int height, int depth, const ubyte* aubData = 0 );
+	static GLTexture3D* createUnsignedByte3Texture( int width, int height, int depth, const uint8_t* data = 0 );
 
 	// creates a ubyte4 (8 bits for each component) texture
-	static GLTexture3D* createUnsignedByte4Texture( int width, int height, int depth, const ubyte* aubData = 0 );
+	static GLTexture3D* createUnsignedByte4Texture( int width, int height, int depth, const uint8_t* data = 0 );
 
 	// creates a float1 texture
 	static GLTexture3D* createFloat1Texture( int width, int height, int depth, int nBitsPerComponent = 32, const float* afData = 0 );
@@ -44,13 +47,13 @@ public:
 	// by default, assumes that the entire texture is being updated
 	// (pass in width and height = 0)
 	// otherwise, specify the rectangle
-	void setUnsignedByte1Data( const GLubyte* aubData,
+	void setUnsignedByte1Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0, int zOffset = 0,
 		int width = 0, int height = 0, int depth = 0 );
-	void setUnsignedByte3Data( const GLubyte* aubData,
+	void setUnsignedByte3Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0, int zOffset = 0,
 		int width = 0, int height = 0, int depth = 0 );
-	void setUnsignedByte4Data( const GLubyte* aubData,
+	void setUnsignedByte4Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0, int zOffset = 0,
 		int width = 0, int height = 0, int depth = 0 );
 
@@ -76,9 +79,9 @@ private:
 	GLTexture3D( int width, int height, int depth,
 		GLTexture::GLTextureInternalFormat internalFormat );
 
-	int m_iWidth;
-	int m_iHeight;
-	int m_iDepth;
+	int m_width;
+	int m_height;
+	int m_depth;
 };
 
 #endif

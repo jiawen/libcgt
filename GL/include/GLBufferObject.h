@@ -1,8 +1,10 @@
 #ifndef GL_BUFFER_OBJECT
 #define GL_BUFFER_OBJECT
 
-#include <GL/glew.h>
+#include <cstdint>
 #include <vector>
+
+#include <GL/glew.h>
 
 #include <common/BasicTypes.h>
 
@@ -23,8 +25,8 @@ public:
 		TARGET_ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
 
 		// Pixel Buffer Objects
-		TARGET_PIXEL_PACK_BUFFER = GL_PIXEL_PACK_BUFFER_ARB,
-		TARGET_PIXEL_UNPACK_BUFFER = GL_PIXEL_UNPACK_BUFFER_ARB
+		TARGET_PIXEL_PACK_BUFFER = GL_PIXEL_PACK_BUFFER,
+		TARGET_PIXEL_UNPACK_BUFFER = GL_PIXEL_UNPACK_BUFFER
 	};
 
 	enum GLBufferObjectUsage
@@ -102,14 +104,15 @@ public:
 	// map this buffer into local memory
 	void* map( GLBufferObjectTarget target, GLBufferObjectAccess access );
 
-	ubyte* mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access );
+	uint8_t* mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access );
 
 	float* mapToFloatArray( GLBufferObjectTarget target, GLBufferObjectAccess access );
 
 	// unmap this buffer from local memory
 	void unmap( GLBufferObjectTarget target );
 
-	// gets the data stored in this GLBufferObject
+	// allocates memory and returns a copy of the data stored in this GLBufferObject
+    // TODO: return a vector, or pass in a view, or use copy()
 	void* getData( GLBufferObjectTarget target );
 
 	// sets a sub-array of this buffer object from data in afData
@@ -124,8 +127,8 @@ public:
 
 	// sets a sub-array of this buffer object from data in aubData
 	void setUnsignedByteSubData( GLBufferObjectTarget target,
-		const ubyte* aubData, int nElements,
-		int nUnsignedBytesOffset = 0 );
+		const uint8_t* data, int nElements,
+		int offset = 0 );
 
 	// sets a sub-array of this buffer object from data in auiData
 	void setUnsignedIntSubData( GLBufferObjectTarget target,

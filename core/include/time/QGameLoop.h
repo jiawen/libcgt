@@ -67,8 +67,8 @@ private:
 	int m_nDelaysPerYield;
 	int m_iMaxFrameSkips;
 
-  float m_period;
-  QElapsedTimer m_timer;
+    float m_period;
+    QElapsedTimer m_timer;
 };
 
 #endif // QGAMELOOP_H

@@ -1,5 +1,7 @@
 #include "lights/DirectionalLight.h"
 
+#include <algorithm>
+
 #include <geometry/GeometryUtils.h>
 #include <vecmath/Vector4f.h>
 

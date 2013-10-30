@@ -1,6 +1,4 @@
-#include <GL/glew.h>
 #include <cassert>
-#include <common/ArrayWithLength.h>
 #include <common/ArrayUtils.h>
 
 #include "GLBufferObject.h"
@@ -126,9 +124,9 @@ void* GLBufferObject::map( GLBufferObject::GLBufferObjectTarget target,
 	return NULL;
 }
 
-ubyte* GLBufferObject::mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access )
+uint8_t* GLBufferObject::mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access )
 {
-	return reinterpret_cast< ubyte* >( map( target, access ) );
+	return reinterpret_cast< uint8_t* >( map( target, access ) );
 }
 
 float* GLBufferObject::mapToFloatArray( GLBufferObjectTarget target, GLBufferObjectAccess access )
@@ -156,20 +154,13 @@ void* GLBufferObject::getData( GLBufferObject::GLBufferObjectTarget target )
 {
 	assert( target != TARGET_NO_TARGET );
 
-	ubyte* dataOut = NULL;
+	uint8_t* dataOut = NULL;
 
 	if( isBoundToTarget( target ) )
 	{
-		dataOut = new ubyte[ m_nBytes ];
+		dataOut = new uint8_t[ m_nBytes ];
 		glGetBufferSubData( target, 0, m_nBytes, dataOut );
 	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer Object not bound to target\n" );
-		assert( false );
-	}
-#endif
 
 	return dataOut;
 }
@@ -189,22 +180,7 @@ void GLBufferObject::setFloatSubData( GLBufferObject::GLBufferObjectTarget targe
 
 			glBufferSubData( target, offset, size, afData );
 		}
-#if _DEBUG
-		else
-		{
-			fprintf( stderr, "Buffer Object not bound to target\n" );
-			assert( false );
-		}
-#endif
 	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer overflow.  nElements + nFloatsOffset = %d, m_nElements = %d\n",
-			nElements + nFloatsOffset, m_nElements );
-		assert( false );
-	}
-#endif
 }
 
 void GLBufferObject::setIntSubData( GLBufferObject::GLBufferObjectTarget target,
@@ -242,19 +218,18 @@ void GLBufferObject::setIntSubData( GLBufferObject::GLBufferObjectTarget target,
 
 // sets a sub-array of this buffer object from data in aubData
 void GLBufferObject::setUnsignedByteSubData( GLBufferObject::GLBufferObjectTarget target,
-											const ubyte* aubData, int nElements,
-											int nUnsignedBytesOffset )
+											const uint8_t* data, int nElements,
+											int offset )
 {
 	assert( target != TARGET_NO_TARGET );
 
-	if( ( nUnsignedBytesOffset + nElements ) <= m_nElements )
+	if( ( offset + nElements ) <= m_nElements )
 	{
 		if( isBoundToTarget( target ) )
 		{
-			GLintptr offset = nUnsignedBytesOffset * sizeof( ubyte );
 			GLsizeiptr size = nElements * m_nBytesPerElement;
 
-			glBufferSubData( target, offset, size, aubData );
+			glBufferSubData( target, offset, size, data );
 		}
 #if _DEBUG
 		else
@@ -309,6 +284,9 @@ void GLBufferObject::setUnsignedIntSubData( GLBufferObject::GLBufferObjectTarget
 
 void GLBufferObject::dumpToTXTFloat( const char* filename )
 {
+	fprintf( stderr, "fix me!\n" );
+	assert( false );
+	/*
 	// HACK: put in type
 	bind( GLBufferObject::TARGET_ARRAY_BUFFER );
 	float* data = reinterpret_cast< float* >( getData( GLBufferObject::TARGET_ARRAY_BUFFER ) );
@@ -316,6 +294,7 @@ void GLBufferObject::dumpToTXTFloat( const char* filename )
 	ArrayUtils::dumpFloatArrayToFileText( arr, filename );
 	arr.destroy();
 	unbind( GLBufferObject::TARGET_ARRAY_BUFFER );
+	*/
 }
 
 //////////////////////////////////////////////////////////////////////////

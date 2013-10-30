@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstring>
 
 #include "common/Array3DView.h"
 #include "common/BasicTypes.h"

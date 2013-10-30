@@ -64,7 +64,7 @@ void GLUtilities::setupOrthoCamera( int viewportWidth, int viewportHeight )
 // static
 void GLUtilities::setupOrthoCamera( const Vector2i& viewportSize )
 {
-	setupOrthoCamera( viewportSize.x(), viewportSize.y() );
+	setupOrthoCamera( viewportSize.x, viewportSize.y );
 }
 
 // static
@@ -76,7 +76,7 @@ void GLUtilities::drawQuad( int width, int height, bool zeroOneTextureCoordinate
 // static
 void GLUtilities::drawQuad( const Vector2i& size, bool zeroOneTextureCoordinates, bool tTextureCoordinateZeroOnBottom )
 {
-	drawQuad( size.x(), size.y(), zeroOneTextureCoordinates, tTextureCoordinateZeroOnBottom );
+	drawQuad( size.x, size.y, zeroOneTextureCoordinates, tTextureCoordinateZeroOnBottom );
 }
 
 // static

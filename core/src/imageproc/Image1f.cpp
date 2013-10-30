@@ -256,7 +256,7 @@ bool Image1f::loadPFM( QString filename )
 	if( qsType != "Pf" )
 	{
 		inputFile.close();
-		return NULL;
+		return false;
 	}
 
 	inputTextStream >> qsWidth >> qsHeight >> qsScale;
@@ -278,7 +278,7 @@ bool Image1f::loadPFM( QString filename )
 	// now reopen it again in binary mode
 	if( !( inputFile.open( QIODevice::ReadOnly ) ) )
 	{
-		return NULL;
+		return false;
 	}
 
 	int headerLength = qsType.length() + qsWidth.length() + qsHeight.length() + qsScale.length() + 4;	

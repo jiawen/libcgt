@@ -2,6 +2,7 @@
 #define GL_BUFFER_OBJECT_MANAGER_H
 
 #include <GL/glew.h>
+
 #include <QHash>
 #include <QString>
 
@@ -29,5 +30,4 @@ private:
 	QHash< QString, GLBufferObject::GLBufferObjectTarget > m_qNamesToTargets;
 
 };
-
 #endif

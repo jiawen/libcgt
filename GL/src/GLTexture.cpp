@@ -145,21 +145,21 @@ void GLTexture::getFloat4Data( float* afOutput, int level )
 }
 
 // virtual
-void GLTexture::getUnsignedByte1Data( ubyte* aubOutput, int level )
+void GLTexture::getUnsignedByte1Data( uint8_t* aubOutput, int level )
 {
 	GLenum format = GL_LUMINANCE;
 	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
 }
 
 // virtual
-void GLTexture::getUnsignedByte3Data( ubyte* aubOutput, int level )
+void GLTexture::getUnsignedByte3Data( uint8_t* aubOutput, int level )
 {
 	GLenum format = GL_RGB;
 	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
 }
 
 // virtual
-void GLTexture::getUnsignedByte4Data( ubyte* aubOutput, int level )
+void GLTexture::getUnsignedByte4Data( uint8_t* aubOutput, int level )
 {
 	GLenum format = GL_RGBA;
 	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
@@ -178,62 +178,208 @@ GLTexture::GLTexture( GLenum eTarget, GLTexture::GLTextureInternalFormat interna
 	glGenTextures( 1, &m_iTextureId );
 	glBindTexture( m_eTarget, m_iTextureId );
 
+    // TODO: make this a function
 	switch( internalFormat )
 	{
-	case GLTexture::DEPTH_COMPONENT_FLOAT_16:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 16;
-		break;
+		case R_8_BYTE_UNORM:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::DEPTH_COMPONENT_FLOAT_24:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 24;
-		break;
+		case RG_8_BYTE_UNORM:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::DEPTH_COMPONENT_FLOAT_32:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 32;
-		break;
+		case RGB_8_BYTE_UNORM:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::LUMINANCE_UNSIGNED_BYTE_8:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 8;
-		break;
+		case RGBA_8_BYTE_UNORM:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::LUMINANCE_FLOAT_16:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 16;
-		break;
+		case R_8_INT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::LUMINANCE_FLOAT_32:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 32;
-		break;
+		case RG_8_INT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::RGBA_UNSIGNED_BYTE_8:
-		m_nComponents = 1;
-		m_nBitsPerComponent = 8;
-		break;
+		case RGB_8_INT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::RGB_FLOAT_16:
-		m_nComponents = 3;
-		m_nBitsPerComponent = 16;
-		break;
+		case RGBA_8_INT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::RGB_FLOAT_32:
-		m_nComponents = 3;
-		m_nBitsPerComponent = 32;
-		break;
+		case R_8_UINT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::RGBA_FLOAT_16:
-		m_nComponents = 4;
-		m_nBitsPerComponent = 16;
-		break;
+		case RG_8_UINT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 8;
+			break;
 
-	case GLTexture::RGBA_FLOAT_32:
-		m_nComponents = 4;
-		m_nBitsPerComponent = 32;
-		break;
+		case RGB_8_UINT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 8;
+			break;
+
+		case RGBA_8_UINT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 8;
+			break;
+
+		case R_16_INT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RG_16_INT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGB_16_INT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGBA_16_INT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case R_16_UINT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RG_16_UINT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGB_16_UINT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGBA_16_UINT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case R_32_INT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RG_32_INT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGB_32_INT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGBA_32_INT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case R_32_UINT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RG_32_UINT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGB_32_UINT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGBA_32_UINT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case R_16_FLOAT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RG_16_FLOAT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGB_16_FLOAT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case RGBA_16_FLOAT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case R_32_FLOAT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RG_32_FLOAT:
+			m_nComponents = 2;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGB_32_FLOAT:
+			m_nComponents = 3;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case RGBA_32_FLOAT:
+			m_nComponents = 4;
+			m_nBitsPerComponent = 32;
+			break;
+
+		case GLTexture::DEPTH_COMPONENT_16:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 16;
+			break;
+
+		case GLTexture::DEPTH_COMPONENT_24:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 24;
+			break;
+
+		case GLTexture::DEPTH_COMPONENT_32:
+        	m_nComponents = 1;
+			m_nBitsPerComponent = 32;
+			break;
+            
+		case GLTexture::DEPTH_COMPONENT_32_FLOAT:
+			m_nComponents = 1;
+			m_nBitsPerComponent = 32;
+			break;
 	}
 }
 

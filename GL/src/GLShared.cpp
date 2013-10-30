@@ -1,20 +1,25 @@
 #include "GLShared.h"
 
+#if 0
+#include <memory>
+
 #include "GLBufferObject.h"
 #include "GLFramebufferObject.h"
 #include "GLTextureRectangle.h"
 #include "GLVertexBufferObject.h"
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
 
 // static
-Reference< GLShared > GLShared::getInstance()
+shared_ptr< GLShared > GLShared::getInstance()
 {
-	if( s_singleton.operator ==( NULL ) )
+	if( s_singleton.get() == NULL )
 	{
-		s_singleton = new GLShared;
+		s_singleton.reset( new GLShared );
 	}
 
 	return s_singleton;
@@ -35,7 +40,7 @@ GLShared::~GLShared()
 	m_qhSharedTextures.clear();
 }
 
-Reference< GLFramebufferObject > GLShared::getSharedFramebufferObject()
+shared_ptr< GLFramebufferObject > GLShared::getSharedFramebufferObject()
 {
 	return m_fbo;
 }
@@ -118,9 +123,12 @@ GLBufferObject* GLShared::getSharedXYCoordinateVBO( int width, int height )
 // Private
 //////////////////////////////////////////////////////////////////////////
 
-GLShared::GLShared()
+GLShared::GLShared() :
+	m_fbo( new GLFramebufferObject )
 {
-	m_fbo = new GLFramebufferObject;
 }
 
-Reference< GLShared > GLShared::s_singleton = NULL;
+// static
+shared_ptr< GLShared > GLShared::s_singleton = nullptr;
+
+#endif

@@ -6,8 +6,8 @@
 
 Sphere::Sphere( float _radius, const Vector3f& _center ) :
 
-	radius( _radius ),
-	center( _center )
+    center( _center ),
+    radius( _radius )
 
 {
 
