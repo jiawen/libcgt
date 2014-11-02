@@ -193,7 +193,7 @@ std::vector< Vector3i >& TriangleMesh::faces()
 
 int TriangleMesh::vertexOppositeEdge( int i, int j ) const
 {
-	return vertexOppositeEdge( Vector2i( i, j ) );
+    return vertexOppositeEdge( { i, j } );
 }
 
 int TriangleMesh::vertexOppositeEdge( const Vector2i& ij ) const
@@ -563,7 +563,7 @@ void TriangleMesh::buildAdjacency()
 	m_vertexToFace.resize( nVertices );
 	for( int v = 0; v < nVertices; ++v )
 	{
-		Vector2i initialOutgoingEdge( v, m_vertexToOutgoingEdge[ v ] );
+        Vector2i initialOutgoingEdge{ v, m_vertexToOutgoingEdge[ v ] };
 
 		m_vertexToVertex[ v ].push_back( initialOutgoingEdge.y );
 		m_vertexToFace[ v ].push_back( m_edgeToFace[ initialOutgoingEdge ] );

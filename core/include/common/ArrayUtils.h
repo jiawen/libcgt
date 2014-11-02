@@ -85,7 +85,7 @@ public:
 	// otherwise, iterates
 	// returns false if the dimensions don't match, or if either is null
 	template< typename T >
-	static bool copy( Array2DView< T > src, Array2DView< T > dst );
+	static bool copy( Array2DView< const T > src, Array2DView< T > dst );
 };
 
 #include "common/ArrayUtils.inl"

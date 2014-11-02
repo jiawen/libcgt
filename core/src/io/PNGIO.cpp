@@ -121,10 +121,10 @@ PNGIO::PNGData PNGIO::read( QString filename )
 }
 
 // static
-bool PNGIO::writeRGB( QString filename, Array2DView< uint8x3 > image )
+bool PNGIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
 {
 	Array2D< uint8x3 > tmpImage;
-	uint8_t* pSrcPointer;
+	const uint8_t* pSrcPointer;
 
 	if( !image.packed() )
 	{
@@ -134,7 +134,7 @@ bool PNGIO::writeRGB( QString filename, Array2DView< uint8x3 > image )
 	}
 	else
 	{
-		pSrcPointer = reinterpret_cast< uint8_t* >( image.rowPointer( 0 ) );
+		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
 	}
 
 	QByteArray cstrFilename = filename.toLocal8Bit();
@@ -151,10 +151,10 @@ bool PNGIO::writeRGB( QString filename, Array2DView< uint8x3 > image )
 }
 
 // static
-bool PNGIO::writeRGBA( QString filename, Array2DView< uint8x4 > image )
+bool PNGIO::writeRGBA( QString filename, Array2DView< const uint8x4 > image )
 {
 	Array2D< uint8x4 > tmpImage;
-	uint8_t* pSrcPointer;
+	const uint8_t* pSrcPointer;
 
 	if( !image.packed() )
 	{
@@ -164,7 +164,7 @@ bool PNGIO::writeRGBA( QString filename, Array2DView< uint8x4 > image )
 	}
 	else
 	{
-		pSrcPointer = reinterpret_cast< uint8_t* >( image.rowPointer( 0 ) );
+		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
 	}
 
 	QByteArray cstrFilename = filename.toLocal8Bit();

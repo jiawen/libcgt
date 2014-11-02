@@ -49,7 +49,7 @@ Vector2i GLTextureRectangle::size() const
     return m_size;
 }
 
-void GLTextureRectangle::set( Array2DView< uint8_t > data )
+void GLTextureRectangle::set( Array2DView< const uint8_t > data )
 {
     if( data.packed() )
     {
@@ -57,7 +57,7 @@ void GLTextureRectangle::set( Array2DView< uint8_t > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< uint8x2 > data )
+void GLTextureRectangle::set( Array2DView< const uint8x2 > data )
 {
     if( data.packed() )
     {
@@ -65,7 +65,7 @@ void GLTextureRectangle::set( Array2DView< uint8x2 > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< uint8x3 > data )
+void GLTextureRectangle::set( Array2DView< const uint8x3 > data )
 {
     if( data.packed() )
     {
@@ -73,7 +73,7 @@ void GLTextureRectangle::set( Array2DView< uint8x3 > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< uint8x4 > data )
+void GLTextureRectangle::set( Array2DView< const uint8x4 > data )
 {
     if( data.packed() )
     {
@@ -81,7 +81,7 @@ void GLTextureRectangle::set( Array2DView< uint8x4 > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< float > data )
+void GLTextureRectangle::set( Array2DView< const float > data )
 {
     if( data.packed() )
     {
@@ -90,7 +90,7 @@ void GLTextureRectangle::set( Array2DView< float > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< Vector2f > data )
+void GLTextureRectangle::set( Array2DView< const Vector2f > data )
 {
     if( data.packed() )
     {
@@ -98,7 +98,7 @@ void GLTextureRectangle::set( Array2DView< Vector2f > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< Vector3f > data )
+void GLTextureRectangle::set( Array2DView< const Vector3f > data )
 {
     if( data.packed() )
     {
@@ -106,7 +106,7 @@ void GLTextureRectangle::set( Array2DView< Vector3f > data )
     }
 }
 
-void GLTextureRectangle::set( Array2DView< Vector4f > data )
+void GLTextureRectangle::set( Array2DView< const Vector4f > data )
 {
     if( data.packed() )
     {

@@ -25,10 +25,10 @@ Vector2i::Vector2i( int i )
 	m_elements[1] = i;
 }
 
-Vector2i::Vector2i( int x, int y )
+Vector2i::Vector2i( std::initializer_list< int > xy )
 {
-	m_elements[0] = x;
-	m_elements[1] = y;
+	m_elements[ 0 ] = *( xy.begin() );
+    m_elements[ 1 ] = *( xy.begin() + 1 );
 }
 
 Vector2i::Vector2i( const Vector2i& rv )
@@ -59,22 +59,22 @@ int& Vector2i::operator [] ( int i )
 
 Vector2i Vector2i::xy() const
 {
-	return Vector2i( m_elements[0], m_elements[1] );
+    return{ x, y };
 }
 
 Vector2i Vector2i::yx() const
 {
-	return Vector2i( m_elements[1], m_elements[0] );
+    return{ y, x };
 }
 
 Vector2i Vector2i::xx() const
 {
-	return Vector2i( m_elements[0], m_elements[0] );
+    return{ x, x };
 }
 
 Vector2i Vector2i::yy() const
 {
-	return Vector2i( m_elements[1], m_elements[1] );
+    return{ y, y };
 }
 
 float Vector2i::norm() const
@@ -106,7 +106,7 @@ void Vector2i::negate()
 
 Vector2i Vector2i::flippedUD( int height ) const
 {
-	return Vector2i( x, height - y - 1 );
+    return{ x, height - y - 1 };
 }
 
 Vector2i::operator const int* () const
@@ -154,27 +154,27 @@ Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x + v1.x, v0.y + v1.y );
+    return{ v0.x + v1.x, v0.y + v1.y };
 }
 
 Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x - v1.x, v0.y - v1.y );
+    return{ v0.x - v1.x, v0.y - v1.y };
 }
 
 Vector2i operator - ( const Vector2i& v )
 {
-	return Vector2i( -v.x, -v.y );
+    return{ -v.x, -v.y };
 }
 
 Vector2i operator * ( int c, const Vector2i& v )
 {
-	return Vector2i( c * v.x, c * v.y );
+    return{ c * v.x, c * v.y };
 }
 
 Vector2i operator * ( const Vector2i& v, int c )
 {
-	return Vector2i( c * v.x, c * v.y );
+    return{ c * v.x, c * v.y };
 }
 
 Vector2f operator * ( float f, const Vector2i& v )
@@ -189,17 +189,17 @@ Vector2f operator * ( const Vector2i& v, float f )
 
 Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x * v1.x, v0.y * v1.y );
+    return{ v0.x * v1.x, v0.y * v1.y };
 }
 
 Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( v0.x / v1.x, v0.y / v1.y );
+    return{ v0.x / v1.x, v0.y / v1.y };
 }
 
 Vector2i operator / ( const Vector2i& v, int c )
 {
-	return Vector2i( v.x / c, v.y / c );
+    return{ v.x / c, v.y / c };
 }
 
 bool operator == ( const Vector2i& v0, const Vector2i& v1 )

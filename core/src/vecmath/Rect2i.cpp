@@ -10,8 +10,9 @@
 
 Rect2i::Rect2i() :
 
-	m_origin( 0, 0 ),
-	m_size( 0, 0 )
+    // TODO(VS2013): m_origin{ 0, 0 } not implemented in VS2013.
+    m_origin( Vector2i{ 0, 0 } ),
+    m_size( Vector2i{ 0, 0 } )
 
 {
 
@@ -19,8 +20,8 @@ Rect2i::Rect2i() :
 
 Rect2i::Rect2i( int left, int bottom, int width, int height ) :
 
-	m_origin( left, bottom ),
-	m_size( width, height )
+    m_origin( Vector2i{ left, bottom } ),
+    m_size( Vector2i{ width, height } )
 
 {
 
@@ -28,8 +29,8 @@ Rect2i::Rect2i( int left, int bottom, int width, int height ) :
 
 Rect2i::Rect2i( int width, int height ) :
 
-	m_origin( 0, 0 ),
-	m_size( width, height )
+    m_origin( Vector2i{ 0, 0 } ),
+    m_size( Vector2i{ width, height } )
 
 {
 
@@ -46,7 +47,7 @@ Rect2i::Rect2i( const Vector2i& origin, const Vector2i& size ) :
 
 Rect2i::Rect2i( const Vector2i& size ) :
 
-	m_origin( 0, 0 ),
+    m_origin( Vector2i{ 0, 0 } ),
 	m_size( size )
 
 {
@@ -119,12 +120,12 @@ Vector2i Rect2i::bottomLeft() const
 
 Vector2i Rect2i::bottomRight() const
 {
-	return m_origin + Vector2i( m_size.x, 0 );
+    return m_origin + Vector2i{ m_size.x, 0 };
 }
 
 Vector2i Rect2i::topLeft() const
 {
-	return m_origin + Vector2i( 0, m_size.y );
+    return m_origin + Vector2i{ 0, m_size.y };
 }
 
 Vector2i Rect2i::topRight() const
@@ -243,8 +244,8 @@ Rect2i Rect2i::united( const Rect2i& r0, const Rect2i& r1 )
 	Vector2i r1Min = r1.bottomLeft();
 	Vector2i r1Max = r1.topRight();
 
-	Vector2i unitedMin( std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) );
-	Vector2i unitedMax( std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) );
+    Vector2i unitedMin{ std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) };
+    Vector2i unitedMax{ std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) };
 
 	return Rect2i( unitedMin, unitedMax - unitedMin );
 }

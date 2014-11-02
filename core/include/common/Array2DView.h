@@ -1,54 +1,44 @@
 #pragma once
 
-#include <cstdint>
-
+#include "common/BasicTypes.h"
+#include "common/WrapConstPointerT.h"
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
-// a 2D array view that wraps around a raw pointer
-// and does not take ownership
-
+// A 2D array view that wraps around a raw pointer and does not take ownership.
 template< typename T >
 class Array2DView
 {
 public:
 
-	// pointer = nullptr, width = height = 0
+    // The null Array2DView:
+    // pointer = nullptr, width = height = 0
 	Array2DView();
 
-	// create an Array2DView with
-	// the default stride of sizeof( T ),
-	// and the default row pitch of width * sizeof( T )	
-	Array2DView( void* pPointer, int width, int height );
+	// Create an Array2DView with:
+    // the default element stride of sizeof( T )
+	// and the default row stride of width * sizeof( T )	
 	Array2DView( void* pPointer, const Vector2i& size );
 
-	// create an Array2DView with specified sizes and strides
-	Array2DView( void* pPointer, int width, int height, int elementStrideBytes, int rowStrideBytes );
-	Array2DView( void* pPointer, const Vector2i& size, int elementStrideBytes, int rowStrideBytes );	
+	// Create an Array2DView with specified
+    // size { x, y } in elements
+    // and strides { elementStride, rowStride } in bytes.
+    Array2DView( void* pPointer, const Vector2i& size, const Vector2i& strides );
 
-	bool isNull() const;
-	bool notNull() const;
+    bool isNull( ) const;
+    bool notNull( ) const;
 
-	operator const T* () const;
-	operator T* ();
+    operator const T* () const;
+    operator T* ();
 
-	const T* pointer() const;
-	T* pointer();
+    const T* pointer() const;
+    T* pointer();
 
-	const T* elementPointer( int x, int y ) const;
-	T* elementPointer( int x, int y );
-
-	const T* rowPointer( int y ) const;
+    T* elementPointer( const Vector2i& xy );
 	T* rowPointer( int y );
 
-	const T& operator [] ( int k ) const; // read
-	T& operator [] ( int k ); // write
-
-	const T& operator () ( int x, int y ) const; // read
-	T& operator () ( int x, int y ); // write
-
-	const T& operator [] ( const Vector2i& xy ) const; // read
-	T& operator [] ( const Vector2i& xy ); // write
+	T& operator [] ( int k );
+	T& operator [] ( const Vector2i& xy );
 
 	// The logical size of this view,
 	// (i.e., how many elements of type T there are).
@@ -85,13 +75,14 @@ public:
 	// also known as "linear"
 	bool packed() const;
 
+    // Conversion operator to Array2DView< const T >
+    operator Array2DView< const T >() const;
+
 private:
 
-	int m_width;
-	int m_height;
-	int m_elementStrideBytes;
-	int m_rowStrideBytes;
-	uint8_t* m_pPointer;
+    Vector2i m_size;
+    Vector2i m_strides;
+    typename WrapConstPointerT< T, uint8_t >::pointer m_pPointer;
 };
 
 #include "Array2DView.inl"

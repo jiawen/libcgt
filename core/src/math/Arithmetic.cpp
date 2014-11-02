@@ -12,11 +12,7 @@ int Arithmetic::mod( int x, int n )
 // static
 Vector2i Arithmetic::mod( const Vector2i& v, const Vector2i& n )
 {
-	return Vector2i
-	(
-		mod( v.x, n.x ),
-		mod( v.y, n.y )
-	);
+    return{ mod( v.x, n.x ), mod( v.y, n.y ) };
 }
 
 // static
@@ -87,7 +83,7 @@ int Arithmetic::sign( double x )
 // static
 Vector2i Arithmetic::sign( const Vector2f& v )
 {
-	return Vector2i( sign( v.x ), sign( v.y ) );
+    return{ sign( v.x ), sign( v.y ) };
 }
 
 // static
@@ -214,19 +210,19 @@ Vector2f Arithmetic::ceil( const Vector2f& v )
 // static
 Vector2i Arithmetic::roundToInt( const Vector2f& v )
 {
-	return Vector2i( roundToInt( v.x ), roundToInt( v.y ) );
+    return{ roundToInt( v.x ), roundToInt( v.y ) };
 }
 
 // static
 Vector2i Arithmetic::floorToInt( const Vector2f& v )
 {
-	return Vector2i( floorToInt( v.x ), floorToInt( v.y ) );
+    return{ floorToInt( v.x ), floorToInt( v.y ) };
 }
 
 // static
 Vector2i Arithmetic::ceilToInt( const Vector2f& v )
 {
-	return Vector2i( ceilToInt( v.x ), ceilToInt( v.y ) );
+    return{ ceilToInt( v.x ), ceilToInt( v.y ) };
 }
 
 // static

@@ -10,7 +10,7 @@
 using namespace libcgt::core::imageproc::colorutils;
 
 // static
-bool PortablePixelMapIO::write( QString filename, Array2DView< uint8x3 > image )
+bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
 {
 	QFile outputFile( filename );
 
@@ -34,7 +34,7 @@ bool PortablePixelMapIO::write( QString filename, Array2DView< uint8x3 > image )
 	{
 		for( int x = 0; x < image.width(); ++x )
 		{
-			uint8x3 rgb = image( x, y );
+            uint8x3 rgb = image[ { x, y } ];
 			outputDataStream << rgb.x << rgb.y << rgb.z;			
 		}
 	}
@@ -44,7 +44,7 @@ bool PortablePixelMapIO::write( QString filename, Array2DView< uint8x3 > image )
 }
 
 // static
-bool PortablePixelMapIO::write( QString filename, Array2DView< Vector3f > image )								  
+bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< const Vector3f > image )
 {
 	QFile outputFile( filename );
 
@@ -68,7 +68,7 @@ bool PortablePixelMapIO::write( QString filename, Array2DView< Vector3f > image 
 	{
 		for( int x = 0; x < image.width(); ++x )
 		{
-			Vector3f rgb = image( x, y );
+            Vector3f rgb = image[ { x, y } ];
 
             outputDataStream << toUInt8( saturate( rgb.x ) );
             outputDataStream << toUInt8( saturate( rgb.y ) );

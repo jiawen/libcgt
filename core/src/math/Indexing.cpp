@@ -13,7 +13,7 @@ Vector2i Indexing::indexToSubscript2D( int index, int width )
 	int x;
 	int y;
 	indexToSubscript2D( index, width, x, y );
-	return Vector2i( x, y );
+    return{ x, y };
 }
 
 // static

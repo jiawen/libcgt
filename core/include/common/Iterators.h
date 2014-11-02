@@ -57,7 +57,7 @@ inline void Iterators::for2D( const Vector2i& count, QString progressPrefix, con
 template< typename Function >
 inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, const Function& func )
 {
-	Iterators::for2D( first, count, Vector2i( 1, 1 ), func );
+    Iterators::for2D( first, count, { 1, 1 }, func );
 }
 
 // static

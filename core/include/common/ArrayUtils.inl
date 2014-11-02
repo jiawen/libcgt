@@ -46,16 +46,17 @@ bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
 template< typename T >
 bool ArrayUtils::fill( Array2DView< T > view, const T& value )
 {
-	if( view.notNull() )
+    if( view.isNull() )
+    {
+        return false;
+    }
+
+	int ne = view.numElements();
+	for( int k = 0; k < ne; ++k )
 	{
-		int ne = view.numElements();
-		for( int k = 0; k < ne; ++k )
-		{
-			view[ k ] = value;
-		}
-		return true;
+		view[ k ] = value;
 	}
-	return false;
+	return true;
 }
 
 // static

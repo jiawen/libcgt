@@ -22,7 +22,7 @@ void libcgt::core::imageproc::patterns::createCheckerboard( Array2DView< T > ima
 			{
 				for( int x = bx * checkerSizeX; ( x < ( bx + 1 ) * checkerSizeX ) && ( x < image.width() ); ++x )
 				{					
-                    image( x, y ) = isWhite ? whiteColor : blackColor;					
+                    image[ { x, y } ] = isWhite ? whiteColor : blackColor;
 				}
 			}
 

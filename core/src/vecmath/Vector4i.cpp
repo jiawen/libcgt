@@ -113,22 +113,22 @@ int& Vector4i::operator [] ( int i )
 
 Vector2i Vector4i::xy() const
 {
-	return Vector2i( m_elements[0], m_elements[1] );
+    return{ x, y };
 }
 
 Vector2i Vector4i::yz() const
 {
-	return Vector2i( m_elements[1], m_elements[2] );
+    return{ y, z };
 }
 
 Vector2i Vector4i::zw() const
 {
-	return Vector2i( m_elements[2], m_elements[3] );
+    return{ z, w };
 }
 
 Vector2i Vector4i::wx() const
 {
-	return Vector2i( m_elements[3], m_elements[0] );
+    return{ w, x };
 }
 
 Vector3i Vector4i::xyz() const

@@ -131,7 +131,7 @@ int FloatMatrix::numElements() const
 
 Vector2i FloatMatrix::indexToSubscript( int idx ) const
 {
-	return Vector2i( idx / m_nRows, idx % m_nRows );
+    return{ idx / m_nRows, idx % m_nRows };
 }
 
 int FloatMatrix::subscriptToIndex( int i, int j ) const

@@ -78,32 +78,32 @@ int& Vector3i::operator [] ( int i )
 
 Vector2i Vector3i::xy() const
 {
-	return Vector2i( x, y );
+    return{ x, y };
 }
 
 Vector2i Vector3i::yz() const
 {
-	return Vector2i( y, z );
+    return{ y, z };
 }
 
 Vector2i Vector3i::zx() const
 {
-	return Vector2i( z, x );
+    return{ z, x };
 }
 
 Vector2i Vector3i::yx() const
 {
-	return Vector2i( y, x );
+    return{ y, x };
 }
 
 Vector2i Vector3i::zy() const
 {
-	return Vector2i( z, y );
+    return{ z, y };
 }
 
 Vector2i Vector3i::xz() const
 {
-	return Vector2i( x, z );
+    return{ x, z };
 }
 
 Vector3i Vector3i::xyz() const

@@ -94,7 +94,7 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( QString filename )
 }
 
 // static
-bool PortableFloatMapIO::write( QString filename, Array2DView< float > image )
+bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< const float > image )
 {
 	int w = image.width();
 	int h = image.height();
@@ -128,7 +128,7 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< float > image )
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-				fwrite( &( image( x, y ) ), sizeof( float ), 1, pFile );
+                fwrite( &( image[ { x, y } ] ), sizeof( float ), 1, pFile );
 			}
 		}
 	}
@@ -138,7 +138,7 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< float > image )
 }
 
 // static
-bool PortableFloatMapIO::write( QString filename, Array2DView< Vector3f > image )
+bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< const Vector3f > image )
 {
 	int w = image.width();
 	int h = image.height();
@@ -172,7 +172,7 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< Vector3f > image 
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-				fwrite( &( image( x, y ) ), sizeof( Vector3f ), 1, pFile );
+                fwrite( &( image[ { x, y } ] ), sizeof( Vector3f ), 1, pFile );
 			}
 		}
 	}
@@ -182,7 +182,7 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< Vector3f > image 
 }
 
 // static
-bool PortableFloatMapIO::write( QString filename, Array2DView< Vector4f > image )
+bool PortableFloatMapIO::writeRGBA( QString filename, Array2DView< const Vector4f > image )
 {
 	int w = image.width();
 	int h = image.height();
@@ -199,10 +199,12 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< Vector4f > image 
 	// write header
 	fprintf( pFile, "PF4\n%d %d\n-1\n", w, h );
 
+    // All at once.
 	if( image.packed() )
 	{
 		fwrite( image.rowPointer( 0 ), sizeof( Vector4f ), image.width() * image.height(), pFile );
 	}
+    // Row by Row.
 	else if( image.elementsArePacked() )
 	{
 		for( int y = 0; y < h; ++y )
@@ -210,13 +212,14 @@ bool PortableFloatMapIO::write( QString filename, Array2DView< Vector4f > image 
 			fwrite( image.rowPointer( y ), sizeof( Vector4f ), image.width(), pFile );
 		}
 	}
+    // Element by element.
 	else
 	{
 		for( int y = 0; y < h; ++y )
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-				fwrite( &( image( x, y ) ), sizeof( Vector4f ), 1, pFile );
+                fwrite( &( image[ { x, y } ] ), sizeof( Vector4f ), 1, pFile );
 			}
 		}
 	}

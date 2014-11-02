@@ -20,22 +20,22 @@ namespace compositing
     // a_o = a_f + a_b * ( 1 - a_f )
     //
     // Inputs must all be the same size.
-    void over( Array2DView< Vector4f > foreground,
-        Array2DView< Vector4f > background,
+    void over( Array2DView< const Vector4f > foreground,
+        Array2DView< const Vector4f > background,
         Array2DView< Vector4f > output );
 
     // Given the composite image "composite",
     // and the foreground image "foreground" (probably from matting),
     // divides out the alpha to extract the background color in "background".
-    void extractBackgroundColor( Array2DView< Vector4f > composite,
-        Array2DView< Vector4f > foreground,
+    void extractBackgroundColor( Array2DView< const Vector4f > composite,
+        Array2DView< const Vector4f > foreground,
         Array2DView< Vector4f > background );
 
     // Given the composite image "composite",
     // and the foreground image "foreground" (probably from matting),
     // divides out the alpha to extract the background color in "background".
-    void extractBackgroundColor( Array2DView< uint8x4 > composite,
-        Array2DView< uint8x4 > foreground,
+    void extractBackgroundColor( Array2DView< const uint8x4 > composite,
+        Array2DView< const uint8x4 > foreground,
         Array2DView< uint8x4 > background );
 
     // Given the composite color "composite",

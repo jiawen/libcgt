@@ -126,11 +126,11 @@ int MathUtils::clampToRangeInclusive( int x, int lo, int hi )
 // static
 Vector2i MathUtils::clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height )
 {
-	return Vector2i
-	(
-		clampToRangeExclusive( x, left, left + width ),
-		clampToRangeExclusive( y, bottom, bottom + height )
-	);	
+	return
+    {
+        clampToRangeExclusive( x, left, left + width ),
+        clampToRangeExclusive( y, bottom, bottom + height )
+    };
 }
 
 // static
@@ -218,7 +218,7 @@ Vector4f MathUtils::abs( const Vector4f& v )
 // static
 Vector2i MathUtils::abs( const Vector2i& v )
 {
-	return Vector2i( ::abs( v.x ), ::abs( v.y ) );
+    return{ ::abs( v.x ), ::abs( v.y ) };
 }
 
 // static
@@ -362,7 +362,7 @@ Vector4f MathUtils::minimum( const Vector4f& v0, const Vector4f& v1 )
 // static
 Vector2i MathUtils::minimum( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) );
+    return{ std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) };
 }
 
 // static
@@ -398,7 +398,7 @@ Vector4f MathUtils::maximum( const Vector4f& v0, const Vector4f& v1 )
 // static
 Vector2i MathUtils::maximum( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector2i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) );
+    return{ std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) };
 }
 
 // static

@@ -38,7 +38,7 @@ int BSplineSurface3f::height() const
 
 Vector2i BSplineSurface3f::numControlPoints() const
 {
-	return Vector2i( width(), height() );
+    return{ width(), height() };
 }
 
 const std::vector< std::vector< Vector3f > >& BSplineSurface3f::controlPoints() const
@@ -75,7 +75,7 @@ void BSplineSurface3f::appendControlPointColumn( const std::vector< Vector3f >& 
 
 Vector2i BSplineSurface3f::controlPointClosestTo( const Vector3f& p, float& distanceSquared ) const
 {
-	Vector2i index( -1, -1 );
+    Vector2i index{ -1, -1 };
 	distanceSquared = std::numeric_limits< float >::max();
 
 	for( int x = 0; x < width(); ++x )
@@ -85,7 +85,7 @@ Vector2i BSplineSurface3f::controlPointClosestTo( const Vector3f& p, float& dist
 			float d = ( m_controlPoints[ x ][ y ] - p ).normSquared();
 			if( d < distanceSquared )
 			{
-				index = Vector2i( x, y );
+                index = { x, y };
 				distanceSquared = d;
 			}
 		}
@@ -172,5 +172,5 @@ Vector2i BSplineSurface3f::findControlPointStartIndex( float u, float v, float& 
 	s = ds / segmentLengthU;
 	t = dt / segmentLengthU;
 
-	return Vector2i( c0, d0 );
+    return{ c0, d0 };
 }

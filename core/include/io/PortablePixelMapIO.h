@@ -12,9 +12,8 @@ public:
 
 	// TODO: text vs binary
 	// TODO: can optimize this by checking stride for packed to write binary
+	static bool writeRGB( QString filename, Array2DView< const uint8x3 > image );		
 
-	static bool write( QString filename, Array2DView< uint8x3 > image );		
-
-    // The input is clamped to [0,1]	
-	static bool write( QString filename, Array2DView< Vector3f > image );
+	// Image is clamped to [0,1] before writing.
+	static bool writeRGB( QString filename, Array2DView< const Vector3f > image );
 };

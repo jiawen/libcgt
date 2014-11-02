@@ -13,35 +13,27 @@ class Vector4f;
 class PortableFloatMapIO
 {
 public:
+
+    // TODO: read all three types, return a variant.
+    // TODO: get rid of QString
+    // TODO: get rid of QFile:
+    // read the PF header, then read width / height. If the second line only has one symbol
+    // then read another line (sscanf returns 1 instead of 2).
+    static Array2D< float > readGrayscale( QString filename );
+
+    static Array2D< Vector3f > readRGB( QString filename );
+
+    static Array2D< Vector4f > readRGBA( QString filename );
+
+    // Writes a standard "PFM" format.
+    // Header is "Pf" - grayscale.
+	static bool writeGrayscale( QString filename, Array2DView< const float > image );
+
+    // Writes a standard "PFM" format.
+    // Header is "PF" - rgb.
+	static bool writeRGB( QString filename, Array2DView< const Vector3f > image );
 	
-	struct PFMData
-	{
-		bool valid;
-		int nComponents;
-		// scale < 0: little endian
-		// scale > 0: big endian
-		// abs( scale ): scaling factor between sample values
-		//   and appropriate units, such as W/m^2.
-		float scale;
-
-		// Only one of these will be notNull().
-		Array2D< float > grayscale;
-		Array2D< Vector3f > rgb;
-		Array2D< Vector4f > rgba;
-	};
-
-	// Reads a PFM file and returns a PFMData structure.
-	// Depending on the format, only one of the Array2Ds will be notNull().
-	// If the read fails, then all of them will be null and valid is set to false.
-	static PFMData read( QString filename );
-
-	// Writes a standard 3-component PFM format with header "Pf".
-	static bool write( QString filename, Array2DView< float > image );
-
-	// Writes a standard 3-component PFM format with header "PF".
-	static bool write( QString filename, Array2DView< Vector3f > image );
-	
-	// Writes to a nonstandard 4-component "PFM4" format with header "PF4".
-	// It's the same as PFM except it has 4 channels.
-	static bool write( QString filename, Array2DView< Vector4f > image );
+	// Writes a nonstandard "PFM4" format.
+	// (header is "PF4", and includes an alpha channel)
+	static bool writeRGBA( QString filename, Array2DView< const Vector4f > image );
 };

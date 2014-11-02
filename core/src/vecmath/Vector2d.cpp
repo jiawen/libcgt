@@ -101,7 +101,7 @@ void Vector2d::negate()
 
 Vector2i Vector2d::floored() const
 {
-	return Vector2i( Arithmetic::floorToInt( m_elements[ 0 ] ), Arithmetic::floorToInt( m_elements[ 1 ] ) );
+    return{ Arithmetic::floorToInt( m_elements[ 0 ] ), Arithmetic::floorToInt( m_elements[ 1 ] ) };
 }
 
 // ---- Utility ----

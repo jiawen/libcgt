@@ -240,13 +240,13 @@ void Array2D< T >::resize( const Vector2i& size )
 template< typename T >
 Array2D< T >::operator const Array2DView< T >() const
 {
-	return Array2DView< T >( m_array, width(), height(), elementStrideBytes(), rowStrideBytes() );
+    return Array2DView< T >( m_array, { width(), height() }, { strideBytes(), rowPitchBytes() } );
 }
 
 template< typename T >
 Array2D< T >::operator Array2DView< T >()
 {
-	return Array2DView< T >( m_array, width(), height(), elementStrideBytes(), rowStrideBytes() );
+    return Array2DView< T >( m_array, { width(), height() }, { strideBytes(), rowPitchBytes() } );
 }
 
 template< typename T >

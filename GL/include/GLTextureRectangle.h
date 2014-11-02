@@ -30,15 +30,14 @@ public:
     // TODO: the functions are almost all the same across formats,
     //   use a function that does the checking and finds the right formats.
     // TODO: make a version that converts?
-    // TODO: get()
-    void set( Array2DView< uint8_t > data );
-    void set( Array2DView< uint8x2 > data );
-    void set( Array2DView< uint8x3 > data );
-    void set( Array2DView< uint8x4 > data );
-    void set( Array2DView< float > data );
-    void set( Array2DView< Vector2f > data );
-    void set( Array2DView< Vector3f > data );
-    void set( Array2DView< Vector4f > data );
+    void set( Array2DView< const uint8_t > data );
+    void set( Array2DView< const uint8x2 > data );
+    void set( Array2DView< const uint8x3 > data );
+    void set( Array2DView< const uint8x4 > data );
+    void set( Array2DView< const float > data );
+    void set( Array2DView< const Vector2f > data );
+    void set( Array2DView< const Vector3f > data );
+    void set( Array2DView< const Vector4f > data );
 
 private:	
 
