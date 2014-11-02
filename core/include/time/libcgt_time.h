@@ -5,4 +5,3 @@
 #include "FPSEstimator.h"
 #include "PerformanceCollector.h"
 #include "QGameLoop.h"
-#include "StopWatch.h"

@@ -308,7 +308,7 @@ Quat4f Quat4f::slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip 
 	float c2;
 
 	// Linear interpolation for close orientations
-	if( ( 1.0f - fabs( cosAngle ) ) < 0.01f )
+	if( ( 1.0f - std::abs( cosAngle ) ) < 0.01f )
 	{
 		c1 = 1.0f - t;
 		c2 = t;
@@ -328,7 +328,13 @@ Quat4f Quat4f::slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip 
 		c1 = -c1;
 	}
 
-	return Quat4f( c1 * a[ 0 ] + c2 * b[ 0 ], c1 * a[ 1 ] + c2 * b[ 1 ], c1 * a[ 2 ] + c2 * b[ 2 ], c1 * a[ 3 ] + c2 * b[ 3 ] );
+	return Quat4f
+	(
+		c1 * a.w + c2 * b.w,
+		c1 * a.x + c2 * b.x,
+		c1 * a.y + c2 * b.y,
+		c1 * a.z + c2 * b.z
+	);
 }
 
 // static

@@ -2,88 +2,80 @@
 
 #include <cstdio>
 
-#include <io/FileReader.h>
+#include <io/File.h>
 
-GLShader* GLShader::vertexShaderFromFile( const char* filename )
+GLShader* GLShader::vertexShaderFromSourceFile( const char* filename )
 {
 	return GLShader::fromFile( filename, GL_VERTEX_SHADER );
 }
 
-GLShader* GLShader::fragmentShaderFromFile( const char* filename )
+GLShader* GLShader::fragmentShaderFromSourceFile( const char* filename )
 {
 	return GLShader::fromFile( filename, GL_FRAGMENT_SHADER );
 }
 
-GLuint GLShader::getHandle()
-{
-	return m_iShaderHandle;
-}
-
 GLShader::~GLShader()
 {
-	glDeleteShader( m_iShaderHandle );
-	m_iShaderHandle = -1;
-
-	delete[] m_szCode;
-	m_szCode = NULL;
+	glDeleteShader( m_id );
+	m_id = 0;
 }
 
-bool GLShader::compile()
+GLuint GLShader::id() const
 {
-	GLint status;
-
-	glCompileShader( m_iShaderHandle );
-
-    //get the compilation log
-    const int MaxLogLength = 1000;
-    char shaderLog[MaxLogLength + 1];
-    int LogLength;
-    glGetShaderInfoLog( m_iShaderHandle, MaxLogLength, &LogLength, shaderLog );
-
-    printf( "%s", shaderLog );
-
-	glGetShaderiv( m_iShaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status );
-
-	if( status == GL_TRUE )
-	{
-		m_bIsCompiled = true;
-	}
-	return m_bIsCompiled;
+	return m_id;
 }
 
-bool GLShader::isCompiled()
+GLenum GLShader::type() const
 {
-	return m_bIsCompiled;
+	return m_type;
 }
 
-// ==================== Private ====================
-
-GLShader::GLShader() :
-	m_iShaderHandle( 0 ),
-	m_szCode( NULL ),
-	m_bIsCompiled( false )
+GLShader::GLShader( int id ) :
+	m_id( id )
 {
 
 }
 
 // static
-GLShader* GLShader::fromFile( const char* filename, GLenum eShaderType )
+GLShader* GLShader::fromFile( const char* filename, GLenum shaderType )
 {
-	char* buffer;
-	long length;
-
-	if( FileReader::readTextFile( filename, &buffer, &length ) )
+	std::string source = File::readTextFile( filename );
+	if( source.size() == 0 )
 	{
-		GLShader* pShader = new GLShader;
-		pShader->m_szCode = buffer;
-		pShader->m_iShaderHandle = glCreateShader( eShaderType );
-		glShaderSource( pShader->m_iShaderHandle, 1,
-			( const GLchar ** )( &( pShader->m_szCode ) ), NULL ); // TODO: figure out the const correctness
+		return nullptr;
+	}
 
-		return pShader;
-	}
-	else
+	// create the shader
+	GLuint id = glCreateShader( shaderType );
+
+	// copy its source over
+	const char* sourceCStr = source.c_str();
+	glShaderSource( id, 1, &sourceCStr, NULL );
+
+	// compile it
+	glCompileShader( id );
+
+	// get the status and error message
+	GLint status;
+	glGetShaderiv( id, GL_COMPILE_STATUS, &status );
+
+	// If it failed, then print the info log
+	// and return nullptr.
+	if( status == GL_FALSE )
 	{
-		return NULL;
+		GLint infoLogLength;
+		glGetShaderiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
+
+		std::string infoLog( infoLogLength, '\0' );
+		glGetShaderInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
+			NULL, &( infoLog[0] ) );
+
+		printf( "Shader compilation failed:\n%s\n", infoLog.c_str() );
+
+		glDeleteShader( id );
+
+		return nullptr;
 	}
+
+	return new GLShader( id );	
 }

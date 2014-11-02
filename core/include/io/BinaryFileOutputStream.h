@@ -2,13 +2,12 @@
 
 #include <cstdio>
 
-// TODO: rename to binary file output stream
-class BinaryFileWriter
+class BinaryFileOutputStream
 {
 public:
 
-	static BinaryFileWriter* open( const char* filename );
-	virtual ~BinaryFileWriter();
+	static BinaryFileOutputStream* open( const char* filename );
+	virtual ~BinaryFileOutputStream();
 
 	void close();
 
@@ -18,7 +17,7 @@ public:
 
 private:
 
-	BinaryFileWriter( FILE* pFilePointer );
+	BinaryFileOutputStream( FILE* pFilePointer );
 
 	FILE* m_pFilePointer;
 };

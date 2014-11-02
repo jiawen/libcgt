@@ -1,23 +1,22 @@
 TEMPLATE = lib
-CONFIG += qt thread debug_and_release staticlib
+CONFIG += qt thread c++11 debug_and_release staticlib
+QT += widgets
 
 DESTDIR = "../lib"
 
-CONFIG( debug, debug|release ) {
-  TARGET = libcgt_cored
-} else {
-  TARGET = libcgt_core
-  DEFINES += _SECURE_SCL=0
-}
-
-INCLUDEPATH += $(QTDIR)/include/QtCore
-INCLUDEPATH += $(QTDIR)/include/QtGui
-INCLUDEPATH += $(QTDIR)/include
-
 INCLUDEPATH += "./include"
 
-QMAKE_CXXFLAGS += -MP
-DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX 
+win32 {
+    CONFIG( debug, debug|release ) {
+      TARGET = libcgt_cored
+    } else {
+      TARGET = libcgt_core
+      DEFINES += _SECURE_SCL=0
+    }
+
+    QMAKE_CXXFLAGS += -MP
+    DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX 
+}
 
 HEADERS += include/libcgt_core.h
 
@@ -53,3 +52,8 @@ SOURCES += src/time/*.cpp
 HEADERS += include/vecmath/*.h
 HEADERS += include/vecmath/*.inl
 SOURCES += src/vecmath/*.cpp
+
+# LodePNG
+
+HEADERS += external/*.h
+SOURCES += external/*.cpp

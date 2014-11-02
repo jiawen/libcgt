@@ -3,119 +3,171 @@
 #include <vecmath/libcgt_vecmath.h>
 
 #include "GLShader.h"
-#include "GLTexture.h"
 
-GLProgram::GLProgram() :
-	m_bIsLinked( false )
+// static
+GLProgram* GLProgram::fromShaders( std::vector< GLShader* > shaders )
 {
-	m_iProgramHandle = glCreateProgram();
-}
+	// Create the program.
+	GLuint id = glCreateProgram();
+	
+	// Attach all the shaders.
+	for( size_t i = 0; i < shaders.size(); ++i )
+	{
+		glAttachShader( id, shaders[i]->id() );
+	}
 
-GLProgram::~GLProgram()
-{
-	glDeleteProgram( m_iProgramHandle );
-}
+	// Link.
+	glLinkProgram( id );
 
-GLhandleARB GLProgram::getHandle()
-{
-	return m_iProgramHandle;
-}
-
-void GLProgram::attachShader( GLShader* pShader )
-{
-	glAttachShader( m_iProgramHandle, pShader->getHandle() );
-}
-
-void GLProgram::detachShader( GLShader* pShader )
-{
-	glDetachShader( m_iProgramHandle, pShader->getHandle() );
-}
-
-GLint GLProgram::getNumActiveUniforms()
-{
-	GLint numActiveUniforms;
-	glGetProgramiv( m_iProgramHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
-	return numActiveUniforms;
-}
-
-GLint GLProgram::getUniformLocation( const GLchar* szName )
-{
-	return glGetUniformLocation( m_iProgramHandle, szName );
-}
-
-Matrix4f GLProgram::getUniformMatrix4f( GLint iUniformLocation )
-{
-    Matrix4f m;
-    glGetUniformfv( m_iProgramHandle, iUniformLocation, m );
-    return m;
-}
-
-void GLProgram::setUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix )
-{
-	glUniformMatrix4fv( iUniformLocation, 1, false, *pMatrix );
-}
-
-void GLProgram::setUniformSampler( GLint iUniformLocation, GLTexture* pTexture )
-{
-	glUniform1i( iUniformLocation, 0 /*pTexture->getTextureUnit()*/ );
-}
-
-void GLProgram::setUniformSampler( const GLchar* variableName, GLTexture* pTexture )
-{
-	// TODO: do error checking
-    setUniformSampler( getUniformLocation( variableName ), pTexture );
-}
-
-void GLProgram::setUniformVector2f( const GLchar* variableName, float x, float y )
-{    
-    glUniform2f( getUniformLocation( variableName ), x, y );
-}
-
-void GLProgram::setUniformVector2f( const GLchar* variableName, const Vector2f& v )
-{
-    glUniform2fv( getUniformLocation( variableName ), 1, v );
-}
-
-void GLProgram::setUniformVector3f( const GLchar* variableName, float x, float y, float z )
-{
-    glUniform3f( getUniformLocation( variableName ), x, y, z );
-}
-
-void GLProgram::setUniformVector3f( const GLchar* variableName, const Vector3f& v )
-{
-    glUniform3fv( getUniformLocation( variableName ), 1, v );
-}
-
-bool GLProgram::link()
-{
+	// If it failed, then print the info log
+	// and return nullptr;
 	GLint status;
-
-	glLinkProgram( m_iProgramHandle );
-	glGetProgramiv( m_iProgramHandle, GL_OBJECT_LINK_STATUS_ARB, &status );
-
-	if( status == GL_TRUE )
+    glGetProgramiv( id, GL_LINK_STATUS, &status );
+    if( status == GL_FALSE )
 	{
-		m_bIsLinked = true;
-	}
-	return m_bIsLinked;
-}
+		GLint infoLogLength;
+		glGetProgramiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
 
-bool GLProgram::isLinked()
-{
-	return m_bIsLinked;
-}
+		std::string infoLog( infoLogLength, '\0' );
+		glGetShaderInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
+			NULL, &( infoLog[0] ) );
 
-bool GLProgram::use()
-{
-	if( m_bIsLinked )
-	{
-		glUseProgram( m_iProgramHandle );
+		printf( "Program linking failed:\n%s\n", infoLog.c_str() );
+
+		glDeleteProgram( id );
+
+		return nullptr;
 	}
-	return m_bIsLinked;
+
+	return new GLProgram( id );
 }
 
 // static
 void GLProgram::disableAll()
 {
 	glUseProgram( 0 );
+}
+
+GLProgram::~GLProgram()
+{
+	glDeleteProgram( m_id );
+}
+
+GLuint GLProgram::id() const
+{
+	return m_id;
+}
+
+GLint GLProgram::numActiveUniforms() const
+{
+	GLint numActiveUniforms;
+	glGetProgramiv( m_id, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
+	return numActiveUniforms;
+}
+
+GLint GLProgram::uniformLocation( const GLchar* name ) const
+{
+	return glGetUniformLocation( m_id, name );
+}
+
+Matrix4f GLProgram::getUniformMatrix4f( GLint uniformLocation )
+{
+    Matrix4f m;
+    glGetUniformfv( m_id, uniformLocation, m );
+    return m;
+}
+
+void GLProgram::setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix )
+{
+	glProgramUniformMatrix4fv( m_id, uniformLocation, 1, false, matrix );
+}
+
+void GLProgram::setUniformInt( GLint uniformLocation, int x )
+{
+	glProgramUniform1i( m_id, uniformLocation, x );
+}
+
+void GLProgram::setUniformFloat( GLint uniformLocation, float x )
+{
+	glProgramUniform1f( m_id, uniformLocation, x );
+}
+
+void GLProgram::setUniformFloat( const GLchar* name, float x )
+{
+    setUniformFloat( uniformLocation( name ), x );
+}
+
+void GLProgram::setUniformVector2f( const GLchar* name, float x, float y )
+{    
+    glProgramUniform2f( m_id, uniformLocation( name ), x, y );
+}
+
+void GLProgram::setUniformVector2f( const GLchar* name, const Vector2f& v )
+{
+    glProgramUniform2fv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::setUniformVector3f( const GLchar* name, float x, float y, float z )
+{
+    glProgramUniform3f( m_id, uniformLocation( name ), x, y, z );
+}
+
+void GLProgram::setUniformVector3f( const GLchar* name, const Vector3f& v )
+{
+    glProgramUniform3fv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::setUniformVector4f( const GLchar* name, float x, float y, float z, float w )
+{
+    glProgramUniform4f( m_id, uniformLocation( name ), x, y, z, w );
+}
+
+void GLProgram::setUniformVector4f( const GLchar* name, const Vector4f& v )
+{
+    glProgramUniform4fv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::setUniformInt( const GLchar* name, int x )
+{
+    setUniformInt( uniformLocation( name ), x );
+}
+
+void GLProgram::setUniformVector2i( const GLchar* name, int x, int y )
+{
+    glProgramUniform2i( m_id, uniformLocation( name ), x, y );
+}
+
+void GLProgram::setUniformVector2i( const GLchar* name, const Vector2i& v )
+{
+    glProgramUniform2iv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::setUniformVector3i( const GLchar* name, int x, int y, int z )
+{
+    glProgramUniform3i( m_id, uniformLocation( name ), x, y, z );
+}
+
+void GLProgram::setUniformVector3i( const GLchar* name, const Vector3i& v )
+{
+    glProgramUniform3iv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::setUniformVector4i( const GLchar* name, int x, int y, int z, int w )
+{
+    glProgramUniform4i( m_id, uniformLocation( name ), x, y, z, w );
+}
+
+void GLProgram::setUniformVector4i( const GLchar* name, const Vector4i& v )
+{
+    glProgramUniform4iv( m_id, uniformLocation( name ), 1, v );
+}
+
+void GLProgram::use()
+{
+	glUseProgram( m_id );
+}
+
+GLProgram::GLProgram( GLuint id ) :
+	m_id( id )
+{
 }

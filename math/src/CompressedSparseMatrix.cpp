@@ -14,7 +14,7 @@
 
 template< typename T >
 CompressedSparseMatrix< T >::CompressedSparseMatrix( MatrixType matrixType,
-	uint nRows, uint nCols, uint nnz ) :
+	uint32_t nRows, uint32_t nCols, uint32_t nnz ) :
 
 	m_matrixType( matrixType )
 
@@ -23,7 +23,7 @@ CompressedSparseMatrix< T >::CompressedSparseMatrix( MatrixType matrixType,
 }
 
 template< typename T >
-void CompressedSparseMatrix< T >::reset( uint nRows, uint nCols, uint nnz )
+void CompressedSparseMatrix< T >::reset( uint32_t nRows, uint32_t nCols, uint32_t nnz )
 {
 	m_nRows = nRows;
 	m_nCols = nCols;
@@ -35,32 +35,32 @@ void CompressedSparseMatrix< T >::reset( uint nRows, uint nCols, uint nnz )
 }
 
 template< typename T >
-uint CompressedSparseMatrix< T >::numNonZeros() const
+uint32_t CompressedSparseMatrix< T >::numNonZeros() const
 {
-	return static_cast< uint >( m_values.size() );
+	return static_cast< uint32_t >( m_values.size() );
 }
 
 template< typename T >
-uint CompressedSparseMatrix< T >::numRows() const
+uint32_t CompressedSparseMatrix< T >::numRows() const
 {
 	return m_nRows;
 }
 
 template< typename T >
-uint CompressedSparseMatrix< T >::numCols() const
+uint32_t CompressedSparseMatrix< T >::numCols() const
 {
 	return m_nCols;
 }
 
 template< typename T >
-T CompressedSparseMatrix< T >::get( uint i, uint j ) const
+T CompressedSparseMatrix< T >::get( uint32_t i, uint32_t j ) const
 {
 	T output( 0 );
 
 	auto itr = m_structureMap.find( std::make_pair( i, j ) );
 	if( itr != m_structureMap.end() )
 	{
-		uint k = itr->second;
+		uint32_t k = itr->second;
 		output = m_values[ k ];
 	}
 
@@ -68,9 +68,9 @@ T CompressedSparseMatrix< T >::get( uint i, uint j ) const
 }
 
 template< typename T >
-void CompressedSparseMatrix< T >::put( uint i, uint j, const T& value )
+void CompressedSparseMatrix< T >::put( uint32_t i, uint32_t j, const T& value )
 {
-	uint k = m_structureMap[ std::make_pair( i, j ) ];
+	uint32_t k = m_structureMap[ std::make_pair( i, j ) ];
 	m_values[ k ] = value;
 }
 
@@ -93,31 +93,31 @@ const std::vector< T >& CompressedSparseMatrix< T >::values() const
 }
 
 template< typename T >
-std::vector< uint >& CompressedSparseMatrix< T >::innerIndices()
+std::vector< uint32_t >& CompressedSparseMatrix< T >::innerIndices()
 {
 	return m_innerIndices;
 }
 
 template< typename T >
-const std::vector< uint >& CompressedSparseMatrix< T >::innerIndices() const
+const std::vector< uint32_t >& CompressedSparseMatrix< T >::innerIndices() const
 {
 	return m_innerIndices;
 }
 
 template< typename T >
-std::vector< uint >& CompressedSparseMatrix< T >::outerIndexPointers()
+std::vector< uint32_t >& CompressedSparseMatrix< T >::outerIndexPointers()
 {
 	return m_outerIndexPointers;
 }
 
 template< typename T >
-const std::vector< uint >& CompressedSparseMatrix< T >::outerIndexPointers() const
+const std::vector< uint32_t >& CompressedSparseMatrix< T >::outerIndexPointers() const
 {
 	return m_outerIndexPointers;
 }
 
 template< typename T >
-std::map< SparseMatrixKey, uint >& CompressedSparseMatrix< T >::structureMap()
+std::map< SparseMatrixKey, uint32_t >& CompressedSparseMatrix< T >::structureMap()
 {
 	return m_structureMap;
 }
@@ -347,29 +347,29 @@ template< typename T >
 void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >& product ) const
 {
 	product.clear();
-	uint n = static_cast< uint >( m_outerIndexPointers.size() - 1 );
+	uint32_t n = static_cast< uint32_t >( m_outerIndexPointers.size() - 1 );
 
 	// CSC: iterate over rows of A' (columns of A)
 	// CSR: iterate over rows of A (columns of A')
-	for( uint i = 0; i < n; ++i )
+	for( uint32_t i = 0; i < n; ++i )
 	{
 		// CSC: iterate over columns of A
 		// CSR: iterate over columns of A'
-		for( uint j = 0; j <= i; ++j )
+		for( uint32_t j = 0; j <= i; ++j )
 		{
 			bool nonZero = false;
 			T sum( 0 );
 
-			uint k = m_outerIndexPointers[ i ];
-			uint kEnd = m_outerIndexPointers[ i + 1 ];
+			uint32_t k = m_outerIndexPointers[ i ];
+			uint32_t kEnd = m_outerIndexPointers[ i + 1 ];
 
-			uint l = m_outerIndexPointers[ j ];
-			uint lEnd = m_outerIndexPointers[ j + 1 ];
+			uint32_t l = m_outerIndexPointers[ j ];
+			uint32_t lEnd = m_outerIndexPointers[ j + 1 ];
 
 			while( k < kEnd && l < lEnd )
 			{
-				uint leftJ = m_innerIndices[ k ];
-				uint rightI = m_innerIndices[ l ];
+				uint32_t leftJ = m_innerIndices[ k ];
+				uint32_t rightI = m_innerIndices[ l ];
 
 				if( leftJ == rightI )
 				{
@@ -403,8 +403,8 @@ void CompressedSparseMatrix< T >::multiplyTranspose( CoordinateSparseMatrix< T >
 template< typename T >
 void CompressedSparseMatrix< T >::gather( const CoordinateSparseMatrix< T >& coord, const std::vector< int >& indexMap )
 {
-	uint nnz = numNonZeros();
-	for( uint k = 0; k < nnz; ++k )
+	uint32_t nnz = numNonZeros();
+	for( uint32_t k = 0; k < nnz; ++k )
 	{
 		int l = indexMap[ k ];
 		auto ijk = coord.get( l );
@@ -415,7 +415,7 @@ void CompressedSparseMatrix< T >::gather( const CoordinateSparseMatrix< T >& coo
 template< typename T >
 void CompressedSparseMatrix< T >::multiplyTranspose( CompressedSparseMatrix< T >& product ) const
 {
-	uint n = static_cast< uint >( m_outerIndexPointers.size() - 1 );
+	uint32_t n = static_cast< uint32_t >( m_outerIndexPointers.size() - 1 );
 
 	assert( product.numRows() == n );
 	assert( product.numCols() == n );
@@ -423,25 +423,25 @@ void CompressedSparseMatrix< T >::multiplyTranspose( CompressedSparseMatrix< T >
 
 	// CSC: iterate over rows of A' (columns of A)
 	// CSR: iterate over rows of A (columns of A')
-	for( uint i = 0; i < n; ++i )
+	for( uint32_t i = 0; i < n; ++i )
 	{
 		// CSC: iterate over columns of A
 		// CSR: iterate over columns of A'
-		for( uint j = 0; j <= i; ++j )
+		for( uint32_t j = 0; j <= i; ++j )
 		{
 			bool nonZero = false;
 			T sum( 0 );
 
-			uint k = m_outerIndexPointers[ i ];
-			uint kEnd = m_outerIndexPointers[ i + 1 ];
+			uint32_t k = m_outerIndexPointers[ i ];
+			uint32_t kEnd = m_outerIndexPointers[ i + 1 ];
 
-			uint l = m_outerIndexPointers[ j ];
-			uint lEnd = m_outerIndexPointers[ j + 1 ];
+			uint32_t l = m_outerIndexPointers[ j ];
+			uint32_t lEnd = m_outerIndexPointers[ j + 1 ];
 
 			while( k < kEnd && l < lEnd )
 			{
-				uint leftJ = m_innerIndices[ k ];
-				uint rightI = m_innerIndices[ l ];
+				uint32_t leftJ = m_innerIndices[ k ];
+				uint32_t rightI = m_innerIndices[ l ];
 
 				if( leftJ == rightI )
 				{
@@ -482,13 +482,13 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	// A is m x n
 	// B is n x p
 	// product C is m x p
-	uint m = a.numRows();
-	uint n = a.numCols();
+	uint32_t m = a.numRows();
+	uint32_t n = a.numCols();
 	assert( n == b.numRows() );
-	uint p = b.numCols();
+	uint32_t p = b.numCols();
 
 	// count how many elements are in C
-	uint nnzC = 0;
+	uint32_t nnzC = 0;
 	const auto& aV = a.values();
 	const auto& aII = a.innerIndices();
 	const auto& aOIP = a.outerIndexPointers();
@@ -499,27 +499,27 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	std::vector< bool > flags( m );
 
 	// iterate over columns of B (or C)
-	for( uint j = 0; j < p; ++j )
+	for( uint32_t j = 0; j < p; ++j )
 	{
 		// clear flag array
 		flags.assign( m, false );
 
 		// for column j, see which rows are occupied
-		uint k = bOIP[ j ];
-		uint kEnd = bOIP[ j + 1 ];
+		uint32_t k = bOIP[ j ];
+		uint32_t kEnd = bOIP[ j + 1 ];
 		while( k < kEnd )
 		{
-			uint bi = bII[ k ];
+			uint32_t bi = bII[ k ];
 
 			// B[ bi, j ] is a non-zero element
 			// which means A[ :, bi ] will contribute to the product
 			// look for non-zero elements of A[ :, bi ]
 
-			uint l = aOIP[ bi ];
-			uint lEnd = aOIP[ bi + 1 ];
+			uint32_t l = aOIP[ bi ];
+			uint32_t lEnd = aOIP[ bi + 1 ];
 			while( l < lEnd )
 			{
-				uint ai = aII[ l ];
+				uint32_t ai = aII[ l ];
 				
 				// A[ ai, bi ] is a non-zero element
 				// and will contribute to the product
@@ -561,7 +561,7 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 
 	// iterate over columns of B (or C) again
 	// this time actually accumulating the product
-	for( uint j = 0; j < p; ++j )
+	for( uint32_t j = 0; j < p; ++j )
 	{
 		// clear flag array
 		flags.assign( m, false );
@@ -569,23 +569,23 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 		// start a new column of C
 		cOIP[ j ] = nnzC;
 		
-		uint k = bOIP[ j ];
-		uint kEnd = bOIP[ j + 1 ];
+		uint32_t k = bOIP[ j ];
+		uint32_t kEnd = bOIP[ j + 1 ];
 		while( k < kEnd )
 		{
 			const T& bValue = bV[ k ];
-			uint bi = bII[ k ];
+			uint32_t bi = bII[ k ];
 
 			// B[ bi, j ] is a non-zero element
 			// which means A[ :, bi ] will contribute to the product
 			// look for non-zero elements of A[ :, bi ]
 
-			uint l = aOIP[ bi ];
-			uint lEnd = aOIP[ bi + 1 ];
+			uint32_t l = aOIP[ bi ];
+			uint32_t lEnd = aOIP[ bi + 1 ];
 			while( l < lEnd )
 			{
 				const T& aValue = aV[ l ];
-				uint ai = aII[ l ];
+				uint32_t ai = aII[ l ];
 
 				// A[ ai, bi ] is a non-zero element
 				// and will contribute to the product
@@ -614,9 +614,9 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 		//    cOIP[j] (which we set at the beginning of this column)
 		// and ends at:
 		//    nnzC (which we just computed)
-		for( uint kk = cOIP[ j ]; kk < nnzC; ++kk )
+		for( uint32_t kk = cOIP[ j ]; kk < nnzC; ++kk )
 		{			
-			uint ci = cII[ kk ];
+			uint32_t ci = cII[ kk ];
 			cV[ kk ] = work[ ci ];
 			// clear work as we go along
 			work[ ci ] = 0;
@@ -625,17 +625,17 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 	// fill out outer index
 	cOIP[ p ] = nnzC;
 
-	StopWatch sw;
+	//StopWatch sw;
 	std::vector< std::pair< int, T > > work2;
 	// TODO: how do I sort 2 parallel arrays using the first?
 
 	// sort columns of output
 	// i.e., ensure that the row indices within each column are ascending
 	// and that the values match
-	for( uint j = 0; j < p; ++j )
+	for( uint32_t j = 0; j < p; ++j )
 	{
-		uint k = cOIP[ j ];
-		uint kEnd = cOIP[ j + 1 ];
+		uint32_t k = cOIP[ j ];
+		uint32_t kEnd = cOIP[ j + 1 ];
 				
 		int n = kEnd - k;
 		work2.resize( n );
@@ -651,7 +651,7 @@ void CompressedSparseMatrix< T >::multiply( const CompressedSparseMatrix< T >& a
 			cV[ k + kk ] = work2[ kk ].second;
 		}
 	}
-	printf( "sorting took %f ms\n", sw.millisecondsElapsed() );
+	//printf( "sorting took %f ms\n", sw.millisecondsElapsed() );
 	// TODO: update structure matrix?
 }
 

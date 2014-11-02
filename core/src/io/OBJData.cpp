@@ -146,19 +146,19 @@ bool OBJData::save( QString filename )
 	QByteArray ba = filename.toUtf8();
 	FILE* fp = fopen( ba.data(), "w" );
 
-	for( int i = 0; i < m_positions.size(); ++i )
+	for( size_t i = 0; i < m_positions.size(); ++i )
 	{
 		Vector3f v = m_positions[ i ];
 		fprintf( fp, "v %f %f %f\n", v.x, v.y, v.z );
 	}
 
-	for( int i = 0; i < m_textureCoordinates.size(); ++i )
+	for (size_t i = 0; i < m_textureCoordinates.size(); ++i)
 	{
 		Vector2f t = m_textureCoordinates[ i ];
 		fprintf( fp, "vt %f %f\n", t.x, t.y );
 	}
 
-	for( int i = 0; i < m_normals.size(); ++i )
+	for (size_t i = 0; i < m_normals.size(); ++i)
 	{
 		Vector3f n = m_normals[ i ];
 		fprintf( fp, "vn %f %f %f\n", n.x, n.y, n.z );

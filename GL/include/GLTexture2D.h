@@ -1,89 +1,74 @@
-#ifndef GL_TEXTURE_2D_H
-#define GL_TEXTURE_2D_H
+#pragma once
 
 #include <GL/glew.h>
 
+#include <common/Array2DView.h>
 #include <common/BasicTypes.h>
+#include <vecmath/Rect2f.h>
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector2f.h>
+#include <vecmath/Vector3f.h>
+#include <vecmath/Vector4f.h>
+
 #include "GLTexture.h"
+
+class GLSamplerObject;
 
 class GLTexture2D : public GLTexture
 {
 public:
+	
+    GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat );
+	
+	int width() const;
+	int height() const;
+	Vector2i size() const;
 
-	static void setEnabled( bool bEnabled );
+	// TODO: set: arbitrary format and void*
 
-	// creates a depth texture	
-	static GLTexture2D* createDepthTexture( int width, int height, int nBits = 32, const uint* data = 0 );
+	// TODO: set BGR: take in a GLImageFormat
+    // TODO: const uint8x3
+    // TODO: rename xOffset / yOffset to const Vector2i& dstOffset
+	bool set( Array2DView< uint8x3 > data,
+		int xOffset = 0, int yOffset = 0 );
 
-	// creates a ubyte1 (8 bits luminance for each pixel) texture
-	static GLTexture2D* createUnsignedByte1Texture( int width, int height, const uint8_t* data = 0 );
+	// TODO: const ubyte4 --> uint8x4
+    // TODO: rename xOffset / yOffset to const Vector2i& dstOffset
+    bool set( Array2DView< uint8x4 > data,
+		GLImageFormat format = GLImageFormat::RGBA,
+		int xOffset = 0, int yOffset = 0 );
 
-	// creates a ubyte3 (8 bits for each component) texture
-	static GLTexture2D* createUnsignedByte3Texture( int width, int height, const uint8_t* data = 0 );
+	// Retrieves the entire texture.
+	// Returns false if output isNull(), is not packed,
+	// has the wrong size.
+    bool get( Array2DView< uint8x4 > output );
+	bool get( Array2DView< Vector2f > output );
+	bool get( Array2DView< Vector4f > output );	
 
-	// creates a ubyte4 (8 bits for each component) texture
-	static GLTexture2D* createUnsignedByte4Texture( int width, int height, const uint8_t* data = 0 );
+	// Same as drawNV() below, but with
+	// windowCoords = Rect2f( 0, 0, width(), height() )
+	void drawNV( GLSamplerObject* pSampler = nullptr,
+		float z = 0,
+		const Rect2f& texCoords = Rect2f( 1.f, 1.f ) );
 
-	// creates a float1 texture
-	static GLTexture2D* createFloat1Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
+	// Using NV_draw_texture, draw this texture to the screen
+	// to the rectangle windowCoords.
+	//
+	// The window will be mapped to have texCoords.
+	// The default mapping draws right side up, OpenGL style.
+	// To draw upside down, use Rect2f( x = 0, y = 1, width = 1, height = -1 ).
+	// To draw a sub-rectangle, set texture coordinates between 0 and 1.
+	//
+	// Pass nullptr as the sampler object to use the default sampler
+	// bound to the texture (NEAREST).
+	//
+	// The fragments will all have depth z.
+	void drawNV( const Rect2f& windowCoords,
+		GLSamplerObject* pSampler = nullptr,
+		float z = 0,
+		const Rect2f& texCoords = Rect2f( 1.f, 1.f ) );	
 
-	// creates a float3 texture
-	static GLTexture2D* createFloat3Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
+private:	
 
-	// creates a float4 texture	
-	static GLTexture2D* createFloat4Texture( int width, int height, int nBitsPerComponent = 32, const float* data = 0 );
-
-	// uploads float array to hardware
-	// by default, assumes that the entire texture is being updated
-	// (pass in width and height = 0)
-	// otherwise, specify the rectangle
-	void setFloat1Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
-	void setFloat3Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
-	void setFloat4Data( const float* data, int xOffset = 0, int yOffset = 0, int width = 0, int height = 0 );
-
-	// uploads unsigned byte array to hardware
-	// by default, assumes that the entire texture is being updated
-	// (pass in width and height = 0)
-	// otherwise, specify the rectangle
-	void setUnsignedByte1Data( const uint8_t* data,
-		int xOffset = 0, int yOffset = 0,
-		int width = 0, int height = 0 );
-	void setUnsignedByte3Data( const uint8_t* data,
-		int xOffset = 0, int yOffset = 0,
-		int width = 0, int height = 0 );	
-	void setUnsignedByte4Data( const uint8_t* data,
-		int xOffset = 0, int yOffset = 0,
-		int width = 0, int height = 0 );
-
-	int getWidth();
-	int getHeight();	
-
-	// sets the wrap mode of the currently bound texture
-	virtual void setAllWrapModes( GLint iMode );
-
-	// always dumps as RGBA and float mode
-	virtual void dumpToTXT( QString filename, GLint level = 0, GLenum format = GL_RGBA, GLenum type = GL_FLOAT );
-	virtual void dumpToCSV( QString filename );
-
-	// always dumps as RGBA and unsigned byte mode
-	void dumpToPPM( QString filename );	
-	void dumpToPNG( QString filename );
-
-	// always dumps as RGB and float mode
-	void dumpToPFM( QString filename );
-
-private:
-
-	// wrapper around constructor
-	// creates the texture, sets wrap mode to clamp, and filter mode to nearest
-	static GLTexture2D* createTexture2D( int width, int height,
-		GLTexture::GLTextureInternalFormat internalFormat );
-
-	GLTexture2D( int width, int height,
-		GLTexture::GLTextureInternalFormat internalFormat );
-
-	int m_width;
-	int m_height;
+    Vector2i m_size;
 };
-
-#endif

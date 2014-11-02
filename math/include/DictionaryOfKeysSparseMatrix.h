@@ -13,12 +13,12 @@ class DictionaryOfKeysSparseMatrix
 {
 public:	
 
-	uint numRows() const;
-	uint numCols() const;
-	uint numNonZeroes() const;
+	uint32_t numRows() const;
+	uint32_t numCols() const;
+	uint32_t numNonZeroes() const;
 
-	T operator () ( uint i, uint j ) const;
-	void put( uint i, uint j, T value );
+	T operator () ( uint32_t i, uint32_t j ) const;
+	void put( uint32_t i, uint32_t j, T value );
 
 	// one-based: useful for FORTRAN-style numerical libraries
 	// upperTriangleOnly: if the input is already symmetric and positive definite
@@ -30,8 +30,8 @@ public:
 private:
 
 	// dynamically maintained as the maximum inserted value
-	uint m_nRows;
-	uint m_nCols;
+	uint32_t m_nRows;
+	uint32_t m_nCols;
 
 	std::map< SparseMatrixKey, T, SparseMatrixKeyColMajorLess > m_values;
 };

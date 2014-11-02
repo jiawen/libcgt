@@ -302,7 +302,7 @@ int Arithmetic::log2ToInt( float v )
 }
 
 // static
-uint Arithmetic::roundUpToNearestPowerOfTwo( uint v )
+uint32_t Arithmetic::roundUpToNearestPowerOfTwo( uint32_t v )
 {
 	v--;
 	v |= v >> 1;

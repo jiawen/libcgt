@@ -10,9 +10,9 @@
 // ========================================
 
 // static
-void GLFramebufferObject::disableAll()
+void GLFramebufferObject::unbind()
 {
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 
 // static
@@ -23,59 +23,57 @@ GLint GLFramebufferObject::getMaxColorAttachments()
 	return maxColorAttachments;
 }
 
-GLFramebufferObject::GLFramebufferObject() :
-	m_iFramebufferObjectHandle( generateFBOId() ),
-	m_iPreviousFramebufferObjectHandle( 0 )
-{	
-	guardedBind();
-	guardedUnbind();
+GLFramebufferObject::GLFramebufferObject()
+{
+	glGenFramebuffers( 1, &m_id );
 }
 
 // virtual
 GLFramebufferObject::~GLFramebufferObject()
 {
-	glDeleteFramebuffersEXT( 1, &m_iFramebufferObjectHandle );
+	glDeleteFramebuffers( 1, &m_id );
 }
 
 void GLFramebufferObject::bind()
 {
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, m_iFramebufferObjectHandle );
+	glBindFramebuffer( GL_FRAMEBUFFER, m_id );
 }
 
-void GLFramebufferObject::attachTexture( GLenum eAttachment, GLTexture* pTexture, GLint zSlice )
+void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture, GLint zSlice )
 {
-	guardedBind();
-
 	// TODO: 1d texture?
 	// rectangle can be target, not the same as type apparently
 	// also cube maps
 
-	GLuint textureId = pTexture->getTextureId();
+	GLuint textureId = pTexture->id();
 
-	if( getAttachedId( eAttachment ) != textureId )
+	if( getAttachedId( attachment ) != textureId )
 	{
-		GLenum textureTarget = pTexture->getTarget();
+		GLenum textureTarget = pTexture->target();
 		switch( textureTarget )
 		{
+		// TODO:
+		// http://www.opengl.org/wiki/Framebuffer_Object
+		// to bind a mipmap level as a layered image, use glNamedFramebufferTextureEXT
+
 		case GL_TEXTURE_2D:
-			
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, eAttachment,
+			glNamedFramebufferTexture2DEXT( m_id, attachment,
 				GL_TEXTURE_2D, textureId,
 				0 ); // mipmap level
 			break;
 
-		case GL_TEXTURE_RECTANGLE_ARB:
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, eAttachment,
-				GL_TEXTURE_RECTANGLE_ARB, textureId,
+		case GL_TEXTURE_RECTANGLE:
+			glNamedFramebufferTexture2DEXT( m_id, attachment,			
+				GL_TEXTURE_RECTANGLE, textureId,
 				0 ); // mipmap level
 			break;
 
+		// TODO: 3D and mipmap should just get their own functions
 		case GL_TEXTURE_3D:
-
-			glFramebufferTexture3DEXT( GL_FRAMEBUFFER_EXT, eAttachment,
+			glNamedFramebufferTexture3DEXT( m_id, attachment,
 				GL_TEXTURE_3D, textureId,
 				0, // mipmap level
-				zSlice );
+				zSlice );			
 			break;
 
 		default:
@@ -84,125 +82,98 @@ void GLFramebufferObject::attachTexture( GLenum eAttachment, GLTexture* pTexture
 			break;
 		}
 	}	
-
-	guardedUnbind();
 }
 
-void GLFramebufferObject::detachTexture( GLenum eAttachment )
+void GLFramebufferObject::detachTexture( GLenum attachment )
 {
-	guardedBind();
-
-	GLenum type = getAttachedType( eAttachment );
+	GLenum type = getAttachedType( attachment );
 	switch( type )
 	{
 	case GL_NONE:
 		break;
-	case GL_RENDERBUFFER_EXT:
-		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, eAttachment, GL_RENDERBUFFER_EXT, 0 ); // 0 ==> detach
+	case GL_RENDERBUFFER:
+		glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, 0 ); // 0 ==> detach		
 		break;
+
+	// TODO: 3D?
 	case GL_TEXTURE:
-		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, eAttachment,
-			GL_TEXTURE_2D, // ignored, since detaching
+		glNamedFramebufferTexture2DEXT( m_id, attachment,
+			GL_TEXTURE_2D, // ignored, since detaching			
 			0, // 0 ==> detach
 			0 ); // mipmap level
 		break;
+
 	default:
 		fprintf( stderr, "FramebufferObject::unbind_attachment ERROR: Unknown attached resource type\n" );
 		assert( false );
 		break;
 	}
-
-	guardedUnbind();
 }
 
-GLuint GLFramebufferObject::getAttachedId( GLenum eAttachment )
+GLuint GLFramebufferObject::getAttachedId( GLenum attachment )
 {
-	guardedBind();
-
 	GLint id;
-	glGetFramebufferAttachmentParameterivEXT( GL_FRAMEBUFFER_EXT, eAttachment,
-		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME_EXT, &id );
-
-	guardedUnbind();
-
+	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
+		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &id );
 	return id;
 }
 
-GLuint GLFramebufferObject::getAttachedType( GLenum eAttachment )
+GLuint GLFramebufferObject::getAttachedType( GLenum attachment )
 {
-	guardedBind();
-
 	GLint type = 0;
-	glGetFramebufferAttachmentParameterivEXT( GL_FRAMEBUFFER_EXT, eAttachment,
-		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE_EXT,
-		&type );
-
-	guardedUnbind();
-
+	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
+		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type );
 	return type;
 }
 
-GLint GLFramebufferObject::getAttachedZSlice( GLenum eAttachment )
+GLint GLFramebufferObject::getAttachedZSlice( GLenum attachment )
 {
-	guardedBind();
-
 	GLint slice = -1;
-	glGetFramebufferAttachmentParameterivEXT( GL_FRAMEBUFFER_EXT, eAttachment,
+	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
 		GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_EXT,
 		&slice );
-	
-	guardedUnbind();
-
 	return slice;
 }
 
 bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 {
-	guardedBind();
+	bool isComplete = false;	
 
-	bool isComplete = false;
-
-	GLenum status = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
+	GLenum status = glCheckNamedFramebufferStatusEXT( m_id, GL_FRAMEBUFFER );
 	switch( status )
 	{
-	case GL_FRAMEBUFFER_COMPLETE_EXT:
+	case GL_FRAMEBUFFER_COMPLETE:
 		// fprintf( stderr, "Framebuffer is complete.\n" );
 		isComplete = true;
 		break;
-	case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+	case GL_FRAMEBUFFER_UNSUPPORTED:
 		fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 		fprintf( stderr, "Framebuffer incomplete: incomplete attachment.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
 		fprintf( stderr, "Framebuffer incomplete: missing attachment.\n" );
 		break;
 	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
 		fprintf( stderr, "Framebuffer incomplete: dimension mismatch.\n" );
 		break;		
-	// TODO: wtf: this enum is missing?
-	//case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
-	//	fprintf( stderr, "framebuffer INCOMPLETE_DUPLICATE_ATTACHMENT\n" );
-	//	break;
 	case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
 		fprintf( stderr, "Framebuffer incomplete: incompatible formats.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
 		fprintf( stderr, "framebuffer INCOMPLETE_DRAW_BUFFER\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
 		fprintf( stderr, "framebuffer INCOMPLETE_READ_BUFFER\n" );
 		break;
-	case GL_FRAMEBUFFER_BINDING_EXT:
-		fprintf( stderr, "framebuffer BINDING_EXT\n" );
+	case GL_FRAMEBUFFER_BINDING:
+		fprintf( stderr, "framebuffer BINDING\n" );
 		break;
 	default:
 		fprintf( stderr, "Can't get here!\n" );
 		assert( false );
 	}
-
-	guardedUnbind();
 
 	if( pStatus != NULL )
 	{
@@ -210,36 +181,3 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 	}
 	return isComplete;
 }
-
-void GLFramebufferObject::guardedBind()
-{
-	// Only binds if handle is different than the currently bound FBO
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &m_iPreviousFramebufferObjectHandle );
-	if( m_iFramebufferObjectHandle != ( ( GLuint )m_iPreviousFramebufferObjectHandle ) )
-	{
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, m_iFramebufferObjectHandle );
-	}
-}
-
-void GLFramebufferObject::guardedUnbind()
-{
-	// Returns FBO binding to the previously enabled FBO
-	if( ( ( GLuint )m_iPreviousFramebufferObjectHandle ) != m_iFramebufferObjectHandle )
-	{
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, ( GLuint )m_iPreviousFramebufferObjectHandle );
-	}
-}
-
-GLuint GLFramebufferObject::generateFBOId()
-{
-	GLuint id = 0;
-	glGenFramebuffersEXT( 1, &id );
-	return id;
-}
-
-#if 0
-
-glReadBuffer(GL_COLOR_ATTACHMENT0_EXT); // FBO version
-glReadPixels(0,0,texSize,texSize,texture_format,GL_FLOAT,data);
-
-#endif

@@ -1,11 +1,11 @@
 #pragma once
 
 template< typename T >
-class PingPongBuffers
+class PingPong
 {
 public:
 
-	PingPongBuffers();
+	PingPong();
 
 	const T& inputBuffer() const;
 	T& inputBuffer();
@@ -22,7 +22,7 @@ private:
 };
 
 template< typename T >
-PingPongBuffers< T >::PingPongBuffers() :
+PingPong< T >::PingPong() :
 
 	m_outputBufferIndex( 0 )
 
@@ -31,31 +31,31 @@ PingPongBuffers< T >::PingPongBuffers() :
 }
 
 template< typename T >
-const T& PingPongBuffers< T >::inputBuffer() const
+const T& PingPong< T >::inputBuffer() const
 {
 	return m_buffers[ ( m_outputBufferIndex + 1 ) % 2 ];
 }
 
 template< typename T >
-T& PingPongBuffers< T >::inputBuffer()
+T& PingPong< T >::inputBuffer()
 {
 	return m_buffers[ ( m_outputBufferIndex + 1 ) % 2 ];
 }
 
 template< typename T >
-const T& PingPongBuffers< T >::outputBuffer() const
+const T& PingPong< T >::outputBuffer() const
 {
 	return m_buffers[ m_outputBufferIndex ];
 }
 
 template< typename T >
-T& PingPongBuffers< T >::outputBuffer()
+T& PingPong< T >::outputBuffer()
 {
 	return m_buffers[ m_outputBufferIndex ];
 }
 
 template< typename T >
-void PingPongBuffers< T >::swapBuffers()
+void PingPong< T >::swapBuffers()
 {
 	m_outputBufferIndex = ( m_outputBufferIndex + 1 ) % 2;
 }

@@ -1,23 +1,26 @@
 #pragma once
 
+#include "common/Array2DView.h"
 #include "math/Random.h"
 #include "vecmath/Vector4f.h"
 
-#include "Image1f.h"
-#include "Image4f.h"
-
-class Patterns
+namespace libcgt
 {
-public:
+namespace core
+{
+namespace imageproc
+{
+namespace patterns
+{
+    // Explicitly instantiated for uint8_t, uint16_t, uint32_t, float, Vector2f, Vector3f, Vector4f.
+    template< typename T >
+    void createCheckerboard( Array2DView< T > image,
+        int checkerSizeX, int checkerSizeY,
+        const T& blackColor = T( 0 ), const T& whiteColor = T( 1 ) );    
 
-	static Image1f createCheckerboard( int width, int height, int checkerSize,
-		float whiteColor = 1, float blackColor = 0 );		
-
-	static Image4f createCheckerboard( int width, int height, int checkerSize,
-		const Vector4f& whiteColor = Vector4f( 1.f, 1.f, 1.f, 1.f ),
-		const Vector4f& blackColor = Vector4f( 0.8f, 0.8f, 0.8f, 1.f ) );
-
-	Image1f createRandom( int width, int height, Random& random );
-	Image4f createRandomFloat4( int width, int height, Random& random );
-
-};
+    void createRandom( Array2DView< float > image, Random& random );
+    void createRandom( Array2DView< Vector4f> image, Random& random );
+}
+}
+}
+}

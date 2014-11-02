@@ -176,6 +176,45 @@ bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* file
 }
 
 // static
+bool ArrayUtils::saveTXT( const Array2DView< ubyte4 >& view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+	
+	int retVal;
+	int w = view.width();
+	int h = view.height();
+
+	retVal = fprintf( fp, "Size: %d x %d\n", w, h );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: ubyte4\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}	
+
+	for( int y = 0; y < h; ++y )
+	{
+		for( int x = 0; x < w; ++x )
+		{
+			int index = y * w + x;
+			ubyte4 v = view( x, y );
+			fprintf( fp, "[%d] (%d %d): %d %d %d %d\n", index, x, y, v.x, v.y, v.z, v.w );
+		}
+	}
+	
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
 bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );

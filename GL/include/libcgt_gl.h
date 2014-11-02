@@ -1,20 +1,22 @@
-#ifndef LIBCGT_GL_H
-#define LIBCGT_GL_H
+#pragma once
 
 #include "GLBufferObject.h"
-#include "GLBufferObjectManager.h"
+#include "GLDynamicTextureUnitAssignment.h"
 #include "GLFramebufferObject.h"
+#include "GLImageFormat.h"
+#include "GLImageInternalFormat.h"
 #include "GLInitializable.h"
 #include "GLOcclusionQuery.h"
+#include "GLPixelType.h"
 #include "GLProgram.h"
+#include "GLSamplerObject.h"
 #include "GLShader.h"
 #include "GLShared.h"
+#include "GLStaticTextureUnitAssignment.h"
 #include "GLTexture.h"
 #include "GLTexture1D.h"
 #include "GLTexture2D.h"
 #include "GLTexture3D.h"
 #include "GLTextureRectangle.h"
 #include "GLUtilities.h"
-#include "GLVertexBufferObject.h"
-
-#endif // LIBCGT_GL_H
+#include "GLVertexArrayObject.h"

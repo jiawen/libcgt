@@ -1,13 +1,14 @@
-#ifndef GL_TEXTURE_3D_H
-#define GL_TEXTURE_3D_H
+#pragma once
 
 #include <cstdint>
 
 #include <GL/glew.h>
-#include <QImage>
-#include <QString>
 
 #include <common/BasicTypes.h>
+#include <vecmath/Vector3i.h>
+#include <vecmath/Vector2f.h>
+#include <vecmath/Vector3f.h>
+#include <vecmath/Vector4f.h>
 
 #include "GLTexture.h"
 
@@ -15,25 +16,15 @@ class GLTexture3D : public GLTexture
 {
 public:
 
-	static void setEnabled( bool bEnabled );
+	GLTexture3D( const Vector3i& size, GLImageInternalFormat internalFormat );
 
-	// creates a ubyte1 (8 bits luminance for each pixel) texture
-	static GLTexture3D* createUnsignedByte1Texture( int width, int height, int depth, const uint8_t* data = 0 );
+    int numElements() const;
+	int width() const;
+	int height() const;
+	int depth() const;
+	Vector3i size() const;
 
-	// creates a ubyte3 (8 bits for each component) texture
-	static GLTexture3D* createUnsignedByte3Texture( int width, int height, int depth, const uint8_t* data = 0 );
-
-	// creates a ubyte4 (8 bits for each component) texture
-	static GLTexture3D* createUnsignedByte4Texture( int width, int height, int depth, const uint8_t* data = 0 );
-
-	// creates a float1 texture
-	static GLTexture3D* createFloat1Texture( int width, int height, int depth, int nBitsPerComponent = 32, const float* afData = 0 );
-
-	// creates a float3 texture
-	static GLTexture3D* createFloat3Texture( int width, int height, int depth, int nBitsPerComponent = 32, const float* afData = 0 );
-
-	// creates a float4 texture	
-	static GLTexture3D* createFloat4Texture( int width, int height, int depth, int nBitsPerComponent = 32, const float* afData = 0 );
+    // TODO: use views just like GLTexture2D(), call them set() and get()
 
 	// uploads float array to hardware
 	// by default, assumes that the entire texture is being updated
@@ -55,33 +46,9 @@ public:
 		int width = 0, int height = 0, int depth = 0 );
 	void setUnsignedByte4Data( const uint8_t* data,
 		int xOffset = 0, int yOffset = 0, int zOffset = 0,
-		int width = 0, int height = 0, int depth = 0 );
+		int width = 0, int height = 0, int depth = 0 );	
 
-	int getWidth();
-	int getHeight();
-	int getDepth();
+private:	
 
-	// sets the wrap mode of the currently bound texture
-	virtual void setAllWrapModes( GLint iMode );
-
-	virtual void dumpToCSV( QString filename );
-	virtual void dumpToTXT( QString filename, GLint level = 0, GLenum format = GL_RGBA, GLenum type = GL_FLOAT );
-
-	void dumpToPNG( QString filename );
-
-private:
-
-	// wrapper around constructor
-	// creates the texture, sets wrap mode to clamp, and filter mode to nearest
-	static GLTexture3D* createTexture3D( int width, int height, int depth,
-		GLTexture::GLTextureInternalFormat internalFormat );
-
-	GLTexture3D( int width, int height, int depth,
-		GLTexture::GLTextureInternalFormat internalFormat );
-
-	int m_width;
-	int m_height;
-	int m_depth;
+    Vector3i m_size;
 };
-
-#endif

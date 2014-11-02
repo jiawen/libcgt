@@ -1,167 +1,140 @@
-#ifndef GL_BUFFER_OBJECT
-#define GL_BUFFER_OBJECT
+﻿#pragma once
 
 #include <cstdint>
-#include <vector>
 
 #include <GL/glew.h>
+#include <vector>
 
 #include <common/BasicTypes.h>
-
-class TriangleMesh3fVertex;
-class Vector2f;
-class Vector3f;
+#include <common/Array1DView.h>
 
 class GLBufferObject
 {
 public:
 
-	enum GLBufferObjectTarget
+	enum class Target
 	{
-		TARGET_NO_TARGET = 0,
+		NONE = 0,
 
 		// Vertex Buffer Objects
-		TARGET_ARRAY_BUFFER = GL_ARRAY_BUFFER,
-		TARGET_ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
+		ARRAY_BUFFER = GL_ARRAY_BUFFER,
+		ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
+		DRAW_INDIRECT_BUFFER = GL_DRAW_INDIRECT_BUFFER,
 
 		// Pixel Buffer Objects
-		TARGET_PIXEL_PACK_BUFFER = GL_PIXEL_PACK_BUFFER,
-		TARGET_PIXEL_UNPACK_BUFFER = GL_PIXEL_UNPACK_BUFFER
+		PIXEL_PACK_BUFFER = GL_PIXEL_PACK_BUFFER,
+		PIXEL_UNPACK_BUFFER = GL_PIXEL_UNPACK_BUFFER,
+		
+		QUERY_BUFFER = GL_QUERY_BUFFER,
+		TRANSFORM_FEEDBACK_BUFFER = GL_TRANSFORM_FEEDBACK_BUFFER,
+		UNIFORM_BUFFER = GL_UNIFORM_BUFFER,
+		TEXTURE_BUFFER = GL_TEXTURE_BUFFER,
+
+		// Compute
+		ATOMIC_COUNTER_BUFFER = GL_ATOMIC_COUNTER_BUFFER,
+		DISPATCH_INDIRECT_BUFFER = GL_DISPATCH_INDIRECT_BUFFER,
+		SHADER_STORAGE_BUFFER = GL_SHADER_STORAGE_BUFFER
 	};
 
-	enum GLBufferObjectUsage
-	{
-		USAGE_STREAM_DRAW = GL_STREAM_DRAW,
-		USAGE_STREAM_READ = GL_STREAM_READ,
-		USAGE_STREAM_COPY = GL_STREAM_COPY,
-
-		USAGE_STATIC_DRAW = GL_STATIC_DRAW,
-		USAGE_STATIC_READ = GL_STATIC_READ,
-		USAGE_STATIC_COPY = GL_STATIC_COPY,
-
-		USAGE_DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
-		USAGE_DYNAMIC_READ = GL_DYNAMIC_READ,
-		USAGE_DYNAMIC_COPY = GL_DYNAMIC_COPY,
-	};
-
-	enum GLBufferObjectAccess
+    enum class Access
 	{
 		ACCESS_READ_ONLY = GL_READ_ONLY,
 		ACCESS_WRITE_ONLY = GL_WRITE_ONLY,
 		ACCESS_READ_WRITE = GL_READ_WRITE
 	};
 
-	// get the GLBufferObject currently bound to target
-	static GLBufferObject* getBoundBufferObject( GLBufferObjectTarget target );
+	// Direct copy between two buffer objects.
+    // Returns false if either range is out of bounds.
+	static bool copy( GLBufferObject* pSource, GLBufferObject* pDestination,
+		GLintptr sourceOffsetBytes, GLintptr destinationOffsetBytes,
+		GLsizeiptr nBytes );
 
-	// unbind target
-	static void unbind( GLBufferObjectTarget target );	
-
-	// used to get the "offset-as-a-pointer" of this buffer
-	// used for things like glDrawElements and glTexImage2D
-	// that require pointers instead of offsets
-	// 
-	// if i = 3 and elementSize is 2 * sizeof( float ),
-	// i.e. each element is a float2
-	// then it will return the offset into the buffer of the 6th float
-	static char* convertOffsetToPointer( int i, int elementSize );
-	static int convertPointerToOffset( char* pPtr, int elementSize );
-
-	// TODO: getUsage()?
-	// TODO: how do you change the usage?
-
-	// Construct a GLBufferObject with data of size nBytes, bound to target with usage
-	// if data is NULL (default), then it creates an empty GLBufferObject
-	// nElements = number of "elements"
-	// for a Vertex Buffer Object, it would be the number of vertices
-	//     i.e. the number of times glVertex would be called,
-	//     and also the parameter passed to glDrawArrays and glDrawElements
-	// for a Pixel Buffer Object, it would be the number of pixels
-	// nBytes should be equal to nElements * bytesPerElement
-	GLBufferObject( GLBufferObjectTarget target,
-		GLBufferObjectUsage usage,
-		int nElements, int bytesPerElement,
-		const void* data = NULL );
+	// Construct a buffer object with capacity nBytes, access permissions in flags,
+	// and optional initial data. If data is nullptr (default), then it creates an empty
+	// buffer with undefined data.
+	//
+	// flags is an OR mask of:
+	// GL_MAP_READ_BIT​: user can read using map() (glMapBuffer)
+	// GL_MAP_WRITE_BIT​: user can write using map() (glMapBuffer)
+	// GL_DYNAMIC_STORAGE_BIT​: user can modify using set() (glBufferSubData)
+	// GL_PERSISTENT_BIT​: can be used while mapped.
+	// GL_COHERENT_BIT​: allows read and write while mapped without barriers.
+	//   *Requires GL_PERSISTENT_BIT.*
+	// GL_CLIENT_STORAGE_BIT​: hint that the memory should live in client memory.
+	//
+	// Userful combinations:
+	// Pure OpenGL: set flags to 0.
+	// Static vertex data: set flags to 0 with initial data.
+	// Read-back only: use GL_MAP_READ_BIT and map(), glGetBufferSubData() isn't very efficient.
+	// Updatable: use GL_MAP_WRITE_BIT and map(), glBufferSubData() isn't very efficient.
+	GLBufferObject( size_t nBytes,
+		GLbitfield flags, const void* data = nullptr );
 
 	// destroy a GLBufferObject
 	virtual ~GLBufferObject();
 
-	// gets the number of elements
-	int getNumElements();
+	GLuint id() const;
 
-	// get the number of bytes per element
-	int getNumBytesPerElement();
+	// Total bytes allocated.
+	size_t numBytes() const;
 
-	// gets the total number of bytes
-	int getNumBytes();
+	// Map the entire buffer into client memory.
+    Array1DView< uint8_t > map( Access access );
 
-	// bind this GLBufferObject to target
-	void bind( GLBufferObjectTarget target );	
+	// Map the entire buffer into client memory, with length
+	//   numBytes() / sizeof( T ).
+	template< typename T >
+    Array1DView< T > mapAs( Access access );
 
-	// unbinds this buffer object from ALL targets
-	void unbindAll();
+	// Map part of this buffer as a pointer into client memory.
+    Array1DView< uint8_t > mapRange( GLintptr offset, GLsizeiptr length, Access access );
 
-	// map this buffer into local memory
-	void* map( GLBufferObjectTarget target, GLBufferObjectAccess access );
+	// Map part of this buffer as a pointer into client memory.	
+	//   byteOffset is obviously *in bytes*,
+	//   nElements is the number of elements of type T
+    // TODO: make a Range1i class, just like Rect2i. For 64-bit, make Range1l
+	template< typename T >
+    Array1DView< T > mapRangeAs( GLintptr byteOffset, size_t nElements, Access access );
 
-	uint8_t* mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access );
-
-	float* mapToFloatArray( GLBufferObjectTarget target, GLBufferObjectAccess access );
-
-	// unmap this buffer from local memory
-	void unmap( GLBufferObjectTarget target );
-
-	// allocates memory and returns a copy of the data stored in this GLBufferObject
-    // TODO: return a vector, or pass in a view, or use copy()
-	void* getData( GLBufferObjectTarget target );
-
-	// sets a sub-array of this buffer object from data in afData
-	void setFloatSubData( GLBufferObjectTarget target,
-		const float* afData, int nElements,
-		int nFloatsOffset = 0 );
-
-	// sets a sub-array of this buffer object from data in aiData
-	void setIntSubData( GLBufferObjectTarget target,
-		const int* aiData, int nElements,
-		int nIntsOffset = 0 );
-
-	// sets a sub-array of this buffer object from data in aubData
-	void setUnsignedByteSubData( GLBufferObjectTarget target,
-		const uint8_t* data, int nElements,
-		int offset = 0 );
-
-	// sets a sub-array of this buffer object from data in auiData
-	void setUnsignedIntSubData( GLBufferObjectTarget target,
-		const uint* auiData, int nElements,
-		int nUnsignedIntsOffset = 0 );	
-
-	// ==== Debugging ====
-	void dumpToTXTFloat( const char* filename );
-
-protected:
-
-	// ---- Static ----
-
-	static GLBufferObject* s_apBindingTable[4];
-
-	// returns the index of the binding table entry corresponding to target
-	// ARRAY_BUFFER --> 0
-	// ELEMENT_ARRAY_BUFFER --> 1
-	// PIXEL_PACK_BUFFER --> 2
-	// PIXEL_UNPACK_BUFFER --> 2
-	static int getBindingTableIndex( GLBufferObjectTarget target );
-
-	static void setBoundBufferObject( GLBufferObjectTarget target,
-		GLBufferObject* pBufferObject );
+	// Unmap this buffer from local memory.
+	void unmap();
 	
-	// ---- Non-static ----
-	
-	bool isBoundToTarget( GLBufferObjectTarget target );
+	// Copies the data in a subset of this buffer to dst.
+	// Returns false if srcOffset + dst.length() > numBytes().
+	bool get( GLintptr srcOffset, Array1DView< uint8_t > dst );
 
-	int m_nElements;
-	int m_nBytesPerElement;
-	int m_nBytes;
-	GLuint m_iBufferId;
+	// Copies the data from src into this buffer.
+	// Returns false if:
+	// The source buffer is not packed(), or
+	// if dstOffset + src.length() > numBytes().
+	bool set( Array1DView< uint8_t > src, GLintptr dstOffset );
+
+	// TODO: glClearNamedBufferDataEXT / glClearNamedBufferSubDataEXT
+	// TODO: persistent mapping:
+	//  glMemoryBarrier( GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT ),
+	//  glFlushMappedBufferRange,
+	//  glInvalidateBufferData / glInvalidateBufferSubData
+
+private:
+
+	GLuint m_id;
+	size_t m_nBytes;
 };
 
-#endif // GL_BUFFER_OBJECT
+template< typename T >
+Array1DView< T > GLBufferObject::mapAs( GLBufferObject::Access access )
+{
+    return Array1DView< T >(
+        glMapNamedBufferEXT( m_id, static_cast< GLbitfield >( access ) ),
+        m_nBytes / sizeof( T ) );
+}
+
+template< typename T >
+Array1DView< T > GLBufferObject::mapRangeAs( GLintptr byteOffset, size_t nElements,
+    GLBufferObject::Access access )
+{
+	GLsizeiptr nBytes = nElements * sizeof( T );
+    return Array1DView< T >(
+        glMapNamedBufferRangeEXT( m_id, byteOffset, nBytes, static_cast< GLbitfield >( access ) ),
+        nElements );
+}

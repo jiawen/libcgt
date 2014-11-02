@@ -44,10 +44,148 @@ bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
 
 // static
 template< typename T >
+bool ArrayUtils::fill( Array2DView< T > view, const T& value )
+{
+	if( view.notNull() )
+	{
+		int ne = view.numElements();
+		for( int k = 0; k < ne; ++k )
+		{
+			view[ k ] = value;
+		}
+		return true;
+	}
+	return false;
+}
+
+// static
+template<>
+bool ArrayUtils::fill( Array2DView< uint8_t > view, const uint8_t& value )
+{
+	if( view.isNull() )
+	{
+		return false;
+	}
+
+	if( view.packed() )
+	{
+		memset( view.pointer(), value, view.bytesSpanned() );
+		return true;
+	}
+
+	if( view.elementsArePacked() )
+	{
+		// Fill w bytes at a time.
+		int w = view.width();
+		for( int y = 0; y < view.height(); ++y )
+		{
+			memset( view.rowPointer( y ), value, w );
+		}
+		return true;
+	}
+
+	// Nothing is packed, iterate.
+	int ne = view.numElements();
+	for( int k = 0; k < ne; ++k )
+	{
+		view[ k ] = value;
+	}
+	return true;
+}
+
+// static
+template< typename T >
+Array1DView< T > ArrayUtils::flipLR( Array1DView< T > view )
+{
+	return Array1DView< T >
+	(
+		&( view( view.length() - 1, 0 ) ),
+		view.length(),
+		-view.elementStrideBytes()
+	);
+}
+
+// static
+template< typename T >
+Array2DView< T > ArrayUtils::flipLR( Array2DView< T > view )
+{
+	return Array2DView< T >
+	(
+		&( view( view.width() - 1, 0 ) ),
+		view.size(),
+		-view.elementStrideBytes(),
+		view.rowStrideBytes()
+	);
+}
+
+// static
+template< typename T >
+Array2DView< T > ArrayUtils::flipUD( Array2DView< T > view )
+{
+	return Array2DView< T >
+	(
+		view.rowPointer( view.height() - 1 ),
+		view.size(),
+		view.elementStrideBytes(),
+		-view.rowStrideBytes()
+	);
+}
+
+// static
+template< typename T >
+Array1DView< T > ArrayUtils::crop( Array1DView< T > view, int x, int width )
+{	
+	return Array1DView< T >( view.elementPointer( x ), width, view.elementStrideBytes() );
+}
+
+// static
+template< typename T >
+Array2DView< T > ArrayUtils::crop( Array2DView< T > view, int x, int y, int width, int height )
+{	
+	return Array2DView< T >( view.elementPointer( x, y ), width, height, view.elementStrideBytes(), view.rowStrideBytes() );
+}
+
+// static
+template< typename T >
+Array3DView< T > ArrayUtils::crop( Array3DView< T > view, int x, int y, int z, int width, int height, int depth )
+{
+	return Array3DView< T >( view.elementPointer( x, y, z ), width, height, depth, view.elementStrideBytes(), view.rowStrideBytes(), view.slicePitchBytes() );
+}
+
+// static
+template< typename T >
+bool ArrayUtils::copy( Array1DView< T > src, Array1DView< T > dst )
+{
+	if( src.isNull() || dst.isNull() )
+	{
+		return false;
+	}
+
+	if( src.length() != dst.length() )
+	{
+		return false;
+	}
+
+	if( src.packed() && dst.packed() )
+	{
+		memcpy( dst.pointer(), src.pointer(), src.bytesSpanned() );
+	}	
+	else
+	{
+		for( int x = 0; x < src.length(); ++x )
+		{
+			dst[ x ] = src[ x ];
+		}
+	}
+
+	return true;
+}
+
+// static
+template< typename T >
 bool ArrayUtils::copy( Array2DView< T > src, Array2DView< T > dst )
 {
-	if( src.rowPointer( 0 ) == nullptr ||
-		dst.rowPointer( 0 ) == nullptr )
+	if( src.isNull() || dst.isNull() )
 	{
 		return false;
 	}
@@ -57,17 +195,20 @@ bool ArrayUtils::copy( Array2DView< T > src, Array2DView< T > dst )
 		return false;
 	}
 
+	// Both views are packed, do a single memcpy.
 	if( src.packed() && dst.packed() )
 	{
-		memcpy( dst.rowPointer( 0 ), src.rowPointer( 0 ), src.rowPitchBytes() * src.height() );
+		memcpy( dst.pointer(), src.pointer(), src.bytesSpanned() );
 	}
+	// Elements are packed within each row, do a memcpy per row.
 	else if( src.elementsArePacked() && dst.elementsArePacked() )
 	{
 		for( int y = 0; y < src.height(); ++y )
 		{
-			memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.strideBytes() );
+			memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.elementStrideBytes() );
 		}
 	}
+	// Otherwise, iterate.
 	else
 	{
 		for( int y = 0; y < src.height(); ++y )
@@ -80,60 +221,4 @@ bool ArrayUtils::copy( Array2DView< T > src, Array2DView< T > dst )
 	}
 
 	return true;
-}
-
-// static
-template< typename T >
-Array2DView< T > ArrayUtils::flippedUpDownView( Array2DView< T > view )
-{
-	return Array2DView< T >
-	(
-		view.rowPointer( view.height() - 1 ),
-		view.size(),
-		view.strideBytes(),
-		-view.rowPitchBytes()
-	);
-}
-
-// static
-template< typename T >
-Array2DView< T > ArrayUtils::flippedLeftRightView( Array2DView< T > view )
-{
-	return Array2DView< T >
-	(
-		&( view( view.width() - 1, 0 ) ),
-		view.size(),
-		-view.strideBytes(),
-		view.rowPitchBytes()
-	);
-}
-
-// static
-template< typename T >
-Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, int x, int y )
-{
-	return croppedView( view, x, y, view.width() - x, view.height() - y );
-}
-
-// static
-template< typename T >
-Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, int x, int y, int width, int height )
-{
-	T* cornerPointer = &( view.rowPointer( y )[ x ] );
-	return Array2DView< T >( cornerPointer, width, height, view.strideBytes(), view.rowPitchBytes() );
-}
-
-// static
-template< typename T >
-Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, int x, int y, int z )
-{
-	return croppedView( view, x, y, z, view.width() - x, view.height() - y, view.depth() - z );
-}
-
-// static
-template< typename T >
-Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, int x, int y, int z, int width, int height, int depth )
-{
-	T* cornerPointer = &( view.rowPointer( y, z )[ x ] );
-	return Array3DView< T >( cornerPointer, width, height, depth, view.strideBytes(), view.rowPitchBytes(), view.slicePitchBytes() );
 }

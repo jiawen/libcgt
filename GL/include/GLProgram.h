@@ -1,48 +1,61 @@
-#ifndef GL_PROGRAM_H
-#define GL_PROGRAM_H
+#pragma once
+
+#include <vector>
 
 #include <GL/glew.h>
 
 class GLShader;
 class Matrix4f;
-class GLTexture;
 class Vector2f;
 class Vector3f;
+class Vector4f;
+class Vector2i;
+class Vector3i;
+class Vector4i;
 
 class GLProgram
 {
 public:
 
-	GLProgram();
+	static GLProgram* fromShaders( std::vector< GLShader* > shaders );
+	static void disableAll();
+	
 	virtual ~GLProgram();
 
-	GLuint getHandle();
+	GLuint id() const;
 
-	void attachShader( GLShader* pShader );
-	void detachShader( GLShader* pShader );
-	
-	GLint getNumActiveUniforms();
-	GLint getUniformLocation( const GLchar* szName );
-  	Matrix4f getUniformMatrix4f( GLint iUniformLocation );
+	GLint numActiveUniforms() const;
+	GLint uniformLocation( const GLchar* name ) const;
+  	
+	Matrix4f getUniformMatrix4f( GLint uniformLocation );
 		
-	void setUniformMatrix4f( GLint iUniformLocation, Matrix4f* pMatrix );
-	void setUniformSampler( GLint iUniformLocation, GLTexture* pTexture );
-	void setUniformSampler( const GLchar* szName, GLTexture* pTexture );
-	void setUniformVector2f( const GLchar* szName, float x, float y );
-	void setUniformVector2f( const GLchar* szName, const Vector2f& pv );
-	void setUniformVector3f( const GLchar* szName, float x, float y, float z );
-	void setUniformVector3f( const GLchar* szName, const Vector3f& pv );
+	void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix );
 
-	bool link();
-	bool isLinked();
-	
-	bool use();
-	static void disableAll();
+	void setUniformInt( GLint uniformLocation, int x );
+	void setUniformFloat( GLint uniformLocation, float x );
+
+	void setUniformFloat( const GLchar* name, float x );
+	void setUniformVector2f( const GLchar* name, float x, float y );
+	void setUniformVector2f( const GLchar* name, const Vector2f& v );
+	void setUniformVector3f( const GLchar* name, float x, float y, float z );
+	void setUniformVector3f( const GLchar* name, const Vector3f& v );
+	void setUniformVector4f( const GLchar* name, float x, float y, float z, float w );
+	void setUniformVector4f( const GLchar* name, const Vector4f& v );
+
+	void setUniformInt( const GLchar* name, int x );
+	void setUniformVector2i( const GLchar* name, int x, int y );
+	void setUniformVector2i( const GLchar* name, const Vector2i& v );
+	void setUniformVector3i( const GLchar* name, int x, int y, int z );
+	void setUniformVector3i( const GLchar* name, const Vector3i& v );
+	void setUniformVector4i( const GLchar* name, int x, int y, int z, int w );
+	void setUniformVector4i( const GLchar* name, const Vector4i& v );
+
+	void use();
+    static void disableAll();
 
 private:
 
-	GLuint m_iProgramHandle;
-	bool m_bIsLinked;
+	GLProgram( GLuint id );
+	
+	GLuint m_id;	
 };
-
-#endif

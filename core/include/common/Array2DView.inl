@@ -3,8 +3,8 @@ Array2DView< T >::Array2DView() :
 
 	m_width( 0 ),
 	m_height( 0 ),
-	m_strideBytes( 0 ),
-	m_rowPitchBytes( 0 ),
+	m_elementStrideBytes( 0 ),
+	m_rowStrideBytes( 0 ),
 	m_pPointer( nullptr )
 
 {
@@ -16,9 +16,9 @@ Array2DView< T >::Array2DView( void* pPointer, int width, int height ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_strideBytes( sizeof( T ) ),
-	m_rowPitchBytes( width * sizeof( T ) ),
-	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+	m_elementStrideBytes( sizeof( T ) ),
+	m_rowStrideBytes( width * sizeof( T ) ),
+	m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
 
 {
 
@@ -29,50 +29,98 @@ Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_strideBytes( sizeof( T ) ),
-	m_rowPitchBytes( size.x * sizeof( T ) ),
-	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+	m_elementStrideBytes( sizeof( T ) ),
+	m_rowStrideBytes( size.x * sizeof( T ) ),
+	m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
 
 {
 
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( void* pPointer, int width, int height, int strideBytes, int rowPitchBytes ) :
+Array2DView< T >::Array2DView( void* pPointer, int width, int height, int elementStrideBytes, int rowStrideBytes ) :
 
 	m_width( width ),
 	m_height( height ),
-	m_strideBytes( strideBytes ),
-	m_rowPitchBytes( rowPitchBytes ),
-	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+	m_elementStrideBytes( elementStrideBytes ),
+	m_rowStrideBytes( rowStrideBytes ),
+	m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
 
 {
 
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size, int strideBytes, int rowPitchBytes ) :
+Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size, int elementStrideBytes, int rowStrideBytes ) :
 
 	m_width( size.x ),
 	m_height( size.y ),
-	m_strideBytes( strideBytes ),
-	m_rowPitchBytes( rowPitchBytes ),
-	m_pPointer( reinterpret_cast< ubyte* >( pPointer ) )
+	m_elementStrideBytes( elementStrideBytes ),
+	m_rowStrideBytes( rowStrideBytes ),
+	m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
 
 {
 
+}
+
+template< typename T >
+bool Array2DView< T >::isNull() const
+{
+	return( m_pPointer == nullptr );
+}
+
+template< typename T >
+bool Array2DView< T >::notNull() const
+{
+	return( m_pPointer != nullptr );
+}
+
+template< typename T >
+Array2DView< T >::operator const T* () const
+{
+	return reinterpret_cast< T* >( m_pPointer );
+}
+
+template< typename T >
+Array2DView< T >::operator T* ()
+{
+	return reinterpret_cast< T* >( m_pPointer );
+}
+
+template< typename T >
+const T* Array2DView< T >::pointer() const
+{
+	return reinterpret_cast< T* >( m_pPointer );
+}
+
+template< typename T >
+T* Array2DView< T >::pointer()
+{
+	return reinterpret_cast< T* >( m_pPointer );
+}
+
+template< typename T >
+const T* Array2DView< T >::elementPointer( int x, int y ) const
+{
+	return reinterpret_cast< T* >( m_pPointer + y * rowStrideBytes() + x * elementStrideBytes() );
+}
+
+template< typename T >
+T* Array2DView< T >::elementPointer( int x, int y )
+{
+	return reinterpret_cast< T* >( m_pPointer + y * rowStrideBytes() + x * elementStrideBytes() );
 }
 
 template< typename T >
 T* Array2DView< T >::rowPointer( int y )
 {
-	return reinterpret_cast< T* >( &( m_pPointer[ y * m_rowPitchBytes ] ) );
+	return elementPointer( 0, y );
 }
 
 template< typename T >
 const T* Array2DView< T >::rowPointer( int y ) const
 {
-	return reinterpret_cast< T* >( &( m_pPointer[ y * m_rowPitchBytes ] ) );
+	return elementPointer( 0, y );
 }
 
 template< typename T >
@@ -96,19 +144,13 @@ T& Array2DView< T >::operator [] ( int k )
 template< typename T >
 const T& Array2DView< T >::operator () ( int x, int y ) const
 {
-	const ubyte* pRowPointer = reinterpret_cast< const ubyte* >( rowPointer( y ) );
-	const ubyte* pElementPointer = pRowPointer + x * m_strideBytes;
-	const T* q = reinterpret_cast< const T* >( pElementPointer );
-	return *q;
+	return *elementPointer( x, y );
 }
 
 template< typename T >
 T& Array2DView< T >::operator () ( int x, int y )
 {
-	ubyte* pRowPointer = reinterpret_cast< ubyte* >( rowPointer( y ) );
-	ubyte* pElementPointer = pRowPointer + x * m_strideBytes;
-	T* q = reinterpret_cast< T* >( pElementPointer );
-	return *q;
+	return *elementPointer( x, y );
 }
 
 template< typename T >
@@ -142,27 +184,45 @@ Vector2i Array2DView< T >::size() const
 }
 
 template< typename T >
-int Array2DView< T >::strideBytes() const
+int Array2DView< T >::numElements() const
 {
-	return m_strideBytes;
+	return width() * height();
 }
 
 template< typename T >
-int Array2DView< T >::rowPitchBytes() const
+size_t Array2DView< T >::bytesReferenced() const
 {
-	return m_rowPitchBytes;
+	return sizeof( T ) * numElements();
+}
+
+template< typename T >
+size_t Array2DView< T >::bytesSpanned() const
+{
+	return std::abs( rowStrideBytes() ) * height();
+}
+
+template< typename T >
+int Array2DView< T >::elementStrideBytes() const
+{
+	return m_elementStrideBytes;
+}
+
+template< typename T >
+int Array2DView< T >::rowStrideBytes() const
+{
+	return m_rowStrideBytes;
 }
 
 template< typename T >
 bool Array2DView< T >::elementsArePacked() const
 {
-	return m_strideBytes == sizeof( T );
+	return elementStrideBytes() == sizeof( T );
 }
 
 template< typename T >
 bool Array2DView< T >::rowsArePacked() const
 {
-	return m_rowPitchBytes == ( m_width * m_strideBytes );
+	return rowStrideBytes() == ( width() * elementStrideBytes() );
 }
 
 template< typename T >

@@ -6,13 +6,8 @@ DESTDIR = "../lib"
 # ===== libcgt_core =====
 INCLUDEPATH += "../core/include"
 
-# ===== Qt =====
-INCLUDEPATH += $(QTDIR)/include/QtCore
-INCLUDEPATH += $(QTDIR)/include/QtGui
-INCLUDEPATH += $(QTDIR)/include
-
 # ===== MKL =====
-INCLUDEPATH += $(ICPP_COMPILER12)mkl/include
+INCLUDEPATH += $(ICPP_COMPILER13)mkl/include
 
 INCLUDEPATH += "./include"
 

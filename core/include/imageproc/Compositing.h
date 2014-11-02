@@ -1,25 +1,48 @@
 #pragma once
 
-#include "Image4f.h"
-#include "Image4ub.h"
+#include <common/Array2DView.h>
+#include <common/BasicTypes.h>
 
-class Compositing
+class Vector4f;
+
+namespace libcgt
 {
-public:
+namespace core
+{
+namespace imageproc
+{
+namespace compositing
+{
+    // TODO: const correctness.
 
-	// classic compositing operation:
-	// C_o = a_f * C_f + ( 1 - a_f ) * C_b
-	// a_o = a_f + a_b * ( 1 - a_f )
-	// composites foreground over background into the buffer "composite" and returns it
-	static Image4f compositeOver( const Image4f& foreground, const Image4f& background );
+    // Classical "over" operator:
+    // C_o = a_f * C_f + ( 1 - a_f ) * C_b
+    // a_o = a_f + a_b * ( 1 - a_f )
+    //
+    // Inputs must all be the same size.
+    void over( Array2DView< Vector4f > foreground,
+        Array2DView< Vector4f > background,
+        Array2DView< Vector4f > output );
 
-	// given the composite image "compositeRGBA"
-	// and the foreground image "foregroundRGBA" (probably from matting)
-	// divides out the alpha to extract the background color in "backgroundRGBA" and returns it
-	static Image4f extractBackgroundColor( const Image4f& composite, const Image4f& foreground );
-	static Image4ub extractBackgroundColor( const Image4ub& composite, const Image4ub& foreground );
+    // Given the composite image "composite",
+    // and the foreground image "foreground" (probably from matting),
+    // divides out the alpha to extract the background color in "background".
+    void extractBackgroundColor( Array2DView< Vector4f > composite,
+        Array2DView< Vector4f > foreground,
+        Array2DView< Vector4f > background );
 
-private:
+    // Given the composite image "composite",
+    // and the foreground image "foreground" (probably from matting),
+    // divides out the alpha to extract the background color in "background".
+    void extractBackgroundColor( Array2DView< uint8x4 > composite,
+        Array2DView< uint8x4 > foreground,
+        Array2DView< uint8x4 > background );
 
-	static Vector4f extractBackgroundColor( const Vector4f& composite, const Vector4f& foreground );
-};
+    // Given the composite color "composite",
+    // and the foreground color "foreground" (probably from matting),
+    // divides out the alpha to extract the background color.
+    Vector4f extractBackgroundColor( const Vector4f& composite, const Vector4f& foreground );
+}
+}
+}
+}

@@ -124,36 +124,6 @@ int MathUtils::clampToRangeInclusive( int x, int lo, int hi )
 }
 
 // static
-float MathUtils::clampToRange( float x, float lo, float hi )
-{
-	if( x > hi )
-	{
-		x = hi;
-	}
-	if( x < lo )
-	{
-		x = lo;
-	}
-	
-	return x;
-}
-
-// static
-double MathUtils::clampToRange( double x, double lo, double hi )
-{
-	if( x > hi )
-	{
-		x = hi;
-	}
-	if( x < lo )
-	{
-		x = lo;
-	}
-
-	return x;
-}
-
-// static
 Vector2i MathUtils::clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height )
 {
 	return Vector2i
@@ -225,18 +195,6 @@ Vector3f MathUtils::clampToBox( const Vector3f& v, const Box3f& box )
 	float y = clampToRange( v.y, box.bottom(), box.top() );
 	float z = clampToRange( v.z, box.back(), box.front() );
 	return Vector3f( x, y, z );
-}
-
-// static
-sbyte MathUtils::floatToByteSignedNormalized( float f )
-{
-	return static_cast< sbyte >( f * 127 );
-}
-
-// static
-float MathUtils::signedByteToFloatNormalized( sbyte sb )
-{
-	return( sb / 127.f );
 }
 
 // static

@@ -1,5 +1,4 @@
-#ifndef GL_SHADER_H
-#define GL_SHADER_H
+#pragma once
 
 #include <GL/glew.h>
 
@@ -8,26 +7,20 @@ class GLShader
 public:
 
 	// Factory constructors
-	static GLShader* vertexShaderFromFile( const char* filename );
-	static GLShader* fragmentShaderFromFile( const char* filename );
+	static GLShader* vertexShaderFromSourceFile( const char* filename );
+	static GLShader* fragmentShaderFromSourceFile( const char* filename );
 
 	// Destructor
 	virtual ~GLShader();
 
-	bool compile();
-	bool isCompiled();
-
-	GLuint getHandle();
+	GLuint id() const;
+	GLenum type() const;
 
 private:
 
-	GLuint m_iShaderHandle;
-	GLchar* m_szCode;
+	GLuint m_id;
+	GLenum m_type;
 
-	bool m_bIsCompiled;
-
-	GLShader();
+	GLShader( int id );
 	static GLShader* fromFile( const char* filename, GLenum shaderType );	
 };
-
-#endif

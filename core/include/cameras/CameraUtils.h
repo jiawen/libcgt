@@ -7,6 +7,8 @@ class CameraUtils
 {
 public:
 
+    // TODO: make a CameraIntrinsics class
+
 	// note that y points up, for both the crop window
 	// and the principal point
 	static void adjustIntrinsicsToCrop

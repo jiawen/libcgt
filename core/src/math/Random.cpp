@@ -72,7 +72,7 @@ Vector4f Random::nextVector4fRange( const Vector4f& lo, const Vector4f& hi )
 		nextFloatRange( lo.z, hi.z ), nextFloatRange( lo.w, hi.w ) );
 }
 
-uint Random::nextInt()
+uint32_t Random::nextInt()
 {
 	return m_mtRand.randInt();
 }

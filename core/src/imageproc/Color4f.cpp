@@ -1,4 +1,4 @@
-#include "color/Color4f.h"
+#include "imageproc/Color4f.h"
 
 // static
 const Vector4f Color4f::RED = Vector4f( 1, 0, 0, 1 );

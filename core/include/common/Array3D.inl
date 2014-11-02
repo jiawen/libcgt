@@ -254,7 +254,7 @@ void Array3D< T >::resize( int width, int height, int depth )
 				delete[] m_array;
 			}
 
-			ubyte* pBuffer = new ubyte[ slicePitchBytes * depth ];
+			uint8_t* pBuffer = new uint8_t[ slicePitchBytes * depth ];
 			m_array = reinterpret_cast< T* >( pBuffer );
 		}
 
@@ -288,7 +288,7 @@ Array3D< T >::operator Array3DView< T >()
 template< typename T >
 const T* Array3D< T >::rowPointer( int y, int z ) const
 {
-	ubyte* pBuffer = reinterpret_cast< ubyte* >( m_array );
+	uint8_t* pBuffer = reinterpret_cast< uint8_t* >( m_array );
 	return reinterpret_cast< T* >
 	(
 		&( pBuffer[ z * slicePitchBytes() + y * rowPitchBytes() ] )
@@ -298,7 +298,7 @@ const T* Array3D< T >::rowPointer( int y, int z ) const
 template< typename T >
 T* Array3D< T >::rowPointer( int y, int z )
 {
-	ubyte* pBuffer = reinterpret_cast< ubyte* >( m_array );
+	uint8_t* pBuffer = reinterpret_cast< uint8_t* >( m_array );
 	return reinterpret_cast< T* >
 	(
 		&( pBuffer[ z * slicePitchBytes() + y * rowPitchBytes() ] )
@@ -308,7 +308,7 @@ T* Array3D< T >::rowPointer( int y, int z )
 template< typename T >
 const T* Array3D< T >::slicePointer( int z ) const
 {
-	ubyte* pBuffer = reinterpret_cast< ubyte* >( m_array );
+	uint8_t* pBuffer = reinterpret_cast< uint8_t* >( m_array );
 	return reinterpret_cast< T* >
 	(
 		&( pBuffer[ z * slicePitchBytes() ] )
@@ -318,7 +318,7 @@ const T* Array3D< T >::slicePointer( int z ) const
 template< typename T >
 T* Array3D< T >::slicePointer( int z )
 {
-	ubyte* pBuffer = reinterpret_cast< ubyte* >( m_array );
+	uint8_t* pBuffer = reinterpret_cast< uint8_t* >( m_array );
 	return reinterpret_cast< T* >
 	(
 		&( pBuffer[ z * slicePitchBytes() ] )
@@ -477,7 +477,7 @@ bool Array3D< T >::load( FILE* fp )
 	int slicePitchBytes = whdrpsp[4];
 
 	size_t nBytes = slicePitchBytes * depth;
-	ubyte* pBuffer = new ubyte[ nBytes ];
+	uint8_t* pBuffer = new uint8_t[ nBytes ];
 
 	// read elements
 	elementsRead = fread( pBuffer, 1, nBytes, fp );

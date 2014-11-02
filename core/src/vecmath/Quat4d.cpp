@@ -225,35 +225,41 @@ Quat4d Quat4d::lerp( const Quat4d& q0, const Quat4d& q1, double alpha )
 }
 
 // static
-Quat4d Quat4d::slerp( const Quat4d& q0, const Quat4d& q1, double alpha, double cosOmegaThreshold )
+Quat4d Quat4d::slerp( const Quat4d& a, const Quat4d& b, float t, bool allowFlip )
 {
-	double cosOmega = Quat4d::dot( q0, q1 );
+	double cosAngle = Quat4d::dot( a, b );
 
-	// if they're too close, then just lerp them
-	if( cosOmega > cosOmegaThreshold )
+	double c1;
+	double c2;
+
+	// Linear interpolation for close orientations
+	if( ( 1.0f - std::abs( cosAngle ) ) < 0.01f )
 	{
-		return Quat4d::lerp( q0, q1, alpha );
+		c1 = 1.0f - t;
+		c2 = t;
 	}
 	else
 	{
-		cosOmega = MathUtils::clampToRange( cosOmega, -1, 1 );
-		if( cosOmega < -1 )
-		{
-			cosOmega = -1;
-		}
-		if( cosOmega > 1 )
-		{
-			cosOmega = 1;
-		}
-
-		double omega0 = acos( cosOmega ); // original angle between q0 and q1
-		double omega = omega0 * alpha; // new angle
-
-		Quat4d q2 = q1 - q0 * cosOmega;
-		q2.normalize();
-
-		return( q0 * cos( omega ) + q2 * sin( omega ) );
+		// Spherical interpolation
+		double angle = acos( std::abs( cosAngle ) );
+		double sinAngle = sin( angle );
+		c1 = sin( angle * ( 1.0 - t ) ) / sinAngle;
+		c2 = sin( angle * t ) / sinAngle;
 	}
+
+	// Use the shortest path
+	if( allowFlip && ( cosAngle < 0.0 ) )
+	{
+		c1 = -c1;
+	}
+
+	return Quat4d
+	(
+		c1 * a.w + c2 * b.w,
+		c1 * a.x + c2 * b.x,
+		c1 * a.y + c2 * b.y,
+		c1 * a.z + c2 * b.z
+	);
 }
 
 // static

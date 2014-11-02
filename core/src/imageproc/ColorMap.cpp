@@ -1,11 +1,13 @@
 #include "imageproc/ColorMap.h"
 
-#include <color/ColorUtils.h>
+#include <imageproc/ColorUtils.h>
 #include <math/MathUtils.h>
+
+using namespace libcgt::core::imageproc::colorutils;
 
 // static
 void ColorMap::toJet( Array2DView< float > src, float minValue, float maxValue,
-	Array2DView< ubyte4 > dst )
+	Array2DView< uint8x4 > dst )
 {
 	for( int y = 0; y < src.height(); ++y )
 	{
@@ -15,7 +17,7 @@ void ColorMap::toJet( Array2DView< float > src, float minValue, float maxValue,
 			value = MathUtils::clampToRange( value, minValue, maxValue );
 			float z = ( value - minValue ) / ( maxValue - minValue );
 
-			dst( x, y ) = ColorUtils::floatToUnsignedByte( ColorUtils::colorMapJet( z ) );
+			dst( x, y ) = toUInt8( colorMapJet( z ) );
 		}
 	}
 }

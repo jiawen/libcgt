@@ -12,7 +12,7 @@ class GLFramebufferObject
 {
 public:
 
-	static void disableAll();
+	static void unbind();
 	static GLint getMaxColorAttachments();
 
 	GLFramebufferObject();
@@ -24,27 +24,24 @@ public:
 	// GLTexture->getType()
 	// forget mipmapped textures for a while
 
-	// eAttachment can be COLOR_ATTACHMENT0_EXT, ... COLOR_ATTACHMENTn_EXT,
-	// DEPTH_ATTACHMENT_EXT, STENCIL_ATTACHMENT_EXT
-	void attachTexture( GLenum eAttachment, GLTexture* pTexture, GLint zSlice = 0 );
-	void detachTexture( GLenum eAttachment );
+	// attachment can be GL_COLOR_ATTACHMENT0, ... GL_COLOR_ATTACHMENTn,
+	// GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT
+	void attachTexture( GLenum attachment, GLTexture* pTexture, GLint zSlice = 0 );
+	void detachTexture( GLenum attachment );
 
 	// TODO: attachRenderBuffer()
 
-	GLuint getAttachedId( GLenum eAttachment );
-	GLuint getAttachedType( GLenum eAttachment );
-	GLint getAttachedZSlice( GLenum eAttachment );
+	GLuint getAttachedId( GLenum attachment );
+	GLuint getAttachedType( GLenum attachment );
+	GLint getAttachedZSlice( GLenum attachment );
 
 	bool checkStatus( GLenum* pStatus = NULL );
 
 private:	
 
-	void guardedBind();
-	void guardedUnbind();
 	GLuint generateFBOId();
 
-	GLuint m_iFramebufferObjectHandle;
-	GLint m_iPreviousFramebufferObjectHandle; // yes, GLint to deal with glGetInteger weirdness
+	GLuint m_id;
 };
 
 #endif

@@ -18,7 +18,7 @@ public:
 	Random( int seed ); // seed from integer
 
 	// [0, 2^32 - 1]
-	uint nextInt();
+	uint32_t nextInt();
 
 	// [0,n) for n < 2^32
 	int nextIntExclusive( int n );

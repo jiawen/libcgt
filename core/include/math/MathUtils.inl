@@ -1,10 +1,19 @@
 #pragma once
 
+#include <algorithm>
+
 // static
 template< typename T >
 T MathUtils::lerp( const T& x, const T& y, float t )
 {
 	return( x + t * ( y - x ) );
+}
+
+// static
+template< typename T >
+T MathUtils::clampToRange( const T& x, const T& lo, const T& hi )
+{
+	return std::max( lo, std::min( x, hi ) );
 }
 
 // static

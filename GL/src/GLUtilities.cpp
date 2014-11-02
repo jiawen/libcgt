@@ -11,19 +11,11 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-Matrix4f GLUtilities::orthoCamera( int viewportWidth, int viewportHeight )
+void GLUtilities::clearDepthNV( double d )
 {
-	float tx = -1;
-	float ty = -1;
-	float tz = 0;
+	glClearDepth( d );
 
-	return Matrix4f
-	(
-		2.f / viewportWidth,	0,						0,	tx,
-		0,						2.f / viewportHeight,	0,	ty,
-		0,						0,						-1,	tz,
-		0,						0,						0,	1
-	);
+	glClearDepthdNV( d );
 }
 
 // static
@@ -65,6 +57,46 @@ void GLUtilities::setupOrthoCamera( int viewportWidth, int viewportHeight )
 void GLUtilities::setupOrthoCamera( const Vector2i& viewportSize )
 {
 	setupOrthoCamera( viewportSize.x, viewportSize.y );
+}
+
+// static
+Rect2f GLUtilities::getViewport()
+{
+	float vp[4];
+	glGetFloatv( GL_VIEWPORT, vp );
+	return Rect2f( vp[0], vp[1], vp[2], vp[3] );
+}
+
+// static
+Box3f GLUtilities::getViewport3D()
+{
+	float vp[4];
+	glGetFloatv( GL_VIEWPORT, vp );
+
+	float dr[2];
+	glGetFloatv( GL_DEPTH_RANGE, dr );
+
+	float zNear = dr[0];
+	float zFar = dr[1];
+	return Box3f( vp[0], vp[1], zNear, vp[2], vp[3], zFar - zNear );
+}
+
+// static
+void GLUtilities::setViewport( const Rect2f& vp )
+{
+	glViewport( vp.left(), vp.bottom(), vp.width(), vp.height() );
+}
+
+// static
+void GLUtilities::setDepthRange( GLclampd zNear, GLclampd zFar )
+{
+	glDepthRange( zNear, zFar );
+}
+
+// static
+void GLUtilities::setDepthRangeNV( double zNear, double zFar )
+{
+	glDepthRangedNV( zNear, zFar );
 }
 
 // static
@@ -260,7 +292,7 @@ void GLUtilities::dumpFrameBufferLuminanceBinary( int x, int y, int width, int h
 	dimensions[1] = height;
 
 	float* pixels = new float[ width * height ];
-	glReadPixels( x, y, width, height, GL_LUMINANCE, GL_FLOAT, pixels );
+	glReadPixels( x, y, width, height, GL_RED, GL_FLOAT, pixels );
 	
 	FILE* fp = fopen( szFilename, "wb" );
 	fwrite( dimensions, sizeof( int ), 2, fp );
@@ -274,7 +306,7 @@ void GLUtilities::dumpFrameBufferLuminanceBinary( int x, int y, int width, int h
 void GLUtilities::dumpFrameBufferLuminanceText( int x, int y, int width, int height, const char* szFilename )
 {
 	float* pixels = new float[ width * height ];
-	glReadPixels( x, y, width, height, GL_LUMINANCE, GL_FLOAT, pixels );
+    glReadPixels( x, y, width, height, GL_RED, GL_FLOAT, pixels );
 
 	FILE* fp = fopen( szFilename, "w" );
 	fprintf( fp, "Width = %d, Height = %d\n", width, height );
@@ -353,7 +385,7 @@ void GLUtilities::printGLVersion()
 }
 
 // static
-bool GLUtilities::printGLLastError()
+bool GLUtilities::printLastError()
 {
 	bool noErrorOccurred = false;
 
@@ -361,7 +393,7 @@ bool GLUtilities::printGLLastError()
 	switch( glError )
 	{
 	case GL_NO_ERROR:
-		// fprintf( stderr, "GL_NO_ERROR\n" );
+		fprintf( stderr, "GL_NO_ERROR\n" );
 		noErrorOccurred = true;
 		break;
 	case GL_INVALID_ENUM:

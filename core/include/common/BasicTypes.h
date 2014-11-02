@@ -1,80 +1,58 @@
 #pragma once
 
+#include <cstdint>
 #include <cstdio>
 
-#ifndef sbyte
-typedef signed char			sbyte;
-#endif
-
-#ifndef ubyte
-typedef unsigned char		ubyte;
-#endif
-
-#ifndef ubyte2
+#ifndef int8x2
 typedef struct
 {
-	ubyte x;
-	ubyte y;
-} ubyte2;
+    int8_t x;
+    int8_t y;
+} int8x2;
 #endif
 
-#ifndef ubyte3
+#ifndef int8x3
 typedef struct
 {
-	ubyte x;
-	ubyte y;
-	ubyte z;
-} ubyte3;
+    int8_t x;
+    int8_t y;
+    int8_t z;
+} int8x3;
 #endif
 
-#ifndef ubyte4
+#ifndef int8x4
 typedef struct
 {
-	ubyte x;
-	ubyte y;
-	ubyte z;
-	ubyte w;
-} ubyte4;
+    int8_t x;
+    int8_t y;
+    int8_t z;
+    int8_t w;
+} int8x4;
 #endif
 
-#ifndef ushort
-typedef unsigned short		ushort;
+#ifndef uint8x2
+typedef struct
+{
+	uint8_t x;
+	uint8_t y;
+} uint8x2;
 #endif
 
-#ifndef uint
-typedef unsigned int		uint;
+#ifndef uint8x3
+typedef struct
+{
+	uint8_t x;
+	uint8_t y;
+	uint8_t z;
+} uint8x3;
 #endif
 
-// int 8, 16, 32, 64
-
-#ifndef int8
-typedef signed char			int8;
-#endif
-
-#ifndef uint8
-typedef unsigned char		uint8;
-#endif
-
-#ifndef int16
-typedef short				int16;
-#endif
-
-#ifndef uint16
-typedef unsigned short		uint16;
-#endif
-
-#ifndef int32
-typedef int					int32;
-#endif
-
-#ifndef uint32
-typedef unsigned int		uint32;
-#endif
-
-#ifndef int64
-typedef long long			int64;
-#endif
-
-#ifndef uint64
-typedef unsigned long long	uint64;
+#ifndef uint8x4
+typedef struct
+{
+	uint8_t x;
+	uint8_t y;
+	uint8_t z;
+	uint8_t w;
+} uint8x4;
 #endif

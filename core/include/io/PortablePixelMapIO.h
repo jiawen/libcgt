@@ -11,19 +11,10 @@ class PortablePixelMapIO
 public:
 
 	// TODO: text vs binary
-
-	/*
-	// scale > 0 is big endian, < 0 is little endian
-	static bool writeRGB( QString filename,
-		Vector3f* avRGB,
-		int width, int height,
-		float scale = -1.0f );
-		*/
-
 	// TODO: can optimize this by checking stride for packed to write binary
-	static bool writeRGB( QString filename, Array2DView< ubyte3 > image );		
 
-    // TODO: clamp to [0,1]
-	// elements of image needs to be in [0,1]^3
-	static bool writeRGB( QString filename, Array2DView< Vector3f > image );
+	static bool write( QString filename, Array2DView< uint8x3 > image );		
+
+    // The input is clamped to [0,1]	
+	static bool write( QString filename, Array2DView< Vector3f > image );
 };

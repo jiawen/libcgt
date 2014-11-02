@@ -17,18 +17,18 @@ class CompressedSparseMatrix
 {
 public:	
 
-	CompressedSparseMatrix( MatrixType matrixType = GENERAL, uint nRows = 0, uint nCols = 0, uint nnz = 0 );
+	CompressedSparseMatrix( MatrixType matrixType = GENERAL, uint32_t nRows = 0, uint32_t nCols = 0, uint32_t nnz = 0 );
 
-	void reset( uint nRows, uint nCols, uint nnz );
+	void reset( uint32_t nRows, uint32_t nCols, uint32_t nnz );
 
-	uint numNonZeros() const;
-	uint numRows() const;
-	uint numCols() const;
+	uint32_t numNonZeros() const;
+	uint32_t numRows() const;
+	uint32_t numCols() const;
 
 	// only valid where the structure is already defined
 	// get and put takes O( log( nnz ) ) since it requires a binary search tree lookup
-	T get( uint i, uint j ) const;
-	void put( uint i, uint j, const T& value );
+	T get( uint32_t i, uint32_t j ) const;
+	void put( uint32_t i, uint32_t j, const T& value );
 
 	MatrixType matrixType() const;
 
@@ -39,8 +39,8 @@ public:
 	// the vector of inner indices
 	//   innerIndices has length numNonZeroes(), the same as values().size()
 	//   innerIndices[k] is the row index of the k-th non-zero element in values()
-	std::vector< uint >& innerIndices();
-	const std::vector< uint >& innerIndices() const;
+	std::vector< uint32_t >& innerIndices();
+	const std::vector< uint32_t >& innerIndices() const;
 
 	// the vector of outer index pointers
 	// compressed sparse column format:
@@ -48,8 +48,8 @@ public:
 	//   outerIndexPointers[j] is the index of the first element of column j in values()
 	//   outerIndexPointers[j+1] - outerIndices[j] = # non-zero elements in column j
 	//   outerIndexPointers[numCols()] = numNonZeroes()
-	std::vector< uint >& outerIndexPointers();
-	const std::vector< uint >& outerIndexPointers() const;
+	std::vector< uint32_t >& outerIndexPointers();
+	const std::vector< uint32_t >& outerIndexPointers() const;
 	
 	// returns a data structure mapping indices (i,j)
 	// to indices in values() and innerIndices()
@@ -106,12 +106,12 @@ private:
 
 	MatrixType m_matrixType;
 
-	uint m_nRows;
-	uint m_nCols;
+	uint32_t m_nRows;
+	uint32_t m_nCols;
 
 	std::vector< T > m_values;
-	std::vector< uint > m_innerIndices;
-	std::vector< uint > m_outerIndexPointers;
+	std::vector< uint32_t > m_innerIndices;
+	std::vector< uint32_t > m_outerIndexPointers;
 
 	// structure dictionary
 	// mapping matrix coordinates (i,j) --> index k

@@ -7,337 +7,99 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-// -----------------------------------------------------------------------
-// Static
-// -----------------------------------------------------------------------
-
 // static
-GLBufferObject* GLBufferObject::getBoundBufferObject( GLBufferObject::GLBufferObjectTarget target )
+bool GLBufferObject::copy( GLBufferObject* pSource, GLBufferObject* pDestination,
+						  GLintptr sourceOffsetBytes, GLintptr destinationOffsetBytes,
+						  GLsizeiptr nBytes )
 {
-	return s_apBindingTable[ GLBufferObject::getBindingTableIndex( target ) ];
-}
-
-// static
-void GLBufferObject::unbind( GLBufferObject::GLBufferObjectTarget target )
-{
-	if( getBoundBufferObject( target ) != NULL )
+	if( sourceOffsetBytes >= pSource->numBytes() ||
+		destinationOffsetBytes >= pDestination->numBytes() ||
+		sourceOffsetBytes + nBytes >= pSource->numBytes() ||
+		destinationOffsetBytes + nBytes >= pDestination->numBytes() )
 	{
-		glBindBuffer( target, 0 );
-		setBoundBufferObject( target, NULL );
+		return false;
 	}
+
+	glNamedCopyBufferSubDataEXT( pSource->m_id, pDestination->m_id,
+		sourceOffsetBytes, destinationOffsetBytes,
+		nBytes );
+	return true;
 }
 
-// -----------------------------------------------------------------------
-// Non-Static
-// -----------------------------------------------------------------------
-
-GLBufferObject::GLBufferObject( GLBufferObject::GLBufferObjectTarget target,
-							   GLBufferObject::GLBufferObjectUsage usage,
-							   int nElements, int bytesPerElement,
+GLBufferObject::GLBufferObject( size_t nBytes,
+							   GLbitfield flags,
 							   const void* data ) :
 
-	m_nElements( nElements ),
-	m_nBytesPerElement( bytesPerElement ),
-	m_nBytes( nElements * bytesPerElement )
+	m_id( 0 ),
+	m_nBytes( nBytes )
 
 {
 	// printf( "GLBufferObject: allocating %f megabytes\n", nElements * bytesPerElement / 1048576.f );
 
-	glGenBuffers( 1, &m_iBufferId );
-	bind( target );
-	glBufferData( target, m_nBytes, data, usage );
-}
+	// TODO: OpenGL 4.4: move to glBufferStorage and different flags
+	// http://www.opengl.org/wiki/GLAPI/glBufferStorage
 
-// static
-char* GLBufferObject::convertOffsetToPointer( int i, int elementSize )
-{
-	int offset = i * elementSize;
-	return( ( ( char* )NULL ) + offset );
-}
-
-// static
-int GLBufferObject::convertPointerToOffset( char* pPtr, int elementSize )
-{
-	// TODO_x64
-	int offsetBytes = ( int )( ( ( char* )pPtr ) - ( ( char* )NULL ) );
-
-	assert( offsetBytes % elementSize == 0 ); // check alignment
-	return offsetBytes / elementSize;
+	glGenBuffers( 1, &m_id );
+	glNamedBufferStorageEXT( m_id, nBytes, data, flags );
 }
 
 // virtual
 GLBufferObject::~GLBufferObject()
 {
-	unbindAll();
-	glDeleteBuffersARB( 1, &m_iBufferId );
+	glDeleteBuffers( 1, &m_id );
 }
 
-int GLBufferObject::getNumElements()
+GLuint GLBufferObject::id() const
 {
-	return m_nElements;
+	return m_id;
 }
 
-// get the number of bytes per element
-int GLBufferObject::getNumBytesPerElement()
-{
-	return m_nBytesPerElement;
-}
-
-// gets the total number of bytes
-int GLBufferObject::getNumBytes()
+size_t GLBufferObject::numBytes() const
 {
 	return m_nBytes;
 }
 
-void GLBufferObject::bind( GLBufferObject::GLBufferObjectTarget target )
+Array1DView< uint8_t > GLBufferObject::map( Access access )
 {
-	if( !isBoundToTarget( target ) )
-	{
-		setBoundBufferObject( target, this );
-		glBindBuffer( target, m_iBufferId );
-	}
+    return Array1DView< uint8_t >(
+        glMapNamedBufferEXT( m_id, static_cast< GLbitfield >( access ) ),
+        m_nBytes );
 }
 
-void GLBufferObject::unbindAll()
+Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offset, GLsizeiptr length, GLBufferObject::Access access )
 {
-	unbind( GLBufferObject::TARGET_ARRAY_BUFFER );
-	unbind( GLBufferObject::TARGET_ELEMENT_ARRAY_BUFFER );
-	unbind( GLBufferObject::TARGET_PIXEL_PACK_BUFFER );
-	unbind( GLBufferObject::TARGET_PIXEL_UNPACK_BUFFER );
+    return Array1DView< uint8_t >(
+        glMapNamedBufferRangeEXT( m_id, offset, length, static_cast< GLbitfield >( access ) ),
+        length );
 }
 
-void* GLBufferObject::map( GLBufferObject::GLBufferObjectTarget target,
-						  GLBufferObject::GLBufferObjectAccess access )
+void GLBufferObject::unmap()
 {
-	assert( target != TARGET_NO_TARGET );
-	if( isBoundToTarget( target ) )
-	{
-		return glMapBuffer( target, access );
-	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer Object not bound to target\n" );
-		assert( false );		
-	}
-#endif
-	return NULL;
+	glUnmapNamedBufferEXT( m_id );
 }
 
-uint8_t* GLBufferObject::mapToUnsignedByteArray( GLBufferObjectTarget target, GLBufferObjectAccess access )
+bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
 {
-	return reinterpret_cast< uint8_t* >( map( target, access ) );
-}
-
-float* GLBufferObject::mapToFloatArray( GLBufferObjectTarget target, GLBufferObjectAccess access )
-{
-	return reinterpret_cast< float* >( map( target, access ) );
-}
-
-void GLBufferObject::unmap( GLBufferObject::GLBufferObjectTarget target )
-{
-	assert( target != TARGET_NO_TARGET );
-	if( isBoundToTarget( target ) )
+	if( srcOffset + dst.length() > m_nBytes )
 	{
-		glUnmapBuffer( target );
-	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer Object not bound to target\n" );
-		assert( false );
-	}
-#endif
-}
-
-void* GLBufferObject::getData( GLBufferObject::GLBufferObjectTarget target )
-{
-	assert( target != TARGET_NO_TARGET );
-
-	uint8_t* dataOut = NULL;
-
-	if( isBoundToTarget( target ) )
-	{
-		dataOut = new uint8_t[ m_nBytes ];
-		glGetBufferSubData( target, 0, m_nBytes, dataOut );
+		return false;
 	}
 
-	return dataOut;
+	glGetNamedBufferSubDataEXT( m_id, srcOffset, dst.length(), dst.pointer() );
+	return true;
 }
 
-void GLBufferObject::setFloatSubData( GLBufferObject::GLBufferObjectTarget target,
-									 const float* afData, int nElements,
-									 int nFloatsOffset )
+bool GLBufferObject::set( Array1DView< uint8_t > src, GLintptr dstOffset )
 {
-	assert( target != TARGET_NO_TARGET );
-
-	if( ( nFloatsOffset + nElements ) <= m_nElements )
+	if( !( src.packed() ) )
 	{
-		if( isBoundToTarget( target ) )
-		{
-			GLintptr offset = nFloatsOffset * sizeof( float );
-			GLsizeiptr size = nElements * m_nBytesPerElement;
-
-			glBufferSubData( target, offset, size, afData );
-		}
+		return false;
 	}
-}
-
-void GLBufferObject::setIntSubData( GLBufferObject::GLBufferObjectTarget target,
-								   const int* aiData, int nElements,
-								   int nIntsOffset )
-{
-	assert( target != TARGET_NO_TARGET );
-
-	if( ( nIntsOffset + nElements ) <= m_nElements )
+	if( dstOffset + src.length() > m_nBytes )
 	{
-		if( isBoundToTarget( target ) )
-		{
-			GLintptr offset = nIntsOffset * sizeof( int );
-			GLsizeiptr size = nElements * m_nBytesPerElement;
-
-			glBufferSubData( target, offset, size, aiData );
-		}
-#if _DEBUG
-		else
-		{
-			fprintf( stderr, "Buffer Object not bound to target\n" );
-			assert( false );
-		}
-#endif
+		return false;
 	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer overflow.  nElements + nIntsOffset = %d, m_nElements = %d\n",
-			nElements + nIntsOffset, m_nElements );
-		assert( false );
-	}
-#endif
-}
-
-// sets a sub-array of this buffer object from data in aubData
-void GLBufferObject::setUnsignedByteSubData( GLBufferObject::GLBufferObjectTarget target,
-											const uint8_t* data, int nElements,
-											int offset )
-{
-	assert( target != TARGET_NO_TARGET );
-
-	if( ( offset + nElements ) <= m_nElements )
-	{
-		if( isBoundToTarget( target ) )
-		{
-			GLsizeiptr size = nElements * m_nBytesPerElement;
-
-			glBufferSubData( target, offset, size, data );
-		}
-#if _DEBUG
-		else
-		{
-			fprintf( stderr, "Buffer Object not bound to target\n" );
-			assert( false );
-		}
-#endif
-	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer overflow.  nElements + nUnsignedBytesOffset = %d, m_nElements = %d\n",
-			nElements + nUnsignedBytesOffset, m_nElements );
-		assert( false );
-	}
-#endif
-}
-
-void GLBufferObject::setUnsignedIntSubData( GLBufferObject::GLBufferObjectTarget target,
-										   const uint* auiData, int nElements,
-										   int nUnsignedIntsOffset )
-{
-	assert( target != TARGET_NO_TARGET );
-
-	if( ( nUnsignedIntsOffset + nElements ) <= m_nElements )
-	{
-		if( isBoundToTarget( target ) )
-		{
-			GLintptr offset = nUnsignedIntsOffset * sizeof( uint );
-			GLsizeiptr size = nElements * m_nBytesPerElement;
-
-			glBufferSubData( target, offset, size, auiData );
-		}
-#if _DEBUG
-		else
-		{
-			fprintf( stderr, "Buffer Object not bound to target\n" );
-			assert( false );
-		}
-#endif
-	}
-#if _DEBUG
-	else
-	{
-		fprintf( stderr, "Buffer overflow.  nElements + nUnsignedIntsOffset = %d, m_nElements = %d\n",
-			nElements + nUnsignedIntsOffset, m_nElements );
-		assert( false );
-	}
-#endif
-}
-
-void GLBufferObject::dumpToTXTFloat( const char* filename )
-{
-	fprintf( stderr, "fix me!\n" );
-	assert( false );
-	/*
-	// HACK: put in type
-	bind( GLBufferObject::TARGET_ARRAY_BUFFER );
-	float* data = reinterpret_cast< float* >( getData( GLBufferObject::TARGET_ARRAY_BUFFER ) );
-	ArrayWithLength< float > arr( data, getNumBytes() / sizeof( float ) );
-	ArrayUtils::dumpFloatArrayToFileText( arr, filename );
-	arr.destroy();
-	unbind( GLBufferObject::TARGET_ARRAY_BUFFER );
-	*/
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
-
-// static
-GLBufferObject* GLBufferObject::s_apBindingTable[4] =
-{
-	NULL,
-	NULL,
-	NULL,
-	NULL
-};
-
-// static
-int GLBufferObject::getBindingTableIndex( GLBufferObject::GLBufferObjectTarget target )
-{	
-	switch( target )
-	{
-	case GLBufferObject::TARGET_ARRAY_BUFFER:
-		return 0;
-	case GLBufferObject::TARGET_ELEMENT_ARRAY_BUFFER:
-		return 1;
-	case GLBufferObject::TARGET_PIXEL_PACK_BUFFER:
-		return 2;
-	case GLBufferObject::TARGET_PIXEL_UNPACK_BUFFER:
-		return 3;
-	default:
-		fprintf( stderr, "Can't get here!\n" );
-		assert( false );
-		return -1;
-	}
-}
-
-// static
-void GLBufferObject::setBoundBufferObject( GLBufferObject::GLBufferObjectTarget target,
-										  GLBufferObject* pBufferObject )
-{
-	s_apBindingTable[ getBindingTableIndex( target ) ] = pBufferObject;
-}
-
-bool GLBufferObject::isBoundToTarget( GLBufferObject::GLBufferObjectTarget target )
-{
-	return( getBoundBufferObject( target ) == this );
+	
+	glNamedBufferSubDataEXT( m_id, dstOffset, src.length(), src.pointer() );
+	return true;
 }

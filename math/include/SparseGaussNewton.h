@@ -33,8 +33,8 @@ public:
 
 	void setEnergy( std::shared_ptr< SparseEnergy > pEnergy );
 
-	uint maxNumIterations() const;
-	void setMaxNumIterations( uint maxNumIterations );
+	uint32_t maxNumIterations() const;
+	void setMaxNumIterations( uint32_t maxNumIterations );
 
 	float epsilon() const;
 	void setEpsilon( float epsilon );

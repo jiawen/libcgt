@@ -2,14 +2,36 @@
 
 #include <cstdio>
 
-#include "GLUtilities.h"
-
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
 
 // static
-int GLTexture::getMaxTextureSize()
+GLenum GLTexture::activeTextureUnit()
+{
+	int textureUnit;
+	glGetIntegerv( GL_ACTIVE_TEXTURE, &textureUnit );
+	return static_cast< GLenum >( textureUnit );
+}
+
+// static
+int GLTexture::maxTextureImageUnits()
+{
+	int maxTIU;
+	glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &maxTIU );
+	return maxTIU;
+}
+
+// static
+int GLTexture::maxCombinedTextureImageUnits()
+{
+	int maxCTIU;
+	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCTIU );
+	return maxCTIU;
+}
+
+// static
+int GLTexture::maxSize1D2D()
 {
 	int maxSize;
 	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &maxSize );
@@ -17,116 +39,57 @@ int GLTexture::getMaxTextureSize()
 }
 
 // static
-GLfloat GLTexture::getLargestSupportedAnisotropy()
+int GLTexture::maxSize3D()
 {
-	GLfloat largestSupportedAnisotropy;
-	glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largestSupportedAnisotropy );
-	return largestSupportedAnisotropy;
+	int maxSize;
+	glGetIntegerv( GL_MAX_3D_TEXTURE_SIZE, &maxSize );
+	return maxSize;
+}
+
+// static
+int GLTexture::maxSizeCubeMap()
+{
+	int maxSize;
+	glGetIntegerv( GL_MAX_CUBE_MAP_TEXTURE_SIZE, &maxSize );
+	return maxSize;
 }
 
 // virtual
 GLTexture::~GLTexture()
 {
 	unbind();
-	glDeleteTextures( 1, &m_iTextureId );
+	glDeleteTextures( 1, &m_id );
 }
 
 void GLTexture::bind()
 {
-	glBindTexture( m_eTarget, m_iTextureId );
+	glBindTexture( m_target, m_id );
 }
 
 void GLTexture::unbind()
 {
-	glBindTexture( m_eTarget, 0 );
+	glBindTexture( m_target, 0 );
 }
 
-GLuint GLTexture::getTextureId()
+GLuint GLTexture::id()
 {
-	return m_iTextureId;
+	return m_id;
 }
 
-GLenum GLTexture::getTarget()
+GLenum GLTexture::target()
 {
-	return m_eTarget;
+	return m_target;
 }
 
-GLTexture::GLTextureInternalFormat GLTexture::getInternalFormat()
+GLImageInternalFormat GLTexture::internalFormat()
 {
-	return m_eInternalFormat;
-}
-
-int GLTexture::getNumComponents()
-{
-	return m_nComponents;
-}
-
-int GLTexture::getNumBitsPerComponent()
-{
-	return m_nBitsPerComponent;
-}
-
-GLTexture::GLTextureFilterMode GLTexture::getMinFilterMode()
-{
-	bind();
-
-	GLint mode;
-
-	glGetTexParameteriv( m_eTarget, GL_TEXTURE_MIN_FILTER, &mode );
-
-	return( ( GLTexture::GLTextureFilterMode )mode );
-}
-
-GLTexture::GLTextureFilterMode GLTexture::getMagFilterMode()
-{
-	bind();
-
-	GLint mode;
-
-	glGetTexParameteriv( m_eTarget, GL_TEXTURE_MAG_FILTER, &mode );
-
-	return( ( GLTexture::GLTextureFilterMode )mode );
-}
-
-void GLTexture::setFilterModeNearest()
-{
-	setFilterMode( GLTexture::GLTextureFilterMode_NEAREST );
-}
-
-void GLTexture::setFilterModeLinear()
-{
-	setFilterMode( GLTexture::GLTextureFilterMode_LINEAR );
-}
-
-void GLTexture::setFilterMode( GLTexture::GLTextureFilterMode minAndMagMode )
-{
-	setFilterMode( minAndMagMode, minAndMagMode );
-}
-
-void GLTexture::setFilterMode( GLTexture::GLTextureFilterMode minFilterMode, GLTexture::GLTextureFilterMode magFilterMode )
-{
-	bind();
-
-	glTexParameteri( m_eTarget, GL_TEXTURE_MIN_FILTER, static_cast< GLint >( minFilterMode ) );
-	glTexParameteri( m_eTarget, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( magFilterMode ) );
-}
-
-void GLTexture::setAnisotropicFiltering( GLfloat anisotropy )
-{
-	bind();
-	glTexParameterf( m_eTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
-}
-
-void GLTexture::setWrapMode( GLenum eParam, GLint iMode )
-{
-	bind();
-	glTexParameteri( m_eTarget, eParam, iMode );
+	return m_internalFormat;
 }
 
 // virtual
 void GLTexture::getFloat1Data( float* afOutput, int level )
 {
-	GLenum format = GL_LUMINANCE;
+	GLenum format = GL_RED;
 	getTexImage( level, format, GL_FLOAT, afOutput );
 }
 
@@ -147,7 +110,7 @@ void GLTexture::getFloat4Data( float* afOutput, int level )
 // virtual
 void GLTexture::getUnsignedByte1Data( uint8_t* aubOutput, int level )
 {
-	GLenum format = GL_LUMINANCE;
+	GLenum format = GL_RED;
 	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
 }
 
@@ -169,218 +132,13 @@ void GLTexture::getUnsignedByte4Data( uint8_t* aubOutput, int level )
 // Protected
 //////////////////////////////////////////////////////////////////////////
 
-GLTexture::GLTexture( GLenum eTarget, GLTexture::GLTextureInternalFormat internalFormat ) :
+GLTexture::GLTexture( GLenum target, GLImageInternalFormat internalFormat ) :
 
-	m_eTarget( eTarget ),
-	m_eInternalFormat( internalFormat )
+m_target( target ),
+	m_internalFormat( internalFormat )
 
 {
-	glGenTextures( 1, &m_iTextureId );
-	glBindTexture( m_eTarget, m_iTextureId );
-
-    // TODO: make this a function
-	switch( internalFormat )
-	{
-		case R_8_BYTE_UNORM:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RG_8_BYTE_UNORM:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGB_8_BYTE_UNORM:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGBA_8_BYTE_UNORM:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case R_8_INT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RG_8_INT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGB_8_INT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGBA_8_INT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case R_8_UINT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RG_8_UINT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGB_8_UINT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case RGBA_8_UINT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 8;
-			break;
-
-		case R_16_INT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RG_16_INT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGB_16_INT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGBA_16_INT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case R_16_UINT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RG_16_UINT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGB_16_UINT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGBA_16_UINT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case R_32_INT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RG_32_INT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGB_32_INT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGBA_32_INT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case R_32_UINT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RG_32_UINT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGB_32_UINT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGBA_32_UINT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case R_16_FLOAT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RG_16_FLOAT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGB_16_FLOAT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case RGBA_16_FLOAT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case R_32_FLOAT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RG_32_FLOAT:
-			m_nComponents = 2;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGB_32_FLOAT:
-			m_nComponents = 3;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case RGBA_32_FLOAT:
-			m_nComponents = 4;
-			m_nBitsPerComponent = 32;
-			break;
-
-		case GLTexture::DEPTH_COMPONENT_16:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 16;
-			break;
-
-		case GLTexture::DEPTH_COMPONENT_24:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 24;
-			break;
-
-		case GLTexture::DEPTH_COMPONENT_32:
-        	m_nComponents = 1;
-			m_nBitsPerComponent = 32;
-			break;
-            
-		case GLTexture::DEPTH_COMPONENT_32_FLOAT:
-			m_nComponents = 1;
-			m_nBitsPerComponent = 32;
-			break;
-	}
+	glGenTextures( 1, &m_id );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -389,6 +147,7 @@ GLTexture::GLTexture( GLenum eTarget, GLTexture::GLTextureInternalFormat interna
 
 void GLTexture::getTexImage( GLint level, GLenum format, GLenum type, void* avOutput )
 {
+    // TODO: don't need binding with DSA
 	bind();
-	glGetTexImage( m_eTarget, level, format, type, avOutput );
+	glGetTexImage( m_target, level, format, type, avOutput );
 }

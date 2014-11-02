@@ -62,8 +62,7 @@ public:
 	// TODO: http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
 	// look at the other ones - nlerp and log-quaternion lerp
 
-	// TODO: epsilon
-	static Quat4d slerp( const Quat4d& q0, const Quat4d& q1, double alpha, double cosOmegaThreshold = 0.9995 );
+	static Quat4d slerp( const Quat4d& a, const Quat4d& b, float t, bool allowFlip );
 
 	// returns a unit quaternion that's a uniformly distributed rotation
 	// given u[i] is a uniformly distributed random number in [0,1]

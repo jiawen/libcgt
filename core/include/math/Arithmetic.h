@@ -80,9 +80,11 @@ public:
 	
 	// From: http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
 	// returns 0 if v is 0 (add v += ( v == 0 )) to return 1 in that case
-	static uint roundUpToNearestPowerOfTwo( uint v );
+	static uint32_t roundUpToNearestPowerOfTwo( uint32_t v );
 
-	// leaves x alone if it's already a multiple
+	// Rounds x up to the nearest multiple of <n>.
+    // If x is already a multile of <n>, then returns x.
+    // Still works when x is zero or negative.
 	static int roundUpToNearestMultipleOf4( int x );
 	static int roundUpToNearestMultipleOf8( int x );
 	static int roundUpToNearestMultipleOf16( int x );

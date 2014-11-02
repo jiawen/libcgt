@@ -172,12 +172,12 @@ void SparseGaussNewton::setEnergy( std::shared_ptr< SparseEnergy > pEnergy )
 	m_jtr.resize( n, 1 );
 }
 
-uint SparseGaussNewton::maxNumIterations() const
+uint32_t SparseGaussNewton::maxNumIterations() const
 {
 	return m_maxNumIterations;
 }
 
-void SparseGaussNewton::setMaxNumIterations( uint maxNumIterations )
+void SparseGaussNewton::setMaxNumIterations( uint32_t maxNumIterations )
 {
 	m_maxNumIterations = maxNumIterations;
 }

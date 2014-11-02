@@ -4,10 +4,13 @@
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
-#include <color/ColorUtils.h>
+
+#include "imageproc/ColorUtils.h"
+
+using namespace libcgt::core::imageproc::colorutils;
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< ubyte3 > image )
+bool PortablePixelMapIO::write( QString filename, Array2DView< uint8x3 > image )
 {
 	QFile outputFile( filename );
 
@@ -31,7 +34,7 @@ bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< ubyte3 > image
 	{
 		for( int x = 0; x < image.width(); ++x )
 		{
-			ubyte3 rgb = image( x, y );
+			uint8x3 rgb = image( x, y );
 			outputDataStream << rgb.x << rgb.y << rgb.z;			
 		}
 	}
@@ -41,7 +44,7 @@ bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< ubyte3 > image
 }
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< Vector3f > image )								  
+bool PortablePixelMapIO::write( QString filename, Array2DView< Vector3f > image )								  
 {
 	QFile outputFile( filename );
 
@@ -67,9 +70,9 @@ bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< Vector3f > ima
 		{
 			Vector3f rgb = image( x, y );
 
-			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.x );
-			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.y );
-			outputDataStream << ColorUtils::floatToUnsignedByte( rgb.z );
+            outputDataStream << toUInt8( saturate( rgb.x ) );
+            outputDataStream << toUInt8( saturate( rgb.y ) );
+            outputDataStream << toUInt8( saturate( rgb.z ) );
 		}
 	}
 

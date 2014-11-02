@@ -2,6 +2,9 @@
 
 #include "common/BasicTypes.h"
 
+// TODO: turn into pure functions
+// TODO: merge with Arithmetic
+
 class Vector2f;
 class Vector3f;
 class Vector4f;
@@ -62,8 +65,8 @@ public:
 	static int clampToRangeInclusive( int x, int lo, int hi );
 
 	// clamps x to between min (inclusive) and max (inclusive)
-	static float clampToRange( float x, float lo, float hi );
-	static double clampToRange( double x, double lo, double hi );
+	template< typename T >
+	static T clampToRange( const T& x, const T& lo, const T& hi );
 
 	// clamps v to rect (exclusive)
 	static Vector2i clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height );
@@ -82,17 +85,6 @@ public:
 
 	// clamps v to box (inclusive)
 	static Vector3f clampToBox( const Vector3f& v, const Box3f& box );
-
-	// ----- Format conversion -----
-
-	// converts a float in [-1,1] to
-	// a signed byte in [-127,127]
-	// the behavior for f outside [-1,1] is undefined
-	static sbyte floatToByteSignedNormalized( float f );
-
-	// converts a signed byte in [-127,127] to
-	// a [snorm] float in [-1,1]
-	static float signedByteToFloatNormalized( sbyte sb );
 
 	// ----- Absolute value of all components of a short vector -----
 	static Vector2f abs( const Vector2f& v );
@@ -177,13 +169,15 @@ public:
 		float fMin, float fMax );
 
 	// rescale an int range with rounding,
-	// inMax and out Max are inclusive
+	// inMax and outMax are inclusive
 	static int rescaleIntToInt( int x,
 		int inMin, int inMax,
 		int outMin, int outMax );	
 
 	// ----- Cubic spline interpolation -----
 
+	// TODO: this is Catmull-Rom?
+	// Look at 6.839 notes.
 	template< typename T >
 	static T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t );
 

@@ -23,6 +23,10 @@ void CameraUtils::adjustIntrinsicsToCrop
 	// fl' = fl
 	// pp' = pp - left
 
+    // image size is ignored
+    ( void )imageWidth;
+    ( void )imageHeight;
+
 	newFocalLengthPixels = focalLengthPixels;
 	newPrincipalPointPixels = principalPointPixels - cropWindow.origin();
 }
@@ -50,6 +54,10 @@ void CameraUtils::adjustIntrinsicsToScale
 	// ==>
 	// fl' = fl * uniformScale
 	// pp' = pp * uniformScale
+
+	// image size is ignored
+	(void)imageWidth;
+	(void)imageHeight;
 
 	newFocalLengthPixels = focalLengthPixels * uniformScale;
 	newPrincipalPointPixels = principalPointPixels * uniformScale;

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Color4f.h"
+#include "ColorMap.h"
+#include "ColorUtils.h"
 #include "Compositing.h"
-#include "Image1f.h"
-#include "Image1ub.h"
-#include "Image1i.h"
-#include "Image4f.h"
-#include "Image4ub.h"
+#include "ImageSampling.h"
+#include "GeometricTransforms.h"
 #include "Patterns.h"
+#include "Swizzle.h"

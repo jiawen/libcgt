@@ -1,20 +1,19 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <unordered_map>
 #include <utility>
 
-#include <common/BasicTypes.h>
-
 #include "MatrixCommon.h"
 
-typedef std::pair< uint, uint > SparseMatrixKey;
+typedef std::pair< uint32_t, uint32_t > SparseMatrixKey;
 
 template< typename T >
 struct SparseMatrixTriplet
 {
-	uint i;
-	uint j;
+	uint32_t i;
+	uint32_t j;
 	T value;
 };
 
@@ -30,5 +29,5 @@ struct SparseMatrixKeyHash
 };
 
 
-typedef std::map< SparseMatrixKey, uint > SparseMatrixStructureTreeMap;
-typedef std::unordered_map< SparseMatrixKey, uint, SparseMatrixKeyHash > SparseMatrixStructureHashMap;
+typedef std::map< SparseMatrixKey, uint32_t > SparseMatrixStructureTreeMap;
+typedef std::unordered_map< SparseMatrixKey, uint32_t, SparseMatrixKeyHash > SparseMatrixStructureHashMap;

@@ -18,5 +18,5 @@ bool SparseMatrixKeyColMajorLess::operator () ( const SparseMatrixKey& a, const 
 
 size_t SparseMatrixKeyHash::operator() ( const SparseMatrixKey& x ) const
 {
-	return std::hash< uint >()( x.first ) ^ std::hash< uint >()( x.second );
+	return std::hash< uint32_t >()( x.first ) ^ std::hash< uint32_t >()( x.second );
 }

@@ -5,25 +5,25 @@
 #include "CompressedSparseMatrix.h"
 
 template< typename T >
-uint DictionaryOfKeysSparseMatrix< T >::numRows() const
+uint32_t DictionaryOfKeysSparseMatrix< T >::numRows() const
 {
 	return m_nRows;
 }
 
 template< typename T >
-uint DictionaryOfKeysSparseMatrix< T >::numCols() const
+uint32_t DictionaryOfKeysSparseMatrix< T >::numCols() const
 {
 	return m_nCols;
 }
 
 template< typename T >
-uint DictionaryOfKeysSparseMatrix< T >::numNonZeroes() const
+uint32_t DictionaryOfKeysSparseMatrix< T >::numNonZeroes() const
 {
-	return static_cast< uint >( m_values.size() );
+	return static_cast< uint32_t >( m_values.size() );
 }
 
 template< typename T >
-T DictionaryOfKeysSparseMatrix< T >::operator () ( uint i, uint j ) const
+T DictionaryOfKeysSparseMatrix< T >::operator () ( uint32_t i, uint32_t j ) const
 {
 	SparseMatrixKey key( i, j );
 	auto itr = m_values.find( key );
@@ -40,7 +40,7 @@ T DictionaryOfKeysSparseMatrix< T >::operator () ( uint i, uint j ) const
 }
 
 template< typename T >
-void DictionaryOfKeysSparseMatrix< T >::put( uint i, uint j, T value )
+void DictionaryOfKeysSparseMatrix< T >::put( uint32_t i, uint32_t j, T value )
 {
 	if( value != 0 )
 	{
@@ -62,14 +62,14 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 	bool oneBased, bool upperTriangleOnly ) const
 {
 	int nnz = numNonZeroes();
-	uint m = numRows();
-	uint n = numCols();
+	uint32_t m = numRows();
+	uint32_t n = numCols();
 
 	output.reset( m, n, nnz );
 
-	uint columnsIndex = 0;
-	uint rowIndexIndex = 0;
-	uint offset = oneBased ? 1 : 0;
+	uint32_t columnsIndex = 0;
+	uint32_t rowIndexIndex = 0;
+	uint32_t offset = oneBased ? 1 : 0;
 
 	// if column compressed
 	// then build a vector of (i,j,v) and sort into (j,i)
@@ -82,8 +82,8 @@ void DictionaryOfKeysSparseMatrix< T >::compress( CompressedSparseMatrix< T >& o
 	for( auto itr = m_values.begin(); itr != m_values.end(); ++itr )
 	{
 		auto ij = itr->first;
-		uint i = ij.first;
-		uint j = ij.second;
+		uint32_t i = ij.first;
+		uint32_t j = ij.second;
 
 		if( ( !upperTriangleOnly ) ||
 			( j >= i ) )

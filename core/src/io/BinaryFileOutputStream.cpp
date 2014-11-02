@@ -1,16 +1,16 @@
-#include "io/BinaryFileWriter.h"
+#include "io/BinaryFileOutputStream.h"
 
 // ==============================================================
 // Public
 // ==============================================================
 
 // static
-BinaryFileWriter* BinaryFileWriter::open( const char* filename )
+BinaryFileOutputStream* BinaryFileOutputStream::open( const char* filename )
 {
 	FILE* fp = fopen( filename, "wb" );
 	if( fp != NULL )
 	{
-		return new BinaryFileWriter( fp );
+		return new BinaryFileOutputStream( fp );
 	}
 	else
 	{
@@ -19,29 +19,29 @@ BinaryFileWriter* BinaryFileWriter::open( const char* filename )
 }
 
 // virtual
-BinaryFileWriter::~BinaryFileWriter()
+BinaryFileOutputStream::~BinaryFileOutputStream()
 {
 	close();
 }
 
-void BinaryFileWriter::close()
+void BinaryFileOutputStream::close()
 {
 	fclose( m_pFilePointer );
 }
 
-bool BinaryFileWriter::writeInt( int i )
+bool BinaryFileOutputStream::writeInt( int i )
 {
 	size_t itemsWritten = fwrite( &i, sizeof( int ), 1, m_pFilePointer );
 	return( itemsWritten == 1 );
 }
 
-bool BinaryFileWriter::writeFloat( float f )
+bool BinaryFileOutputStream::writeFloat( float f )
 {
 	size_t itemsWritten = fwrite( &f, sizeof( float ), 1, m_pFilePointer );
 	return( itemsWritten == 1 );
 }
 
-bool BinaryFileWriter::writeFloatArray( float f[], int nCount )
+bool BinaryFileOutputStream::writeFloatArray( float f[], int nCount )
 {
 	size_t itemsWritten = fwrite( f, sizeof( float ), nCount, m_pFilePointer );
 	return( itemsWritten == nCount );
@@ -51,7 +51,7 @@ bool BinaryFileWriter::writeFloatArray( float f[], int nCount )
 // Private
 // ==============================================================
 
-BinaryFileWriter::BinaryFileWriter( FILE* pFilePointer ) :
+BinaryFileOutputStream::BinaryFileOutputStream( FILE* pFilePointer ) :
 	m_pFilePointer( pFilePointer )
 {
 

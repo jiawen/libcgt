@@ -1,26 +1,43 @@
-#ifndef GL_UTILITIES_H
-#define GL_UTILITIES_H
+#pragma once
 
 #include <GL/glew.h>
-#include "vecmath/Matrix4f.h"
-#include "vecmath/Vector2i.h"
-#include "vecmath/Rect2f.h"
+
+#include <vecmath/Matrix4f.h>
+#include <vecmath/Vector2i.h>
+#include <vecmath/Rect2f.h>
+#include <vecmath/Box3f.h>
 
 class GLUtilities
 {
 public:
 
-	static Matrix4f orthoCamera( int viewportWidth, int viewportHeight );
+	// Clears the standard clamped to [0,1] depth buffer, regardless of representation.
+	static void clearDepth( GLclampd d = 0 );
+
+	// Clears the unclamped floating point depth buffer to d.
+	static void clearDepthNV( double d );
 
 	static Matrix4f getProjectionMatrix();
 	static Matrix4f getModelviewMatrix();
 
 	// same thing as getProjectionMatrix() * getModelviewMatrix()
 	static Matrix4f getModelviewProjectionMatrix();
-
+	
 	static void setupOrthoCamera( int viewportWidth, int viewportHeight );
 
 	static void setupOrthoCamera( const Vector2i& viewportSize );
+
+	static Rect2f getViewport();
+	static Box3f getViewport3D(); // including depth range, usually [0,1]
+
+	static void setViewport( const Rect2f& vp );
+
+	// Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
+	// ARB_depth_buffer_float is still clamped
+	static void setDepthRange( GLclampd zNear, GLclampd zFar );
+	// NV_depth_buffer_float is unclamped and takes doubles
+	// (The default is still [0,1])
+	static void setDepthRangeNV( double zNear, double zFar );
 
 	// draw a screen aligned quad.  if zeroOneTextureCoordinates are true,
 	// then the tex coordinates range from 0 to 1.  Otherwise, they will range
@@ -44,12 +61,10 @@ public:
 	static void printGLVendor();
 	static void printGLVersion();	
 	
-	// prints the last GL error if there was one
-	// returns true if there was NO error
-	static bool printGLLastError();
+	// Prints the last GL error.
+	// Returns true if there was *no error*.
+	static bool printLastError();
 
 private:
 
 };
-
-#endif

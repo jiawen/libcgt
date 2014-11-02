@@ -1,12 +1,100 @@
 #include "io/PortableFloatMapIO.h"
 
+#include <QFile>
 #include <QString>
+#include <QTextStream>
 
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
 // static
-bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< float > image )
+PortableFloatMapIO::PFMData PortableFloatMapIO::read( QString filename )
+{
+	PFMData output;
+	output.valid = false;
+
+	QByteArray cstrFilename = filename.toLocal8Bit();
+	FILE* file = fopen( cstrFilename.constData(), "rb" );	
+
+	if( file == nullptr )
+	{
+		return output;
+	}
+
+	const int LINE_LENGTH = 80;
+	char line[LINE_LENGTH];
+
+	// Read format.
+	fgets( line, LINE_LENGTH, file );
+
+	// grayscale
+	if( strcmp( line, "Pf\n" ) == 0 )
+	{
+		output.nComponents = 1;
+	}
+	// RGB
+	else if( strcmp( line, "PF\n" ) == 0 )
+	{
+		output.nComponents = 3;
+	}
+	// RGBA
+	else if( strcmp( line, "PF4\n" ) == 0 )
+	{
+		output.nComponents = 4;
+	}
+	// Invalid
+	else
+	{		
+		return output;
+	}
+
+	// Read dimensions.
+	fgets( line, LINE_LENGTH, file );
+	int width;
+	int height;
+	sscanf( line, "%d %d", &width, &height );
+
+	if( width <= 0 || height <= 0 )
+	{
+		return output;
+	}
+	
+	// Read scale.
+	fgets( line, LINE_LENGTH, file );
+	sscanf( line, "%f", &( output.scale ) );
+
+	// Allocate memory.
+	uint8_t* buffer;
+	if( output.nComponents == 1 )
+	{
+		output.grayscale.resize( width, height );
+		buffer = reinterpret_cast< uint8_t* >( output.grayscale.pointer() );
+	}
+	else if( output.nComponents == 3 )
+	{
+		output.rgb.resize( width, height );
+		output.rgb.fill(Vector3f(1,1,1));
+		buffer = reinterpret_cast< uint8_t* >( output.rgb.pointer() );
+	}
+	else
+	{
+		output.rgba.resize( width, height );
+		buffer = reinterpret_cast< uint8_t* >( output.rgba.pointer() );
+	}
+
+	// Read buffer.
+	size_t nElementsRead = fread( buffer, output.nComponents * sizeof( float ), width * height, file );
+	if( nElementsRead == width * height )
+	{
+		output.valid = true;
+	}
+
+	fclose( file );
+	return output;
+}
+
+// static
+bool PortableFloatMapIO::write( QString filename, Array2DView< float > image )
 {
 	int w = image.width();
 	int h = image.height();
@@ -50,7 +138,7 @@ bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< float > 
 }
 
 // static
-bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< Vector3f > image )
+bool PortableFloatMapIO::write( QString filename, Array2DView< Vector3f > image )
 {
 	int w = image.width();
 	int h = image.height();
@@ -94,7 +182,7 @@ bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< Vector3f > ima
 }
 
 // static
-bool PortableFloatMapIO::writeRGBA( QString filename, Array2DView< Vector4f > image )
+bool PortableFloatMapIO::write( QString filename, Array2DView< Vector4f > image )
 {
 	int w = image.width();
 	int h = image.height();

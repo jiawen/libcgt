@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Box3f.h"
+#include "Box3i.h"
 #include "Matrix2d.h"
 #include "Matrix2f.h"
 #include "Matrix3d.h"

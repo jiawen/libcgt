@@ -1,6 +1,5 @@
 #pragma once
 
-#include <common/BasicTypes.h>
 #include <common/Array2D.h>
 
 class QString;
@@ -8,6 +7,8 @@ class QString;
 class PortableGrayMapIO
 {
 public:
+
+    // TODO: use views, uint8_t, uint16_t
 
 	// PGM specifies that maxVal from the file is > 0 and < 65536
 	// TODO: reads P5 (binary) only
@@ -17,13 +18,13 @@ public:
 	// else, then maxVal is guaranteed to be < 65536 and the array is (2 * width x height)
 	//   and it should be reinterpreted with:
 	//   outputShort = inputUByte.reinterpretAs< ushort >()	
-	static bool read( QString filename, Array2D< ubyte >& output, int& maxVal );
+	static bool read( QString filename, Array2D< uint8_t >& output, int& maxVal );
 };
 
 #include <QString>
 
 // static
-bool PortableGrayMapIO::read( QString filename, Array2D< ubyte >& output, int& maxVal )
+bool PortableGrayMapIO::read( QString filename, Array2D< uint8_t >& output, int& maxVal )
 {
 	QByteArray cstrFilename = filename.toLocal8Bit();
 	FILE* pFile = fopen( cstrFilename.constData(), "rb" );

@@ -3,21 +3,30 @@
 #include <common/Array2DView.h>
 #include <common/BasicTypes.h>
 
-class Swizzle
+namespace libcgt
 {
-public:
+namespace core
+{
+namespace imageproc
+{
+namespace swizzle
+{
+    // TODO: const correct inputs
 
-	// RGBA source
-	// 4 -> 4
-	static void RGBAToBGRA( Array2DView< ubyte4 > input, Array2DView< ubyte4 > output );
-	static void RGBAToARGB( Array2DView< ubyte4 > input, Array2DView< ubyte4 > output );
+    // RGBA source
+    // 4 -> 4
+    void RGBAToBGRA( Array2DView< uint8x4 > input, Array2DView< uint8x4 > output );
+    void RGBAToARGB( Array2DView< uint8x4 > input, Array2DView< uint8x4 > output );
 
-	// 4 -> 3
-	static void RGBAToRGB( Array2DView< ubyte4 > input, Array2DView< ubyte3 > output );
-	static void RGBAToBGR( Array2DView< ubyte4 > input, Array2DView< ubyte3 > output );
+    // 4 -> 3
+    void RGBAToRGB( Array2DView< uint8x4 > input, Array2DView< uint8x3 > output );
+    void RGBAToBGR( Array2DView< uint8x4 > input, Array2DView< uint8x3 > output );
 
-	// BGR source
-	// 3 to 4
-	static void BGRToRGBA( Array2DView< ubyte3 > input, Array2DView< ubyte4 > output, ubyte alpha = 255 );
-	static void BGRToBGRA( Array2DView< ubyte3 > input, Array2DView< ubyte4 > output, ubyte alpha = 255 );
-};
+    // BGR source
+    // 3 to 4
+    void BGRToRGBA( Array2DView< uint8x3 > input, Array2DView< uint8x4 > output, uint8_t alpha = 255 );
+    void BGRToBGRA( Array2DView< uint8x3 > input, Array2DView< uint8x4 > output, uint8_t alpha = 255 );
+}
+}
+}
+}
