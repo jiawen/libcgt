@@ -1,119 +1,110 @@
 #include "io/PortableFloatMapIO.h"
 
-#include <QFile>
-#include <QString>
-#include <QTextStream>
-
-#include <vecmath/Vector3f.h>
-#include <vecmath/Vector4f.h>
-
 // static
-PortableFloatMapIO::PFMData PortableFloatMapIO::read( QString filename )
+PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filename )
 {
-	PFMData output;
-	output.valid = false;
+    PortableFloatMapIO::PFMData output;
+    output.valid = false;
 
-	QByteArray cstrFilename = filename.toLocal8Bit();
-	FILE* file = fopen( cstrFilename.constData(), "rb" );	
+    FILE* fp = fopen( filename.c_str(), "rb" );
+    if( fp == nullptr )
+    {
+        return output;
+    }
 
-	if( file == nullptr )
-	{
-		return output;
-	}
+    char buffer[ 80 ];
 
-	const int LINE_LENGTH = 80;
-	char line[LINE_LENGTH];
+    // Read the top level header
+    char* readStatus = fgets( buffer, 80, fp );
+    if( readStatus == nullptr )
+    {
+        return output;
+    }
 
-	// Read format.
-	fgets( line, LINE_LENGTH, file );
+    int nComponents = 0;
+    if( strncmp( buffer, "Pf", 2 ) == 0 )
+    {
+        nComponents = 1;
+    }
+    else if( strncmp( buffer, "PF4", 3 ) == 0 )
+    {
+        nComponents = 4;
+    }
+    else if( strncmp( buffer, "PF", 2 ) == 0 )
+    {
+        nComponents = 3;
+    }    
+    else
+    {
+        fclose( fp );
+        return output;
+    }
 
-	// grayscale
-	if( strcmp( line, "Pf\n" ) == 0 )
-	{
-		output.nComponents = 1;
-	}
-	// RGB
-	else if( strcmp( line, "PF\n" ) == 0 )
-	{
-		output.nComponents = 3;
-	}
-	// RGBA
-	else if( strcmp( line, "PF4\n" ) == 0 )
-	{
-		output.nComponents = 4;
-	}
-	// Invalid
-	else
-	{		
-		return output;
-	}
+    // TODO: read comments: lines that begin with #
+    int width;
+    int height;
+    float scale;
+    int nMatches = fscanf( fp, "%d %d %f\n", &width, &height, &scale );
+    if( nMatches != 3 || width <= 0 || height <= 0 )
+    {
+        fclose( fp );
+        return output;
+    }
 
-	// Read dimensions.
-	fgets( line, LINE_LENGTH, file );
-	int width;
-	int height;
-	sscanf( line, "%d %d", &width, &height );
+    float* floatData = new float[ nComponents * width * height ];
+    size_t nElementsRead = fread( floatData, nComponents * sizeof( float ), width * height, fp );
+    if( nElementsRead != width * height )
+    {
+        delete[] floatData;
+        fclose( fp );
+        return output;
+    }
+    
+    if( nComponents == 1 )
+    {
+        output.grayscale = Array2D< float >( floatData, { width, height } );
+    }
+    else if( nComponents == 3 )
+    {
+        output.rgb = Array2D< Vector3f >( floatData, { width, height } );
+    }
+    if( nComponents == 4 )
+    {
+        output.rgba = Array2D< Vector4f >( floatData, { width, height } );
+    }
 
-	if( width <= 0 || height <= 0 )
-	{
-		return output;
-	}
-	
-	// Read scale.
-	fgets( line, LINE_LENGTH, file );
-	sscanf( line, "%f", &( output.scale ) );
-
-	// Allocate memory.
-	uint8_t* buffer;
-	if( output.nComponents == 1 )
-	{
-		output.grayscale.resize( width, height );
-		buffer = reinterpret_cast< uint8_t* >( output.grayscale.pointer() );
-	}
-	else if( output.nComponents == 3 )
-	{
-		output.rgb.resize( width, height );
-		output.rgb.fill(Vector3f(1,1,1));
-		buffer = reinterpret_cast< uint8_t* >( output.rgb.pointer() );
-	}
-	else
-	{
-		output.rgba.resize( width, height );
-		buffer = reinterpret_cast< uint8_t* >( output.rgba.pointer() );
-	}
-
-	// Read buffer.
-	size_t nElementsRead = fread( buffer, output.nComponents * sizeof( float ), width * height, file );
-	if( nElementsRead == width * height )
-	{
-		output.valid = true;
-	}
-
-	fclose( file );
-	return output;
+    output.valid = true;
+    output.nComponents = nComponents;
+    output.scale = scale;
+    fclose( fp );
+    return output;
 }
 
 // static
-bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< const float > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const float > image )
 {
 	int w = image.width();
 	int h = image.height();
 
 	// use "wb" binary mode to ensure that on Windows,
-	// newlines in the header are written out as '\n'
-	QByteArray cstrFilename = filename.toLocal8Bit();
-	FILE* pFile = fopen( cstrFilename.constData(), "wb" );
+	// newlines in the header are written out as '\n'	
+    FILE* pFile = fopen( filename.c_str(), "wb" );
 	if( pFile == nullptr )
 	{
 		return false;
 	}
 
 	// write header
-	fprintf( pFile, "Pf\n%d %d\n-1\n", w, h );
+    int nCharsWritten = fprintf( pFile, "Pf\n%d %d\n-1\n", w, h );
+    if( nCharsWritten < 0 )
+    {
+        fclose( pFile );
+        return false;
+    }
 
 	if( image.packed() )
 	{
-		fwrite( image.rowPointer( 0 ), sizeof( float ), image.width() * image.height(), pFile );
+		fwrite( image.rowPointer( 0 ), sizeof( float ), image.numElements(), pFile );
 	}
 	else if( image.elementsArePacked() )
 	{
@@ -128,7 +119,7 @@ bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< const fl
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-                fwrite( &( image[ { x, y } ] ), sizeof( float ), 1, pFile );
+                fwrite( image.elementPointer( { x, y } ), sizeof( float ), 1, pFile );
 			}
 		}
 	}
@@ -138,26 +129,30 @@ bool PortableFloatMapIO::writeGrayscale( QString filename, Array2DView< const fl
 }
 
 // static
-bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< const Vector3f > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector3f > image )
 {
 	int w = image.width();
 	int h = image.height();
 
 	// use "wb" binary mode to ensure that on Windows,
 	// newlines in the header are written out as '\n'
-	QByteArray cstrFilename = filename.toLocal8Bit();
-	FILE* pFile = fopen( cstrFilename.constData(), "wb" );
+	FILE* pFile = fopen( filename.c_str(), "wb" );
 	if( pFile == nullptr )
 	{
 		return false;
 	}
 
 	// write header
-	fprintf( pFile, "PF\n%d %d\n-1\n", w, h );
+    int nCharsWritten = fprintf( pFile, "PF\n%d %d\n-1\n", w, h );
+    if( nCharsWritten < 0 )
+    {
+        fclose( pFile );
+        return false;
+    }
 
 	if( image.packed() )
 	{
-		fwrite( image.rowPointer( 0 ), sizeof( Vector3f ), image.width() * image.height(), pFile );
+		fwrite( image.rowPointer( 0 ), sizeof( Vector3f ), image.numElements(), pFile );
 	}
 	else if( image.elementsArePacked() )
 	{
@@ -172,7 +167,7 @@ bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< const Vector3f
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-                fwrite( &( image[ { x, y } ] ), sizeof( Vector3f ), 1, pFile );
+                fwrite( image.elementPointer( { x, y } ), sizeof( Vector3f ), 1, pFile );
 			}
 		}
 	}
@@ -182,27 +177,31 @@ bool PortableFloatMapIO::writeRGB( QString filename, Array2DView< const Vector3f
 }
 
 // static
-bool PortableFloatMapIO::writeRGBA( QString filename, Array2DView< const Vector4f > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector4f > image )
 {
 	int w = image.width();
 	int h = image.height();
 
 	// use "wb" binary mode to ensure that on Windows,
 	// newlines in the header are written out as '\n'
-	QByteArray cstrFilename = filename.toLocal8Bit();
-	FILE* pFile = fopen( cstrFilename.constData(), "wb" );
+    FILE* pFile = fopen( filename.c_str(), "wb" );
 	if( pFile == nullptr )
 	{
 		return false;
 	}
 
 	// write header
-	fprintf( pFile, "PF4\n%d %d\n-1\n", w, h );
+    int nCharsWritten = fprintf( pFile, "PF4\n%d %d\n-1\n", w, h );
+    if( nCharsWritten < 0 )
+    {
+        fclose( pFile );
+        return false;
+    }
 
     // All at once.
 	if( image.packed() )
 	{
-		fwrite( image.rowPointer( 0 ), sizeof( Vector4f ), image.width() * image.height(), pFile );
+		fwrite( image.rowPointer( 0 ), sizeof( Vector4f ), image.numElements(), pFile );
 	}
     // Row by Row.
 	else if( image.elementsArePacked() )
@@ -219,7 +218,7 @@ bool PortableFloatMapIO::writeRGBA( QString filename, Array2DView< const Vector4
 		{
 			for( int x = 0; x < w; ++x )
 			{				
-                fwrite( &( image[ { x, y } ] ), sizeof( Vector4f ), 1, pFile );
+                fwrite( image.elementPointer( { x, y } ), sizeof( Vector4f ), 1, pFile );
 			}
 		}
 	}

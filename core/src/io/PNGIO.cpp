@@ -56,11 +56,11 @@ PNGIO::PNGData PNGIO::read( QString filename )
 		output.nComponents = 1;
 		if( output.bitDepth == 8 )
 		{
-			output.grey8 = Array2D< uint8_t >( bits, width, height );
+			output.grey8 = Array2D< uint8_t >( bits, { width, height } );
 		}
 		else
 		{			
-			output.grey16 = Array2D< uint16_t >( bits, width, height );
+			output.grey16 = Array2D< uint16_t >( bits, { width, height } );
 		}
 		output.valid = true;
 		break;
@@ -69,11 +69,11 @@ PNGIO::PNGData PNGIO::read( QString filename )
 		output.nComponents = 3;
 		if( output.bitDepth == 8 )
 		{
-			output.rgb8 = Array2D< ubyte3 >( bits, width, height );
+			output.rgb8 = Array2D< uint8x3 >( bits, { width, height } );
 		}
 		else
 		{
-			output.rgb16 = Array2D< ushort3 >( bits, width, height );
+			output.rgb16 = Array2D< uint16x3 >( bits, { width, height } );
 		}
 		output.valid = true;
 		break;
@@ -82,11 +82,11 @@ PNGIO::PNGData PNGIO::read( QString filename )
 		output.nComponents = 2;
 		if( output.bitDepth == 8 )
 		{
-			output.greyalpha8 = Array2D< ubyte2 >( bits, width, height );
+			output.greyalpha8 = Array2D< uint8x2 >( bits, { width, height } );
 		}
 		else
 		{
-			output.greyalpha16 = Array2D< ushort2 >( bits, width, height );
+			output.greyalpha16 = Array2D< uint16x2 >( bits, { width, height } );
 		}
 		output.valid = true;
 		break;
@@ -95,11 +95,11 @@ PNGIO::PNGData PNGIO::read( QString filename )
 		output.nComponents = 4;
 		if( output.bitDepth == 8 )
 		{
-			output.rgba8 = Array2D< ubyte4 >( bits, width, height );
+			output.rgba8 = Array2D< uint8x4 >( bits, { width, height } );
 		}
 		else
 		{
-			output.rgba16 = Array2D< ushort4 >( bits, width, height );
+			output.rgba16 = Array2D< uint16x4 >( bits, { width, height } );
 		}
 		output.valid = true;
 		break;
@@ -121,7 +121,7 @@ PNGIO::PNGData PNGIO::read( QString filename )
 }
 
 // static
-bool PNGIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
+bool PNGIO::write( const std::string& filename, Array2DView< const uint8x3 > image )
 {
 	Array2D< uint8x3 > tmpImage;
 	const uint8_t* pSrcPointer;
@@ -129,7 +129,7 @@ bool PNGIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
 	if( !image.packed() )
 	{
 		tmpImage.resize( image.size() );
-		ArrayUtils::copy< uint8x3 >( image, tmpImage	);
+		ArrayUtils::copy< uint8x3 >( image, tmpImage );
 		pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
 	}
 	else
@@ -137,10 +137,9 @@ bool PNGIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
 		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
 	}
 
-	QByteArray cstrFilename = filename.toLocal8Bit();
 	unsigned int errVal = lodepng_encode24_file
 	(
-		cstrFilename.constData(),
+		filename.c_str(),
 		pSrcPointer,
 		image.width(),
 		image.height()
@@ -151,7 +150,7 @@ bool PNGIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
 }
 
 // static
-bool PNGIO::writeRGBA( QString filename, Array2DView< const uint8x4 > image )
+bool PNGIO::write( const std::string& filename, Array2DView< const uint8x4 > image )
 {
 	Array2D< uint8x4 > tmpImage;
 	const uint8_t* pSrcPointer;
@@ -159,7 +158,7 @@ bool PNGIO::writeRGBA( QString filename, Array2DView< const uint8x4 > image )
 	if( !image.packed() )
 	{
 		tmpImage.resize( image.size() );
-		ArrayUtils::copy< uint8x4 >( image, tmpImage	);
+		ArrayUtils::copy< uint8x4 >( image, tmpImage );
 		pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
 	}
 	else
@@ -167,10 +166,9 @@ bool PNGIO::writeRGBA( QString filename, Array2DView< const uint8x4 > image )
 		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
 	}
 
-	QByteArray cstrFilename = filename.toLocal8Bit();
 	unsigned int errVal = lodepng_encode32_file
 	(
-		cstrFilename.constData(),
+		filename.c_str(),
 		pSrcPointer,
 		image.width(),
 		image.height()

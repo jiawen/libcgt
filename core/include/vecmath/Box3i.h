@@ -66,20 +66,20 @@ public:
 	// returns true if size().x < 0 or size().y < 0
 	// a box is empty iff it's not valid
 	// (a null box is empty and not valid)
-	// call normalized() to return a valid box with the corners flipped
+	// call standardized() to return a valid box with the corners flipped
 	bool isEmpty() const;
 
 	// returns true if size().x > 0 and size().y > 0
 	// a box is valid iff it's not empty
 	// (a null box is empty and not valid)
-	// call normalized() to return a valid box with the corners flipped
+	// call standardized() to return a valid box with the corners flipped
 	bool isValid() const;
 
 	// if this box is invalid,
 	// returns a valid box with positive size
 	// otherwise, returns this
-	// normalizing a null box is still a null box
-	Box3i normalized() const;
+	// Standardizing a null box is still a null box.
+    Box3i standardized() const;
 
 	QString toString() const;
 

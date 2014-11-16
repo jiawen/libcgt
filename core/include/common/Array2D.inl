@@ -1,9 +1,28 @@
 template< typename T >
 Array2D< T >::Array2D() :
-
-	m_width( 0 ),
-	m_height( 0 ),
+    m_size( 0 ),
+    m_strides( 0 ),
 	m_array( nullptr )
+
+{
+
+}
+
+template< typename T >
+Array2D< T >::Array2D( void* pointer, const Vector2i& size ) :
+    m_size( size ),
+    m_strides( { static_cast< int >( sizeof( T ) ), static_cast< int >( m_size.x * sizeof( T ) ) } ),
+    m_array( reinterpret_cast< T* >( pointer ) )
+{
+
+}
+
+template< typename T >
+Array2D< T >::Array2D( void* pointer, const Vector2i& size, const Vector2i& strides ) :
+
+    m_size( size ),
+    m_strides( strides ),
+    m_array( reinterpret_cast< T* >( pointer ) )
 
 {
 
@@ -12,44 +31,19 @@ Array2D< T >::Array2D() :
 template< typename T >
 Array2D< T >::Array2D( const char* filename ) :
 
-	m_width( 0 ),
-	m_height( 0 ),
-	m_array( nullptr )
+    m_size( 0 ),
+    m_strides( 0 ),
+    m_array( nullptr )
 
 {
 	load( filename );
 }
 
 template< typename T >
-Array2D< T >::Array2D( void* pointer, int width, int height ) :
-
-	m_width( width ),
-	m_height( height ),
-	m_array( reinterpret_cast< uint8_t* >( pointer ) )
-
-{
-
-}
-
-template< typename T >
-Array2D< T >::Array2D( int width, int height, const T& fillValue ) :
-
-	m_width( 0 ),
-	m_height( 0 ),
-	m_array( nullptr )
-
-{
-	resize( width, height );
-	fill( fillValue );
-}
-
-template< typename T >
 Array2D< T >::Array2D( const Vector2i& size, const T& fillValue ) :
-
-	m_width( 0 ),
-	m_height( 0 ),
-	m_array( nullptr )
-
+    m_size( 0 ),
+    m_strides( 0 ),
+    m_array( nullptr )
 {
 	resize( size );
 	fill( fillValue );
@@ -57,28 +51,26 @@ Array2D< T >::Array2D( const Vector2i& size, const T& fillValue ) :
 
 template< typename T >
 Array2D< T >::Array2D( const Array2D< T >& copy ) :
-
-	m_width( 0 ),
-	m_height( 0 ),
-	m_array( nullptr )
-
+    m_size( 0 ),
+    m_strides( 0 ),
+    m_array( nullptr )
 {
-	resize( copy.m_width, copy.m_height );
+    resize( copy.m_size );
 	if( copy.notNull() )
 	{
-		memcpy( m_array, copy.m_array, m_width * m_height * sizeof( T ) );
+		memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
 	}
 }
 
 template< typename T >
 Array2D< T >::Array2D( Array2D< T >&& move )
 {
-	m_width = move.m_width;
-	m_height = move.m_height;
+    m_size = move.m_size;
+    m_strides = move.m_strides;
 	m_array = move.m_array;
 
-	move.m_width = 0;
-	move.m_height = 0;
+    move.m_size = { 0, 0 };
+    move.m_strides = { 0, 0 };
 	move.m_array = nullptr;
 }
 
@@ -87,10 +79,10 @@ Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 {
 	if( this != &copy )
 	{
-		resize( copy.m_width, copy.m_height );
+        resize( copy.m_size );
 		if( copy.notNull() )
 		{
-			memcpy( m_array, copy.m_array, m_width * m_height * sizeof( T ) );
+			memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
 		}
 	}
 	return *this;
@@ -106,13 +98,13 @@ Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
 			delete[] m_array;
 		}
 
-		m_width = move.m_width;
-		m_height = move.m_height;
-		m_array = move.m_array;
+        m_size = move.m_size;
+        m_strides = move.m_strides;
+        m_array = move.m_array;
 
-		move.m_width = 0;
-		move.m_height = 0;
-		move.m_array = nullptr;
+        move.m_size = { 0, 0 };
+        move.m_strides = { 0, 0 };
+        move.m_array = nullptr;
 	}
 	return *this;
 }
@@ -139,8 +131,8 @@ bool Array2D< T >::notNull() const
 template< typename T >
 void Array2D< T >::invalidate()
 {
-	m_width = 0;
-	m_height = 0;
+    m_size = { 0, 0 };
+    m_strides = { 0, 0 };
 
 	if( m_array != nullptr )
 	{
@@ -152,43 +144,43 @@ void Array2D< T >::invalidate()
 template< typename T >
 int Array2D< T >::width() const
 {
-	return m_width;
+	return m_size.x;
 }
 
 template< typename T >
 int Array2D< T >::height() const
 {
-	return m_height;
+	return m_size.y;
 }
 
 template< typename T >
 Vector2i Array2D< T >::size() const
 {
-	return Vector2i( m_width, m_height );
+    return m_size;
 }
 
 template< typename T >
 int Array2D< T >::numElements() const
 {
-	return m_width * m_height;
-}
-
-template< typename T >
-size_t Array2D< T >::sizeInBytes() const
-{
-	return numElements() * sizeof( T );
+    return m_size.x * m_size.y;
 }
 
 template< typename T >
 int Array2D< T >::elementStrideBytes() const
 {
-	return sizeof( T );
+    return m_strides.x;
 }
 
 template< typename T >
 int Array2D< T >::rowStrideBytes() const
 {
-	return m_width * elementStrideBytes();
+    return m_strides.y;
+}
+
+template< typename T >
+Vector2i Array2D< T >::strides() const
+{
+	return m_strides;
 }
 
 template< typename T >
@@ -202,63 +194,76 @@ void Array2D< T >::fill( const T& fillValue )
 }
 
 template< typename T >
-void Array2D< T >::resize( int width, int height )
+void Array2D< T >::resize( const Vector2i& size )
+{
+    resize( size, { static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } );
+}
+
+template< typename T >
+void Array2D< T >::resize( const Vector2i& size, const Vector2i& strides )
 {
 	// if we request an invalid size
 	// then invalidate this
-	if( width <= 0 || height <= 0 )
+    if( size.x <= 0 || size.y <= 0 || strides.x <= 0 || strides.y <= 0 )
 	{
 		invalidate();
 	}
 	// otherwise, it's a valid size
 	else
 	{
-		// check if the total number of elements is the same
-		// if it is, don't reallocate
-		if( m_width * m_height != width * height )
+		// Check if the total number of memory is the same.
+		// If it is, can reuse memory.
+        if( size.y * strides.y != m_size.y * m_strides.y )
 		{
 			if( m_array != nullptr )
 			{
 				delete[] m_array;
 			}
 
-			m_array = new uint8_t[ width * height * sizeof( T ) ];
+            uint8_t* pBuffer = new uint8_t[ size.y * strides.y ];
+			m_array = reinterpret_cast< T* >( pBuffer );
 		}
 
 		// if the number of elements is the same, the dimensions may be different
-		m_width = width;
-		m_height = height;
+        m_size = size;
+        m_strides = strides;
 	}
 }
 
 template< typename T >
-void Array2D< T >::resize( const Vector2i& size )
+Array2D< T >::operator Array2DView< const T >() const
 {
-	resize( size.x, size.y );
-}
-
-template< typename T >
-Array2D< T >::operator const Array2DView< T >() const
-{
-    return Array2DView< T >( m_array, { width(), height() }, { strideBytes(), rowPitchBytes() } );
+    return Array2DView< const T >( m_array, m_size, m_strides );
 }
 
 template< typename T >
 Array2D< T >::operator Array2DView< T >()
 {
-    return Array2DView< T >( m_array, { width(), height() }, { strideBytes(), rowPitchBytes() } );
+    return Array2DView< T >( m_array, m_size, m_strides );
+}
+
+template< typename T >
+const T* Array2D< T >::elementPointer( const Vector2i& xy ) const
+{
+    return reinterpret_cast< const T* >( &( m_array[ Vector2i::dot( xy, m_strides ) ] ) );
+}
+
+template< typename T >
+T* Array2D< T >::elementPointer( const Vector2i& xy )
+{
+    return reinterpret_cast< T* >( &( m_array[ Vector2i::dot( xy, m_strides ) ] ) );
 }
 
 template< typename T >
 Array2D< T >::operator const T* () const
 {
-	return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< const T* >( &( m_array[ y * m_strides.y ] ) );
 }
 
 template< typename T >
 Array2D< T >::operator T* ()
 {
-	return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( &( m_array[ y * m_strides.y ] ) );
 }
 
 template< typename T >
@@ -302,8 +307,8 @@ const T& Array2D< T >::operator [] ( int k ) const
 {
 	int x;
 	int y;
-	Indexing::indexToSubscript2D( k, m_width, x, y );
-	return ( *this )( x, y );
+	Indexing::indexToSubscript2D( k, m_size.x, x, y );
+    return ( *this )[ { x, y } ];
 }
 
 template< typename T >
@@ -311,20 +316,8 @@ T& Array2D< T >::operator [] ( int k )
 {
 	int x;
 	int y;
-	Indexing::indexToSubscript2D( k, m_width, x, y );
-	return ( *this )( x, y );
-}
-
-template< typename T >
-const T& Array2D< T >::operator () ( int x, int y ) const
-{
-	return *elementPointer( x, y );
-}
-
-template< typename T >
-T& Array2D< T >::operator () ( int x, int y )
-{
-	return *elementPointer( x, y );
+	Indexing::indexToSubscript2D( k, m_size.x, x, y );
+    return ( *this )[ { x, y } ];
 }
 
 template< typename T >
@@ -339,52 +332,6 @@ T& Array2D< T >::operator [] ( const Vector2i& xy )
 	return ( *this )( xy.x, xy.y );
 }
 
-#if 0
-template< typename T >
-template< typename S >
-Array2D< S > Array2D< T >::reinterpretAs( int outputWidth, int outputHeight, int outputrowStrideBytes )
-{
-	Array2D< S > output;
-
-	// if source is null, then return a null array
-	if( isNull() )
-	{
-		return output;
-	}
-
-	// if the requested output widths are not default
-	// and the sizes don't fit
-	if( outputWidth != 0 || outputHeight != 0 || outputrowStrideBytes != 0 )
-	{
-		int srcBytes = rowStrideBytes * m_height;
-		int dstBytes = outputrowStrideBytes * outputHeight;
-		if( srcBytes != dstBytes )
-		{
-			return output;
-		}
-	}
-
-	output.m_array = reinterpret_cast< S* >( m_array );
-
-	if( outputWidth == 0 && outputHeight == 0 && outputrowStrideBytes == 0 )
-	{
-		output.m_width = m_width * sizeof( T ) / sizeof( S );
-		output.m_height = m_height;
-	}
-	else
-	{
-		output.m_width = outputWidth;
-		output.m_height = outputHeight;
-	}
-
-	m_array = nullptr;
-	m_width = 0;
-	m_height = 0;
-
-	return output;
-}
-#endif
-
 template< typename T >
 bool Array2D< T >::load( const char* filename )
 {
@@ -394,19 +341,21 @@ bool Array2D< T >::load( const char* filename )
 		return false;
 	}
 
-	int whp[3];
+    int dims[ 4 ];
 	size_t elementsRead;
 
-	elementsRead = fread( whp, sizeof( int ), 3, fp );
-	if( elementsRead != 3 )
+    elementsRead = fread( dims, sizeof( int ), 4, fp );
+	if( elementsRead != 4 )
 	{
 		return false;
 	}
 
-	int width = whp[0];
-	int height = whp[1];
+    int width = dims[ 0 ];
+    int height = dims[ 1 ];
+    int elementStrideBytes = dims[ 2 ];
+    int rowStrideBytes = dims[ 3 ];
 
-	size_t nBytes = width * height;
+    size_t nBytes = rowStrideBytes * height;
 	uint8_t* pBuffer = new uint8_t[ nBytes ];
 
 	// read elements
@@ -426,8 +375,8 @@ bool Array2D< T >::load( const char* filename )
 	}
 
 	// read succeeded, swap contents
-	m_width = width;
-	m_height = height;
+    m_size = { width, height };
+    m_strides = { elementStrideBytes, rowStrideBytes };
 
 	if( m_array != nullptr )
 	{
@@ -447,9 +396,9 @@ bool Array2D< T >::save( const char* filename ) const
 		return false;
 	}
 
-	fwrite( &m_width, sizeof( int ), 1, fp );
-	fwrite( &m_height, sizeof( int ), 1, fp );
-	fwrite( m_array, 1, m_width * m_height, fp );
+	fwrite( &m_size, sizeof( int ), 2, fp );
+    fwrite( &m_strides, sizeof( int ), 2, fp );
+	fwrite( m_array, 1, m_size.y * m_strides.y, fp );
 	fclose( fp );
 
 	return true;

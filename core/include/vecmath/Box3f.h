@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "vecmath/Vector3f.h"
 
 class QString;
@@ -25,6 +26,9 @@ public:
 	Vector3f size() const;
 	Vector3f& size();
 
+    Vector3f minimum() const; // Same as origin.
+    Vector3f maximum() const; // origin + size.
+
 	float left() const; // origin.x
 	float right() const; // origin.x + width
 
@@ -32,7 +36,7 @@ public:
 	float top() const; // origin.y + height
 
 	float back() const; // origin.z
-	float front() const; // origin.z + depth
+	float front() const; // origin.z + depth    
 
 	Vector3f leftBottomBack() const; // for convenience, same as origin and is considered inside
 	Vector3f rightBottomBack() const; // x is one past the end
@@ -51,6 +55,10 @@ public:
 
 	Vector3f center() const;
 
+    // Returns the 8 corners of the bounding box in hypercube order:
+    // x changes most frequently, y next, then z least frequently.
+    std::vector< Vector3f > corners() const;
+
 	// returns if this box is null:
 	// width == 0 and height == 0
 	// (a null box is empty and not valid)
@@ -59,29 +67,29 @@ public:
 	// returns true if size().x < 0 or size().y < 0
 	// a box is empty iff it's not valid
 	// (a null box is empty and not valid)
-	// call normalized() to return a valid box with the corners flipped
+	// call standardized() to return a valid box with the corners flipped
 	bool isEmpty() const;
 
 	// returns true if size().x > 0 and size().y > 0
 	// a box is valid iff it's not empty
 	// (a null box is empty and not valid)
-	// call normalized() to return a valid box with the corners flipped
+	// call standardized() to return a valid box with the corners flipped
 	bool isValid() const;
 
 	// if this box is invalid,
 	// returns a valid box with positive size
 	// otherwise, returns this
-	// normalizing a null box is still a null box
-	Box3f normalized() const;
+	// Standardizing a null box is still a null box.
+	Box3f standardized() const;
 
 	QString toString() const;
 
 	// flips this box up/down
-	// (usually used to handle boxes on 3D images where y pofloats down)
+	// (usually used to handle boxes on 3D images where y points down)
 	Box3f flippedUD( float height ) const;
 
 	// flips this box back/front
-	// (usually used to handle boxes on 3D volumes where z pofloats in)
+	// (usually used to handle boxes on 3D volumes where z points in)
 	Box3f flippedBF( float depth ) const;
 
 	// flips this box up/down and back/front
@@ -96,6 +104,9 @@ public:
 
 	void enlargeToContain( const Vector3f& p );
 
+    // Scales the box symmetrically about the center by s[i] along axis i.
+    static Box3f scale( const Box3f& b, const Vector3f& s );
+
 	// returns the smallest Box3f that contains both b0 and b1
 	// r0 and r1 must both be valid
 	static Box3f united( const Box3f& b0, const Box3f& b1 );
@@ -107,6 +118,21 @@ public:
 	// and computes the bounding box that is their intersection
 	// (intersection is unmodified if the intersection is empty)
 	static bool intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection );
+
+    // Computes the intersection between this Box3f and a ray,
+    // with the ray parameterized as an origin and a direction,
+    // and a minimum intersection distance (default to 0).
+    // Calls intersectLine:
+    //   If both intersections are behind the origin, returns false.
+    //   Otherwise, sets tIntersect to the closer positive distance.
+    bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect, float tMin = 0 ) const;
+
+    // Computes the intersection between this Box3f and a line,
+    // with the line parameterized as an origin and a direction.
+    // If an intersection is found:
+    //   Returns true, with the parametric distances tNear and tFar.
+    //   tNear and tFar can both be < 0. tNear <= tFar.
+    bool intersectLine( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
 
 private:
 

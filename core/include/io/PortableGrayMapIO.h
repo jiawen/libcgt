@@ -17,7 +17,8 @@ public:
 	// if maxVal < 256, then the array can be used as is
 	// else, then maxVal is guaranteed to be < 65536 and the array is (2 * width x height)
 	//   and it should be reinterpreted with:
-	//   outputShort = inputUByte.reinterpretAs< ushort >()	
+	//   outputShort = inputUint8_t.reinterpretAs< ushort >()
+    // TODO: return a variant
 	static bool read( QString filename, Array2D< uint8_t >& output, int& maxVal );
 };
 

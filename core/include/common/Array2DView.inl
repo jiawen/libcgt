@@ -114,6 +114,12 @@ int Array2DView< T >::height() const
 }
 
 template< typename T >
+int Array2DView< T >::numElements() const
+{
+    return m_size.x * m_size.y;
+}
+
+template< typename T >
 Vector2i Array2DView< T >::size() const
 {
     return m_size;

@@ -5,10 +5,11 @@ class Vector3f;
 #include <vector>
 
 #include "math/Random.h"
+#include "vecmath/Matrix2f.h"
 #include "vecmath/Matrix3f.h"
+#include "vecmath/Matrix4f.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector4f.h"
-#include "geometry/BoundingBox3f.h"
 
 class Rect2f;
 class Box3f;

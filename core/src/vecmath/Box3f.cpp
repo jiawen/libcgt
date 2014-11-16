@@ -94,6 +94,16 @@ Vector3f& Box3f::size()
 	return m_size;
 }
 
+Vector3f Box3f::minimum() const
+{
+    return m_origin;
+}
+
+Vector3f Box3f::maximum() const
+{
+    return m_origin + m_size;
+}
+
 float Box3f::left() const
 {
 	return m_origin.x;
@@ -204,7 +214,7 @@ bool Box3f::isValid() const
 	return( m_size.x > 0 && m_size.y > 0 );
 }
 
-Box3f Box3f::normalized() const
+Box3f Box3f::standardized() const
 {
 	Vector3f origin;
 	Vector3f size;
@@ -361,32 +371,74 @@ bool Box3f::intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection )
 	return false;
 }
 
-/*
-std::vector< Vector3f > BoundingBox3f::corners() const
+bool Box3f::intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect, float tMin ) const
 {
-std::vector< Vector3f > out( 8 );
-
-for( int i = 0; i < 8; ++i )
-{
-out[ i ] =
-Vector3f
-(
-( i & 1 ) ? minimum().x : maximum().x,
-( i & 2 ) ? minimum().y : maximum().y,
-( i & 4 ) ? minimum().z : maximum().z
-);
+    float tNear;
+    float tFar;
+    bool intersect = intersectLine( origin, direction, tNear, tFar );
+    if( intersect )
+    {
+        if( tNear >= tMin )
+        {
+            tIntersect = tNear;
+        }
+        else if( tFar >= tMin )
+        {
+            tIntersect = tFar;
+        }
+        else
+        {
+            intersect = false;
+        }
+    }
+    return intersect;
 }
 
-return out;
-}
-
-void BoundingBox3f::scale( const Vector3f& s )
+bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
+    float& tNear, float& tFar ) const
 {
-Vector3f c = center();
-Vector3f r = range();	
-Vector3f r2 = s * r;
+    // compute t to each face
+    Vector3f rcpDir = 1.0f / direction;
 
-minimum() = c - 0.5f * r2;
-maximum() = minimum() + r2;
+    // three "bottom" faces (min of the box)
+    Vector3f tBottom = rcpDir * ( minimum() - origin );
+    // three "top" faces (max of the box)
+    Vector3f tTop = rcpDir * ( maximum() - origin );
+
+    // find the smallest and largest distances along each axis
+    Vector3f tMin = MathUtils::minimum( tBottom, tTop );
+    Vector3f tMax = MathUtils::maximum( tBottom, tTop );
+
+    // tNear is the largest tMin
+    tNear = MathUtils::maximum( tMin );
+
+    // tFar is the smallest tMax
+    tFar = MathUtils::minimum( tMax );
+
+    return tFar > tNear;
 }
-*/
+
+std::vector< Vector3f > Box3f::corners() const
+{
+    std::vector< Vector3f > out( 8 );
+
+    for( int i = 0; i < 8; ++i )
+    {
+        out[ i ] =
+            Vector3f
+            (
+                ( i & 1 ) ? minimum().x : maximum().x,
+                ( i & 2 ) ? minimum().y : maximum().y,
+                ( i & 4 ) ? minimum().z : maximum().z
+            );
+    }
+
+    return out;
+}
+
+// static
+Box3f Box3f::scale( const Box3f& b, const Vector3f& s )
+{    
+    Vector3f size = s * b.size();    
+    return Box3f( b.center() - 0.5f * size, size );
+}

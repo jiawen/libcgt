@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <geometry/GeometryUtils.h>
+#include <vecmath/Box3f.h>
 #include <vecmath/Vector4f.h>
 
 DirectionalLight::DirectionalLight() :
@@ -38,7 +39,7 @@ Matrix3f DirectionalLight::lightBasis() const
 }
 
 // virtual
-Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3f& sceneBoundingBox )
+Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& sceneBoundingBox )
 {
     const float feather = 1.01f;
 
@@ -49,15 +50,14 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
 	// with the z = 0 plane at the eye
 	std::vector< Vector3f > frustumCorners = camera.frustumCorners();
 
-    BoundingBox3f frustumBB;
+    Box3f frustumBB;
     for( int i = 0; i < frustumCorners.size(); ++i )
 	{
-		// TODO: enlargeToInclude
-        frustumBB.enlarge( frustumCorners[i] );
+        frustumBB.enlargeToContain( frustumCorners[i] );
 	}
 
-    BoundingBox3f sceneAndFrustum;
-	bool intersects = BoundingBox3f::intersect( frustumBB, sceneBoundingBox, sceneAndFrustum );
+    Box3f sceneAndFrustum;
+	bool intersects = Box3f::intersect( frustumBB, sceneBoundingBox, sceneAndFrustum );
 
 	// TODO: check for intersection
 
@@ -70,9 +70,11 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const BoundingBox3
         sceneCorners[ i ] = lightLinear * ( sceneCorners[ i ] - eye );
 	}
 
-    BoundingBox3f inLightCoordinates;
-    for(int i = 0; i < sceneAndFrustumCorners.size(); ++i)
-        inLightCoordinates.enlarge(sceneAndFrustumCorners[i]);
+    Box3f inLightCoordinates;
+    for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
+    {
+        inLightCoordinates.enlargeToContain( sceneAndFrustumCorners[ i ] );
+    }
 
     Vector3f maxCorner = inLightCoordinates.maximum();
     Vector3f minCorner = inLightCoordinates.minimum();

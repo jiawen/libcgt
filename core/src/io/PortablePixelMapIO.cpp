@@ -1,80 +1,101 @@
 #include "io/PortablePixelMapIO.h"
 
 #include <cassert>
-#include <QFile>
-#include <QDataStream>
-#include <QTextStream>
+#include <cstdio>
 
 #include "imageproc/ColorUtils.h"
 
 using namespace libcgt::core::imageproc::colorutils;
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< const uint8x3 > image )
+bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< const uint8x3 > image )
 {
-	QFile outputFile( filename );
+    FILE* fp = fopen( filename.c_str(), "wb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
-	// try to open the file in write only mode
-	if( !( outputFile.open( QIODevice::WriteOnly ) ) )
-	{
-		return false;
-	}
+    int nCharsWritten = fprintf( fp, "P6\n%d %d\n255\n", image.width(), image.height() );
+    if( nCharsWritten < 0 )
+    {
+        fclose( fp );
+        return false;
+    }    
 
-	QTextStream outputTextStream( &outputFile );
-	outputTextStream.setCodec( "ISO-8859-1" );
-	outputTextStream << "P6\n";
-	outputTextStream << image.width() << " " << image.height() << "\n";
-	outputTextStream << "255\n";
+    if( image.packed() )
+    {
+        int nWritten = fwrite( image.rowPointer( 0 ), sizeof( uint8x3 ), image.numElements(), fp );
+        if( nWritten != image.numElements() )
+        {
+            fclose( fp );
+            return false;
+        }
+    }
+    else if( image.rowsArePacked() )
+    {
+        for( int y = 0; y < image.height(); ++y )
+        {
+            int nWritten = fwrite( image.rowPointer( y ), sizeof( uint8x3 ), image.width(), fp );
+            if( nWritten != image.width() )
+            {
+                fclose( fp );
+                return false;
+            }
+        }
+    }
+    else
+    {
+        for( int y = 0; y < image.height(); ++y )
+        {
+            for( int x = 0; x < image.width(); ++x )
+            {
+                int nWritten = fwrite( image.elementPointer( { x, y } ), sizeof( uint8x3 ), 1, fp );
+                if( nWritten != 1 )
+                {
+                    fclose( fp );
+                    return false;
+                }
+            }
+        }
+    }
 
-	outputTextStream.flush();
-
-	QDataStream outputDataStream( &outputFile );
-
-	for( int y = 0; y < image.height(); ++y )
-	{
-		for( int x = 0; x < image.width(); ++x )
-		{
-            uint8x3 rgb = image[ { x, y } ];
-			outputDataStream << rgb.x << rgb.y << rgb.z;			
-		}
-	}
-	
-	// TODO: error check
-	return true;
+    fclose( fp );
+    return true;
 }
 
 // static
-bool PortablePixelMapIO::writeRGB( QString filename, Array2DView< const Vector3f > image )
+bool PortablePixelMapIO::writeRGBText( const std::string& filename, Array2DView< const uint8x3 > image )
 {
-	QFile outputFile( filename );
+    FILE* fp = fopen( filename.c_str(), "w" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
-	// try to open the file in write only mode
-	if( !( outputFile.open( QIODevice::WriteOnly ) ) )
-	{
-		return false;
-	}
+    int nCharsWritten = 0;
+    
+    nCharsWritten = fprintf( fp, "P3\n%d %d\n255\n", image.width(), image.height() );
+    if( nCharsWritten < 0 )
+    {
+        fclose( fp );
+        return false;
+    }
 
-	QTextStream outputTextStream( &outputFile );
-	outputTextStream.setCodec( "ISO-8859-1" );
-	outputTextStream << "P6\n";
-	outputTextStream << image.width() << " " << image.height() << "\n";
-	outputTextStream << "255\n";
+    for( int y = 0; y < image.height(); ++y )
+    {
+        for( int x = 0; x < image.width(); ++x )
+        {
+            uint8x3 c = image[ { x, y } ];
+            nCharsWritten = fprintf( fp, "%d %d %d ", c.x, c.y, c.z );
+            if( nCharsWritten < 0 )
+            {
+                fclose( fp );
+                return false;
+            }
+        }
+    }
 
-	outputTextStream.flush();
-
-	QDataStream outputDataStream( &outputFile );	
-
-	for( int y = 0; y < image.height(); ++y )
-	{
-		for( int x = 0; x < image.width(); ++x )
-		{
-            Vector3f rgb = image[ { x, y } ];
-
-            outputDataStream << toUInt8( saturate( rgb.x ) );
-            outputDataStream << toUInt8( saturate( rgb.y ) );
-            outputDataStream << toUInt8( saturate( rgb.z ) );
-		}
-	}
-
-	return true;
+    fclose( fp );
+    return true;
 }

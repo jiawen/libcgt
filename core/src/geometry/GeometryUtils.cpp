@@ -11,7 +11,6 @@
 #include "vecmath/Rect2f.h"
 #include "vecmath/Rect2i.h"
 #include "vecmath/Box3f.h"
-#include "vecmath/Matrix2f.h"
 #include "vecmath/Vector3f.h"
 
 using namespace std;

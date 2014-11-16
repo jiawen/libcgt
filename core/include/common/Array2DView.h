@@ -40,22 +40,12 @@ public:
 	T& operator [] ( int k );
 	T& operator [] ( const Vector2i& xy );
 
-	// The logical size of this view,
+	// The logical size of the array view
 	// (i.e., how many elements of type T there are).
 	int width() const;
-	int height() const;	
-	Vector2i size() const;
-	int numElements() const;
-
-	// How many bytes this view would occupy if it were packed.
-	// Equal to numElements() * sizeof( T ).
-	size_t bytesReferenced() const;
-
-	// how many bytes does this view span:
-	// the total number of bytes in a rectangular region
-	// that view overlaps, including the empty spaces.
-	// Equal to abs(rowStrideBytes()) * height()
-	size_t bytesSpanned() const;
+	int height() const;
+    int numElements() const;
+	Vector2i size() const;    
 
 	// the space between the start of elements in bytes
 	int elementStrideBytes() const;
@@ -63,8 +53,10 @@ public:
 	// the space between the start of rows in bytes
 	int rowStrideBytes() const;
 
-	// Returns true if there is no space between adjacent elements *within* a row,
-	// i.e., if elementStrideBytes() == sizeof( T ).
+    // { elementStride, rowStride } in bytes.
+    Vector2i strides() const;
+
+	// returns true if there is no space between adjacent elements *within* a row
 	bool elementsArePacked() const;
 
 	// Returns true if there is no space between adjacent rows,

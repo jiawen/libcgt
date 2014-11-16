@@ -6,7 +6,7 @@
 
 #include "cameras/Camera.h"
 
-class BoundingBox3f;
+class Box3f;
 
 // A directional light (at infinity)
 // The light direction is conventinally defined
@@ -32,7 +32,7 @@ public:
 
 	// Returns the world -> light matrix
 	// encompassing both the camera and the scene	
-	Matrix4f lightMatrix( const Camera& camera, const BoundingBox3f& sceneBoundingBox );
+	Matrix4f lightMatrix( const Camera& camera, const Box3f& sceneBoundingBox );
 
 private:
 

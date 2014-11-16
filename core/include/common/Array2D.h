@@ -8,25 +8,31 @@
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
-// A simple 2D array class (with tightly packed, row-major storage)
-// TODO: allow element and row pitches, but only positive ones.
-// TODO: Array1D
+// TODO:
+// stride should be settable when taking over something?
+
+// A simple 2D array class (with row-major storage)
 template< typename T >
 class Array2D
 {
 public:
 
-	// Default null array with dimensions 0x0 and no data allocated
+	// Default null array with dimensions 0 and no data allocated.
 	Array2D();
+
+    // Takes ownership of pointer and views it as a 2D array with strides.
+    // All sizes and strides must be positive.
+    Array2D( void* pointer, const Vector2i& size );
+    Array2D( void* pointer, const Vector2i& size, const Vector2i& strides );
+
+    // Read file from disk.
 	Array2D( const char* filename );
-	Array2D( void* pointer, int width, int height ); // Take ownership of a pointer.
-	Array2D( int width, int height, const T& fillValue = T() );
 	Array2D( const Vector2i& size, const T& fillValue = T() );
 	Array2D( const Array2D< T >& copy );
 	Array2D( Array2D< T >&& move );
 	Array2D& operator = ( const Array2D< T >& copy );
 	Array2D& operator = ( Array2D< T >&& move );
-	virtual ~Array2D();	
+    virtual ~Array2D();	
 
 	bool isNull() const;
 	bool notNull() const;
@@ -37,21 +43,32 @@ public:
 	Vector2i size() const;
 	int numElements() const;
 
-	size_t sizeInBytes() const;
-	int elementStrideBytes() const; // the space between the start of elements, in bytes, equal to sizeof( T )
-	int rowStrideBytes() const; // number of bytes between successive rows, equal to width * elementStrideBytes()
+    // the space between the start of elements in bytes
+    int elementStrideBytes() const;
+
+    // the space between the start of rows in bytes
+    int rowStrideBytes() const;
+
+    // { elementStride, rowStride } in bytes.
+    Vector2i strides() const;
 
 	void fill( const T& fillValue );
 
-	// resizes the array, original data is not preserved
+	// Resizes the array, original data is not preserved
 	// if width or height <= 0, the array is invalidated
-	void resize( int width, int height );
 	void resize( const Vector2i& size );
+    void resize( const Vector2i& size, const Vector2i& strides );
 
-	operator const Array2DView< T >() const;
+	operator Array2DView< const T >() const;
 	operator Array2DView< T >();
 
-	operator const T* () const;
+    const T* elementPointer( const Vector2i& xy ) const;
+    T* elementPointer( const Vector2i& xy );
+
+	const T* rowPointer( int y ) const;
+	T* rowPointer( int y );
+	
+    operator const T* () const;
 	operator T* ();
 
 	const T* pointer() const;
@@ -66,13 +83,10 @@ public:
 	const T& operator [] ( int k ) const; // read
 	T& operator [] ( int k ); // write
 
-	const T& operator () ( int x, int y ) const; // read
-	T& operator () ( int x, int y ); // write
-
 	const T& operator [] ( const Vector2i& xy ) const; // read
 	T& operator [] ( const Vector2i& xy ); // write
 	
-	// only works if T doesn't have pointers, with sizeof() well defined
+    // only works if T doesn't have pointers, with sizeof() well defined
 	bool load( const char* filename );
 
 	// only works if T doesn't have pointers, with sizeof() well defined
@@ -80,9 +94,9 @@ public:
 
 private:
 	
-	int m_width;
-	int m_height;
-	uint8_t* m_array;
+    Vector2i m_size;
+    Vector2i m_strides;
+	T* m_array;
 };
 
 #include "Array2D.inl"

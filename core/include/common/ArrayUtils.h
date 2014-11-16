@@ -29,7 +29,7 @@ public:
 	static bool saveTXT( const std::vector< Vector3f >& array, const char* filename );
 	static bool saveTXT( const std::vector< Vector4f >& array, const char* filename );
 
-	static bool saveTXT( const Array2DView< ubyte4 >& view, const char* filename );
+	static bool saveTXT( const Array2DView< uint8x4 >& view, const char* filename );
 
 	static bool saveTXT( const Array2D< float >& array, const char* filename );
 	static bool saveTXT( const Array3D< float >& array, const char* filename );

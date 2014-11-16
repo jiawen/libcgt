@@ -1,12 +1,15 @@
 #include "geometry/FrustumUtils.h"
 
+#include "geometry/Plane3f.h"
+#include "vecmath/Box3f.h";
+
 // static
-FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const BoundingBox3f& box, Plane3f planes[ 6 ] )
+FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Box3f& box, const Plane3f planes[ 6 ] )
 {
 	auto boxCorners = box.corners();
 
 	// by default, we assume the box is completely inside
-	IntersectionResult result = INSIDE;
+    IntersectionResult result = IntersectionResult::INSIDE;
 
 	// and keep track, for each corner of the box
 	// how many vertices are inside vs outside
@@ -41,7 +44,7 @@ FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Bound
 		// then it's guaranteed to be outside, done
 		if( nVerticesInside == 0 )
 		{
-			return OUTSIDE;
+            return IntersectionResult::OUTSIDE;
 		}
 		// otherwise, at least some of them are inside
 		// but if some of them are *also* outside
@@ -49,7 +52,7 @@ FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Bound
 		// (but it's not guaranteed to actually intersect the entire frustum)
 		else if( nVerticesOutside != 0 )
 		{
-			result = INTERESECTING;
+            result = IntersectionResult::INTERESECTING;
 		}
 		// otherwise, we know that some vertices are inside
 		// and none are outside

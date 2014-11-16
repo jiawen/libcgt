@@ -1,15 +1,17 @@
 #pragma once
 
+#include <string>
+
 #include <common/BasicTypes.h>
 #include <common/Array2D.h>
-
-class QString;
 
 class PNGIO
 {
 public:
-    
-    static bool writeRGB( QString filename, Array2DView< const uint8x3 > image );
 
-    static bool writeRGBA( QString filename, Array2DView< const uint8x4 > image );
+    // TODO: implement uint16x3 / uint16x4 (16-bit) input.
+    // TODO: needs big-endian input.
+
+    static bool write( const std::string& filename, Array2DView< const uint8x3 > image );
+    static bool write( const std::string& filename, Array2DView< const uint8x4 > image );
 };

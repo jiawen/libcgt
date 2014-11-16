@@ -203,7 +203,7 @@ bool Box3i::isValid() const
 	return( m_size.x > 0 && m_size.y > 0 );
 }
 
-Box3i Box3i::normalized() const
+Box3i Box3i::standardized() const
 {
 	Vector3i origin;
 	Vector3i size;

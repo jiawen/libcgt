@@ -245,7 +245,7 @@ bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 		for( int x = 0; x < w; ++x )
 		{
 			int index = y * w + x;
-			float v = array( x, y );
+            float v = array[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %f\n", index, x, y, v );
 		}
 	}
@@ -373,7 +373,7 @@ bool ArrayUtils::saveTXT( const Array2D< Vector4f >& array, const char* filename
 		for( int x = 0; x < w; ++x )
 		{
 			int index = y * w + x;
-			Vector4f v = array( x, y );
+            Vector4f v = array[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %f %f %f %f\n", index, x, y, v.x, v.y, v.z, v.w );
 		}
 	}
