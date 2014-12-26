@@ -140,12 +140,12 @@ int Vector2i::dot( const Vector2i& v0, const Vector2i& v1 )
 //static
 Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 {
-	return Vector3i
-	(
-		0,
-		0,
-		v0.x * v1.y - v0.y * v1.x
-	);
+	return
+    {
+        0,
+        0,
+        v0.x * v1.y - v0.y * v1.x
+    };
 }
 
 //////////////////////////////////////////////////////////////////////////

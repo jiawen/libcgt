@@ -1,5 +1,8 @@
 #include "cameras/PerspectiveCamera.h"
 
+#include <cmath>
+#include <limits>
+
 #include <QFile>
 #include <QString>
 #include <QTextStream>
@@ -16,20 +19,29 @@
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
 	Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ), Vector3f( 0, 1, 0 ),
-	MathUtils::HALF_PI, 1.0f, 1.0f, 100.0f, false, true );
+	MathUtils::HALF_PI, 1.0f, 1.0f, 100.0f );
 
 // static
 const PerspectiveCamera PerspectiveCamera::FRONT(
 	Vector3f( 0, 0, 5 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
-	MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f, false, true );
+	MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
+
+// static
+const PerspectiveCamera PerspectiveCamera::RIGHT(
+    Vector3f( 5, 0, 0 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
+    MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
+
+// static
+const PerspectiveCamera PerspectiveCamera::TOP(
+    Vector3f( 0, 5, 0 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ),
+    MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
 
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
 	float fovYRadians, float aspect,
 	float zNear, float zFar,
-	bool zFarIsInfinite,
 	bool isDirectX )
 {
-	setPerspective( fovYRadians, aspect, zNear, zFar, zFarIsInfinite );
+	setPerspective( fovYRadians, aspect, zNear, zFar );
 	setLookAt( eye, center, up );
 	setDirectX( isDirectX );
 }
@@ -37,24 +49,15 @@ PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& cente
 void PerspectiveCamera::getPerspective( float& fovYRadians, float aspect,
 	float& zNear, float& zFar )
 {
-	bool zFarIsInfinite;
-	getPerspective( fovYRadians, aspect, zNear, zFar, zFarIsInfinite );
-}
+    fovYRadians = m_fovYRadians;
+    aspect = m_aspect;
 
-void PerspectiveCamera::getPerspective( float& fovYRadians, float aspect,
-	float& zNear, float& zFar, bool& zFarIsInfinite )
-{
-	fovYRadians = m_fovYRadians;
-	aspect = m_aspect;
-
-	zNear = m_zNear;
-	zFar = m_zFar;
-
-	zFarIsInfinite = m_zFarIsInfinite;
+    zNear = m_zNear;
+    zFar = m_zFar;
 }
 
 void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
-	float zNear, float zFar, bool zFarIsInfinite )
+	float zNear, float zFar )
 {
 	// store fov and aspect ratio parameters
 	m_fovYRadians = fovYRadians;
@@ -62,7 +65,6 @@ void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 
 	m_zNear = zNear;
 	m_zFar = zFar;
-	m_zFarIsInfinite = zFarIsInfinite;
 
 	updateFrustum();	
 }
@@ -165,15 +167,17 @@ void PerspectiveCamera::setFovYDegrees( float fovY )
 	updateFrustum();
 }
 
-Vector2f PerspectiveCamera::focalLengthPixels( int width, int height ) const
+Vector2f PerspectiveCamera::focalLengthPixels( const Vector2f& screenSize ) const
 {
-	return Vector2f( 0.5f * width / tanHalfFovX(), 0.5f * height / tanHalfFovY() );
+    float fx = CameraUtils::fovRadiansToFocalLengthPixels( fovXRadians(), screenSize.x );
+    float fy = CameraUtils::fovRadiansToFocalLengthPixels( fovYRadians(), screenSize.y );
+    return { fx, fy };
 }
 
 // virtual
 Matrix4f PerspectiveCamera::projectionMatrix() const
 {
-	if( m_zFarIsInfinite )
+	if( isinf( m_zFar ) )
 	{
 		return Matrix4f::infinitePerspectiveProjection( m_left, m_right,
 			m_bottom, m_top,
@@ -192,7 +196,7 @@ Matrix4f PerspectiveCamera::jitteredProjectionMatrix( float eyeX, float eyeY, fl
 	float dx = -eyeX * m_zNear / focusZ;
 	float dy = -eyeY * m_zNear / focusZ;
 
-	if( m_zFarIsInfinite )
+	if( isinf( m_zFar ) )
 	{
 		return Matrix4f::infinitePerspectiveProjection( m_left + dx, m_right + dx,
 			m_bottom + dy, m_top + dy,
@@ -275,6 +279,7 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
 	output[ 6] = Vector4f( e, 1 );
 	output[ 7] = Vector4f( corners[7], 1 );
 
+    // 4 lines between near corners
 	output[ 8] = Vector4f( corners[0], 1 );
 	output[ 9] = Vector4f( corners[1], 1 );
 
@@ -287,7 +292,7 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
 	output[14] = Vector4f( corners[3], 1 );
 	output[15] = Vector4f( corners[0], 1 );
 
-	// 4 lines between near corners
+	// 4 lines between far corners
 	output[16] = Vector4f( corners[4], 1 );
 	output[17] = Vector4f( corners[5], 1 );
 
@@ -299,6 +304,8 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
 
 	output[22] = Vector4f( corners[7], 1 );
 	output[23] = Vector4f( corners[4], 1 );
+    
+    // TODO: handle infinite z plane
 
 	return output;
 }
@@ -335,8 +342,10 @@ bool PerspectiveCamera::loadTXT( QString filename )
 	inputTextStream >> str >> up[ 0 ] >> up[ 1 ] >> up[ 2 ];
 	inputTextStream >> str >> zNear;
 	inputTextStream >> str >> zFar;
-	inputTextStream >> str >> i;
-	isInfinite = ( i != 0 );
+    if( zFar < 0 )
+    {
+        zFar = std::numeric_limits< float >::infinity();
+    }
 	inputTextStream >> str >> fovYRadians;
 	inputTextStream >> str >> aspect;
 	inputTextStream >> str >> i;
@@ -345,7 +354,7 @@ bool PerspectiveCamera::loadTXT( QString filename )
 	inputFile.close();	
 
 	setLookAt( eye, center, up );
-	setPerspective( fovYRadians, aspect, zNear, zFar, isInfinite );
+	setPerspective( fovYRadians, aspect, zNear, zFar );
 	setDirectX( isDirectX );
 
 	return true;
@@ -368,8 +377,14 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
 	outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
 	outputTextStream << "zNear " << m_zNear << "\n";
-	outputTextStream << "zFar " << m_zFar << "\n";
-	outputTextStream << "zFarInfinite " << static_cast< int >( m_zFarIsInfinite ) << "\n";
+    if( isinf( m_zFar ) )
+    {
+        outputTextStream << "zFar " << -1 << "\n";
+    }
+    else
+    {
+        outputTextStream << "zFar " << m_zFar << "\n";
+    }
 	outputTextStream << "fovYRadians " << m_fovYRadians << "\n";
 	outputTextStream << "aspect " << m_aspect << "\n";
 	outputTextStream << "isDirectX " << static_cast< int >( m_directX ) << "\n";
@@ -387,7 +402,6 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 	float zNear = MathUtils::lerp( c0.m_zNear, c1.m_zNear, t );
 	float zFar = MathUtils::lerp( c0.m_zFar, c1.m_zFar, t );
 
-	bool farIsInfinite = c0.m_zFarIsInfinite;
 	bool isDirectX = c0.m_directX;
 
 	Vector3f position = MathUtils::lerp( c0.m_eye, c1.m_eye, t );
@@ -406,7 +420,7 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 	(
 		position, center, y,
 		fov, aspect,
-		zNear, zFar, farIsInfinite
+		zNear, zFar
 	);
 	camera.m_directX = isDirectX;
 
@@ -423,7 +437,6 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	float zNear = MathUtils::cubicInterpolate( c0.m_zNear, c1.m_zNear, c2.m_zNear, c3.m_zNear, t );
 	float zFar = MathUtils::cubicInterpolate( c0.m_zFar, c1.m_zFar, c2.m_zFar, c3.m_zFar, t );
 
-	bool farIsInfinite = c0.m_zFarIsInfinite;
 	bool isDirectX = c0.m_directX;
 
 	Vector3f position = MathUtils::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
@@ -445,7 +458,7 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	(
 		position, center, y,
 		fov, aspect,
-		zNear, zFar, farIsInfinite
+		zNear, zFar
 	);
 	camera.m_directX = isDirectX;
 
@@ -462,5 +475,5 @@ void PerspectiveCamera::updateFrustum()
 	float right = m_aspect * top;
 	float left = -right;
 
-	setFrustum( left, right, bottom, top, m_zNear, m_zFar, m_zFarIsInfinite );
+	setFrustum( left, right, bottom, top, m_zNear, m_zFar );
 }

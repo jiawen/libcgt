@@ -11,8 +11,8 @@
 
 Box3i::Box3i() :
 
-	m_origin( 0, 0, 0 ),
-	m_size( 0, 0, 0 )
+	m_origin( { 0, 0, 0 } ),
+	m_size( { 0, 0, 0 } )
 
 {
 
@@ -20,8 +20,8 @@ Box3i::Box3i() :
 
 Box3i::Box3i( int left, int bottom, int back, int width, int height, int depth ) :
 
-	m_origin( left, bottom, back ),
-	m_size( width, height, depth )
+	m_origin( { left, bottom, back } ),
+	m_size( { width, height, depth } )
 
 {
 
@@ -29,8 +29,8 @@ Box3i::Box3i( int left, int bottom, int back, int width, int height, int depth )
 
 Box3i::Box3i( int width, int height, int depth ) :
 
-	m_origin( 0, 0, 0 ),
-	m_size( width, height, depth )
+	m_origin( { 0, 0, 0 } ),
+	m_size( { width, height, depth } )
 
 {
 
@@ -47,8 +47,8 @@ Box3i::Box3i( const Vector3i& origin, const Vector3i& size ) :
 
 Box3i::Box3i( const Vector3i& size ) :
 
-	m_origin( 0, 0, 0 ),
-	m_size( size )
+	m_origin( { 0, 0, 0 } ),
+	m_size( { size } )
 
 {
 
@@ -130,37 +130,37 @@ Vector3i Box3i::leftBottomBack() const
 
 Vector3i Box3i::rightBottomBack() const
 {
-	return m_origin + Vector3i( m_size.x, 0, 0 );
+    return m_origin + Vector3i{ m_size.x, 0, 0 };
 }
 
 Vector3i Box3i::leftTopBack() const
 {
-	return m_origin + Vector3i( 0, m_size.y, 0 );
+    return m_origin + Vector3i{ 0, m_size.y, 0 };
 }
 
 Vector3i Box3i::rightTopBack() const
 {
-	return m_origin + Vector3i( m_size.x, m_size.y, 0 );
+    return m_origin + Vector3i{ m_size.x, m_size.y, 0 };
 }
 
 Vector3i Box3i::leftBottomFront() const
 {
-	return m_origin + Vector3i( 0, 0, m_size.z );
+    return m_origin + Vector3i{ 0, 0, m_size.z };
 }
 
 Vector3i Box3i::rightBottomFront() const
 {
-	return m_origin + Vector3i( m_size.x, 0, m_size.z );
+    return m_origin + Vector3i{ m_size.x, 0, m_size.z };
 }
 
 Vector3i Box3i::leftTopFront() const
 {
-	return m_origin + Vector3i( 0, m_size.y, m_size.z );
+    return m_origin + Vector3i{ 0, m_size.y, m_size.z };
 }
 
 Vector3i Box3i::rightTopFront() const
 {
-	return m_origin + Vector3i( m_size.x, m_size.y, m_size.z );
+    return m_origin + Vector3i{ m_size.x, m_size.y, m_size.z };
 }
 
 int Box3i::width() const

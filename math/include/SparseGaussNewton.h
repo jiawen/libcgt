@@ -1,3 +1,5 @@
+// TODO: use Eigen instead of CHOLMOD directly
+#if 0
 #pragma once
 
 #include <memory>
@@ -85,3 +87,4 @@ private:
 	bool m_alreadySetup;
 	PARDISOSolver< float, true > m_pardiso;
 };
+#endif

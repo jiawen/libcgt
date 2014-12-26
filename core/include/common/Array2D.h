@@ -96,7 +96,7 @@ private:
 	
     Vector2i m_size;
     Vector2i m_strides;
-	T* m_array;
+	uint8_t* m_array;
 };
 
 #include "Array2D.inl"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <initializer_list>
+
 class QString;
 
 class Vector2i;
@@ -11,7 +13,7 @@ public:
 
 	Vector3i();
 	explicit Vector3i( int i ); // fills all 3 components with i
-	Vector3i( int x, int y, int z );
+    Vector3i( std::initializer_list< int > xyz );
 	Vector3i( const Vector2i& xy, int z );
 	Vector3i( int x, const Vector2i& yz );
 

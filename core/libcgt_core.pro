@@ -54,6 +54,5 @@ HEADERS += include/vecmath/*.inl
 SOURCES += src/vecmath/*.cpp
 
 # LodePNG
-
-HEADERS += external/*.h
-SOURCES += external/*.cpp
+HEADERS += external/lodepng.h
+SOURCES += external/lodepng.cpp

@@ -80,14 +80,14 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 					int p1 = pFace.positionIndices()[ i - 1 ];
 					int p2 = pFace.positionIndices()[ i ];
 
-					m_faces.push_back( Vector3i( p0, p1, p2 ) );
+                    m_faces.push_back( { p0, p1, p2 } );
 
 					if( group.hasNormals() )
 					{						
 						int n1 = pFace.normalIndices()[ i - 1 ];
 						int n2 = pFace.normalIndices()[ i ];
 
-						normalIndices.push_back( Vector3i( n0, n1, n2 ) );
+                        normalIndices.push_back( { n0, n1, n2 } );
 					}
 				}				
 			}
@@ -125,7 +125,7 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bo
 		int pi1 = face.positionIndices()[ 1 ];
 		int pi2 = face.positionIndices()[ 2 ];
 
-		m_faces.push_back( Vector3i( pi0, pi1, pi2 ) );
+        m_faces.push_back( { pi0, pi1, pi2 }  );
 
 		if( group.hasNormals() )
 		{
@@ -133,7 +133,7 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bo
 			int ni1 = face.normalIndices()[ 1 ];
 			int ni2 = face.normalIndices()[ 2 ];
 
-			normalIndices.push_back( Vector3i( ni0, ni1, ni2 ) );
+            normalIndices.push_back( { ni0, ni1, ni2 } );
 		}
 		else if( generatePerFaceNormalsIfNonExistent )
 		{
@@ -374,14 +374,14 @@ TriangleMesh TriangleMesh::consolidate( const std::vector< int >& connectedCompo
 	for( int i = 0; i < nFaces; ++i )
 	{
 		int f = connectedComponent[i];
-		Vector3i face = m_faces[ f ];
-		
-		Vector3i newFace
-		(
-			oldVertexToNewVertexMap[ face.x ],
-			oldVertexToNewVertexMap[ face.y ],
-			oldVertexToNewVertexMap[ face.z ]
-		);
+        Vector3i face = m_faces[ f ];
+
+        Vector3i newFace
+        {
+            oldVertexToNewVertexMap[ face.x ],
+            oldVertexToNewVertexMap[ face.y ],
+            oldVertexToNewVertexMap[ face.z ]
+        };
 
 		output.m_faces.push_back( newFace );
 	}

@@ -38,7 +38,7 @@ public:
 	// implicit cast
 	operator const float* () const;
 	operator float* ();
-	void print(); // TODO: toString()?
+	void print() const; // TODO: toString()?
 
 	static float determinant2x2( float m00, float m01,
 		float m10, float m11 );

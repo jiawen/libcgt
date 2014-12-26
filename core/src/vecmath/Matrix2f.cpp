@@ -162,7 +162,7 @@ Matrix2f::operator float* ()
 	return m_elements;
 }
 
-void Matrix2f::print()
+void Matrix2f::print() const
 {
 	printf( "[ %.2f %.2f ]\n[ %.2f %.2f ]\n",
 		m_elements[ 0 ], m_elements[ 2 ],

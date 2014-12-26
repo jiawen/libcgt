@@ -1,10 +1,12 @@
-#include "FPSControls.h"
-
-#include <QMouseEvent>
+#include "cameras/FPSControls.h"
 
 #include <cassert>
 #include <cameras/PerspectiveCamera.h>
 #include <geometry/GeometryUtils.h>
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 FPSMouseParameters::FPSMouseParameters( bool invertX, bool invertY,
 	const Vector3f& translationPerPixel,
@@ -84,7 +86,8 @@ void FPSControls::setUpVector( const Vector3f& y )
 
 void FPSControls::handleKeyboard( PerspectiveCamera& camera )
 {
-	Vector3f delta;
+#ifdef WIN32
+    Vector3f delta;
 
 	if( ( GetAsyncKeyState( 'W' ) & 0x8000 ) != 0 )
 	{
@@ -117,6 +120,7 @@ void FPSControls::handleKeyboard( PerspectiveCamera& camera )
 	}
 
 	applyTranslation( delta.x, delta.y, delta.z, camera );
+#endif
 }
 
 FPSMouseParameters& FPSControls::mouseParameters()
@@ -134,6 +138,7 @@ FPSXboxGamepadParameters& FPSControls::xboxGamepadParameters()
 	return m_xboxGamepadParameters;
 }
 
+#ifdef XBOX_CONTROLLER_SUPPORT
 void FPSControls::handleXboxController( XboxController* pXboxController, PerspectiveCamera& camera )
 {
 	if( pXboxController->isConnected() )
@@ -144,6 +149,7 @@ void FPSControls::handleXboxController( XboxController* pXboxController, Perspec
         computeXboxFoV( &state.Gamepad, camera );
     }
 }
+#endif
 
 void FPSControls::handleMousePressEvent( QMouseEvent* event )
 {
@@ -154,7 +160,7 @@ void FPSControls::handleMousePressEvent( QMouseEvent* event )
 
 void FPSControls::handleMouseMoveEvent( QMouseEvent* event, PerspectiveCamera& camera )
 {
-	Vector2i currentMouseXY( event->x(), event->y() );
+    Vector2i currentMouseXY( { event->x(), event->y() } );
 	Vector2f delta = currentMouseXY - m_previousMouseXY;
 
 	computeMouseRotation( event->buttons(), delta, camera );
@@ -195,6 +201,7 @@ void FPSControls::computeMouseTranslation( Qt::MouseButtons buttons, const Vecto
 	}
 }
 
+#ifdef XBOX_CONTROLLER_SUPPORT
 void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera )
 {
 	int lx = pGamepad->sThumbLX;
@@ -220,7 +227,6 @@ void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveC
 	}
 
 	// dpad: up/down
-#if 0
 	if( pGamepad->wButtons & XINPUT_GAMEPAD_DPAD_UP )
 	{
 		moveY = 0.01f;
@@ -231,7 +237,6 @@ void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveC
 		moveY = -0.01f;
 		move = true;
 	}
-#endif
 
 	if( move )
 	{
@@ -304,6 +309,7 @@ void FPSControls::computeXboxFoV( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& c
     	
 	camera.setFovYRadians( fov );
 }
+#endif
 
 void FPSControls::applyTranslation( float dx, float dy, float dz, PerspectiveCamera& camera )
 {

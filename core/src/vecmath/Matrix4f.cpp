@@ -16,6 +16,33 @@
 
 using namespace std;
 
+// static
+Matrix4f Matrix4f::ROTATE_X_180 = Matrix4f
+(
+    1, 0, 0, 0,
+    0, -1, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1
+);
+
+// static
+Matrix4f Matrix4f::ROTATE_Y_180 = Matrix4f
+(
+    -1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1
+);
+
+// static
+Matrix4f Matrix4f::ROTATE_Z_180 = Matrix4f
+(
+    -1, 0, 0, 0,
+    0, -1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+);
+
 Matrix4f::Matrix4f( float fill )
 {
 	for( int i = 0; i < 16; ++i )
@@ -327,7 +354,7 @@ Matrix4f::operator float* ()
 	return m_elements;
 }
 
-void Matrix4f::print()
+void Matrix4f::print() const
 {
 	printf( "[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n",
 		m00, m01, m02, m03,
@@ -448,6 +475,11 @@ Matrix4f Matrix4f::rotateZ( float radians )
 // static
 Matrix4f Matrix4f::rotation( const Vector3f& axis, float radians )
 {
+    if( axis.normSquared() == 0 || radians == 0 )
+    {
+        return Matrix4f::identity();
+    }
+
 	Vector3f normalizedDirection = axis.normalized();
 		
 	float cosTheta = cos( radians );

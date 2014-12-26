@@ -232,7 +232,7 @@ Matrix3f::operator float* ()
 	return m_elements;
 }
 
-void Matrix3f::print()
+void Matrix3f::print() const
 {
 	printf( "[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n",
 		m00, m01, m02,

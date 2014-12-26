@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMouseEvent>
+
 #include <common/BasicTypes.h>
 #include <math/Arithmetic.h>
 #include <math/MathUtils.h>
@@ -7,10 +9,11 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix3f.h>
 
+#ifdef XBOX_CONTROLLER_SUPPORT
 #include "XboxController.h"
+#endif
 
 class PerspectiveCamera;
-class QMouseEvent;
 
 struct FPSMouseParameters
 {
@@ -77,7 +80,9 @@ public:
 	void setUpVector( const Vector3f& y );
  
 	void handleKeyboard( PerspectiveCamera& camera );
+#ifdef XBOX_CONTROLLER_SUPPORT
 	void handleXboxController( XboxController* pXboxController, PerspectiveCamera& camera );
+#endif
 
 	void handleMousePressEvent( QMouseEvent* event );
 	void handleMouseMoveEvent( QMouseEvent* event, PerspectiveCamera& camera );
@@ -88,10 +93,12 @@ private:
 	void computeMouseRotation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera );
 	void computeMouseTranslation( Qt::MouseButtons buttons, const Vector2f& delta, PerspectiveCamera& camera );
 
+#ifdef XBOX_CONTROLLER_SUPPORT
 	void computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
 	void computeXboxRotation( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
 	// TODO: put an exponential curve on the fov, so it approaches but never gets to 0 or 180
 	void computeXboxFoV( XINPUT_GAMEPAD* pGamepad, PerspectiveCamera& camera );
+#endif
 
 	void applyTranslation( float dx, float dy, float dz, PerspectiveCamera& camera );
 	void applyRotation( float yaw, float pitch, PerspectiveCamera& camera );

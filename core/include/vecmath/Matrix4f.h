@@ -12,6 +12,11 @@ class Matrix4f
 {
 public:
 
+    // Rotate about the X axis by 180 degrees.
+    static Matrix4f ROTATE_X_180;
+    static Matrix4f ROTATE_Y_180;
+    static Matrix4f ROTATE_Z_180;
+
 	// 4x4 matrix defaults to zero
 	Matrix4f( float fill = 0 );
 
@@ -68,8 +73,9 @@ public:
 	Matrix4f normalMatrix4x4() const;
 
 	// *assuming* this matrix is a composition of a rotation and a translation
-	// and *no scaling*
-	// decomposes it into its components
+	// and *no scaling*, decomposes it into its components such that.
+    // rotation is applied first, then translation.
+    // TODO: rename to decomposeEuclidean, add a rotation vector as output.
 	void decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation ) const;
 	void decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const;
 
@@ -81,7 +87,7 @@ public:
 	// implicit cast to pointer
 	operator const float* () const;
 	operator float* ();
-	void print();
+    void print() const;
 
 	// uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
 	Vector3f transformPoint( const Vector3f& p ) const;

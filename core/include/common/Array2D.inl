@@ -11,19 +11,17 @@ Array2D< T >::Array2D() :
 template< typename T >
 Array2D< T >::Array2D( void* pointer, const Vector2i& size ) :
     m_size( size ),
-    m_strides( { static_cast< int >( sizeof( T ) ), static_cast< int >( m_size.x * sizeof( T ) ) } ),
-    m_array( reinterpret_cast< T* >( pointer ) )
+    m_strides( { static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } ),
+    m_array( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
 }
 
 template< typename T >
 Array2D< T >::Array2D( void* pointer, const Vector2i& size, const Vector2i& strides ) :
-
     m_size( size ),
     m_strides( strides ),
-    m_array( reinterpret_cast< T* >( pointer ) )
-
+    m_array( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
 }
@@ -220,8 +218,7 @@ void Array2D< T >::resize( const Vector2i& size, const Vector2i& strides )
 				delete[] m_array;
 			}
 
-            uint8_t* pBuffer = new uint8_t[ size.y * strides.y ];
-			m_array = reinterpret_cast< T* >( pBuffer );
+            m_array = new uint8_t[ size.y * strides.y ];
 		}
 
 		// if the number of elements is the same, the dimensions may be different

@@ -59,7 +59,7 @@ public:
 	// implicit cast to pointer
 	operator const float* () const;
 	operator float* ();
-	void print();
+	void print() const;
 
 	// uses this to transform a point p (appends a homogeneous coordinate 1, transforms, then extracts xy)
 	Vector2f transformPoint( const Vector2f& p ) const;

@@ -34,7 +34,7 @@ void OrthographicCamera::getOrtho( float* pLeft, float* pRight, float* pBottom, 
 
 void OrthographicCamera::setOrtho( float left, float right, float bottom, float top, float zNear, float zFar )
 {
-	setFrustum( left, right, bottom, top, zNear, zFar, false );
+	setFrustum( left, right, bottom, top, zNear, zFar );
 }
 
 // virtual

@@ -1,3 +1,4 @@
+#if 0
 #include "SparseGaussNewton.h"
 
 #include <limits>
@@ -753,4 +754,5 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
 
 	return m_currBeta;
 }
+#endif
 #endif

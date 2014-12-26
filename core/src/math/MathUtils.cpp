@@ -162,12 +162,12 @@ Vector2f MathUtils::clampToRectangle( const Vector2f& v, const Rect2f& rect )
 // static
 Vector3i MathUtils::clampToBoxExclusive( int x, int y, int z, int left, int bottom, int back, int width, int height, int depth )
 {
-	return Vector3i
-	(
-		clampToRangeExclusive( x, left, left + width ),
-		clampToRangeExclusive( y, bottom, bottom + height ),
-		clampToRangeExclusive( z, back, back + depth )
-	);	
+	return
+    {
+        clampToRangeExclusive( x, left, left + width ),
+        clampToRangeExclusive( y, bottom, bottom + height ),
+        clampToRangeExclusive( z, back, back + depth )
+    };
 }
 
 // static
@@ -224,13 +224,13 @@ Vector2i MathUtils::abs( const Vector2i& v )
 // static
 Vector3i MathUtils::abs( const Vector3i& v )
 {
-	return Vector3i( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) );
+	return { ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) };
 }
 
 // static
 Vector4i MathUtils::abs( const Vector4i& v )
 {
-	return Vector4i( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) );
+	return { ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) };
 }
 
 // static
@@ -368,13 +368,13 @@ Vector2i MathUtils::minimum( const Vector2i& v0, const Vector2i& v1 )
 // static
 Vector3i MathUtils::minimum( const Vector3i& v0, const Vector3i& v1 )
 {
-	return Vector3i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ) );
+	return { std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ) };
 }
 
 // static
 Vector4i MathUtils::minimum( const Vector4i& v0, const Vector4i& v1 )
 {
-	return Vector4i( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ), std::min( v0.w, v1.w ) );
+	return { std::min( v0.x, v1.x ), std::min( v0.y, v1.y ), std::min( v0.z, v1.z ), std::min( v0.w, v1.w ) };
 }
 
 // static
@@ -404,13 +404,13 @@ Vector2i MathUtils::maximum( const Vector2i& v0, const Vector2i& v1 )
 // static
 Vector3i MathUtils::maximum( const Vector3i& v0, const Vector3i& v1 )
 {
-	return Vector3i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ) );
+	return { std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ) };
 }
 
 // static
 Vector4i MathUtils::maximum( const Vector4i& v0, const Vector4i& v1 )
 {
-	return Vector4i( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) );
+	return { std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) };
 }
 
 // static

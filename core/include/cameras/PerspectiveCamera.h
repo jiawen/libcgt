@@ -14,15 +14,23 @@ public:
 	// 90 degree field of view, 1:1 aspect ratio
 	static const PerspectiveCamera CANONICAL;
 	
-	// camera at (0,0,5)
-	// x points right, y points up, z towards viewer, looking at origin
+	// camera at (0,0,5), looking at origin
+	// x points right, y points up, z towards viewer
 	// 50 degree field of view, 1:1 aspect ratio
 	static const PerspectiveCamera FRONT;
 
-	// TODO:
-	// LEFT
-	// TOP
+    // camera at (5,0,0), looking at origin
+    // x points into the screen, y points up, z points right
+    // 50 degree field of view, 1:1 aspect ratio
+    static const PerspectiveCamera RIGHT;
+
+    // camera at (0,5,0), looking at origin
+    // x points riht, y points into the screen, z points up
+    // 50 degree field of view, 1:1 aspect ratio
+    static const PerspectiveCamera TOP;
 	
+    // TODO: make isDirectX a template parameter
+
 	// fovY: field of view angle in the y direction, in degrees
 	// aspect: aspect ratio in width over height
 	PerspectiveCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
@@ -30,7 +38,6 @@ public:
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
 		float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
 		float zNear = 1.0f, float zFar = 100.0f,
-		bool zFarIsInfinite = false,
 		bool isDirectX = true );
 
 	// gets the parameters used to set this perspective camera
@@ -43,13 +50,8 @@ public:
 	void getPerspective( float& fovYRadians, float aspect,
 		float& zNear, float& zFar );
 
-	void getPerspective( float& fovYRadians, float aspect,
-		float& zNear, float& zFar,
-		bool& zFarIsInfinite );
-
 	void setPerspective( float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
-		float zNear = 1.0f, float zFar = 100.0f,
-		bool zFarIsInfinite = false );
+		float zNear = 1.0f, float zFar = 100.0f );
 
 	// same as below, but uses existing zNear and zFar
 	void setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
@@ -94,9 +96,11 @@ public:
 	//
 	// calculated as:
 	// tan( halfFovX ) = (width/2) / focalLengthPixelsX
-	Vector2f focalLengthPixels( int width, int height ) const;
+	Vector2f focalLengthPixels( const Vector2f& screenSize ) const;
 
-	Matrix4f projectionMatrix() const;
+    // Returns the OpenGL / Direct3D style projection matrix,
+    // mapping eye space to clip space.
+	virtual Matrix4f projectionMatrix() const override;
 
 	// returns the projection matrix P such that
 	// the plane at a distance focusZ in front of the center of the lens

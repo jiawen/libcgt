@@ -1,3 +1,5 @@
+// TODO: use Eigen instead of CHOLMOD directly
+#if 0
 #pragma once
 
 #include <cholmod.h>
@@ -36,3 +38,4 @@ public:
 	virtual void evaluateResidualAndJacobian( const FloatMatrix& beta,
 		FloatMatrix& residual, CompressedSparseMatrix< float >& J ) = 0;
 };
+#endif

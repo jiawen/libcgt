@@ -16,6 +16,7 @@ public:
 	Vector2i();
 	explicit Vector2i( int i ); // fills both elements with i
 	Vector2i( std::initializer_list< int > xy );
+
 	Vector2i( const Vector2i& rv ); // copy constructor
 	Vector2i& operator = ( const Vector2i& rv ); // assignment operator
 	// no destructor necessary

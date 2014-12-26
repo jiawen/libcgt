@@ -20,26 +20,26 @@ Vector3f Icosahedron::s_defaultPositions[12] =
 
 Vector3i Icosahedron::s_faces[20] =
 {
-	Vector3i(  0,  1,  2 ),
-	Vector3i(  3,  2,  1 ),
-	Vector3i(  3,  4,  5 ),
-	Vector3i(  3,  8,  4 ),
-	Vector3i(  0,  6,  7 ),
-	Vector3i(  0,  9,  6 ),
-	Vector3i(  4, 10, 11 ),
-	Vector3i(  6, 11, 10 ),
-	Vector3i(  2,  5,  9 ),
-	Vector3i( 11,  9,  5 ),
-	Vector3i(  1,  7,  8 ),
-	Vector3i( 10,  8,  7 ),
-	Vector3i(  3,  5,  2 ),
-	Vector3i(  3,  1,  8 ),
-	Vector3i(  0,  2,  9 ),
-	Vector3i(  0,  7,  1 ),
-	Vector3i(  6,  9, 11 ),
-	Vector3i(  6, 10,  7 ),
-	Vector3i(  4, 11,  5 ),
-	Vector3i(  4,  8, 10 )
+	{  0,  1,  2 },
+	{  3,  2,  1 },
+	{  3,  4,  5 },
+	{  3,  8,  4 },
+	{  0,  6,  7 },
+	{  0,  9,  6 },
+	{  4, 10, 11 },
+	{  6, 11, 10 },
+	{  2,  5,  9 },
+	{ 11,  9,  5 },
+	{  1,  7,  8 },
+	{ 10,  8,  7 },
+	{  3,  5,  2 },
+	{  3,  1,  8 },
+	{  0,  2,  9 },
+	{  0,  7,  1 },
+	{  6,  9, 11 },
+	{  6, 10,  7 },
+	{  4, 11,  5 },
+	{  4,  8, 10 }
 };
 
 Icosahedron::Icosahedron( float scale, const Vector3f& center ) :
