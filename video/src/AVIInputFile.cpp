@@ -64,7 +64,7 @@ int AVIInputFile::height() const
 
 Vector2i AVIInputFile::size() const
 {
-	return Vector2i( width(), height() );
+    return{ width(), height() };
 }
 
 int AVIInputFile::numFrames() const

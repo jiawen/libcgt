@@ -176,7 +176,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* file
 }
 
 // static
-bool ArrayUtils::saveTXT( const Array2DView< ubyte4 >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DView< const uint8x4 >& view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -194,7 +194,7 @@ bool ArrayUtils::saveTXT( const Array2DView< ubyte4 >& view, const char* filenam
 		return false;
 	}
 
-	retVal = fprintf( fp, "Format: ubyte4\n" );
+	retVal = fprintf( fp, "Format: uint8x4\n" );
 	if( retVal < 0 )
 	{
 		return false;
@@ -205,7 +205,7 @@ bool ArrayUtils::saveTXT( const Array2DView< ubyte4 >& view, const char* filenam
 		for( int x = 0; x < w; ++x )
 		{
 			int index = y * w + x;
-			ubyte4 v = view( x, y );
+            uint8x4 v = view[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %d %d %d %d\n", index, x, y, v.x, v.y, v.z, v.w );
 		}
 	}

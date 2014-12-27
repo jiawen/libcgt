@@ -276,27 +276,15 @@ T* Array2D< T >::pointer()
 }
 
 template< typename T >
-const T* Array2D< T >::elementPointer( int x, int y ) const
-{
-	return reinterpret_cast< T* >( m_array + y * rowStrideBytes() + x * elementStrideBytes() );
-}
-
-template< typename T >
-T* Array2D< T >::elementPointer( int x, int y )
-{
-	return reinterpret_cast< T* >( m_array + y * rowStrideBytes() + x * elementStrideBytes() );
-}
-
-template< typename T >
 const T* Array2D< T >::rowPointer( int y ) const
 {
-	return elementPointer( 0, y );
+    return elementPointer( { 0, y } );
 }
 
 template< typename T >
 T* Array2D< T >::rowPointer( int y )
 {
-	return elementPointer( 0, y );
+    return elementPointer( { 0, y } );
 }
 
 template< typename T >
@@ -320,13 +308,13 @@ T& Array2D< T >::operator [] ( int k )
 template< typename T >
 const T& Array2D< T >::operator [] ( const Vector2i& xy ) const
 {
-	return ( *this )( xy.x, xy.y );
+    return *( elementPointer( xy ) );
 }
 
 template< typename T >
 T& Array2D< T >::operator [] ( const Vector2i& xy )
 {
-	return ( *this )( xy.x, xy.y );
+    return *( elementPointer( xy ) );
 }
 
 template< typename T >

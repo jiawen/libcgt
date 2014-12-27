@@ -108,17 +108,17 @@ Vector2i Vector3i::xz() const
 
 Vector3i Vector3i::xyz() const
 {
-    return { m_elements[ 0 ], m_elements[ 1 ], m_elements[ 2 ] };
+    return{ m_elements[ 0 ], m_elements[ 1 ], m_elements[ 2 ] };
 }
 
 Vector3i Vector3i::yzx() const
 {
-    return { m_elements[ 1 ], m_elements[ 2 ], m_elements[ 0 ] };
+    return{ m_elements[ 1 ], m_elements[ 2 ], m_elements[ 0 ] };
 }
 
 Vector3i Vector3i::zxy() const
 {
-    return { m_elements[ 2 ], m_elements[ 0 ], m_elements[ 1 ] };
+    return{ m_elements[ 2 ], m_elements[ 0 ], m_elements[ 1 ] };
 }
 
 float Vector3i::norm() const
@@ -217,32 +217,32 @@ bool operator != ( const Vector3i& v0, const Vector3i& v1 )
 
 Vector3i operator + ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return { v0.x + v1.x, v0.y + v1.y, v0.z + v1.z };
+	return{ v0.x + v1.x, v0.y + v1.y, v0.z + v1.z };
 }
 
 Vector3i operator - ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return { v0.x - v1.x, v0.y - v1.y, v0.z - v1.z };
+	return{ v0.x - v1.x, v0.y - v1.y, v0.z - v1.z };
 }
 
 Vector3i operator * ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return { v0.x * v1.x, v0.y * v1.y, v0.z * v1.z };
+	return{ v0.x * v1.x, v0.y * v1.y, v0.z * v1.z };
 }
 
 Vector3i operator - ( const Vector3i& v )
 {
-	return { -v.x, -v.y, -v.z };
+	return{ -v.x, -v.y, -v.z };
 }
 
 Vector3i operator * ( int c, const Vector3i& v )
 {
-	return { c * v.x, c * v.y, c * v.z };
+	return{ c * v.x, c * v.y, c * v.z };
 }
 
 Vector3i operator * ( const Vector3i& v, int c )
 {
-	return { c * v.x, c * v.y, c * v.z };
+	return{ c * v.x, c * v.y, c * v.z };
 }
 
 Vector3f operator * ( float f, const Vector3i& v )
@@ -257,10 +257,10 @@ Vector3f operator * ( const Vector3i& v, float f )
 
 Vector3i operator / ( const Vector3i& v, int c )
 {
-	return { v.x / c, v.y / c, v.z / c };
+	return{ v.x / c, v.y / c, v.z / c };
 }
 
 Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 )
 {
-	return { v0.x / v1.x, v0.y / v1.y, v0.z / v1.z };
+	return{ v0.x / v1.x, v0.y / v1.y, v0.z / v1.z };
 }

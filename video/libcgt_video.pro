@@ -3,15 +3,13 @@ CONFIG += qt thread debug_and_release staticlib
 
 DESTDIR = "../lib"
 
-# ===== libcgt_core =====
+# ===== libcgt_video =====
 INCLUDEPATH += "../core/include"
-
-# ===== Qt =====
-INCLUDEPATH += $(QTDIR)/include/QtCore
-INCLUDEPATH += $(QTDIR)/include/QtGui
-INCLUDEPATH += $(QTDIR)/include
-
 INCLUDEPATH += "./include"
+
+# FFMPEG
+# HACK
+INCLUDEPATH += ../../libs/include/ffmpeg
 
 QMAKE_CXXFLAGS += -MP
 DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX

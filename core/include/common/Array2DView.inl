@@ -69,18 +69,6 @@ T* Array2DView< T >::elementPointer( const Vector2i& xy )
 }
 
 template< typename T >
-const T* Array2DView< T >::elementPointer( int x, int y ) const
-{
-	return reinterpret_cast< T* >( m_pPointer + y * rowStrideBytes() + x * elementStrideBytes() );
-}
-
-template< typename T >
-T* Array2DView< T >::elementPointer( int x, int y )
-{
-	return reinterpret_cast< T* >( m_pPointer + y * rowStrideBytes() + x * elementStrideBytes() );
-}
-
-template< typename T >
 T* Array2DView< T >::rowPointer( int y )
 {
     return reinterpret_cast< T* >( &( m_pPointer[ y * m_strides.y ] ) );
@@ -98,7 +86,7 @@ T& Array2DView< T >::operator [] ( int k )
 template< typename T >
 T& Array2DView< T >::operator [] ( const Vector2i& xy )
 {
-    return *( elementPointer( xy ) );    
+    return *( elementPointer( xy ) );
 }
 
 template< typename T >

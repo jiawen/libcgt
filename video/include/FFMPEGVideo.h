@@ -1,26 +1,16 @@
-#if 0
-// TODO: refactor this into its own project
+#pragma once
 
-#ifndef FFMPEG_VIDEO_H
-#define FFMPEG_VIDEO_H
+#include "IVideo.h"
 
-#include "video/IVideo.h"
+#include <cstdint>
+#include <vecmath/Vector2i.h>
 
-// stdint.h requires __STDC_CONSTANT_MACROS to be defined
-// in order to define INT64_C()
-// which is needed by ffmpeg
-
-#if _WIN32
-#define __STDC_CONSTANT_MACROS
-#endif
-
-#include <ffmpeg/avcodec.h>
-#include <ffmpeg/avformat.h>
-#include <ffmpeg/swscale.h>
-
-#if _WIN32
-#undef __STDC_CONSTANT_MACROS
-#endif
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+}
 
 // A video loaded using ffmpeg implementing the IVideo interface
 class FFMPEGVideo
@@ -30,23 +20,39 @@ public:
 	static FFMPEGVideo* fromFile( const char* filename );
 	virtual ~FFMPEGVideo();
 
-	virtual int64 numFrames();
-	virtual float framePeriodMilliseconds();
-	virtual float framePeriodSeconds();
+    // The number of frames, if the file has it.
+    // Otherwise, returns 0.
+    virtual int64_t numFrames() const;
+    
+    virtual float durationMilliseconds() const;
+    virtual float durationSeconds() const;
+    // Multiply this by framePeriodRationalSeconds() to get the duration
+    // in seconds as a rational. If it's not specified directly in the file,
+    // then it will be estimated based on file size / bitrate.
+    virtual int64_t durationRationalTimePeriods() const;
 
-	virtual int width();
-	virtual int height();
-	virtual int bytesPerFrame();
+    virtual float framePeriodMilliseconds() const;
+    virtual float framePeriodSeconds() const;
+    // The "timebase" in seconds as a rational number of two 32-bit integers.
+    virtual Vector2i framePeriodRationalSeconds() const;
 
-	// returns the internal frame counter
-	virtual int64 getNextFrameIndex();
-	virtual bool setNextFrameIndex( int64 frameIndex );
+    virtual int width() const;
+    virtual int height() const;
+    virtual Vector2i size() const; // (width, height)
+	virtual int bytesPerFrame() const; // TODO: get rid of this? this assumes PIX_FMT_RGB24
 
-	// Populates dataOut with the contents of the next frame
-	// and increments the internal frame counter
+	// Returns the internal frame counter.
+    virtual int64_t getNextFrameIndex() const;
+    // Seek to time frameIndex.
+    virtual bool setNextFrameIndex( int64_t frameIndex );
+
+	// Populates rgbOut with the contents of the next frame
+	// *and increments* the internal frame counter
 	// returns true if succeeded
 	// and false on failure (i.e. at the end of the video stream).
-	virtual bool getNextFrame( ubyte* dataOut );
+    // TODO: check that rgbOut has the right width, height and is packed.
+    // TODO: other formats are easy, bgr, etc
+	virtual bool getNextFrame( Array2DView< uint8x3 > rgbOut );
 
 private:
 
@@ -59,10 +65,10 @@ private:
 	// reads the next frame in its internal format and stores it in m_pFrameRaw
 	// on success, returns the index of the frame that was decoded
 	// returns -1 on failure
-	bool decodeNextFrame( int64* decodedFrameIndex );
+	bool decodeNextFrame( int64_t* decodedFrameIndex );
 
 	// converts the next frame into RGB
-	void convertDecodedFrameToRGB( unsigned char* rgbOut );
+    void convertDecodedFrameToRGB( Array2DView< uint8x3 > rgbOut );
 
 	bool isDecodedFrameKey();
 
@@ -81,14 +87,19 @@ private:
 	// dimensions
 	int m_width;
 	int m_height;
-	int64 m_nFrames;
+	int64_t m_nFrames;
+
+    // time base
+    Vector2i m_framePeriodRationalSeconds;
+
+    // duration in time base units
+    int64_t m_durationRationalTimePeriods;
+    // duration in seconds
+    float m_durationSeconds;
 
 	// derived units
 	int m_nBytesPerFrame;
 	float m_framePeriodSeconds;
 
-	int64 m_nextFrameIndex;
+	int64_t m_nextFrameIndex;
 };
-
-#endif // FFMPEG_VIDEO_H
-#endif

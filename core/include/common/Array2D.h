@@ -74,12 +74,6 @@ public:
 	const T* pointer() const;
 	T* pointer();
 
-	const T* elementPointer( int x, int y ) const;
-	T* elementPointer( int x, int y );
-
-	const T* rowPointer( int y ) const;
-	T* rowPointer( int y );
-
 	const T& operator [] ( int k ) const; // read
 	T& operator [] ( int k ); // write
 

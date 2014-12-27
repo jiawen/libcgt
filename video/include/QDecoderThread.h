@@ -1,3 +1,4 @@
+#if 0
 #ifndef Q_DECODER_THREAD_H
 #define Q_DECODER_THREAD_H
 
@@ -58,3 +59,4 @@ private:
 };
 
 #endif // Q_DECODERTHREAD_H
+#endif

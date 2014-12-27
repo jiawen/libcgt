@@ -1,5 +1,5 @@
-#ifndef IMAGE_DIRECTORY_VIDEO_H
-#define IMAGE_DIRECTORY_VIDEO_H
+#if 0
+#pragma once
 
 #include <cassert>
 #include <QImage>
@@ -8,7 +8,6 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "common/Reference.h"
 #include "imageproc/Image3ub.h"
 #include "imageproc/Image4f.h"
 #include "video/IVideo.h"
@@ -278,5 +277,4 @@ m_nextFrameIndex( 0 )
 	m_width = m_frames[ 0 ]->width();
 	m_height = m_frames[ 0 ]->height();
 }
-
-#endif // IMAGE_DIRECTORY_VIDEO_H
+#endif

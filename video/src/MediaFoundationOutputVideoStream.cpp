@@ -113,7 +113,7 @@ int MediaFoundationOutputVideoStream::height() const
 
 Vector2i MediaFoundationOutputVideoStream::size() const
 {
-	return Vector2i( m_width, m_height );
+    return{ m_width, m_height };
 }
 
 float MediaFoundationOutputVideoStream::framesPerSecond() const
@@ -123,12 +123,12 @@ float MediaFoundationOutputVideoStream::framesPerSecond() const
 
 Vector2i MediaFoundationOutputVideoStream::framesPerSecondRational() const
 {
-	return Vector2i( m_framesPerSecondNumerator, m_framesPerSecondDenominator );
+    return{ m_framesPerSecondNumerator, m_framesPerSecondDenominator };
 }
 
-int64 MediaFoundationOutputVideoStream::frameDuration() const
+int64_t MediaFoundationOutputVideoStream::frameDuration() const
 {
-	return static_cast< int64 >( m_sampleDuration );
+	return static_cast< int64_t >( m_sampleDuration );
 }
 
 float MediaFoundationOutputVideoStream::frameDurationMilliseconds() const
@@ -146,7 +146,7 @@ int MediaFoundationOutputVideoStream::currentFrameCount() const
 	return m_frameIndex;
 }
 
-int64 MediaFoundationOutputVideoStream::currentTime() const
+int64_t MediaFoundationOutputVideoStream::currentTime() const
 {
 	return m_currentTime;
 }
@@ -156,7 +156,7 @@ float MediaFoundationOutputVideoStream::currentTimeMilliseconds() const
 	return m_frameIndex * frameDurationMilliseconds();
 }
 
-bool MediaFoundationOutputVideoStream::appendFrameRGBA( Array2DView< ubyte4 > rgba )
+bool MediaFoundationOutputVideoStream::appendFrameRGBA( Array2DView< uint8x4 > rgba )
 {
 	if( !m_valid )
 	{
@@ -168,11 +168,11 @@ bool MediaFoundationOutputVideoStream::appendFrameRGBA( Array2DView< ubyte4 > rg
 		return false;
 	}
 
-	Swizzle::RGBAToBGRA( rgba, m_bgraData );
+    libcgt::core::imageproc::swizzle::RGBAToBGRA( rgba, m_bgraData );
 	return appendFrameBGRA( m_bgraData );
 }
 
-bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< ubyte4 > bgra )
+bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< uint8x4 > bgra )
 {
 	if( !m_valid )
 	{
@@ -186,21 +186,21 @@ bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< ubyte4 > bg
 
 	if( m_codec == H264 )
 	{
-		bgra = ArrayUtils::flippedUpDownView< ubyte4 >( bgra );
+        bgra = ArrayUtils::flippedUpDownView< uint8x4 >( bgra );
 	}
 
 	// copy data to buffer
 	BYTE* pBufferData = nullptr;
 	HRESULT hr = m_pBuffer->Lock( &pBufferData, nullptr, nullptr );
 
-	Array2DView< ubyte4 > srcView;	
+    Array2DView< uint8x4 > srcView;
 	if( bgra.elementsArePacked() )
 	{
 		srcView = bgra;
 	}
 	else
 	{
-		ArrayUtils::copy< ubyte4 >( bgra, m_bgraData );
+        ArrayUtils::copy< uint8x4 >( bgra, m_bgraData );
 		srcView = m_bgraData;
 	}
 
@@ -213,9 +213,9 @@ bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< ubyte4 > bg
 			pBufferData, // destination pointer
 			dstRowPitch, // destination row pitch
 			reinterpret_cast< BYTE* >( srcView.rowPointer( 0 ) ), // first row in source image.
-			srcView.rowPitchBytes(), // source row pitch			
+            srcView.rowStrideBytes(), // source row pitch			
 
-			srcView.width() * sizeof( ubyte4 ), // source width in bytes
+            srcView.width() * sizeof( uint8x4 ), // source width in bytes
 			srcView.height() // source height
 		);
 	}
@@ -282,7 +282,7 @@ MediaFoundationOutputVideoStream::MediaFoundationOutputVideoStream(
 	m_pSample( nullptr ),
 	m_pBuffer( nullptr ),
 
-	m_bgraData( width, height )
+    m_bgraData( { width, height } )
 
 {
 	MFFrameRateToAverageTimePerFrame( framesPerSecondNumerator, framesPerSecondDenominator, &m_sampleDuration );

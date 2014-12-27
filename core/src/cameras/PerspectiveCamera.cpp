@@ -171,7 +171,7 @@ Vector2f PerspectiveCamera::focalLengthPixels( const Vector2f& screenSize ) cons
 {
     float fx = CameraUtils::fovRadiansToFocalLengthPixels( fovXRadians(), screenSize.x );
     float fy = CameraUtils::fovRadiansToFocalLengthPixels( fovYRadians(), screenSize.y );
-    return { fx, fy };
+    return{ fx, fy };
 }
 
 // virtual
@@ -334,7 +334,6 @@ bool PerspectiveCamera::loadTXT( QString filename )
 	float fovYRadians;
 	float aspect;
 
-	bool isInfinite;
 	bool isDirectX;
 
 	inputTextStream >> str >> eye[ 0 ] >> eye[ 1 ] >> eye[ 2 ];

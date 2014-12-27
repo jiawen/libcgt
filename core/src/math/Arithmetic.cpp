@@ -89,13 +89,13 @@ Vector2i Arithmetic::sign( const Vector2f& v )
 // static
 Vector3i Arithmetic::sign( const Vector3f& v )
 {
-	return { sign( v.x ), sign( v.y ), sign( v.z ) };
+	return{ sign( v.x ), sign( v.y ), sign( v.z ) };
 }
 
 // static
 Vector4i Arithmetic::sign( const Vector4f& v )
 {
-	return { sign( v.x ), sign( v.y ), sign( v.z ), sign( v.w ) };
+	return{ sign( v.x ), sign( v.y ), sign( v.z ), sign( v.w ) };
 }
 
 // static
@@ -240,13 +240,13 @@ Vector3f Arithmetic::ceil( const Vector3f& v )
 // static
 Vector3i Arithmetic::roundToInt( const Vector3f& v )
 {
-	return { roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) };
+	return{ roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) };
 }
 
 // static
 Vector3i Arithmetic::floorToInt( const Vector3f& v )
 {
-	return { floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ) };
+	return{ floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ) };
 }
 
 // static
@@ -270,19 +270,19 @@ Vector4f Arithmetic::ceil( const Vector4f& v )
 // static
 Vector4i Arithmetic::roundToInt( const Vector4f& v )
 {
-	return { roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ), roundToInt( v.w ) };
+	return{ roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ), roundToInt( v.w ) };
 }
 
 // static
 Vector4i Arithmetic::floorToInt( const Vector4f& v )
 {
-	return { floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ), floorToInt( v.w ) };
+	return{ floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ), floorToInt( v.w ) };
 }
 
 // static
 Vector4i Arithmetic::ceilToInt( const Vector4f& v )
 {
-	return { ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ), ceilToInt( v.w ) };
+	return{ ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ), ceilToInt( v.w ) };
 }
 
 // static

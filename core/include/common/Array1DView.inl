@@ -82,14 +82,14 @@ T* Array1DView< T >::elementPointer( int x )
 template< typename T >
 const T& Array1DView< T >::operator [] ( int k ) const
 {
-	const T* q = reinterpret_cast< const T* >( m_pPointer + k * m_elementStrideBytes );
+    const T* q = reinterpret_cast< const T* >( m_pPointer + k * m_strideBytes );
 	return *q;
 }
 
 template< typename T >
 T& Array1DView< T >::operator [] ( int k )
 {
-	T* q = reinterpret_cast< T* >( m_pPointer + k * m_elementStrideBytes );
+	T* q = reinterpret_cast< T* >( m_pPointer + k * m_strideBytes );
 	return *q;
 }
 
@@ -120,5 +120,5 @@ int Array1DView< T >::elementStrideBytes() const
 template< typename T >
 bool Array1DView< T >::packed() const
 {
-	return( m_elementStrideBytes == sizeof( T ) );
+    return( m_strideBytes == sizeof( T ) );
 }

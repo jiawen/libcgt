@@ -35,7 +35,7 @@ Vector3i Indexing::indexToSubscript3D( int index, int width, int height )
 	int y;
 	int z;
 	indexToSubscript3D( index, width, height, x, y, z );
-	return { x, y, z };
+	return{ x, y, z };
 }
 
 // static

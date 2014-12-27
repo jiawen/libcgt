@@ -50,7 +50,7 @@ AVIInputVideoStream* AVIInputVideoStream::open( PAVIFILE pAVIFile, int streamInd
 
 	AVIInputVideoStream* pOutput = new AVIInputVideoStream;
 
-	pOutput->m_ubyte4Data.resize( width, height );
+    pOutput->m_ubyte4Data.resize( { width, height } );
 	pOutput->m_width = width;
 	pOutput->m_height = height;
 
@@ -83,7 +83,7 @@ int AVIInputVideoStream::height() const
 
 Vector2i AVIInputVideoStream::size() const
 {
-	return Vector2i( width(), height() );
+    return{ width(), height() };
 }
 
 int AVIInputVideoStream::numFrames() const
@@ -102,35 +102,35 @@ void AVIInputVideoStream::framesPerSecondRational( int& numerator, int& denomina
 	denominator = m_info.dwScale;
 }
 
-Array2DView< ubyte4 > AVIInputVideoStream::getFrameRGBA( int frameIndex, ubyte alpha )
+Array2DView< uint8x4 > AVIInputVideoStream::getFrameRGBA( int frameIndex, uint8_t alpha )
 {
 	if( frameIndex < 0 || frameIndex >= numFrames() )
 	{
-		return Array2DView< ubyte4 >();
+		return Array2DView< uint8x4 >();
 	}
 
-	Array2DView< ubyte3 > bgrData = getFrameBGR( frameIndex );
-	Swizzle::BGRToRGBA( bgrData, m_ubyte4Data, alpha );
+	Array2DView< uint8x3 > bgrData = getFrameBGR( frameIndex );
+	libcgt::core::imageproc::swizzle::BGRToRGBA( bgrData, m_ubyte4Data, alpha );
 	return m_ubyte4Data;
 }
 
-Array2DView< ubyte4 > AVIInputVideoStream::getFrameBGRA( int frameIndex, ubyte alpha )
+Array2DView< uint8x4 > AVIInputVideoStream::getFrameBGRA( int frameIndex, uint8_t alpha )
 {
 	if( frameIndex < 0 || frameIndex >= numFrames() )
 	{
-		return Array2DView< ubyte4 >();
+		return Array2DView< uint8x4 >();
 	}
 
-	Array2DView< ubyte3 > bgrData = getFrameBGR( frameIndex );
-	Swizzle::BGRToBGRA( bgrData, m_ubyte4Data, alpha );
+    Array2DView< uint8x3 > bgrData = getFrameBGR( frameIndex );
+	libcgt::core::imageproc::swizzle::BGRToBGRA( bgrData, m_ubyte4Data, alpha );
 	return m_ubyte4Data;
 }
 
-Array2DView< ubyte3 > AVIInputVideoStream::getFrameBGR( int frameIndex )
+Array2DView< uint8x3 > AVIInputVideoStream::getFrameBGR( int frameIndex )
 {
 	if( frameIndex < 0 || frameIndex >= numFrames() )
 	{
-		return Array2DView< ubyte3 >();
+        return Array2DView< uint8x3 >( );
 	}
 
 	// grab the frame
@@ -138,11 +138,11 @@ Array2DView< ubyte3 > AVIInputVideoStream::getFrameBGR( int frameIndex )
 	BITMAPINFOHEADER* pBitmapData = reinterpret_cast< BITMAPINFOHEADER* >( AVIStreamGetFrame( m_pFrame, streamFrameIndex ) );
 
 	// data is just past the header
-	ubyte* pBGRDataBegin = reinterpret_cast< ubyte* >( pBitmapData ) + sizeof( BITMAPINFOHEADER ) + pBitmapData->biClrUsed * sizeof( RGBQUAD );
+    uint8_t* pBGRDataBegin = reinterpret_cast< uint8_t* >( pBitmapData )+sizeof( BITMAPINFOHEADER )+pBitmapData->biClrUsed * sizeof( RGBQUAD );
 
 	// the original data is stored bottom to top
-	Array2DView< ubyte3 > inputView( pBGRDataBegin, m_width, m_height );
-	return ArrayUtils::flippedUpDownView< ubyte3 >( inputView );
+    Array2DView< uint8x3 > inputView( pBGRDataBegin, { m_width, m_height } );
+    return ArrayUtils::flippedUpDownView< uint8x3 >( inputView );
 }
 
 AVIInputVideoStream::AVIInputVideoStream()

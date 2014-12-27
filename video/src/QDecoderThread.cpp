@@ -1,3 +1,4 @@
+#if 0
 #include "video/QDecoderThread.h"
 
 #include "time/StopWatch.h"
@@ -121,3 +122,4 @@ void QDecoderThread::decodeNextFrameIntoBuffer()
 
 	m_nSlotsFilled.release();	
 }
+#endif

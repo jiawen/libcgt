@@ -31,20 +31,20 @@ public:
 	// (Same as getFrameBGR and then swizzling it)
 	//
 	// Returns NULL if frameIndex is out of range
-	Array2DView< ubyte4 > getFrameRGBA( int frameIndex, ubyte alpha = 255 );
+    Array2DView< uint8x4 > getFrameRGBA( int frameIndex, uint8_t alpha = 255 );
 
 	// Returns a view of frame frameIndex
 	// in BGRA format with custom alpha
 	// (Same as getFrameBGR and then swizzling it)
 	//
 	// Returns NULL if frameIndex is out of range
-	Array2DView< ubyte4 > getFrameBGRA( int frameIndex, ubyte alpha = 255 );
+    Array2DView< uint8x4 > getFrameBGRA( int frameIndex, uint8_t alpha = 255 );
 
 	// Returns a view of frame frameIndex
 	// in the natural BGR (24 bits per pixel, 8 bits per channel) format
 	//
 	// Returns NULL if frameIndex is out of range
-	Array2DView< ubyte3 > getFrameBGR( int frameIndex );
+    Array2DView< uint8x3 > getFrameBGR( int frameIndex );
 
 private:
 
@@ -52,7 +52,7 @@ private:
 
 	int m_width;
 	int m_height;
-	Array2D< ubyte4 > m_ubyte4Data;
+    Array2D< uint8x4 > m_ubyte4Data;
 
 	PAVISTREAM m_pStream;
 	PGETFRAME m_pFrame;	

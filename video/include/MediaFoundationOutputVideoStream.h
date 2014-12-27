@@ -54,7 +54,7 @@ public:
 	Vector2i framesPerSecondRational() const;
 	
 	// returns the duration of a frame in 100 ns intervals
-	int64 frameDuration() const;
+	int64_t frameDuration() const;
 
 	// returns the duration of a frame in milliseconds
 	float frameDurationMilliseconds() const;
@@ -66,14 +66,14 @@ public:
 	int currentFrameCount() const;
 
 	// returns the number of 100-nanosecond intervals appended
-	int64 currentTime() const;
+	int64_t currentTime() const;
 	
 	// returns the number of milliseconds appended
 	float currentTimeMilliseconds() const;
 
 	// appends a frame to be encoded in either format
-	bool appendFrameRGBA( Array2DView< ubyte4 > rgba );
-	bool appendFrameBGRA( Array2DView< ubyte4 > bgra );
+    bool appendFrameRGBA( Array2DView< uint8x4 > rgba );
+    bool appendFrameBGRA( Array2DView< uint8x4 > bgra );
 
 	// flushes the pipeline and writes everything to disk
 	// this stream is no longer usable afterwards
@@ -89,9 +89,10 @@ private:
 		int framesPerSecondNumerator, int framesPerSecondDenominator,
 		int bitsPerSecond
 	);
-		HRESULT initializeOutputType();
-		HRESULT initializeInputType();
-		HRESULT initializeBuffer();
+
+	HRESULT initializeOutputType();
+	HRESULT initializeInputType();
+	HRESULT initializeBuffer();
 
 	bool m_valid;
 
@@ -119,5 +120,5 @@ private:
 	LONGLONG m_currentTime;
 
 	// in case we need to swizzle
-	Array2D< ubyte4 > m_bgraData;
+    Array2D< uint8x4 > m_bgraData;
 };

@@ -51,7 +51,6 @@ public:
 	void setUniformVector4i( const GLchar* name, const Vector4i& v );
 
 	void use();
-    static void disableAll();
 
 private:
 

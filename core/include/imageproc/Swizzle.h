@@ -11,8 +11,6 @@ namespace imageproc
 {
 namespace swizzle
 {
-    // TODO: const correct inputs
-
     // RGBA source
     // 4 -> 4
     void RGBAToBGRA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output );
