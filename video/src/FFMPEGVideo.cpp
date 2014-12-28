@@ -1,6 +1,7 @@
 #include "FFMPEGVideo.h"
 
 #include <cassert>
+#include <vector>
 
 #include "math/Arithmetic.h"
 
@@ -24,10 +25,11 @@ FFMPEGVideo* FFMPEGVideo::fromFile( const char* filename )
     int retVal;
 
     AVFormatContext* pFormatContext = avformat_alloc_context();
-    AVCodecContext* pCodecContext;
-    AVCodec* pCodec;
-    AVFrame* pFrameRaw;
-    AVFrame* pFrameRGB;
+    AVCodecContext* pCodecContext = NULL;
+    AVCodec* pCodec = NULL;
+    AVFrame* pFrameRaw = NULL;
+    AVFrame* pFrameRGB = NULL;
+    std::vector< SwsContext* > contexts;
 
     // Open the file and examine the header
     // populates pFormatContext
@@ -85,42 +87,32 @@ FFMPEGVideo* FFMPEGVideo::fromFile( const char* filename )
                             pFrameRGB = av_frame_alloc();
                             if( pFrameRGB != NULL )
                             {
-                                // Note: PixelFormats are in avutil.h
-                                // Note: flags are in swscale.h
-                                SwsContext* pSWSContext = sws_getContext
-                                    (
-                                    pCodecContext->width, pCodecContext->height, // source width and height
-                                    pCodecContext->pix_fmt, // source format
-                                    pCodecContext->width, pCodecContext->height, // destination width and height
-                                    PIX_FMT_RGB24, // destination format
-                                    SWS_POINT, // flags
-                                    NULL, // source filter, NULL --> default
-                                    NULL, // destination filter, NULL --> default
-                                    NULL // filter parameters, NULL --> default
-                                    );
-
-                                if( pSWSContext != NULL )
+                                std::vector< SwsContext* > contexts = createSWSContexts( pCodecContext );
+                                if( contexts.size() > 0 )
                                 {
-                                    FFMPEGVideo* video = new FFMPEGVideo
-                                        (
+                                    FFMPEGVideo* pOutput = new FFMPEGVideo
+                                    (
                                         pFormatContext,
                                         videoStreamIndex,
                                         pCodecContext,
                                         pFrameRaw,
                                         pFrameRGB,
-                                        pSWSContext
-                                        );
+                                        contexts
+                                    );
 
-                                    if( video != NULL )
+                                    if( pOutput != nullptr )
                                     {
-                                        return video;
+                                        return pOutput;
                                     }
                                     else
                                     {
                                         fprintf( stderr, "Out of memory allocating video object!\n" );
                                     }
 
-                                    sws_freeContext( pSWSContext );
+                                    for( SwsContext* pContext : contexts )
+                                    {
+                                        sws_freeContext( pContext );
+                                    }
                                 }
                                 else
                                 {
@@ -172,8 +164,11 @@ FFMPEGVideo* FFMPEGVideo::fromFile( const char* filename )
 // virtual
 FFMPEGVideo::~FFMPEGVideo()
 {
-    sws_freeContext( m_pSWSContext );
-    av_free( m_pFrameRGB );
+    for( SwsContext* pContext : m_swsContexts )
+    {
+        sws_freeContext( pContext );
+    }
+    av_free( m_pFrameDecoded );
     av_free( m_pFrameRaw );
     avcodec_close( m_pCodecContext );
     avformat_close_input( &m_pFormatContext );
@@ -304,8 +299,9 @@ bool FFMPEGVideo::setNextFrameIndex( int64_t frameIndex )
     return true;
 }
 
+// TODO: refactor
 // virtual
-bool FFMPEGVideo::getNextFrame( Array2DView< uint8x3 > rgbOut )
+bool FFMPEGVideo::getNextFrameRGB24( Array2DView< uint8x3 > rgbOut )
 {
     if( m_nextFrameIndex >= m_nFrames )
     {
@@ -337,6 +333,51 @@ bool FFMPEGVideo::getNextFrame( Array2DView< uint8x3 > rgbOut )
     }
 }
 
+// virtual
+bool FFMPEGVideo::getNextFrameBGRA32( Array2DView< uint8x4 > bgraOut )
+{
+    if( m_nextFrameIndex >= m_nFrames )
+    {
+        return false;
+    }
+
+    // TODO: can potentially accelerate this by using m_pCodecContext->hurry_up = 1
+    int64_t t;
+
+    bool decodeSucceeded = decodeNextFrame( &t );
+    while( decodeSucceeded && ( t < m_nextFrameIndex ) )
+    {
+        decodeSucceeded = decodeNextFrame( &t );
+    }
+
+    // if the loop was successful
+    // then t = m_nextFrameIndex
+    if( decodeSucceeded )
+    {
+        // Associate the output buffer with m_pFrameDecoded.
+        avpicture_fill( ( AVPicture* )m_pFrameDecoded,
+            reinterpret_cast< const uint8_t* >( bgraOut.rowPointer( 0 ) ),
+            PIX_FMT_BGRA,
+            width( ), height( ) );
+
+        // Software scale the raw frame to m_pFrameDecoded, which is associated with rgbOut.
+        sws_scale
+        (
+            m_swsContexts[ 1 ], // converter
+            m_pFrameRaw->data, m_pFrameRaw->linesize, // source data and stride
+            0, height( ), // starting y and height
+            m_pFrameDecoded->data, m_pFrameDecoded->linesize
+        );
+
+        ++m_nextFrameIndex;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Private
 //////////////////////////////////////////////////////////////////////////
@@ -345,14 +386,14 @@ FFMPEGVideo::FFMPEGVideo( AVFormatContext* pFormatContext, int videoStreamIndex,
     AVCodecContext* pCodecContext,
     AVFrame* pFrameRaw,
     AVFrame* pFrameRGB,
-    SwsContext* pSWSContext ) :
+    const std::vector< SwsContext* > & swsContexts ) :
 
     m_pFormatContext( pFormatContext ),
     m_videoStreamIndex( videoStreamIndex ),
     m_pCodecContext( pCodecContext ),
     m_pFrameRaw( pFrameRaw ),
-    m_pFrameRGB( pFrameRGB ),
-    m_pSWSContext( pSWSContext ),
+    m_pFrameDecoded( pFrameRGB ),
+    m_swsContexts( swsContexts ),
 
     m_width( pCodecContext->width ),
     m_height( pCodecContext->height ),
@@ -364,13 +405,16 @@ FFMPEGVideo::FFMPEGVideo( AVFormatContext* pFormatContext, int videoStreamIndex,
     
     m_nBytesPerFrame = avpicture_get_size( PIX_FMT_RGB24, width(), height() );
 
-    AVRational framePeriod = m_pFormatContext->streams[ m_videoStreamIndex ]->time_base;
-    m_framePeriodRationalSeconds.x = framePeriod.num;
-    m_framePeriodRationalSeconds.y = framePeriod.den;
-    m_framePeriodSeconds = static_cast< float >( av_q2d( framePeriod ) );
- 
+    AVRational averageFrameRate = m_pFormatContext->streams[ m_videoStreamIndex ]->avg_frame_rate;
+    AVRational averageFramePeriod = av_inv_q( averageFrameRate );
+    m_framePeriodRationalSeconds.x = averageFramePeriod.num;
+    m_framePeriodRationalSeconds.y = averageFramePeriod.den;
+    m_framePeriodSeconds = static_cast< float >( av_q2d( averageFramePeriod ) );
+
+    AVRational timeBaseRationalSeconds = m_pFormatContext->streams[ m_videoStreamIndex ]->time_base;
+
     m_durationRationalTimePeriods = m_pFormatContext->streams[ m_videoStreamIndex ]->duration;
-    m_durationSeconds = m_durationRationalTimePeriods * m_framePeriodSeconds;
+    m_durationSeconds = static_cast< float >( m_durationRationalTimePeriods * av_q2d( timeBaseRationalSeconds ) );
 }
 
 bool FFMPEGVideo::decodeNextFrame( int64_t* decodedFrameIndex )
@@ -440,25 +484,58 @@ bool FFMPEGVideo::decodeNextFrame( int64_t* decodedFrameIndex )
 
 void FFMPEGVideo::convertDecodedFrameToRGB( Array2DView< uint8x3 > rgbOut )
 {
-    // Associate the output buffer with m_pFrameRGB.
-    avpicture_fill( ( AVPicture* )m_pFrameRGB,
+    // Associate the output buffer with m_pFrameDecoded.
+    avpicture_fill( ( AVPicture* )m_pFrameDecoded,
         reinterpret_cast< const uint8_t* >( rgbOut.rowPointer( 0 ) ),
         PIX_FMT_RGB24,
         width(), height() );
 
-    // Software scale the raw frame to m_pFrameRGB, which is associated with rgbOut.
+    // Software scale the raw frame to m_pFrameDecoded, which is associated with rgbOut.
     sws_scale
     (
-        m_pSWSContext, // converter
+        m_swsContexts[ 0 ], // converter
         m_pFrameRaw->data, m_pFrameRaw->linesize, // source data and stride
         0, height(), // starting y and height
-        m_pFrameRGB->data, m_pFrameRGB->linesize
+        m_pFrameDecoded->data, m_pFrameDecoded->linesize
     );
 }
 
 bool FFMPEGVideo::isDecodedFrameKey()
 {
     return( m_pFrameRaw->key_frame == 1 );
+}
+
+std::vector< SwsContext* > FFMPEGVideo::createSWSContexts( AVCodecContext* pCodecContext )
+{
+    // Note: PixelFormats are in avutil.h
+    // Note: flags are in swscale.h
+
+    SwsContext* pRGB24 = sws_getContext
+    (
+        pCodecContext->width, pCodecContext->height, // source width and height
+        pCodecContext->pix_fmt, // source format
+        pCodecContext->width, pCodecContext->height, // destination width and height
+        PIX_FMT_RGB24, // destination format
+        SWS_POINT, // flags
+        NULL, // source filter, NULL --> default
+        NULL, // destination filter, NULL --> default
+        NULL // filter parameters, NULL --> default
+    );
+
+    SwsContext* pBGRA32 = sws_getContext
+    (
+        pCodecContext->width, pCodecContext->height, // source width and height
+        pCodecContext->pix_fmt, // source format
+        pCodecContext->width, pCodecContext->height, // destination width and height
+        PIX_FMT_BGRA, // destination format
+        SWS_POINT, // flags
+        NULL, // source filter, NULL --> default
+        NULL, // destination filter, NULL --> default
+        NULL // filter parameters, NULL --> default
+    );
+
+    // TODO: check for NULL.
+    return{ pRGB24, pBGRA32 };
 }
 
 // static

@@ -60,41 +60,6 @@ bool ArrayUtils::fill( Array2DView< T > view, const T& value )
 }
 
 // static
-template<>
-bool ArrayUtils::fill( Array2DView< uint8_t > view, const uint8_t& value )
-{
-	if( view.isNull() )
-	{
-		return false;
-	}
-
-	if( view.packed() )
-	{
-		memset( view.pointer(), value, view.numElements() );
-		return true;
-	}
-
-	if( view.elementsArePacked() )
-	{
-		// Fill w bytes at a time.
-		int w = view.width();
-		for( int y = 0; y < view.height(); ++y )
-		{
-			memset( view.rowPointer( y ), value, w );
-		}
-		return true;
-	}
-
-	// Nothing is packed, iterate.
-	int ne = view.numElements();
-	for( int k = 0; k < ne; ++k )
-	{
-		view[ k ] = value;
-	}
-	return true;
-}
-
-// static
 template< typename T >
 Array1DView< T > ArrayUtils::flippedLRView( Array1DView< T > view )
 {
@@ -139,9 +104,9 @@ Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, const Vector2i&
 
 // static
 template< typename T >
-Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, const Vector2i& xy, const Vector2i& size )
+Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, const Rect2i& rect )
 {
-    T* cornerPointer = view.elementPointer( xy );
+    T* cornerPointer = view.elementPointer( rect.origin() );
     return Array2DView< T >( cornerPointer, size, view.strides() );
 }
 
@@ -154,9 +119,9 @@ Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Vector3i&
 
 // static
 template< typename T >
-Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Vector3i& xyz, const Vector3i& size )
+Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Box3i& box )
 {
-    T* cornerPointer = view.elementPointer( xyz );
+    T* cornerPointer = view.elementPointer( box.origin() );
     return Array3DView< T >( cornerPointer, size, view.strides() );
 }
 

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <initializer_list>
+
 #include "vecmath/Vector2i.h"
 
 class QString;
+
 class Vector2f;
 
 // A 2D rectangle at integer coordinates
@@ -13,8 +16,8 @@ class Rect2i
 public:
 
 	Rect2i(); // (0,0,0,0), a null rectangle
-	Rect2i( int left, int bottom, int width, int height );
-	Rect2i( int width, int height );
+    // { width, height } or { x, y, width, height }
+    Rect2i( std::initializer_list< int > xywh );
 	Rect2i( const Vector2i& origin, const Vector2i& size );
 	explicit Rect2i( const Vector2i& size );
 
@@ -77,8 +80,8 @@ public:
 	bool contains( int x, int y );
 	bool contains( const Vector2i& p );
 
-	// returns the smallest Rect2f that contains both r0 and r1
-	// r0 and r1 must both be valid
+	// Returns the smallest Rect2i that contains both r0 and r1.
+	// r0 and r1 must both be valid.
 	static Rect2i united( const Rect2i& r0, const Rect2i& r1 );
 
 private:

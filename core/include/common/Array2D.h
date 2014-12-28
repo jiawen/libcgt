@@ -8,8 +8,7 @@
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
-// TODO:
-// stride should be settable when taking over something?
+// TODO: strides should be size_t, so always positive
 
 // A simple 2D array class (with row-major storage)
 template< typename T >
@@ -26,17 +25,28 @@ public:
     Array2D( void* pointer, const Vector2i& size, const Vector2i& strides );
 
     // Read file from disk.
-	Array2D( const char* filename );
-	Array2D( const Vector2i& size, const T& fillValue = T() );
-	Array2D( const Array2D< T >& copy );
-	Array2D( Array2D< T >&& move );
-	Array2D& operator = ( const Array2D< T >& copy );
+    Array2D( const char* filename );
+
+    // All sizes and strides must be positive.
+    Array2D( const Vector2i& size, const T& fillValue = T() );
+    Array2D( const Vector2i& size, const Vector2i& strides, const T& fillValue = T() );
+
+    Array2D( const Array2D< T >& copy );
+    Array2D( Array2D< T >&& move );
+    Array2D& operator = ( const Array2D< T >& copy );
 	Array2D& operator = ( Array2D< T >&& move );
     virtual ~Array2D();	
 
 	bool isNull() const;
 	bool notNull() const;
-	void invalidate(); // makes this array null by setting its dimensions to -1 and frees the data
+    
+    // Makes this array null *without* freeing the underlying memory: it is returned instead.
+    // Dimensions are set to 0.
+    Array2DView< T > relinquish();
+
+    // Makes this array null and frees the underlying memory.
+    // Dimensions are set to 0.
+	void invalidate();
 
 	int width() const;
 	int height() const;
@@ -54,25 +64,26 @@ public:
 
 	void fill( const T& fillValue );
 
-	// Resizes the array, original data is not preserved
-	// if width or height <= 0, the array is invalidated
+	// Resizes the array, freeing the original data.
+	// If width or height <= 0, the array is invalidated
 	void resize( const Vector2i& size );
     void resize( const Vector2i& size, const Vector2i& strides );
 
-	operator Array2DView< const T >() const;
-	operator Array2DView< T >();
+    // Get a pointer to the first element.
+    const T* pointer() const;
+    T* pointer();
 
     const T* elementPointer( const Vector2i& xy ) const;
     T* elementPointer( const Vector2i& xy );
 
 	const T* rowPointer( int y ) const;
 	T* rowPointer( int y );
-	
+
+    operator Array2DView< const T >() const;
+    operator Array2DView< T >();
+
     operator const T* () const;
 	operator T* ();
-
-	const T* pointer() const;
-	T* pointer();
 
 	const T& operator [] ( int k ) const; // read
 	T& operator [] ( int k ); // write

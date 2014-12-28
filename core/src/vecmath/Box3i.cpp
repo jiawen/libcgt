@@ -10,30 +10,30 @@
 //////////////////////////////////////////////////////////////////////////
 
 Box3i::Box3i() :
-
-	m_origin( { 0, 0, 0 } ),
-	m_size( { 0, 0, 0 } )
-
+	m_origin( 0 ),
+	m_size( 0 )
 {
 
 }
 
-Box3i::Box3i( int left, int bottom, int back, int width, int height, int depth ) :
-
-	m_origin( { left, bottom, back } ),
-	m_size( { width, height, depth } )
-
+Box3i::Box3i( std::initializer_list< int > xyzwhd )
 {
-
-}
-
-Box3i::Box3i( int width, int height, int depth ) :
-
-	m_origin( { 0, 0, 0 } ),
-	m_size( { width, height, depth } )
-
-{
-
+    if( xyzwhd.size() == 3 )
+    {
+        m_origin = Vector3i{ 0, 0 };
+        m_size.x = *( xyzwhd.begin() );
+        m_size.y = *( xyzwhd.begin() + 1 );
+        m_size.z = *( xyzwhd.begin() + 2 );
+    }
+    else
+    {
+        m_origin.x = *( xyzwhd.begin() );
+        m_origin.y = *( xyzwhd.begin() + 1 );
+        m_origin.z = *( xyzwhd.begin() + 2 );
+        m_size.x = *( xyzwhd.begin() + 3 );
+        m_size.y = *( xyzwhd.begin() + 4 );
+        m_size.z = *( xyzwhd.begin() + 5 );
+    }
 }
 
 Box3i::Box3i( const Vector3i& origin, const Vector3i& size ) :

@@ -9,31 +9,27 @@
 //////////////////////////////////////////////////////////////////////////
 
 Rect2i::Rect2i() :
-
-    // TODO(VS2013): m_origin{ 0, 0 } not implemented in VS2013.
-    m_origin( Vector2i{ 0, 0 } ),
-    m_size( Vector2i{ 0, 0 } )
-
+    m_origin( 0 ),
+    m_size( 0 )
 {
 
 }
 
-Rect2i::Rect2i( int left, int bottom, int width, int height ) :
-
-    m_origin( Vector2i{ left, bottom } ),
-    m_size( Vector2i{ width, height } )
-
+Rect2i::Rect2i( std::initializer_list< int > xywh )
 {
-
-}
-
-Rect2i::Rect2i( int width, int height ) :
-
-    m_origin( Vector2i{ 0, 0 } ),
-    m_size( Vector2i{ width, height } )
-
-{
-
+    if( xywh.size() == 2 )
+    {
+        m_origin = Vector2i{ 0, 0 };
+        m_size.x = *( xywh.begin() );
+        m_size.y = *( xywh.begin() + 1 );
+    }
+    else
+    {
+        m_origin.x = *( xywh.begin() );
+        m_origin.y = *( xywh.begin() + 1 );
+        m_size.x = *( xywh.begin() + 2 );
+        m_size.y = *( xywh.begin() + 3 );
+    }
 }
 
 Rect2i::Rect2i( const Vector2i& origin, const Vector2i& size ) :

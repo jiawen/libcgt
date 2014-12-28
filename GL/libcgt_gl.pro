@@ -20,5 +20,5 @@ win32 {
     DEFINES += _CRT_SECURE_NO_WARNINGS NOMINMAX 
 }
 
-HEADERS += include/*.h include/*.inl
+HEADERS += include/*.h
 SOURCES += src/*.cpp

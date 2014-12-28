@@ -1,8 +1,8 @@
 #pragma once
 
-#include "IVideo.h"
-
 #include <cstdint>
+#include <vector>
+
 #include <vecmath/Vector2i.h>
 
 extern "C"
@@ -11,6 +11,8 @@ extern "C"
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 }
+
+#include "IVideo.h"
 
 // A video loaded using ffmpeg implementing the IVideo interface
 class FFMPEGVideo
@@ -52,15 +54,19 @@ public:
 	// and false on failure (i.e. at the end of the video stream).
     // TODO: check that rgbOut has the right width, height and is packed.
     // TODO: other formats are easy, bgr, etc
-	virtual bool getNextFrame( Array2DView< uint8x3 > rgbOut );
+	virtual bool getNextFrameRGB24( Array2DView< uint8x3 > rgbOut );
+
+    virtual bool getNextFrameBGRA32( Array2DView< uint8x4 > bgraOut );
 
 private:
 
-	FFMPEGVideo( AVFormatContext* pFormatContext, int iVideoStreamIndex,
-		AVCodecContext* pCodecContext,
-		AVFrame* pFrameRaw,
-		AVFrame* pFrameRGB,
-		SwsContext* pSWSContext );
+    FFMPEGVideo( AVFormatContext* pFormatContext, int iVideoStreamIndex,
+        AVCodecContext* pCodecContext,
+        AVFrame* pFrameRaw,
+        AVFrame* pFrameRGB,
+        const std::vector< SwsContext* > & swsContexts );
+
+    static std::vector< SwsContext* > createSWSContexts( AVCodecContext* pContext );
 
 	// reads the next frame in its internal format and stores it in m_pFrameRaw
 	// on success, returns the index of the frame that was decoded
@@ -81,8 +87,8 @@ private:
 	int m_videoStreamIndex;
     AVCodecContext* m_pCodecContext;
 	AVFrame* m_pFrameRaw;
-	AVFrame* m_pFrameRGB;
-	SwsContext* m_pSWSContext; // for YUV --> RGB conversion
+    AVFrame* m_pFrameDecoded;
+    std::vector< SwsContext* > m_swsContexts; // for YUV --> various formats
 
 	// dimensions
 	int m_width;

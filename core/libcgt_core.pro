@@ -23,9 +23,6 @@ HEADERS += include/libcgt_core.h
 HEADERS += include/cameras/*.h
 SOURCES += src/cameras/*.cpp
 
-HEADERS += include/color/*.h
-SOURCES += src/color/*.cpp
-
 HEADERS += include/common/*.h
 HEADERS += include/common/*.inl
 SOURCES += src/common/*.cpp

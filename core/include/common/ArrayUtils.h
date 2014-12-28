@@ -5,6 +5,8 @@
 #include "Array2D.h"
 #include "Array3D.h"
 
+#include <vecmath/Box3i.h>
+#include <vecmath/Rect2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector3f.h>
@@ -58,22 +60,21 @@ public:
     template< typename T >
     static Array2DView< T > flippedUpDownView( Array2DView< T > view );
 
+    // Get a of a rectangular subset of a Array2DView, starting at xy.
 	template< typename T >
     static Array2DView< T > croppedView( Array2DView< T > view, const Vector2i& xy );
 
-    // TODO: use Rect2i once it has an initializer list
-	// a view of a rectangular subset of a Array3DView, starting at x, y
-	template< typename T >
-    static Array2DView< T > croppedView( Array2DView< T > view, const Vector2i& xy, const Vector2i& size );
+    // Get a of a rectangular subset of a Array2DView.
+    template< typename T >
+    static Array2DView< T > croppedView( Array2DView< T > view, const Rect2i& rect );
 
-	// a view of a rectangular subset of a Array2DView, starting at x, y
-	template< typename T >
+    // Get a of a box subset of a Array3DView, starting at xyz.
+    template< typename T >
     static Array3DView< T > croppedView( Array3DView< T > view, const Vector3i& xyz );
 
-    // TODO: use Box3i once it has an initializer list
-	// a view of a box subset of a Array3DView, starting at x, y, z
+    // Get a of a box subset of a Array3DView.
 	template< typename T >
-    static Array3DView< T > croppedView( Array3DView< T > view, const Vector3i& xyz, const Vector3i& size );
+    static Array3DView< T > croppedView( Array3DView< T > view, const Box3i& box );
 
 	// copy between two Array2DViews, with potentially varying stride and pitch
 	// if both are packed(), uses memcpy to copy quickly

@@ -288,7 +288,7 @@ bool ArrayUtils::saveTXT( const Array3D< float >& array, const char* filename )
 			for( int x = 0; x < w; ++x )
 			{
 				int index = z * w * h + y * w + x;
-				float v = array( x, y, z );
+                float v = array[ { x, y, z } ];
 				fprintf( fp, "[%d] (%d %d %d): %f\n", index, x, y, z, v );
 			}
 		}
@@ -332,7 +332,7 @@ bool ArrayUtils::saveTXT( const Array3D< Vector2f >& array, const char* filename
 			for( int x = 0; x < w; ++x )
 			{
 				int index = z * w * h + y * w + x;
-				Vector2f v = array( x, y, z );
+                Vector2f v = array[ { x, y, z } ];
 				fprintf( fp, "[%d] (%d %d %d): %f %f\n", index, x, y, z, v.x, v.y );
 			}
 		}
@@ -380,4 +380,40 @@ bool ArrayUtils::saveTXT( const Array2D< Vector4f >& array, const char* filename
 
 	retVal = fclose( fp );
 	return( retVal == 0 );
+}
+
+
+// static
+template<>
+bool ArrayUtils::fill( Array2DView< uint8_t > view, const uint8_t& value )
+{
+    if( view.isNull( ) )
+    {
+        return false;
+    }
+
+    if( view.packed( ) )
+    {
+        memset( view.pointer( ), value, view.numElements( ) );
+        return true;
+    }
+
+    if( view.elementsArePacked( ) )
+    {
+        // Fill w bytes at a time.
+        int w = view.width( );
+        for( int y = 0; y < view.height( ); ++y )
+        {
+            memset( view.rowPointer( y ), value, w );
+        }
+        return true;
+    }
+
+    // Nothing is packed, iterate.
+    int ne = view.numElements( );
+    for( int k = 0; k < ne; ++k )
+    {
+        view[ k ] = value;
+    }
+    return true;
 }

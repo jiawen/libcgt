@@ -3,7 +3,6 @@ Array2D< T >::Array2D() :
     m_size( 0 ),
     m_strides( 0 ),
 	m_array( nullptr )
-
 {
 
 }
@@ -28,11 +27,9 @@ Array2D< T >::Array2D( void* pointer, const Vector2i& size, const Vector2i& stri
 
 template< typename T >
 Array2D< T >::Array2D( const char* filename ) :
-
     m_size( 0 ),
     m_strides( 0 ),
     m_array( nullptr )
-
 {
 	load( filename );
 }
@@ -43,7 +40,17 @@ Array2D< T >::Array2D( const Vector2i& size, const T& fillValue ) :
     m_strides( 0 ),
     m_array( nullptr )
 {
-	resize( size );
+    resize( size );
+    fill( fillValue );
+}
+
+template< typename T >
+Array2D< T >::Array2D( const Vector2i& size, const Vector2i& strides, const T& fillValue ) :
+    m_size( 0 ),
+    m_strides( 0 ),
+    m_array( nullptr )
+{
+	resize( size, strides );
 	fill( fillValue );
 }
 
@@ -53,7 +60,7 @@ Array2D< T >::Array2D( const Array2D< T >& copy ) :
     m_strides( 0 ),
     m_array( nullptr )
 {
-    resize( copy.m_size );
+    resize( copy.m_size, copy.m_strides );
 	if( copy.notNull() )
 	{
 		memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
@@ -77,7 +84,7 @@ Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 {
 	if( this != &copy )
 	{
-        resize( copy.m_size );
+        resize( copy.m_size, copy.m_strides );
 		if( copy.notNull() )
 		{
 			memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
@@ -124,6 +131,17 @@ template< typename T >
 bool Array2D< T >::notNull() const
 {
 	return( m_array != nullptr );
+}
+
+template< typename T >
+Array2DView< T > Array2D< T >::relinquish()
+{
+    Array2DView< T > output = *this;
+
+    m_size = { 0, 0 };
+    m_strides = { 0, 0 };
+
+    return output;
 }
 
 template< typename T >
@@ -200,13 +218,12 @@ void Array2D< T >::resize( const Vector2i& size )
 template< typename T >
 void Array2D< T >::resize( const Vector2i& size, const Vector2i& strides )
 {
-	// if we request an invalid size
-	// then invalidate this
+	// Of we request an invalid size then invalidate this.
     if( size.x <= 0 || size.y <= 0 || strides.x <= 0 || strides.y <= 0 )
 	{
 		invalidate();
 	}
-	// otherwise, it's a valid size
+	// Otherwise, it's a valid size.
 	else
 	{
 		// Check if the total number of memory is the same.
@@ -228,15 +245,15 @@ void Array2D< T >::resize( const Vector2i& size, const Vector2i& strides )
 }
 
 template< typename T >
-Array2D< T >::operator Array2DView< const T >() const
+const T* Array2D< T >::pointer() const
 {
-    return Array2DView< const T >( m_array, m_size, m_strides );
+	return reinterpret_cast< T* >( m_array );
 }
 
 template< typename T >
-Array2D< T >::operator Array2DView< T >()
+T* Array2D< T >::pointer()
 {
-    return Array2DView< T >( m_array, m_size, m_strides );
+	return reinterpret_cast< T* >( m_array );
 }
 
 template< typename T >
@@ -252,30 +269,6 @@ T* Array2D< T >::elementPointer( const Vector2i& xy )
 }
 
 template< typename T >
-Array2D< T >::operator const T* () const
-{
-    return reinterpret_cast< const T* >( &( m_array[ y * m_strides.y ] ) );
-}
-
-template< typename T >
-Array2D< T >::operator T* ()
-{
-    return reinterpret_cast< T* >( &( m_array[ y * m_strides.y ] ) );
-}
-
-template< typename T >
-const T* Array2D< T >::pointer() const
-{
-	return reinterpret_cast< T* >( m_array );
-}
-
-template< typename T >
-T* Array2D< T >::pointer()
-{
-	return reinterpret_cast< T* >( m_array );
-}
-
-template< typename T >
 const T* Array2D< T >::rowPointer( int y ) const
 {
     return elementPointer( { 0, y } );
@@ -285,6 +278,30 @@ template< typename T >
 T* Array2D< T >::rowPointer( int y )
 {
     return elementPointer( { 0, y } );
+}
+
+template< typename T >
+Array2D< T >::operator Array2DView< const T >() const
+{
+    return Array2DView< const T >( m_array, m_size, m_strides );
+}
+
+template< typename T >
+Array2D< T >::operator Array2DView< T >()
+{
+    return Array2DView< T >( m_array, m_size, m_strides );
+}
+
+template< typename T >
+Array2D< T >::operator const T* () const
+{
+    return reinterpret_cast< const T* >( m_array );
+}
+
+template< typename T >
+Array2D< T >::operator T* ()
+{
+    return reinterpret_cast< T* >( m_array );
 }
 
 template< typename T >
@@ -367,7 +384,7 @@ bool Array2D< T >::load( const char* filename )
 	{
 		delete[] m_array;
 	}
-	m_array = reinterpret_cast< T* >( pBuffer );
+    m_array = pBuffer;
 
 	return true;
 }

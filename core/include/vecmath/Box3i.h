@@ -1,8 +1,11 @@
 #pragma once
 
+#include <initializer_list>
+
 #include "vecmath/Vector3i.h"
 
 class QString;
+
 class Vector3f;
 
 // A 3D box at integer coordinates
@@ -18,8 +21,8 @@ class Box3i
 public:
 
 	Box3i(); // (0,0,0,0,0,0), a null box
-	Box3i( int left, int bottom, int back, int width, int height, int depth );
-	Box3i( int width, int height, int depth );
+    // { width, height, depth } or { x, y, z, width, height, depth }
+    Box3i( std::initializer_list< int > xyzwhd );
 	Box3i( const Vector3i& origin, const Vector3i& size );
 	explicit Box3i( const Vector3i& size );
 

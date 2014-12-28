@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FileReader.h"
 #include "OBJData.h"
 #include "OBJFace.h"
 #include "OBJGroup.h"
