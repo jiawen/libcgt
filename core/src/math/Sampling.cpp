@@ -7,8 +7,6 @@
 #include "math/Random.h"
 #include "math/SamplingPatternND.h"
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////
 // Public
 //////////////////////////////////////////////////////////////////////////
@@ -18,7 +16,7 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 {
 	int nDimensions = pPattern->getNumDimensions();
 	int nSamples = pPattern->getNumSamples();
-	float* samples = pPattern->getSamples();
+	Array1DView< float > samples = pPattern->rawSamples();
 
 	// generate samples along diagonal boxes
 	float delta = 1.0f / nSamples;
@@ -36,7 +34,7 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 		for( int j = 0; j < nSamples; ++j )
 		{
 			int otherSample = random.nextIntInclusive( nSamples - 1 );
-			swap( samples[ j * nDimensions + i ], samples[ otherSample * nDimensions + i ] );
+			std::swap( samples[ j * nDimensions + i ], samples[ otherSample * nDimensions + i ] );
 		}
 	}
 }

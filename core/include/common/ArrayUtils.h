@@ -17,6 +17,7 @@ class ArrayUtils
 {
 public:
 
+    // TODO: vector --> Array1DView<T>
 	template< typename T >
 	static bool loadBinary( FILE* fp, std::vector< T >& output );
 
@@ -41,6 +42,9 @@ public:
 	static bool saveTXT( const Array3D< Vector2f >& array, const char* filename );
 
 	static bool saveTXT( const Array2D< Vector4f >& array, const char* filename );
+
+    template< typename T >
+    static bool clear( Array2DView< T > view );
 
     template< typename T >
     static bool fill( Array2DView< T > view, const T& value );
@@ -76,11 +80,18 @@ public:
 	template< typename T >
     static Array3DView< T > croppedView( Array3DView< T > view, const Box3i& box );
 
-	// copy between two Array2DViews, with potentially varying stride and pitch
-	// if both are packed(), uses memcpy to copy quickly
-	// if both strides are the same, then uses memcpy row by row
-	// otherwise, iterates
-	// returns false if the dimensions don't match, or if either is null
+    // Copy between two Array1DViews, with potentially varying stride.
+	// If both are packed(), uses memcpy to do a single fast copy.
+	// Otherwise, iterates the copy one element at a time.
+	// Returns false if the dimensions don't match, or if either is null.
+    template< typename T >
+	static bool copy( Array1DView< const T > src, Array1DView< T > dst );
+
+	// Copy between two Array2DViews, with potentially varying strides.
+	// If both are packed(), uses memcpy to do a single fast copy.
+	// If both row strides are the same, then uses memcpy row by row.
+	// Otherwise, iterates the copy one element at a time.
+	// Returns false if the dimensions don't match, or if either is null.
 	template< typename T >
 	static bool copy( Array2DView< const T > src, Array2DView< T > dst );
 };

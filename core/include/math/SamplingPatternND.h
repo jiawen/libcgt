@@ -1,18 +1,19 @@
 #pragma once
 
+#include <common/Array1D.h>
+
 class SamplingPatternND
 {
 public:
 
 	SamplingPatternND( int nSamples, int nDimensions );
-	virtual ~SamplingPatternND();
 
 	// get the jth sample
 	// sample[] should have length of at least nDimensions
-	void getSample( int j, float sample[] );
+	void getSample( int j, Array1DView< float > sample );
 
-	int getNumSamples();
-	int getNumDimensions();
+	int getNumSamples() const;
+	int getNumDimensions() const;
 
 	// returns the raw data
 	// to be populated by a sampling algorithm
@@ -21,11 +22,11 @@ public:
 	// mem: 01234 56780 ABCDE
 	//      00000 11111 22222
 	//      s0    s1    s2
-	float* getSamples();
+	Array1DView< float > rawSamples();
 
 private:
 
 	int m_nSamples;
 	int m_nDimensions;
-	float* m_afSamples; // TODO: use std::vector
+	Array1D< float > m_samples;
 };

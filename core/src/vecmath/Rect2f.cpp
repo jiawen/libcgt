@@ -94,44 +94,19 @@ Vector2f& Rect2f::size()
 	return m_size;
 }
 
-float Rect2f::left() const
+Vector2f Rect2f::limit() const
 {
-	return m_origin.x;
+    return m_origin + m_size;
 }
 
-float Rect2f::right() const
+Vector2f Rect2f::minimum() const
 {
-	return left() + width();
+    return MathUtils::minimum( m_origin, m_origin + m_size );
 }
 
-float Rect2f::bottom() const
+Vector2f Rect2f::maximum() const
 {
-	return m_origin.y;
-}
-
-float Rect2f::top() const
-{
-	return bottom() + height();
-}
-
-Vector2f Rect2f::bottomLeft() const
-{
-	return m_origin;
-}
-
-Vector2f Rect2f::bottomRight() const
-{
-	return m_origin + Vector2f( m_size.x, 0.f );
-}
-
-Vector2f Rect2f::topLeft() const
-{
-	return m_origin + Vector2f( 0.f, m_size.y );
-}
-
-Vector2f Rect2f::topRight() const
-{
-	return m_origin + m_size;
+    return MathUtils::maximum( m_origin, m_origin + m_size );
 }
 
 float Rect2f::width() const
@@ -216,15 +191,15 @@ Rect2f Rect2f::flippedUD( float height ) const
 {
 	Vector2f origin;
 	origin.x = m_origin.x;
-	origin.y = height - topLeft().y;
+	origin.y = height - limit().y;
 
 	return Rect2f( origin, m_size );
 }
 
 Rect2i Rect2f::enlargedToInt() const
 {
-	Vector2i minimum = Arithmetic::floorToInt( bottomLeft() );
-	Vector2i maximum = Arithmetic::ceilToInt( topRight() );
+	Vector2i minimum = Arithmetic::floorToInt( origin() );
+	Vector2i maximum = Arithmetic::ceilToInt( limit() );
 
 	// size does not need a +1:
 	// say min is 1.1 and max is 3.6
@@ -251,16 +226,16 @@ bool Rect2f::contains( const Vector2f& point )
 	return contains( point.x, point.y );
 }
 
-bool Rect2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
+bool Rect2f::intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirection,
 	float& tNear, float& tFar, int& axis ) const
 {
 	// compute t to each face
-	Vector2f rcpDir = 1.0f / direction;
+	Vector2f rcpDir = 1.0f / rayDirection;
 
 	// intersect left and bottom
-	Vector2f tBottomLeft = rcpDir * ( bottomLeft() - origin );
+	Vector2f tBottomLeft = rcpDir * ( origin() - rayOrigin );
 	// intersect right and top
-	Vector2f tTopRight = rcpDir * ( topRight() - origin );
+	Vector2f tTopRight = rcpDir * ( limit() - rayOrigin );
 
 	// find the smallest and largest distances along each axis
 	Vector2f tMin = MathUtils::minimum( tBottomLeft, tTopRight );
@@ -291,10 +266,10 @@ bool Rect2f::intersectRay( const Vector2f& origin, const Vector2f& direction,
 // static
 Rect2f Rect2f::united( const Rect2f& r0, const Rect2f& r1 )
 {
-	Vector2f r0Min = r0.bottomLeft();
-	Vector2f r0Max = r0.topRight();
-	Vector2f r1Min = r1.bottomLeft();
-	Vector2f r1Max = r1.topRight();
+	Vector2f r0Min = r0.minimum();
+	Vector2f r0Max = r0.maximum();
+	Vector2f r1Min = r1.minimum();
+	Vector2f r1Max = r1.maximum();
 
 	Vector2f unitedMin( std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) );
 	Vector2f unitedMax( std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) );
@@ -312,8 +287,8 @@ bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1 )
 // static
 bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection )
 {
-	Vector2f minimum = MathUtils::maximum( r0.bottomLeft(), r1.bottomLeft() );
-	Vector2f maximum = MathUtils::minimum( r0.topRight(), r1.topRight() );
+	Vector2f minimum = MathUtils::maximum( r0.minimum(), r1.minimum() );
+	Vector2f maximum = MathUtils::minimum( r0.maximum(), r1.maximum() );
 
 	if( minimum.x < maximum.x &&
 		minimum.y < maximum.y )

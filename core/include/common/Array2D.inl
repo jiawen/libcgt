@@ -334,15 +334,31 @@ T& Array2D< T >::operator [] ( const Vector2i& xy )
     return *( elementPointer( xy ) );
 }
 
+
 template< typename T >
 bool Array2D< T >::load( const char* filename )
 {
-	FILE* fp = fopen( filename, "rb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
+    FILE* fp = fopen( filename, "rb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
+    bool succeeded = load( fp );
+
+    // close file
+    int fcloseRetVal = fclose( fp );
+    if( fcloseRetVal != 0 )
+    {
+        return false;
+    }
+
+    return succeeded;
+}
+
+template< typename T >
+bool Array2D< T >::load( FILE* fp )
+{
     int dims[ 4 ];
 	size_t elementsRead;
 
@@ -368,14 +384,6 @@ bool Array2D< T >::load( const char* filename )
 		return false;
 	}
 
-	// close file
-	int fcloseRetVal = fclose( fp );
-	if( fcloseRetVal != 0 )
-	{
-		delete[] pBuffer;
-		return false;
-	}
-
 	// read succeeded, swap contents
     m_size = { width, height };
     m_strides = { elementStrideBytes, rowStrideBytes };
@@ -392,11 +400,21 @@ bool Array2D< T >::load( const char* filename )
 template< typename T >
 bool Array2D< T >::save( const char* filename ) const
 {
-	FILE* fp = fopen( filename, "wb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
+    FILE* fp = fopen( filename, "wb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
+
+    bool succeeded = save( fp );
+    fclose( fp );
+    return succeeded;
+}
+
+template< typename T >
+bool Array2D< T >::save( FILE* fp ) const
+{
+    // TODO: error checking
 
 	fwrite( &m_size, sizeof( int ), 2, fp );
     fwrite( &m_strides, sizeof( int ), 2, fp );

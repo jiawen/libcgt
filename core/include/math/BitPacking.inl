@@ -59,7 +59,7 @@ void BitPacking::byteSwap16( Array1DView< uint16_t > view16 )
 {
     if( view16.packed( ) )
     {
-        int nWords64 = view16.length( ) / 64;
+        int nWords64 = view16.size( ) / 64;
         Array1DView< uint64_t > view64( view16.pointer( ), nWords64 );
         for( int i = 0; i < nWords64; ++i )
         {
@@ -70,19 +70,19 @@ void BitPacking::byteSwap16( Array1DView< uint16_t > view16 )
         }
 
         // Input length may not be a multiple of 4.
-        if( nWords64 * 4 < view16.length( ) )
+        if( nWords64 * 4 < view16.size( ) )
         {
             // Could in theory do a byteSwap32() and then a byteSwap16()
             // if there were 3 elements left, but it's totally not worth it.
-            for( int i = nWords64 * 4; i < view16.length( ); ++i )
+            for( int i = nWords64 * 4; i < view16.size( ); ++i )
             {
-                byteSwap16( view16[ view16.length( ) - 1 ] );
+                byteSwap16( view16[ view16.size( ) - 1 ] );
             }
         }
     }
     else
     {
-        for( int i = 0; i < view16.length( ); ++i )
+        for( int i = 0; i < view16.size( ); ++i )
         {
             view16[ i ] = byteSwap16( view16[ i ] );
         }

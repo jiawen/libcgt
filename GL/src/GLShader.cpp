@@ -59,10 +59,10 @@ GLShader* GLShader::fromFile( const char* filename, GLenum shaderType )
 	GLint status;
 	glGetShaderiv( id, GL_COMPILE_STATUS, &status );
 
-	// If it failed, then print the info log
-	// and return nullptr.
+	// If it failed, then print the info log and return nullptr.
 	if( status == GL_FALSE )
 	{
+        // infoLogLength includes the terminating '\0'.
 		GLint infoLogLength;
 		glGetShaderiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
 

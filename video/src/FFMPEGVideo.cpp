@@ -356,16 +356,14 @@ bool FFMPEGVideo::getNextFrameBGRA32( Array2DView< uint8x4 > bgraOut )
     {
         // Associate the output buffer with m_pFrameDecoded.
         avpicture_fill( ( AVPicture* )m_pFrameDecoded,
-            reinterpret_cast< const uint8_t* >( bgraOut.rowPointer( 0 ) ),
+            reinterpret_cast< const uint8_t* >( bgraOut.pointer() ),
             PIX_FMT_BGRA,
-            width( ), height( ) );
+            width(), height() );
 
         // Software scale the raw frame to m_pFrameDecoded, which is associated with rgbOut.
-        sws_scale
-        (
-            m_swsContexts[ 1 ], // converter
+        sws_scale( m_swsContexts[ 1 ], // converter
             m_pFrameRaw->data, m_pFrameRaw->linesize, // source data and stride
-            0, height( ), // starting y and height
+            0, height(), // starting y and height
             m_pFrameDecoded->data, m_pFrameDecoded->linesize
         );
 
@@ -486,7 +484,7 @@ void FFMPEGVideo::convertDecodedFrameToRGB( Array2DView< uint8x3 > rgbOut )
 {
     // Associate the output buffer with m_pFrameDecoded.
     avpicture_fill( ( AVPicture* )m_pFrameDecoded,
-        reinterpret_cast< const uint8_t* >( rgbOut.rowPointer( 0 ) ),
+        reinterpret_cast< const uint8_t* >( rgbOut.pointer() ),
         PIX_FMT_RGB24,
         width(), height() );
 

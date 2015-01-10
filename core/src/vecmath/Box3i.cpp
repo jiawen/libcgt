@@ -16,24 +16,11 @@ Box3i::Box3i() :
 
 }
 
-Box3i::Box3i( std::initializer_list< int > xyzwhd )
+Box3i::Box3i( const Vector3i& size ) :
+	m_origin( { 0, 0, 0 } ),
+	m_size( { size } )
 {
-    if( xyzwhd.size() == 3 )
-    {
-        m_origin = Vector3i{ 0, 0 };
-        m_size.x = *( xyzwhd.begin() );
-        m_size.y = *( xyzwhd.begin() + 1 );
-        m_size.z = *( xyzwhd.begin() + 2 );
-    }
-    else
-    {
-        m_origin.x = *( xyzwhd.begin() );
-        m_origin.y = *( xyzwhd.begin() + 1 );
-        m_origin.z = *( xyzwhd.begin() + 2 );
-        m_size.x = *( xyzwhd.begin() + 3 );
-        m_size.y = *( xyzwhd.begin() + 4 );
-        m_size.z = *( xyzwhd.begin() + 5 );
-    }
+
 }
 
 Box3i::Box3i( const Vector3i& origin, const Vector3i& size ) :
@@ -45,20 +32,19 @@ Box3i::Box3i( const Vector3i& origin, const Vector3i& size ) :
 
 }
 
-Box3i::Box3i( const Vector3i& size ) :
-
-	m_origin( { 0, 0, 0 } ),
-	m_size( { size } )
-
+Box3i::Box3i( std::initializer_list< int > os )
 {
-
+    m_origin.x = *( os.begin() );
+    m_origin.y = *( os.begin() + 1 );
+    m_origin.z = *( os.begin() + 2 );
+    m_size.x = *( os.begin() + 3 );
+    m_size.y = *( os.begin() + 4 );
+    m_size.z = *( os.begin() + 5 );
 }
 
 Box3i::Box3i( const Box3i& copy ) :
-
 	m_origin( copy.m_origin ),
 	m_size( copy.m_size )
-
 {
 
 }
@@ -95,7 +81,7 @@ Vector3i& Box3i::size()
 
 int Box3i::left() const
 {
-	return m_origin.x;
+	return std::min( m_origin.x, m_origin.x + m_size.x );
 }
 
 int Box3i::right() const
@@ -105,7 +91,7 @@ int Box3i::right() const
 
 int Box3i::bottom() const
 {
-	return m_origin.y;
+	return std::min( m_origin.y, m_origin.y + m_size.y );
 }
 
 int Box3i::top() const
@@ -115,72 +101,72 @@ int Box3i::top() const
 
 int Box3i::back() const
 {
-	return m_origin.z;
+	return std::min( m_origin.z, m_origin.z + m_size.z );
 }
 
 int Box3i::front() const
 {
-	return back() + depth();
+    return back() + depth();
 }
 
 Vector3i Box3i::leftBottomBack() const
 {
-	return m_origin;
+    return{ left(), bottom(), back() };
 }
 
 Vector3i Box3i::rightBottomBack() const
 {
-    return m_origin + Vector3i{ m_size.x, 0, 0 };
+    return{ right(), bottom(), back() };
 }
 
 Vector3i Box3i::leftTopBack() const
 {
-    return m_origin + Vector3i{ 0, m_size.y, 0 };
+    return{ left(), top(), back() };
 }
 
 Vector3i Box3i::rightTopBack() const
 {
-    return m_origin + Vector3i{ m_size.x, m_size.y, 0 };
+    return{ right(), top(), back() };
 }
 
 Vector3i Box3i::leftBottomFront() const
 {
-    return m_origin + Vector3i{ 0, 0, m_size.z };
+    return{ left(), bottom(), front() };
 }
 
 Vector3i Box3i::rightBottomFront() const
 {
-    return m_origin + Vector3i{ m_size.x, 0, m_size.z };
+    return{ right(), bottom(), front() };
 }
 
 Vector3i Box3i::leftTopFront() const
 {
-    return m_origin + Vector3i{ 0, m_size.y, m_size.z };
+    return{ left(), top(), front() };
 }
 
 Vector3i Box3i::rightTopFront() const
 {
-    return m_origin + Vector3i{ m_size.x, m_size.y, m_size.z };
+    return{ right(), top(), front() };
 }
 
 int Box3i::width() const
 {
-	return m_size.x;
+	return std::abs( m_size.x );
 }
 
 int Box3i::height() const
 {
-	return m_size.y;
+	return std::abs( m_size.y );
 }
 
 int Box3i::depth() const
 {
-	return m_size.z;
+	return std::abs( m_size.z );
 }
 
 int Box3i::volume() const
 {
-	return( m_size.x * m_size.y * m_size.z );
+	return std::abs( m_size.x * m_size.y * m_size.z );
 }
 
 Vector3f Box3i::center() const
@@ -188,19 +174,9 @@ Vector3f Box3i::center() const
 	return m_origin + 0.5f * m_size;
 }
 
-bool Box3i::isNull() const
+bool Box3i::isStandardized() const
 {
-	return( m_size.x == 0 && m_size.y == 0 );
-}
-
-bool Box3i::isEmpty() const
-{
-	return( !isValid() );
-}
-
-bool Box3i::isValid() const
-{
-	return( m_size.x > 0 && m_size.y > 0 );
+	return( m_size.x >= 0 && m_size.y >= 0 && m_size.z >= 0 );
 }
 
 Box3i Box3i::standardized() const
@@ -257,22 +233,17 @@ QString Box3i::toString() const
 	return out;
 }
 
-bool Box3i::contains( int x, int y, int z )
+bool Box3i::contains( const Vector3i& p )
 {
 	return
 	(
-		( x > m_origin.x ) &&
-		( x < ( m_origin.x + m_size.x ) ) &&
-		( y > m_origin.y ) &&
-		( y < ( m_origin.y + m_size.y ) ) &&
-		( z > m_origin.z ) &&
-		( z < ( m_origin.z + m_size.z ) )
+		( p.x >= left() ) &&
+		( p.x < right() ) &&
+		( p.y >= bottom() ) &&
+		( p.y < top() ) &&
+		( p.z >= back() ) &&
+		( p.z < front() )
 	);
-}
-
-bool Box3i::contains( const Vector3i& p )
-{
-	return contains( p.x, p.y, p.z );
 }
 
 Box3i Box3i::flippedUD( int height ) const

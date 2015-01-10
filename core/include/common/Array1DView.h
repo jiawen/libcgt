@@ -2,22 +2,23 @@
 
 #include <cstdint>
 
-// a 1D array view that wraps around a raw pointer
-// and does not take ownership
+#include "common/WrapConstPointerT.h"
 
+// A 1D array view that wraps around a raw pointer and does not take ownership.
 template< typename T >
 class Array1DView
 {
 public:
 
-	// pointer = nullptr, length = 0
+    // The null Array1DView:
+	// pointer = nullptr, length = 0.
 	Array1DView();
 
-	// create an Array1DView with the default stride of sizeof( T )
-	Array1DView( void* pPointer, int length );
+	// Create an Array1DView with the default element stride of sizeof( T ).
+	Array1DView( void* pPointer, int size );
 
-	// create an Array1DView with the specified size and stride
-	Array1DView( void* pPointer, int length, int elementStrideBytes );
+	// Create an Array1DView with the specified size and element stride.
+	Array1DView( void* pPointer, int size, int stride );
 	
 	bool isNull() const;
 	bool notNull() const;
@@ -28,38 +29,35 @@ public:
 	const T* pointer() const;
 	T* pointer();
 
-	const T* elementPointer( int x ) const;
 	T* elementPointer( int x );
 
-	const T& operator [] ( int k ) const; // read
-	T& operator [] ( int k ); // write
+	T& operator [] ( int k );
 
-	// the logical length of the array view
-	// (i.e., how many elements of type T there are)
-	int length() const;
-
-	// how many bytes does it take if this view were packed.
-	// equal to numElements() * sizeof( T )
-	size_t bytesReferenced() const;
-
-	// how many bytes does this view span:
-	// the total number of bytes in a rectangular region
-	// that view overlaps, including the empty spaces.
-	// Equal to abs( elementStrideBytes() ) * length()
-	size_t bytesSpanned() const;
+    // The logical size of the array view
+	// (i.e., how many elements of type T there are).
+    // For a 1D view, width, size, and numElements are all equivalent.
+    int width() const;
+	int size() const;
+    int numElements() const;
 
 	// The space between the start of elements, in bytes.
-	int elementStrideBytes() const;
+    // For a 1D view, stride and elementStrideBytes are equivalent.
+    int elementStrideBytes() const;
+	int stride() const;
 	
-	// returns true if the array is tightly packed
-	// i.e. elementStrideBytes() == sizeof( T )
+	// Returns true if the array is tightly packed,
+	// i.e. elementStrideBytes() == sizeof( T ).
+	bool elementsArePacked() const;
 	bool packed() const;
+
+    // Conversion operator to Array1DView< const T >
+    operator Array1DView< const T >() const;
 
 private:
 
-	int m_length;
-	int m_strideBytes;
-	uint8_t* m_pPointer;
+	int m_size;
+	int m_stride;
+	typename WrapConstPointerT< T, uint8_t >::pointer m_pPointer;
 };
 
 #include "Array1DView.inl"

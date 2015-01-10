@@ -53,16 +53,16 @@ public:
 	Vector3i size() const;
 	int numElements() const;
 
-    // the space between the start of elements in bytes
+    // The space between the start of elements in bytes.
     int elementStrideBytes() const;
 
-    // the space between the start of rows in bytes
+    // The space between the start of rows in bytes.
     int rowStrideBytes() const;
 
-    // the space between the start of slices in bytes
+    // The space between the start of slices in bytes.
     int sliceStrideBytes() const;
 
-    // { elementStride, rowStride } in bytes.
+    // { elementStride, rowStride, sliceStride } in bytes.
     Vector3i strides() const;
 
 	void fill( const T& fillValue );

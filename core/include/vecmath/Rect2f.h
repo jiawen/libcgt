@@ -24,20 +24,14 @@ public:
 	Vector2f size() const;
 	Vector2f& size();
 
-	float left() const; // origin.x
-	float right() const; // origin.x + width
+    Vector2f limit() const; // origin() + size(); // TODO: better name?
 
-	float bottom() const; // origin.y
-	float top() const; // origin.y + height
+    Vector2f minimum() const; // min( origin, origin + size )
+    Vector2f maximum() const; // max( origin, origin + size )
 
-	Vector2f bottomLeft() const; // for convenience, same as origin
-	Vector2f bottomRight() const;
-	Vector2f topLeft() const;
-	Vector2f topRight() const;
-
-	float width() const;
-	float height() const;
-	float area() const;
+	float width() const; // abs( size.x )
+	float height() const; // abs( size.y )
+	float area() const; // abs( size.x * size.y )
 
 	Vector2f center() const;
 
@@ -68,8 +62,10 @@ public:
 
 	// flips this rectangle up/down
 	// (usually used to handle rectangles on 2D images where y points down)
+    // This rectangle must be standardized.
 	Rect2f flippedUD( float height ) const;
 
+    // This rectangle must be standardized.
 	// returns the smallest integer-aligned rectangle that contains this
 	Rect2i enlargedToInt() const;
 
@@ -77,6 +73,7 @@ public:
 	bool contains( float x, float y );
 	bool contains( const Vector2f& point );
 
+    // This rectangle must be standardized.
 	// WARNING: the ray is considered a line
 	// (tNear and tFar can be < 0)
 	// returns true if the ray intersects this rectangle
@@ -84,7 +81,7 @@ public:
 	//   tFar is the second intersection
 	//   axis is 0 if tNear hit the left or right edge (x-axis)
 	//   axis is 1 if tNear hit the bottom or top edge (y-axis)
-	bool intersectRay( const Vector2f& origin, const Vector2f& direction,
+	bool intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirection,
 		float& tNear, float& tFar, int& axis ) const;
 
 	// returns the smallest Rect2f that contains both r0 and r1

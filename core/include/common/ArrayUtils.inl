@@ -44,6 +44,27 @@ bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
 
 // static
 template< typename T >
+bool ArrayUtils::clear( Array2DView< T > view )
+{
+    if( view.isNull() )
+    {
+        return false;
+    }
+    if( view.packed() )
+    {
+        memset( view, 0, view.rowStrideBytes() * view.height() );
+    }
+    else if( view.elementsArePacked() )
+    {
+        for( int y = 0; y < view.height(); ++y )
+        {
+            memset( view.rowPointer( y ), 0, view.elementStrideBytes() * view.width() );
+        }
+    }
+}
+
+// static
+template< typename T >
 bool ArrayUtils::fill( Array2DView< T > view, const T& value )
 {
     if( view.isNull() )
@@ -124,6 +145,38 @@ Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Box3i& bo
     T* cornerPointer = view.elementPointer( box.origin() );
     return Array3DView< T >( cornerPointer, size, view.strides() );
 }
+
+// static
+template< typename T >
+bool ArrayUtils::copy( Array1DView< const T > src, Array1DView< T > dst )
+{
+	if( src.isNull() || dst.isNull() )
+	{
+		return false;
+	}
+
+	if( src.size() != dst.size() )
+	{
+		return false;
+	}
+
+	// Both views are packed, do a single memcpy.
+	if( src.packed() && dst.packed() )
+	{
+		memcpy( dst.pointer(), src.pointer(), src.size() * src.stride() );
+	}
+	// Otherwise, iterate.
+	else
+	{
+		for( int x = 0; x < src.size(); ++x )
+        {
+            dst[ x ] = src[ x ];
+		}
+	}
+
+	return true;
+}
+
 
 // static
 template< typename T >

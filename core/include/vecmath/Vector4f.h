@@ -65,7 +65,8 @@ public:
 	void normalize();
 	Vector4f normalized() const;
 
-	// if v.z != 0, v = v / v.w
+	// If v.w != 0, v = v / v.w.
+    // Else, does nothing.
 	void homogenize();
 	Vector4f homogenized() const;
 

@@ -57,18 +57,18 @@ int GLTexture::maxSizeCubeMap()
 // virtual
 GLTexture::~GLTexture()
 {
-	unbind();
 	glDeleteTextures( 1, &m_id );
 }
 
-void GLTexture::bind()
+void GLTexture::bind( GLenum texunit )
 {
-	glBindTexture( m_target, m_id );
+    // TODO: ARB_DSA: glBindTextureUnit: takes an uint, not an enum!
+    glBindMultiTextureEXT( texunit, m_target, m_id );
 }
 
-void GLTexture::unbind()
+void GLTexture::unbind( GLenum texunit )
 {
-	glBindTexture( m_target, 0 );
+    glBindMultiTextureEXT( texunit, m_target, 0 );
 }
 
 GLuint GLTexture::id()
@@ -148,6 +148,5 @@ m_target( target ),
 void GLTexture::getTexImage( GLint level, GLenum format, GLenum type, void* avOutput )
 {
     // TODO: don't need binding with DSA
-	bind();
 	glGetTexImage( m_target, level, format, type, avOutput );
 }

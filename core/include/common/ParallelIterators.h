@@ -46,21 +46,21 @@ public:
 template< typename Function >
 inline void ParallelIterators::for2D( const Vector2i& count, const Function& func )
 {
-	ParallelIterators::for2D( Vector2i( 0, 0 ), count, Vector2i( 1, 1 ), func );
+    ParallelIterators::for2D( Vector2i{ 0, 0 }, count, Vector2i{ 1, 1 }, func );
 }
 
 // static
 template< typename Function >
 inline void ParallelIterators::for2D( const Vector2i& count, QString progressPrefix, const Function& func )
 {
-	ParallelIterators::for2D( Vector2i( 0, 0 ), count, Vector2i( 1, 1 ), progressPrefix, func );
+    ParallelIterators::for2D( Vector2i{ 0, 0 }, count, Vector2i{ 1, 1 }, progressPrefix, func );
 }
 
 // static
 template< typename Function >
 inline void ParallelIterators::for2D( const Vector2i& first, const Vector2i& count, const Function& func )
 {
-	ParallelIterators::for2D( first, count, Vector2i( 1, 1 ), func );
+    ParallelIterators::for2D( first, count, Vector2i{ 1, 1 }, func );
 }
 
 // static
@@ -110,21 +110,21 @@ inline void ParallelIterators::for2D( const Vector2i& first, const Vector2i& cou
 template< typename Function >
 inline void ParallelIterators::for3D( const Vector3i& count, const Function& func )
 {
-	ParallelIterators::for3D( Vector3i( 0, 0, 0 ), count, Vector3i( 1, 1, 1 ), func );
+	ParallelIterators::for3D( Vector3i{ 0, 0, 0 }, count, Vector3i{ 1, 1, 1 }, func );
 }
 
 // static
 template< typename Function >
 inline void ParallelIterators::for3D( const Vector3i& count, QString progressPrefix, const Function& func )
 {	
-	ParallelIterators::for3D( Vector3i( 0, 0, 0 ), count, Vector3i( 1, 1, 1 ), progressPrefix, func );
+	ParallelIterators::for3D( Vector3i{ 0, 0, 0 }, count, Vector3i{ 1, 1, 1 }, progressPrefix, func );
 }
 
 // static
 template< typename Function >
 inline void ParallelIterators::for3D( const Vector3i& first, const Vector3i& count, const Function& func )
 {
-	ParallelIterators::for3D( first, count, Vector3i( 1, 1, 1 ), func );
+	ParallelIterators::for3D( first, count, Vector3i{ 1, 1, 1 }, func );
 }
 
 // static

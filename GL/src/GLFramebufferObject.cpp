@@ -10,7 +10,15 @@
 // ========================================
 
 // static
-void GLFramebufferObject::unbind()
+GLuint GLFramebufferObject::boundId()
+{
+    int bid;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &bid );
+    return bid;
+}
+
+// static
+void GLFramebufferObject::unbindAll()
 {
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
@@ -26,6 +34,11 @@ GLint GLFramebufferObject::getMaxColorAttachments()
 GLFramebufferObject::GLFramebufferObject()
 {
 	glGenFramebuffers( 1, &m_id );
+}
+
+GLuint GLFramebufferObject::id() const
+{
+    return m_id;
 }
 
 // virtual
@@ -175,7 +188,7 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 		assert( false );
 	}
 
-	if( pStatus != NULL )
+	if( pStatus != nullptr )
 	{
 		*pStatus = status;
 	}

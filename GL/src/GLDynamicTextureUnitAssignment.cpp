@@ -14,8 +14,7 @@ GLDynamicTextureUnitAssignment::GLDynamicTextureUnitAssignment( std::shared_ptr<
 void GLDynamicTextureUnitAssignment::assign( const char* samplerName,
 											std::shared_ptr< GLTexture > pTexture )
 {
-	glActiveTexture( GL_TEXTURE0 + m_count );
-	pTexture->bind();
+	pTexture->bind( GL_TEXTURE0 + m_count );
 	GLSamplerObject::unbind( m_count );
 	m_pProgram->setUniformInt( samplerName, m_count );
 	++m_count;
@@ -25,8 +24,7 @@ void GLDynamicTextureUnitAssignment::assign( const char* samplerName,
 											std::shared_ptr< GLTexture > pTexture,
 											std::shared_ptr< GLSamplerObject > pSamplerObject )											
 {
-	glActiveTexture( GL_TEXTURE0 + m_count );
-	pTexture->bind();
+	pTexture->bind( GL_TEXTURE0 + m_count );
 	pSamplerObject->bind( m_count );	
 	m_pProgram->setUniformInt( samplerName, m_count );
 	++m_count;

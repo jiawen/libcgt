@@ -6,6 +6,7 @@
 #include <mfreadwrite.h>
 #include <mferror.h>
 
+#include <common/BasicTypes.h>
 #include <common/Array2D.h>
 #include <common/Array2DView.h>
 

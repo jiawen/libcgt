@@ -4,6 +4,8 @@
 
 #include "GLShader.h"
 
+#include "GLUtilities.h"
+
 // static
 GLProgram* GLProgram::fromShaders( std::vector< GLShader* > shaders )
 {
@@ -15,21 +17,21 @@ GLProgram* GLProgram::fromShaders( std::vector< GLShader* > shaders )
 	{
 		glAttachShader( id, shaders[i]->id() );
 	}
-
-	// Link.
+	
+    // Link.
 	glLinkProgram( id );
 
-	// If it failed, then print the info log
-	// and return nullptr;
+	// If it failed, then print the info log and return nullptr.
 	GLint status;
     glGetProgramiv( id, GL_LINK_STATUS, &status );
     if( status == GL_FALSE )
 	{
+        // infoLogLength includes the terminating '\0'.
 		GLint infoLogLength;
 		glGetProgramiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
 
 		std::string infoLog( infoLogLength, '\0' );
-		glGetShaderInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
+		glGetProgramInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
 			NULL, &( infoLog[0] ) );
 
 		printf( "Program linking failed:\n%s\n", infoLog.c_str() );
@@ -95,6 +97,11 @@ void GLProgram::setUniformFloat( GLint uniformLocation, float x )
 void GLProgram::setUniformFloat( const GLchar* name, float x )
 {
     setUniformFloat( uniformLocation( name ), x );
+}
+
+void GLProgram::setUniformMatrix4f( const GLchar* name, const Matrix4f& matrix )
+{
+    setUniformMatrix4f( uniformLocation( name ), matrix );
 }
 
 void GLProgram::setUniformVector2f( const GLchar* name, float x, float y )
@@ -164,7 +171,7 @@ void GLProgram::setUniformVector4i( const GLchar* name, const Vector4i& v )
 
 void GLProgram::use()
 {
-	glUseProgram( m_id );
+    glUseProgram( m_id );
 }
 
 GLProgram::GLProgram( GLuint id ) :

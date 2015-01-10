@@ -24,19 +24,29 @@ public:
 	int height() const;
 	Vector2i size() const;
 
-	// TODO: set: arbitrary format and void*
+    // TODO: clear with a rectangle
+    void clear( const uint8x4& clearValue = uint8x4{ 0, 0, 0, 0 } );
+    void clear( float clearValue = 0.f, GLImageFormat format = GLImageFormat::RED );
+    void clear( const Vector4f& clearValue = Vector4f( 0, 0, 0, 0 ) );
 
-	// TODO: set BGR: take in a GLImageFormat
-    // TODO: const uint8x3
-    // TODO: rename xOffset / yOffset to const Vector2i& dstOffset
-	bool set( Array2DView< uint8x3 > data,
-		int xOffset = 0, int yOffset = 0 );
+	// TODO: set: arbitrary format and void*?
 
-	// TODO: const ubyte4 --> uint8x4
-    // TODO: rename xOffset / yOffset to const Vector2i& dstOffset
-    bool set( Array2DView< uint8x4 > data,
+    // Data must be packed().
+    // Only accepts RGB and BGR for now.
+	bool set( Array2DView< const uint8x3 > data,
+        GLImageFormat format = GLImageFormat::RGB,
+		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+
+    // Data must be packed().
+    // Only accepts RGBA and BGRA for now.
+    bool set( Array2DView< const uint8x4 > data,
 		GLImageFormat format = GLImageFormat::RGBA,
-		int xOffset = 0, int yOffset = 0 );
+		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+
+    // Data must be packed().
+    bool set( Array2DView< const float > data,
+        GLImageFormat format = GLImageFormat::RED,
+        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
 	// Retrieves the entire texture.
 	// Returns false if output isNull(), is not packed,

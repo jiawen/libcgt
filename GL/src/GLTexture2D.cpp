@@ -45,11 +45,33 @@ Vector2i GLTexture2D::size() const
     return m_size;
 }
 
-bool GLTexture2D::set( Array2DView< uint8x3 > data,
-					  int xOffset, int yOffset )
+void GLTexture2D::clear( const uint8x4& clearValue )
 {
-	if( xOffset + data.width() > width() ||
-		yOffset + data.height() > height() )
+    glClearTexImage( id(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &clearValue );
+}
+
+void GLTexture2D::clear( float clearValue, GLImageFormat format )
+{
+    glClearTexImage( id(), 0, static_cast< GLenum >( format ), GL_FLOAT,
+        &clearValue );
+}
+
+void GLTexture2D::clear( const Vector4f& clearValue )
+{
+    glClearTexImage( id(), 0, GL_RGBA, GL_FLOAT, &clearValue );
+}
+
+bool GLTexture2D::set( Array2DView< const uint8x3 > data,
+    GLImageFormat format,
+    const Vector2i& dstOffset )
+{
+	if( dstOffset.x + data.width() > width() ||
+		dstOffset.y + data.height() > height() )
+	{
+		return false;
+	}
+    if( format != GLImageFormat::RGB &&
+		format != GLImageFormat::BGR )
 	{
 		return false;
 	}
@@ -58,8 +80,8 @@ bool GLTexture2D::set( Array2DView< uint8x3 > data,
 	// TODO: alignment, strides, ..., has to be packed: return false if not
 
 	glTextureSubImage2DEXT( id(), GL_TEXTURE_2D, 0,
-		xOffset, yOffset, data.width(), data.height(),
-		GL_RGB, GL_UNSIGNED_BYTE,
+		dstOffset.x, dstOffset.y, data.width(), data.height(),
+		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
 		data.pointer()
 	);
 
@@ -68,13 +90,13 @@ bool GLTexture2D::set( Array2DView< uint8x3 > data,
 	return true;
 }
 
-bool GLTexture2D::set( Array2DView< uint8x4 > data,
+bool GLTexture2D::set( Array2DView< const uint8x4 > data,
 	GLImageFormat format,
-	int xOffset, int yOffset )
+	const Vector2i& dstOffset )
 {
 
-	if( xOffset + data.width() > width() ||
-		yOffset + data.height() > height() )
+	if( dstOffset.x + data.width() > width() ||
+		dstOffset.y + data.height() > height() )
 	{
 		return false;
 	}
@@ -87,26 +109,47 @@ bool GLTexture2D::set( Array2DView< uint8x4 > data,
 	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 	// TODO: alignment, strides, ..., has to be packed
 
-    if( format == GLImageFormat::RGBA )
-    {
-        glTextureSubImage2DEXT
-        (
-            id(), GL_TEXTURE_2D, 0,
-            xOffset, yOffset, data.width(), data.height(),
-            GL_RGBA, GL_UNSIGNED_BYTE,
-            data.pointer()
-        );
-    }
-    else if( format == GLImageFormat::BGRA )
-    {
-        glTextureSubImage2DEXT
-            (
-            id(), GL_TEXTURE_2D, 0,
-            xOffset, yOffset, data.width(), data.height(),
-            GL_BGRA, GL_UNSIGNED_BYTE,
-            data.pointer()
-            );
-    }
+    glTextureSubImage2DEXT
+    (
+        id(), GL_TEXTURE_2D, 0,
+        dstOffset.x, dstOffset.y, data.width(), data.height(),
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+        data.pointer()
+    );
+
+	glPopClientAttrib();
+
+	return true;
+}
+
+bool GLTexture2D::set( Array2DView< const float > data,
+	GLImageFormat format,
+    const Vector2i& dstOffset )
+{
+
+	if( dstOffset.x + data.width() > width() ||
+		dstOffset.y + data.height() > height() )
+	{
+		return false;
+	}
+	if( format != GLImageFormat::RED &&
+		format != GLImageFormat::GREEN &&
+        format != GLImageFormat::BLUE &&
+        format != GLImageFormat::ALPHA )
+	{
+		return false;
+	}
+
+	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+	// TODO: alignment, strides, ..., has to be packed
+
+    glTextureSubImage2DEXT
+    (
+        id(), GL_TEXTURE_2D, 0,
+        dstOffset.x, dstOffset.y, data.width(), data.height(),
+        static_cast< GLenum >( format ), GL_FLOAT,
+        data.pointer()
+    );
 
 	glPopClientAttrib();
 
@@ -177,7 +220,7 @@ void GLTexture2D::drawNV( GLSamplerObject* pSampler,
 						 float z,
 						 const Rect2f& texCoords )
 {
-	drawNV( Rect2f( 0, 0, width(), height() ),
+	drawNV( Rect2f( 0, 0, static_cast< float >( width() ), static_cast< float >( height() ) ),
 		pSampler, z, texCoords );
 }
 
@@ -187,11 +230,27 @@ void GLTexture2D::drawNV( const Rect2f& windowCoords,
 						 const Rect2f& texCoords )
 {
 	GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
+#if 0
 	glDrawTextureNV( id(), samplerId,
 		windowCoords.left(), windowCoords.bottom(),
 		windowCoords.right(), windowCoords.top(),
 		z,
 		texCoords.left(), texCoords.bottom(),
 		texCoords.right(), texCoords.top()
+	);
+#endif
+
+    Vector2f p0 = windowCoords.origin();
+    Vector2f p1 = windowCoords.limit();
+
+    Vector2f t0 = texCoords.origin();
+    Vector2f t1 = texCoords.limit();
+
+    glDrawTextureNV( id(), samplerId,
+        p0.x, p0.y,
+        p1.x, p1.y,
+		z,
+        t0.x, t0.y,
+        t1.x, t1.y
 	);
 }

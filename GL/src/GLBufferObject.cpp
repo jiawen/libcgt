@@ -80,26 +80,26 @@ void GLBufferObject::unmap()
 
 bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
 {
-	if( srcOffset + dst.length() > m_nBytes )
+	if( srcOffset + dst.size() > m_nBytes )
 	{
 		return false;
 	}
 
-	glGetNamedBufferSubDataEXT( m_id, srcOffset, dst.length(), dst.pointer() );
+	glGetNamedBufferSubDataEXT( m_id, srcOffset, dst.size(), dst.pointer() );
 	return true;
 }
 
-bool GLBufferObject::set( Array1DView< uint8_t > src, GLintptr dstOffset )
+bool GLBufferObject::set( Array1DView< const uint8_t > src, GLintptr dstOffset )
 {
 	if( !( src.packed() ) )
 	{
 		return false;
 	}
-	if( dstOffset + src.length() > m_nBytes )
+	if( dstOffset + src.size() > m_nBytes )
 	{
 		return false;
 	}
 	
-	glNamedBufferSubDataEXT( m_id, dstOffset, src.length(), src.pointer() );
+	glNamedBufferSubDataEXT( m_id, dstOffset, src.size(), src.pointer() );
 	return true;
 }

@@ -102,27 +102,27 @@ int Array2DView< T >::height() const
 }
 
 template< typename T >
-int Array2DView< T >::numElements() const
-{
-    return m_size.x * m_size.y;
-}
-
-template< typename T >
 Vector2i Array2DView< T >::size() const
 {
     return m_size;
 }
 
 template< typename T >
+int Array2DView< T >::numElements() const
+{
+    return m_size.x * m_size.y;
+}
+
+template< typename T >
 int Array2DView< T >::elementStrideBytes() const
 {
-	return m_strides[0];
+	return m_strides.x;
 }
 
 template< typename T >
 int Array2DView< T >::rowStrideBytes() const
 {
-	return m_strides[1];
+	return m_strides.y;
 }
 
 template< typename T >

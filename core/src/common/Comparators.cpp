@@ -11,6 +11,12 @@ bool Comparators::indexAndDistanceLess( const std::pair< int, float >& a, const 
 }
 
 // static
+bool Comparators::indexAndDistanceGreater( const std::pair< int, float >& a, const std::pair< int, float >& b )
+{
+	return a.second > b.second;
+}
+
+// static
 bool Comparators::vector2iLexigraphicLess( const Vector2i& a, const Vector2i& b )
 {
 	if( a.x < b.x )

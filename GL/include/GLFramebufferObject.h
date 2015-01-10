@@ -1,5 +1,4 @@
-#ifndef GL_FRAMEBUFFER_OBJECT_H
-#define GL_FRAMEBUFFER_OBJECT_H
+#pragma once
 
 #include <GL/glew.h>
 #include <cstdio>
@@ -12,20 +11,30 @@ class GLFramebufferObject
 {
 public:
 
-	static void unbind();
+    // Get the id of the currently bound FBO.
+    static GLuint boundId();
+
+    // Unbind the one and only FBO
+    // (and binds the default FBO, which has id 0).
+	static void unbindAll();
 	static GLint getMaxColorAttachments();
 
 	GLFramebufferObject();
 	virtual ~GLFramebufferObject();
 
+    GLuint id() const;
 	void bind();
 
 	// TODO: GLTexture2D extends GLTexture
 	// GLTexture->getType()
-	// forget mipmapped textures for a while
+	// TODO: mipmaps
+    // TODO: glDrawBuffers:
+    // glFramebufferDrawBufferEXT() / glFramebufferReadBufferEXT() / ...
+    //    clear, invalidate, blit
+    // ARB_DSA: glNamedFramebufferDrawBuffer() / glClearNamedFramebuffer()
 
-	// attachment can be GL_COLOR_ATTACHMENT0, ... GL_COLOR_ATTACHMENTn,
-	// GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT
+	// Attachment can be GL_COLOR_ATTACHMENT0, ... GL_COLOR_ATTACHMENTn,
+	// GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT.
 	void attachTexture( GLenum attachment, GLTexture* pTexture, GLint zSlice = 0 );
 	void detachTexture( GLenum attachment );
 
@@ -39,9 +48,5 @@ public:
 
 private:	
 
-	GLuint generateFBOId();
-
 	GLuint m_id;
 };
-
-#endif

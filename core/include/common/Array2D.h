@@ -53,10 +53,10 @@ public:
 	Vector2i size() const;
 	int numElements() const;
 
-    // the space between the start of elements in bytes
+    // The space between the start of elements in bytes.
     int elementStrideBytes() const;
 
-    // the space between the start of rows in bytes
+    // The space between the start of rows in bytes.
     int rowStrideBytes() const;
 
     // { elementStride, rowStride } in bytes.
@@ -93,9 +93,11 @@ public:
 	
     // only works if T doesn't have pointers, with sizeof() well defined
 	bool load( const char* filename );
+    bool load( FILE* fp );
 
 	// only works if T doesn't have pointers, with sizeof() well defined
 	bool save( const char* filename ) const;
+    bool save( FILE* fp ) const;
 
 private:
 	

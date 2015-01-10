@@ -16,25 +16,31 @@ class Rect2i
 public:
 
 	Rect2i(); // (0,0,0,0), a null rectangle
-    // { width, height } or { x, y, width, height }
-    Rect2i( std::initializer_list< int > xywh );
+	explicit Rect2i( const Vector2i& size ); // origin = (0, 0)
 	Rect2i( const Vector2i& origin, const Vector2i& size );
-	explicit Rect2i( const Vector2i& size );
+    // { origin.x, origin.y, size.x, size.y }
+    Rect2i( std::initializer_list< int > os );
 
 	Rect2i( const Rect2i& copy ); // copy constructor
 	Rect2i& operator = ( const Rect2i& copy ); // assignment operator
 
+    // The origin coordinates, as is.
 	Vector2i origin() const;
 	Vector2i& origin();
 
+    // The size values, as is: they may be negative.
 	Vector2i size() const;
 	Vector2i& size();
 
+    // TODO: make these clear
+    // minimum(), maximum() --> don't have coordinate conventions
+    // and clearly works on on-standard
+    // standardized --> isStandard(), get rid of left, right, ...
 	int left() const; // origin.x
-	int right() const; // origin.x + width
+	int right() const; // origin.x + size.x
 
 	int bottom() const; // origin.y
-	int top() const; // origin.y + height
+	int top() const; // origin.y + size.y
 
 	Vector2i bottomLeft() const; // for convenience, same as origin and is considered inside
 	Vector2i bottomRight() const; // x coordinate is one past the end
@@ -47,37 +53,22 @@ public:
 
 	Vector2f center() const;
 
-	// returns if this rectangle is null:
-	// width == 0 and height == 0
-	// (a null rectangle is empty and not valid)
-	bool isNull() const;
+	// Returns true if size() >= 0.
+	// Call standardized() to return a valid range with the endpoints flipped
+	bool isStandardized() const;
 
-	// returns true if size().x < 0 or size().y < 0
-	// a rectangle is empty iff it's not valid
-	// (a null rectangle is empty and not valid)
-	// call normalized() to return a valid rectangle with the corners flipped
-	bool isEmpty() const;
-
-	// returns true if size().x > 0 and size().y > 0
-	// a rectangle is valid iff it's not empty
-	// (a null rectangle is empty and not valid)
-	// call normalized() to return a valid rectangle with the corners flipped
-	bool isValid() const;
-
-	// if this rectangle is invalid,
-	// returns a valid rectangle with positive size
-	// otherwise, returns this
-	// normalizing a null rectangle is still a null rectangle
-	Rect2i normalized() const;
+	// Returns the same rectangle but with size() >= 0.
+	Rect2i standardized() const;
 
 	QString toString() const;
 
-	// flips this rectangle up/down
-	// (usually used to handle rectangles on 2D images where y points down)
+	// (Requires a standard rectangle)
+    // Returns the exact same rectangle as this but in a coordinate system
+    // that counts from [0, height) but where y points down.
+	// (usually used to handle rectangles on 2D images where y points down).
 	Rect2i flippedUD( int height ) const;
 
 	// half-open intervals in x and y
-	bool contains( int x, int y );
 	bool contains( const Vector2i& p );
 
 	// Returns the smallest Rect2i that contains both r0 and r1.

@@ -1,40 +1,32 @@
 #include "math/SamplingPatternND.h"
 
 SamplingPatternND::SamplingPatternND( int nSamples, int nDimensions ) :
-
 	m_nSamples( nSamples ),
-	m_nDimensions( nDimensions )
-
+	m_nDimensions( nDimensions ),
+    m_samples( nSamples * nDimensions )
 {
-	m_afSamples = new float[ nSamples * nDimensions ];
 }
 
-// virtual
-SamplingPatternND::~SamplingPatternND()
-{
-	delete[] m_afSamples;
-}
-
-void SamplingPatternND::getSample( int j, float sample[] )
+void SamplingPatternND::getSample( int j, Array1DView< float > sample )
 {
 	int sampleStartIndex = j * m_nDimensions;
 	for( int i = 0; i < m_nDimensions; ++i )
 	{
-		sample[i] = m_afSamples[ sampleStartIndex + i ];
+		sample[i] = m_samples[ sampleStartIndex + i ];
 	}
 }
 
-int SamplingPatternND::getNumSamples()
+int SamplingPatternND::getNumSamples() const
 {
 	return m_nSamples;
 }
 
-int SamplingPatternND::getNumDimensions()
+int SamplingPatternND::getNumDimensions() const
 {
 	return m_nDimensions;
 }
 
-float* SamplingPatternND::getSamples()
+Array1DView< float > SamplingPatternND::rawSamples()
 {
-	return m_afSamples;
+	return m_samples;
 }

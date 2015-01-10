@@ -2,19 +2,31 @@
 
 #include <GL/glew.h>
 
+enum class GLTextureFilterMode
+{
+    NEAREST = GL_NEAREST,
+    LINEAR = GL_LINEAR,
+    NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR,
+    LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST,
+    LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
+};
+
+// TODO: use this
+enum class GLWrapMode
+{
+    CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
+    REPEAT = GL_REPEAT,
+    MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE,
+    MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
+
+    // You probably don't want this.
+    CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER
+};
+
 class GLSamplerObject
 {
 public:
-
-    // TODO: use this
-    // TODO: mipmaps, anisotropic
-    enum class GLTextureFilterMode
-    {
-        GLTextureFilterMode_NEAREST = GL_NEAREST,
-        GLTextureFilterMode_LINEAR = GL_LINEAR
-    };
-
-    // TODO: enum class for wrap modes
 
 	static GLfloat getLargestSupportedAnisotropy();
 	static void unbind( GLuint textureUnit );
@@ -27,16 +39,19 @@ public:
 	void bind( GLuint textureUnit );
 
 	// filter modes
-	GLint minFilterMode() const;
-	GLint magFilterMode() const;
+	GLTextureFilterMode minFilterMode() const;
+	GLTextureFilterMode magFilterMode() const;
+    GLfloat anisotropy() const;
 
-	void setMinFilterMode( GLint mode );
-	void setMagFilterMode( GLint mode );
-	// anisotropy \in [1, getLargestSupportedAnisotropy()]
+	void setMinFilterMode( GLTextureFilterMode mode );
+	void setMagFilterMode( GLTextureFilterMode mode );
+    void setMinMagFilterMode( GLTextureFilterMode minMode, GLTextureFilterMode magMode );
+	
+    // Enable anisotropic filtering.
+    // anisotropy is a value \in [1, getLargestSupportedAnisotropy()].
+    // Setting it to 1 turns off anisotropic filtering.
+    // Turning it on lets GL take more samples.
 	void setAnisotropy( GLfloat anisotropy );
-
-	void setAllFiltersNearest();
-	void setAllFiltersLinear();
 
 	// wrap modes
 	GLint wrapModeS() const;

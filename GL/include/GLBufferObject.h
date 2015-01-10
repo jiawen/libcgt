@@ -38,9 +38,9 @@ public:
 
     enum class Access
 	{
-		ACCESS_READ_ONLY = GL_READ_ONLY,
-		ACCESS_WRITE_ONLY = GL_WRITE_ONLY,
-		ACCESS_READ_WRITE = GL_READ_WRITE
+		READ_ONLY = GL_READ_ONLY,
+		WRITE_ONLY = GL_WRITE_ONLY,
+		READ_WRITE = GL_READ_WRITE
 	};
 
 	// Direct copy between two buffer objects.
@@ -107,7 +107,7 @@ public:
 	// Returns false if:
 	// The source buffer is not packed(), or
 	// if dstOffset + src.length() > numBytes().
-	bool set( Array1DView< uint8_t > src, GLintptr dstOffset );
+	bool set( Array1DView< const uint8_t > src, GLintptr dstOffset );
 
 	// TODO: glClearNamedBufferDataEXT / glClearNamedBufferSubDataEXT
 	// TODO: persistent mapping:

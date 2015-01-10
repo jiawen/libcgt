@@ -1,6 +1,5 @@
 #pragma once
 
-#include "color/libcgt_color.h"
 #include "common/libcgt_common.h"
 #include "geometry/libcgt_geometry.h"
 #include "imageproc/libcgt_imageproc.h"

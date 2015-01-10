@@ -35,45 +35,46 @@ void GLSamplerObject::bind( GLuint textureUnit )
 	glBindSampler( textureUnit, m_id );
 }
 
-GLint GLSamplerObject::minFilterMode() const
+GLTextureFilterMode GLSamplerObject::minFilterMode() const
 {
 	GLint output;
 	glGetSamplerParameteriv( m_id, GL_TEXTURE_MIN_FILTER, &output );
-	return output;
+	return static_cast< GLTextureFilterMode >( output );
 }
 
-GLint GLSamplerObject::magFilterMode() const
+GLTextureFilterMode GLSamplerObject::magFilterMode() const
 {
 	GLint output;
 	glGetSamplerParameteriv( m_id, GL_TEXTURE_MAG_FILTER, &output );
+	return static_cast< GLTextureFilterMode >( output );
+}
+
+GLfloat GLSamplerObject::anisotropy() const
+{
+    GLfloat output;
+	glGetSamplerParameterfv( m_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, &output );
 	return output;
 }
 
-void GLSamplerObject::setMinFilterMode( GLint mode )
+void GLSamplerObject::setMinFilterMode( GLTextureFilterMode mode )
 {
-	glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, mode );
+	glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, static_cast< GLint >( mode )  );
 }
 
-void GLSamplerObject::setMagFilterMode( GLint mode )
+void GLSamplerObject::setMagFilterMode( GLTextureFilterMode mode )
 {
-	glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, mode );
+	glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( mode ) );
+}
+
+void GLSamplerObject::setMinMagFilterMode( GLTextureFilterMode minMode, GLTextureFilterMode magMode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, static_cast< GLint >( minMode ) );
+	glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( magMode ) );
 }
 
 void GLSamplerObject::setAnisotropy( GLfloat anisotropy )
 {
 	glSamplerParameterf( m_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
-}
-
-void GLSamplerObject::setAllFiltersNearest()
-{
-	glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-}
-
-void GLSamplerObject::setAllFiltersLinear()
-{
-	glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 }
 
 GLint GLSamplerObject::wrapModeS() const

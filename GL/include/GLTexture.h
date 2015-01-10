@@ -34,11 +34,11 @@ public:
 
 	virtual ~GLTexture();
 
-	// binds this texture object to the currently active texture unit	
-	void bind();
+	// Binds this texture object to the texture unit;
+	void bind( GLenum texunit = GL_TEXTURE0 );
 
-	// unbinds a texture from the currently active texture unit
-	void unbind();
+	// Unbinds this texture from the texture unit.
+	void unbind( GLenum texunit = GL_TEXTURE0 );
 
 	GLuint id();
 	GLenum target(); // TODO: make target also enum class

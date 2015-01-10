@@ -451,12 +451,9 @@ bool Array3D< T >::save( FILE* fp )
 {
 	// TODO: error checking
 
-	fwrite( &m_width, sizeof( int ), 1, fp );
-	fwrite( &m_height, sizeof( int ), 1, fp );
-	fwrite( &m_depth, sizeof( int ), 1, fp );
-	fwrite( &m_rowPitchBytes, sizeof( int ), 1, fp );
-	fwrite( &m_slicePitchBytes, sizeof( int ), 1, fp );
-	fwrite( m_array, 1, m_slicePitchBytes * m_depth, fp );
+    fwrite( &m_size, sizeof( int ), 3, fp );
+    fwrite( &m_strides, sizeof( int ), 3, fp );
+    fwrite( m_array, 1, m_size.z * m_strides.z, fp );
 
 	return true;
 }

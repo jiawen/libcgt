@@ -154,8 +154,8 @@ Vector2i MathUtils::clampToRectangleExclusive( const Vector2i& v, const Rect2i& 
 // static
 Vector2f MathUtils::clampToRectangle( const Vector2f& v, const Rect2f& rect )
 {
-	float x = clampToRange( v.x, rect.left(), rect.right() );
-	float y = clampToRange( v.y, rect.bottom(), rect.top() );
+	float x = clampToRange( v.x, rect.origin().x, rect.limit().x );
+	float y = clampToRange( v.y, rect.origin().y, rect.limit().y );
 	return Vector2f( x, y );
 }
 

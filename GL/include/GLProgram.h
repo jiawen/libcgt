@@ -43,6 +43,7 @@ public:
 	void setUniformVector4f( const GLchar* name, const Vector4f& v );
 
 	void setUniformInt( const GLchar* name, int x );
+    void setUniformMatrix4f( const GLchar* name, const Matrix4f& matrix );
 	void setUniformVector2i( const GLchar* name, int x, int y );
 	void setUniformVector2i( const GLchar* name, const Vector2i& v );
 	void setUniformVector3i( const GLchar* name, int x, int y, int z );

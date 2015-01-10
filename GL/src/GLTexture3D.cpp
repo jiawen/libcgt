@@ -55,7 +55,7 @@ Vector3i GLTexture3D::size() const
 
 void GLTexture3D::setFloat1Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
-	bind();
+	bind( GL_TEXTURE0 );
 
 	if( width == 0 )
 	{

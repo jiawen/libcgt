@@ -8,11 +8,11 @@ class QString;
 
 class Vector3f;
 
-// A 3D box at integer coordinates
+// A 3D box at integer coordinates.
 //
 // A box is "right handed":
 // the z-axis points out of the screen
-// so the back has the smallest z coordinate and the front has the largest
+// so the back has the smallest z coordinate and the front has the largest.
 //
 // Considered the cartesian product of *half-open* intervals:
 // [x, x + width) x [y, y + height) x [z, z + depth)
@@ -21,10 +21,10 @@ class Box3i
 public:
 
 	Box3i(); // (0,0,0,0,0,0), a null box
-    // { width, height, depth } or { x, y, z, width, height, depth }
-    Box3i( std::initializer_list< int > xyzwhd );
-	Box3i( const Vector3i& origin, const Vector3i& size );
 	explicit Box3i( const Vector3i& size );
+	Box3i( const Vector3i& origin, const Vector3i& size );
+    // { origin.x, origin.y, origin.z, size.x, size.y, size.z }
+    Box3i( std::initializer_list< int > os );
 
 	Box3i( const Box3i& copy ); // copy constructor
 	Box3i& operator = ( const Box3i& copy ); // assignment operator
@@ -35,6 +35,7 @@ public:
 	Vector3i size() const;
 	Vector3i& size();
 
+    // TODO: make these clear
 	int left() const; // origin.x
 	int right() const; // origin.x + width
 
@@ -59,29 +60,14 @@ public:
 	int depth() const;
 	int volume() const;
 
+    // TODO: exactCenter()?
 	Vector3f center() const;
 
-	// returns if this box is null:
-	// width == 0 and height == 0
-	// (a null box is empty and not valid)
-	bool isNull() const;
+	// Returns true if size() >= 0.
+	// Call standardized() to return a valid range with the endpoints flipped
+	bool isStandardized() const;
 
-	// returns true if size().x < 0 or size().y < 0
-	// a box is empty iff it's not valid
-	// (a null box is empty and not valid)
-	// call standardized() to return a valid box with the corners flipped
-	bool isEmpty() const;
-
-	// returns true if size().x > 0 and size().y > 0
-	// a box is valid iff it's not empty
-	// (a null box is empty and not valid)
-	// call standardized() to return a valid box with the corners flipped
-	bool isValid() const;
-
-	// if this box is invalid,
-	// returns a valid box with positive size
-	// otherwise, returns this
-	// Standardizing a null box is still a null box.
+	// Returns the same rectangle but with size() >= 0.
     Box3i standardized() const;
 
 	QString toString() const;
@@ -98,10 +84,9 @@ public:
 	Box3i flippedUDBF( int height, int depth ) const;
 
 	// half-open intervals in x, y, and z
-	bool contains( int x, int y, int z );
 	bool contains( const Vector3i& p );
 
-	// returns the smallest Rect2f that contains both r0 and r1
+	// Returns the smallest Box3i that contains both r0 and r1
 	// r0 and r1 must both be valid
 	static Box3i united( const Box3i& r0, const Box3i& r1 );
 
