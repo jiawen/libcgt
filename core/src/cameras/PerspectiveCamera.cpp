@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 
+// TODO: remove Qt
 #include <QFile>
 #include <QString>
 #include <QTextStream>

@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: remove Qt
+
 #include <QVector>
 #include <vecmath/Vector4f.h>
 

@@ -12,7 +12,6 @@ enum class GLTextureFilterMode
     LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
 };
 
-// TODO: use this
 enum class GLWrapMode
 {
     CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
@@ -38,7 +37,7 @@ public:
 
 	void bind( GLuint textureUnit );
 
-	// filter modes
+	// Filter modes.
 	GLTextureFilterMode minFilterMode() const;
 	GLTextureFilterMode magFilterMode() const;
     GLfloat anisotropy() const;
@@ -53,14 +52,23 @@ public:
     // Turning it on lets GL take more samples.
 	void setAnisotropy( GLfloat anisotropy );
 
-	// wrap modes
-	GLint wrapModeS() const;
-	GLint wrapModeT() const;
-	GLint wrapModeR() const;
+	// Wrap modes.
+    // Note: OpenGL's texture coordinates are named (s, t, r). And rarely q.
+    // GLSL, to avoid the overloaded r, calls them (s, t, p, q).
+    GLWrapMode wrapModeS() const;
+    GLWrapMode wrapModeT() const;
+    GLWrapMode wrapModeR() const;
 
-	// TODO: set individual wrap modes...
-
-	void setAllWrapModesClampToEdge();
+    // Set individual wrap modes.
+    void setSWrapMode( GLWrapMode mode );
+    void setTWrapMode( GLWrapMode mode );
+    void setRWrapMode( GLWrapMode mode );
+    // Set just s and t.
+    void setSTWrapModes( GLWrapMode sMode, GLWrapMode tMode );
+    void setSTWrapModes( GLWrapMode mode );
+    // Set s, t, and r.
+    void setWrapModes( GLWrapMode sMode, GLWrapMode tMode, GLWrapMode rMode );
+    void setWrapModes( GLWrapMode mode );
 
 private:
 

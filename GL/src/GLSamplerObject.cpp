@@ -77,30 +77,64 @@ void GLSamplerObject::setAnisotropy( GLfloat anisotropy )
 	glSamplerParameterf( m_id, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy );
 }
 
-GLint GLSamplerObject::wrapModeS() const
+void GLSamplerObject::setSWrapMode( GLWrapMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, static_cast< GLint >( mode ) );
+}
+
+void GLSamplerObject::setTWrapMode( GLWrapMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, static_cast< GLint >( mode ) );
+}
+
+void GLSamplerObject::setRWrapMode( GLWrapMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_R, static_cast< GLint >( mode ) );
+}
+
+void GLSamplerObject::setSTWrapModes( GLWrapMode sMode, GLWrapMode tMode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, static_cast< GLint >( sMode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, static_cast< GLint >( sMode ) );
+}
+
+void GLSamplerObject::setSTWrapModes( GLWrapMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, static_cast< GLint >( mode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, static_cast< GLint >( mode ) );
+}
+
+void GLSamplerObject::setWrapModes( GLWrapMode sMode, GLWrapMode tMode, GLWrapMode rMode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, static_cast< GLint >( sMode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, static_cast< GLint >( sMode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_R, static_cast< GLint >( sMode ) );
+}
+
+void GLSamplerObject::setWrapModes( GLWrapMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, static_cast< GLint >( mode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, static_cast< GLint >( mode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_WRAP_R, static_cast< GLint >( mode ) );
+}
+
+GLWrapMode GLSamplerObject::wrapModeS() const
 {
 	GLint output;
 	glGetSamplerParameteriv( m_id, GL_TEXTURE_WRAP_S, &output );
-	return output;
+    return static_cast< GLWrapMode >( output );
 }
 
-GLint GLSamplerObject::wrapModeT() const
+GLWrapMode GLSamplerObject::wrapModeT() const
 {
 	GLint output;
 	glGetSamplerParameteriv( m_id, GL_TEXTURE_WRAP_T, &output );
-	return output;
+    return static_cast< GLWrapMode >( output );
 }
 
-GLint GLSamplerObject::wrapModeR() const
+GLWrapMode GLSamplerObject::wrapModeR() const
 {
 	GLint output;
 	glGetSamplerParameteriv( m_id, GL_TEXTURE_WRAP_R, &output );
-	return output;
-}
-
-void GLSamplerObject::setAllWrapModesClampToEdge()
-{
-	glSamplerParameteri( m_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glSamplerParameteri( m_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	glSamplerParameteri( m_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+    return static_cast< GLWrapMode >( output );
 }

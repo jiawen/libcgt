@@ -1,5 +1,8 @@
 #pragma once
 
+// TODO: non-singleton
+// TODO: move to IO
+
 #include <QHash>
 #include <QString>
 #include <QVector>

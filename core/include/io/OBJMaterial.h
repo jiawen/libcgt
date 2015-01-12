@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: get rid of Qt
 #include <QString>
 #include <QVector>
 
