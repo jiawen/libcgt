@@ -59,7 +59,6 @@ void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture,
 	// also cube maps
 
 	GLuint textureId = pTexture->id();
-
 	if( getAttachedId( attachment ) != textureId )
 	{
 		GLenum textureTarget = pTexture->target();
@@ -104,6 +103,7 @@ void GLFramebufferObject::detachTexture( GLenum attachment )
 	{
 	case GL_NONE:
 		break;
+
 	case GL_RENDERBUFFER:
 		glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, 0 ); // 0 ==> detach		
 		break;
@@ -146,6 +146,21 @@ GLint GLFramebufferObject::getAttachedZSlice( GLenum attachment )
 		GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_EXT,
 		&slice );
 	return slice;
+}
+
+void GLFramebufferObject::setDrawBuffer( GLenum attachment )
+{
+    glFramebufferDrawBufferEXT( m_id, attachment );
+}
+
+void GLFramebufferObject::setDrawBuffers( Array1DView< GLenum > attachments )
+{
+    glFramebufferDrawBuffersEXT( m_id, attachments.size(), attachments.pointer() );
+}
+
+void GLFramebufferObject::setReadBuffer( GLenum attachment )
+{
+    glFramebufferReadBufferEXT( m_id, attachment );
 }
 
 bool GLFramebufferObject::checkStatus( GLenum* pStatus )

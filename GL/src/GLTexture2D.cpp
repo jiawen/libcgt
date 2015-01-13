@@ -230,15 +230,6 @@ void GLTexture2D::drawNV( const Rect2f& windowCoords,
 						 const Rect2f& texCoords )
 {
 	GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
-#if 0
-	glDrawTextureNV( id(), samplerId,
-		windowCoords.left(), windowCoords.bottom(),
-		windowCoords.right(), windowCoords.top(),
-		z,
-		texCoords.left(), texCoords.bottom(),
-		texCoords.right(), texCoords.top()
-	);
-#endif
 
     Vector2f p0 = windowCoords.origin();
     Vector2f p1 = windowCoords.limit();
