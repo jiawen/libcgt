@@ -17,6 +17,11 @@ public:
     // Fit an image inside a rectangle maximizing the resulting area and centering. 
     static Rect2f bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window );
 
+    // Given a standard rectangle, return its non-standard version along the y-axis:
+    // the output has the same minimum() and maximum(), but has negative height.
+    // Calling it twice flips it back.
+    static Rect2f flipStandardizationY( const Rect2f& rect );
+
 	static void writeScreenAlignedTriangleStrip(
 		Array1DView< Vector4f > positions,
 		Array1DView< Vector2f > textureCoordinates,

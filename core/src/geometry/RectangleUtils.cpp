@@ -24,7 +24,16 @@ Rect2f RectangleUtils::bestFitKeepAR( const Vector2f& imageSize, const Rect2f& w
     float y = window.origin().y + 0.5f * ( window.height() - h );
     
     return{ x, y, w, h };
-  }
+}
+
+// static
+Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
+{
+    Rect2f output = rect;
+    output.origin().y = output.origin().y + output.size().y;
+    output.size().y = -output.size().y;
+    return output;
+}
 
 // static
 void RectangleUtils::writeScreenAlignedTriangleStrip(

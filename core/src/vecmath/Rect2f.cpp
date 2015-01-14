@@ -191,7 +191,7 @@ Rect2f Rect2f::flippedUD( float height ) const
 {
 	Vector2f origin;
 	origin.x = m_origin.x;
-	origin.y = height - limit().y;
+	origin.y = height -   limit().y;
 
 	return Rect2f( origin, m_size );
 }
