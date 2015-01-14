@@ -27,6 +27,37 @@ Rect2f RectangleUtils::bestFitKeepAR( const Vector2f& imageSize, const Rect2f& w
 }
 
 // static
+Matrix4f RectangleUtils::transformBetween( const Rect2f& from, const Rect2f& to )
+{
+    // Given a point p:
+    // 0. p0 = p - from.origin
+    // 1. p1 = p0 / from.size
+    // 2. p2 = p1 * to.size
+    // 3. p3 = p2 + to.origin
+
+    return Matrix4f::translation( to.origin().x, to.origin().y, 0 ) *
+        Matrix4f::scaling( to.size().x, to.size().y, 1 ) *
+        Matrix4f::scaling( 1.0f / from.size().x, 1.0f / from.size().y, 1 ) *
+        Matrix4f::translation( -from.origin().x, -from.origin().y, 0 );
+}
+
+// static
+Vector2f RectangleUtils::normalizedCoordinatesWithinRectangle( const Vector2f& p,
+    const Rect2f& r )
+{
+    return ( p - r.origin() ) / r.size();
+}
+
+// static
+Rect2f RectangleUtils::flipStandardizationX( const Rect2f& rect )
+{
+    Rect2f output = rect;
+    output.origin().x = output.origin().x + output.size().x;
+    output.size().x = -output.size().x;
+    return output;
+}
+
+// static
 Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
 {
     Rect2f output = rect;

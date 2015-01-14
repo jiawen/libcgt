@@ -55,6 +55,13 @@ Rect2f::Rect2f( const Vector2f& size ) :
 
 }
 
+Rect2f::Rect2f( const Rect2i& r ) :
+    m_origin( r.origin() ),
+    m_size( r.size() )
+{
+
+}
+
 Rect2f::Rect2f( const Rect2f& copy ) :
 
 	m_origin( copy.m_origin ),

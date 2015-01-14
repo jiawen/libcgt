@@ -12,8 +12,9 @@ public:
 	Rect2f(); // (0,0,0,0), a null rectangle
 	Rect2f( float left, float bottom, float width, float height );
 	Rect2f( float width, float height ); // (0, 0, width, height)
-	Rect2f( const Vector2f& origin, const Vector2f& size );	
+	Rect2f( const Vector2f& origin, const Vector2f& size );
 	explicit Rect2f( const Vector2f& size ); // (0, 0, width, height)
+    explicit Rect2f( const Rect2i& r ); // static_cast int -> float on everything.
 
 	Rect2f( const Rect2f& copy ); // copy constructor
 	Rect2f& operator = ( const Rect2f& copy ); // assignment operator
