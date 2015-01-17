@@ -184,7 +184,7 @@ bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< uint8x4 > b
 		return false;
 	}
 
-	if( m_codec == H264 )
+    if( m_codec == MediaFoundationOutputVideoStream::Codec::H264 )
 	{
         bgra = ArrayUtils::flippedUpDownView< uint8x4 >( bgra );
 	}
@@ -326,17 +326,20 @@ HRESULT MediaFoundationOutputVideoStream::initializeOutputType()
 	GUID format;
 	switch( m_codec )
 	{
-	case H264:
+    case MediaFoundationOutputVideoStream::Codec::H264:
 		format = MFVideoFormat_H264;
 		break;
 
-	case VC1:
+    case MediaFoundationOutputVideoStream::Codec::VC1:
 		format = MFVideoFormat_WVC1;
 		break;
 
-	case WMV9:
+    case MediaFoundationOutputVideoStream::Codec::WMV9:
 		format = MFVideoFormat_WMV3;
 		break;
+
+    case MediaFoundationOutputVideoStream::Codec::MOTION_MPEG:
+        format = MFVideoFormat_MJPG;
 
 	default:
 		format = MFVideoFormat_H264;

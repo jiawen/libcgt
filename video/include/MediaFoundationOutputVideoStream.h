@@ -16,11 +16,12 @@ class MediaFoundationOutputVideoStream
 {
 public:
 
-	enum Codec
+	enum class Codec
 	{
 		H264,
 		VC1,
-		WMV9
+		WMV9,
+        MOTION_MPEG
 	};
 
 	static int recommendedBitsPerSecond( int width, int height, int framesPerSecondNumerator = 24,
