@@ -49,9 +49,10 @@ public:
         const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
 	// Retrieves the entire texture.
-	// Returns false if output isNull(), is not packed,
-	// has the wrong size.
-    bool get( Array2DView< uint8x4 > output );
+	// Returns false if output isNull(), is not packed, or has the wrong size.    
+    // Also returns false if format isn't RGBA or BGRA.
+    bool get( Array2DView< uint8x4 > output, GLImageFormat format = GLImageFormat::RGBA );
+
 	bool get( Array2DView< Vector2f > output );
 	bool get( Array2DView< Vector4f > output );	
 

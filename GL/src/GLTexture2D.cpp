@@ -156,7 +156,7 @@ bool GLTexture2D::set( Array2DView< const float > data,
 	return true;
 }
 
-bool GLTexture2D::get( Array2DView< uint8x4 > output )
+bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
 {
 	// TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
@@ -168,10 +168,16 @@ bool GLTexture2D::get( Array2DView< uint8x4 > output )
 	{
 		return false;
 	}
+
+    if( format != GLImageFormat::RGBA &&
+        format != GLImageFormat::BGRA )
+    {
+        return false;
+    }
 	
 	// TODO: mipmap level
 	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, output );
+		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
 	return true;
 }
 
