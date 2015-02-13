@@ -295,31 +295,38 @@ Matrix3f Camera::intrinsicsCV( const Vector2f& screenSize ) const
 
 Vector4f Camera::worldToEye( const Vector4f& world ) const
 {
-	Matrix4f vm = viewMatrix();
-	return vm * world;
+    return viewMatrix() * world;	
+}
+
+Vector4f Camera::eyeToClip( const Vector4f& eye ) const
+{
+    return projectionMatrix() * eye;
+}
+
+Vector4f Camera::clipToNDC( const Vector4f& clip ) const
+{
+    Vector4f ndc = clip.homogenized();
+    ndc.w = clip.w;
+    return ndc;
 }
 
 Vector4f Camera::eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) const
 {
-	Vector4f clip = projectionMatrix() * eye;
+    Vector4f clip = eyeToClip( eye );
 	Vector4f ndc = clip.homogenized();
+    ndc.w = clip.w;
+    return ndcToScreen( ndc, screenSize );
+}
 
-	float sx = screenSize.x * 0.5f * ( ndc.x + 1.0f );
-	float sy = screenSize.y * 0.5f * ( ndc.y + 1.0f );
-	float sz;
-
-	if( m_directX )
-	{
-		sz = ndc.z;
-	}
-	else
-	{
-		sz = 0.5f * ( ndc.z + 1.0f );
-	}
-
-	float sw = clip.w;
-
-	return Vector4f( sx, sy, sz, sw );
+Vector4f Camera::ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) const
+{
+    return Vector4f
+    (
+        screenSize.x * 0.5f * ( ndc.x + 1.0f ),
+        screenSize.y * 0.5f * ( ndc.y + 1.0f ),
+        m_directX ? ndc.z : 0.5f * ( ndc.z + 1.0f ),
+        ndc.w
+    );
 }
 
 Vector4f Camera::worldToScreen( const Vector4f& world, const Vector2f& screenSize ) const
@@ -328,60 +335,17 @@ Vector4f Camera::worldToScreen( const Vector4f& world, const Vector2f& screenSiz
 	return eyeToScreen( eye, screenSize );
 }
 
-Vector3f Camera::pixelToDirection( const Vector2i& xy, const Vector2f& screenSize ) const
-{
-    return pixelToDirection
-    (
-        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-		Rect2f( screenSize )
-	);
-}
-
-Vector3f Camera::pixelToDirection( const Vector2f& xy, const Vector2f& screenSize ) const
-{
-	return pixelToDirection
-	(
-		xy,
-        Rect2f( screenSize )
-	);
-}
-
-Vector3f Camera::pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) const
-{
-	// convert from screen coordinates to NDC
-	float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
-	float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
-
-	Vector4f clip( ndcX, ndcY, 0, 1 );
-	Vector4f eye = inverseProjectionMatrix() * clip;
-	Vector4f world = inverseViewMatrix() * eye;
-
-	Vector3f pointOnNearPlane = world.homogenized().xyz();
-
-	// TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
-
-	return ( pointOnNearPlane - m_eye ).normalized();
-}
-
-Vector2f Camera::pixelToNDC( const Vector2f& xy, const Vector2f& screenSize ) const
-{
-	// convert from screen coordinates to NDC
-	float ndcX = 2 * xy.x / screenSize.x - 1;
-	float ndcY = 2 * xy.y / screenSize.y - 1;
-
-	return Vector2f( ndcX, ndcY );
-}
 
 // virtual 
-Vector4f Camera::pixelToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {
-    return pixelToEye( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
+    return screenToEye( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
 }
 
 // virtual
-Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
 {
-	Vector2f ndcXY = pixelToNDC( xy, screenSize );
+	Vector2f ndcXY = screenToNDC( xy, screenSize );
 
 	// forward transformation:
 	//
@@ -418,13 +382,66 @@ Vector4f Camera::pixelToEye( const Vector2f& xy, float depth, const Vector2f& sc
 	return Vector4f( xEye, yEye, zEye, 1 );
 }
 
-Vector4f Camera::pixelToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::screenToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {
-    return pixelToWorld( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
+    return screenToWorld( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
 }
 
-Vector4f Camera::pixelToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::screenToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
 {
-	Vector4f eye = pixelToEye( xy, depth, screenSize );
+	Vector4f eye = screenToEye( xy, depth, screenSize );
 	return inverseViewMatrix() * eye;
+}
+
+Vector3f Camera::screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const
+{
+    return screenToDirection
+    (
+        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
+		Rect2f( screenSize )
+	);
+}
+
+Vector3f Camera::screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const
+{
+	return screenToDirection
+	(
+		xy,
+        Rect2f( screenSize )
+	);
+}
+
+Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const
+{
+	// convert from screen coordinates to NDC
+	float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
+	float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
+
+	Vector4f clip( ndcX, ndcY, 0, 1 );
+	Vector4f eye = inverseProjectionMatrix() * clip;
+	Vector4f world = inverseViewMatrix() * eye;
+
+	Vector3f pointOnNearPlane = world.homogenized().xyz();
+
+	// TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
+
+	return ( pointOnNearPlane - m_eye ).normalized();
+}
+
+// static
+Vector2f Camera::screenToNDC( const Vector2f& xy, const Vector2f& screenSize )
+{
+	// convert from screen coordinates to NDC
+	float ndcX = 2 * xy.x / screenSize.x - 1;
+	float ndcY = 2 * xy.y / screenSize.y - 1;
+
+    return{ ndcX, ndcY };
+}
+
+// static
+void Camera::copyLookAt( const Camera& from, Camera& to )
+{
+    to.m_eye = from.m_eye;
+    to.m_center = from.m_center;
+    to.m_up = from.m_up;
 }

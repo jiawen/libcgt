@@ -11,67 +11,39 @@
 //////////////////////////////////////////////////////////////////////////
 
 Box3f::Box3f() :
-
-	m_origin( 0.f, 0.f, 0.f ),
-	m_size( 0.f, 0.f, 0.f )
-
+	m_origin( 0.f ),
+	m_size( 0.f )
 {
 
 }
 
 Box3f::Box3f( float left, float bottom, float back, float width, float height, float depth ) :
-
 	m_origin( left, bottom, back ),
 	m_size( width, height, depth )
-
 {
 
 }
 
 Box3f::Box3f( float width, float height, float depth ) :
-
-	m_origin( 0.f, 0.f, 0.f ),
+	m_origin( 0.f ),
 	m_size( width, height, depth )
-
 {
 
 }
 
 Box3f::Box3f( const Vector3f& origin, const Vector3f& size ) :
-
 	m_origin( origin ),
 	m_size( size )
-
 {
 
 }
 
 Box3f::Box3f( const Vector3f& size ) :
-
-	m_origin( 0.f, 0.f, 0.f ),
+	m_origin( 0.f ),
 	m_size( size )
 
 {
 
-}
-
-Box3f::Box3f( const Box3f& copy ) :
-
-	m_origin( copy.m_origin ),
-	m_size( copy.m_size )
-
-{
-
-}
-
-Box3f& Box3f::operator = ( const Box3f& copy )
-{
-	if( this != &copy )
-	{
-		m_origin = copy.m_origin;
-		m_size = copy.m_size;
-	}
-	return *this;
 }
 
 Vector3f Box3f::origin() const
@@ -96,12 +68,12 @@ Vector3f& Box3f::size()
 
 Vector3f Box3f::minimum() const
 {
-    return m_origin;
+    return MathUtils::minimum( m_origin, m_origin + m_size );
 }
 
 Vector3f Box3f::maximum() const
 {
-    return m_origin + m_size;
+    return MathUtils::maximum( m_origin, m_origin + m_size );
 }
 
 float Box3f::left() const
@@ -312,22 +284,17 @@ Box3i Box3f::enlargedToInt() const
 	return Box3i( minimum, size );
 }
 
-bool Box3f::contains( float x, float y, float z )
+bool Box3f::contains( const Vector3f& p )
 {
 	return
 	(
-		( x >= m_origin.x ) &&
-		( x < ( m_origin.x + m_size.x ) ) &&
-		( y >= m_origin.y ) &&
-		( y < ( m_origin.y + m_size.y ) ) &&
-		( z >= m_origin.z ) &&
-		( z < ( m_origin.z + m_size.z ) )
+		( p.x >= m_origin.x ) &&
+		( p.x < ( m_origin.x + m_size.x ) ) &&
+		( p.y >= m_origin.y ) &&
+		( p.y < ( m_origin.y + m_size.y ) ) &&
+		( p.z >= m_origin.z ) &&
+		( p.z < ( m_origin.z + m_size.z ) )
 	);
-}
-
-bool Box3f::contains( const Vector3f& p )
-{
-	return contains( p.x, p.y, p.z );
 }
 
 void Box3f::enlargeToContain( const Vector3f& p )
@@ -416,24 +383,6 @@ bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
     tFar = MathUtils::minimum( tMax );
 
     return tFar > tNear;
-}
-
-std::vector< Vector3f > Box3f::corners() const
-{
-    std::vector< Vector3f > out( 8 );
-
-    for( int i = 0; i < 8; ++i )
-    {
-        out[ i ] =
-            Vector3f
-            (
-                ( i & 1 ) ? minimum().x : maximum().x,
-                ( i & 2 ) ? minimum().y : maximum().y,
-                ( i & 4 ) ? minimum().z : maximum().z
-            );
-    }
-
-    return out;
 }
 
 // static

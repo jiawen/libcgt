@@ -100,9 +100,9 @@ void PerspectiveCamera::setAspect( float aspect )
 	updateFrustum();
 }
 
-void PerspectiveCamera::setAspect( int width, int height )
+void PerspectiveCamera::setAspect( const Vector2f& screenSize )
 {
-	setAspect( Arithmetic::divideIntsToFloat( width, height ) );
+	setAspect( Arithmetic::divideIntsToFloat( screenSize.x, screenSize.y ) );
 }
 
 float PerspectiveCamera::fovXRadians() const
@@ -220,27 +220,15 @@ Matrix4f PerspectiveCamera::jitteredViewProjectionMatrix( float eyeX, float eyeY
 	);
 }
 
-// virtual
-Vector4f PerspectiveCamera::pixelToEye( int x, int y, float depth, const Vector2i& screenSize ) const
-{
-	return pixelToEye( Vector2f( x + 0.5f, y + 0.5f ), depth, screenSize );
-}
-
-// virtual
-Vector4f PerspectiveCamera::pixelToEye( float x, float y, float depth, const Vector2i& screenSize ) const
-{
-	return pixelToEye( Vector2f( x, y ), depth, screenSize );
-}
-
 // virtual 
-Vector4f PerspectiveCamera::pixelToEye( const Vector2i& xy, float depth, const Vector2i& screenSize ) const
+Vector4f PerspectiveCamera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {
-	return pixelToEye( Vector2f( xy.x + 0.5f, xy.y + 0.5f ), depth, screenSize );
+	return screenToEye( Vector2f( xy.x + 0.5f, xy.y + 0.5f ), depth, screenSize );
 }
 
-Vector4f PerspectiveCamera::pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const
+Vector4f PerspectiveCamera::screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
 {
-	Vector2f ndcXY = pixelToNDC( xy, screenSize );
+	Vector2f ndcXY = screenToNDC( xy, screenSize );
 	float t = tanHalfFovY();
 	// x_ndc = x_eye / tan( theta/2 ) / depth / aspect
 	// y_ndc = y_eye / tan( theta/2 ) / depth
@@ -463,6 +451,16 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	camera.m_directX = isDirectX;
 
 	return camera;
+}
+
+void PerspectiveCamera::copyPerspective( const PerspectiveCamera& from, PerspectiveCamera& to )
+{
+    to.m_fovYRadians = from.m_fovYRadians;
+    to.m_aspect = from.m_aspect;
+    to.m_zNear = from.m_zNear;
+    to.m_zFar = from.m_zFar;
+
+    to.updateFrustum();
 }
 
 void PerspectiveCamera::updateFrustum()

@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <geometry/GeometryUtils.h>
+#include <geometry/BoxUtils.h>
 #include <vecmath/Box3f.h>
 #include <vecmath/Vector4f.h>
 
@@ -61,8 +62,8 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& scene
 
 	// TODO: check for intersection
 
-    std::vector< Vector3f > sceneCorners = sceneBoundingBox.corners();
-	std::vector< Vector3f > sceneAndFrustumCorners = sceneAndFrustum.corners();
+    std::vector< Vector3f > sceneCorners = libcgt::core::geometry::boxutils::corners( sceneBoundingBox );
+	std::vector< Vector3f > sceneAndFrustumCorners = libcgt::core::geometry::boxutils::corners( sceneAndFrustum );
 
 	for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
 	{

@@ -2,6 +2,7 @@
 
 #include "math/MathUtils.h"
 
+// TODO: initializer_list
 Vector3f Icosahedron::s_defaultPositions[12] =
 {
 	Vector3f(               0,               1, -MathUtils::PHI ),

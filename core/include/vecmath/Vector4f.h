@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Vector2f.h"
+#include "Vector3f.h"
+
 class QString;
 
-class Vector2f;
-class Vector3f;
 class Vector4i;
 class Vector4d;
 
@@ -40,13 +41,11 @@ public:
 	const float& operator [] ( int i ) const;
 	float& operator [] ( int i );
 	
-	Vector2f xy() const;
 	Vector2f yz() const;
 	Vector2f zw() const;
 	Vector2f wx() const;
 	// TODO: the other combinations
 
-	Vector3f xyz() const;
 	Vector3f yzw() const;
 	Vector3f zwx() const;
 	Vector3f wxy() const;
@@ -93,6 +92,14 @@ public:
 			float z;
 			float w;
 		};
+        struct
+        {
+            Vector2f xy;
+        };
+        struct
+        {
+            Vector3f xyz;            
+        };
 		float m_elements[4];
 	};
 };

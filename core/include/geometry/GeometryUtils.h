@@ -91,9 +91,6 @@ public:
 	// y' = cross( z', x' )
 	static Matrix3f getRightHandedBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY );
 
-	// returns true if p is inside axis aligned bbox
-	static bool pointInBox( const Vector3f& p, const Vector3f& origin, const Vector3f& size );
-	
 	// returns true if p is inside sphere
 	static bool pointInsideSphere( const Vector3f& p,
 		const Vector3f& sphereCenter, float sphereRadius );

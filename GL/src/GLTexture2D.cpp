@@ -8,6 +8,8 @@
 #include <GL/glew.h>
 
 #include <common/Array2DView.h>
+#include <math/Arithmetic.h>
+#include <math/MathUtils.h>
 #include <vecmath/Vector3f.h>
 
 #include "GLSamplerObject.h"
@@ -18,7 +20,32 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-GLTexture2D::GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat ) :
+// static
+int GLTexture2D::calculateNumMipMapLevels( const Vector2i& size )
+{
+    return 1 + Arithmetic::log2( MathUtils::maximum( size ) );
+}
+
+// static
+Vector2i GLTexture2D::calculateMipMapSizeForLevel( const Vector2i& baseSize,
+    int level )
+{
+    if( level <= 0 )
+    {
+        return baseSize;
+    }
+
+    Vector2i size = baseSize;
+    while( level > 0 )
+    {
+        size = MathUtils::maximum( Vector2i{ 1, 1 }, size / 2 );
+        --level;
+    }
+    return size;
+}
+
+GLTexture2D::GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat,
+    int nMipMapLevels ) :
     GLTexture( GL_TEXTURE_2D, internalFormat ),
     m_size( size )
 {
@@ -26,8 +53,19 @@ GLTexture2D::GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFo
     assert( size.y > 0 );
     assert( size.x <= GLTexture::maxSize1D2D() );
     assert( size.y <= GLTexture::maxSize1D2D() );
+    assert( nMipMapLevels >= 0 );
 
-    glTextureStorage2DEXT( id(), GL_TEXTURE_2D, 1, static_cast< GLenum >( internalFormat ), size.x, size.y );
+    // TODO: this can be put into GLTexture as well!
+    if( nMipMapLevels == 0 )
+    {
+        m_nMipMapLevels = Arithmetic::log2( nMipMapLevels );
+    }
+    else
+    {
+        m_nMipMapLevels = nMipMapLevels;
+    }
+
+    glTextureStorage2DEXT( id(), GL_TEXTURE_2D, m_nMipMapLevels, static_cast< GLenum >( internalFormat ), size.x, size.y );
 }
 
 int GLTexture2D::width() const
@@ -181,6 +219,30 @@ bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
 	return true;
 }
 
+
+bool GLTexture2D::get( Array2DView< float > output )					  
+{
+	// TODO: glPixelStorei allows some packing:
+    // GL_PACK_ALIGNMENT
+
+	if( output.isNull() ||
+		output.width() != width() ||
+		output.height() != height() ||
+		!( output.packed() ) )
+	{
+		return false;
+	}
+	
+	// TODO: GL_RG_INTEGER
+	// output can be normalized or not
+	// GL_RG_INTEGER for not normalized
+
+	// TODO: level
+	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+		GL_RED, GL_FLOAT, output );
+	return true;
+}
+
 bool GLTexture2D::get( Array2DView< Vector2f > output )					  
 {
 	// TODO: glPixelStorei allows some packing:
@@ -222,12 +284,16 @@ bool GLTexture2D::get( Array2DView< Vector4f > output )
 	return true;
 }
 
+void GLTexture2D::generateMipMaps()
+{
+    glGenerateTextureMipmapEXT( id(), target() );
+}
+
 void GLTexture2D::drawNV( GLSamplerObject* pSampler,
 						 float z,
 						 const Rect2f& texCoords )
 {
-	drawNV( Rect2f( 0, 0, static_cast< float >( width() ), static_cast< float >( height() ) ),
-		pSampler, z, texCoords );
+	drawNV( Rect2f( size() ), pSampler, z, texCoords );
 }
 
 void GLTexture2D::drawNV( const Rect2f& windowCoords,

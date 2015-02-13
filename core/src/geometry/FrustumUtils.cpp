@@ -1,12 +1,13 @@
 #include "geometry/FrustumUtils.h"
 
 #include "geometry/Plane3f.h"
+#include "geometry/BoxUtils.h"
 #include "vecmath/Box3f.h";
 
 // static
 FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Box3f& box, const Plane3f planes[ 6 ] )
 {
-	auto boxCorners = box.corners();
+	auto boxCorners = libcgt::core::geometry::boxutils::corners( box );
 
 	// by default, we assume the box is completely inside
     IntersectionResult result = IntersectionResult::INSIDE;

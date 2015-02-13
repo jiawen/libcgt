@@ -1,47 +1,28 @@
 inline Vector2f::Vector2f() :
-
 	x( 0 ),
 	y( 0 )
-
 {
 
 }
 
 inline Vector2f::Vector2f( float f ) :
-
 	x( f ),
 	y( f )
-	
 {
 
+}
+
+inline Vector2f::Vector2f( std::initializer_list< float > xy )
+{
+	m_elements[ 0 ] = *( xy.begin() );
+    m_elements[ 1 ] = *( xy.begin() + 1 );
 }
 
 inline Vector2f::Vector2f( float _x, float _y ) :
-
-	x( _x ),
-	y( _y )
-	
-{
-	
-}
-
-inline Vector2f::Vector2f( const Vector2f& v ) :
-
-	x( v.x ),
-	y( v.y )
-
+    x( _x ),
+    y( _y )
 {
 
-}
-
-inline Vector2f& Vector2f::operator = ( const Vector2f& v )
-{
-	if( this != &v )
-	{
-		x = v.x;
-		y = v.y;
-	}
-	return *this;
 }
 
 inline const float& Vector2f::operator [] ( int i ) const

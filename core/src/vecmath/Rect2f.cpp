@@ -11,48 +11,32 @@
 //////////////////////////////////////////////////////////////////////////
 
 Rect2f::Rect2f() :
-
-	m_origin( 0.f, 0.f ),
-	m_size( 0.f, 0.f )
-
-{
-
-}
-
-Rect2f::Rect2f( float left, float bottom, float width, float height ) :
-
-	m_origin( left, bottom ),
-	m_size( width, height )
-
-{
-
-}
-
-Rect2f::Rect2f( float width, float height ) :
-
-	m_origin( 0.f, 0.f ),
-	m_size( width, height )
-
-{
-
-}
-
-Rect2f::Rect2f( const Vector2f& origin, const Vector2f& size ) :
-
-	m_origin( origin ),
-	m_size( size )
-
+    m_origin( 0.f ),
+    m_size( 0.f )
 {
 
 }
 
 Rect2f::Rect2f( const Vector2f& size ) :
-
 	m_origin( 0.f, 0.f ),
 	m_size( size )
-
 {
 
+}
+
+Rect2f::Rect2f( const Vector2f& origin, const Vector2f& size ) :
+	m_origin( origin ),
+	m_size( size )
+{
+
+}
+
+Rect2f::Rect2f( std::initializer_list< float > os )
+{
+    m_origin.x = *( os.begin() );
+    m_origin.y = *( os.begin() + 1 );
+    m_size.x = *( os.begin() + 2 );
+    m_size.y = *( os.begin() + 3 );
 }
 
 Rect2f::Rect2f( const Rect2i& r ) :
@@ -60,25 +44,6 @@ Rect2f::Rect2f( const Rect2i& r ) :
     m_size( r.size() )
 {
 
-}
-
-Rect2f::Rect2f( const Rect2f& copy ) :
-
-	m_origin( copy.m_origin ),
-	m_size( copy.m_size )
-
-{
-
-}
-
-Rect2f& Rect2f::operator = ( const Rect2f& copy )
-{
-	if( this != &copy )
-	{
-		m_origin = copy.m_origin;
-		m_size = copy.m_size;
-	}
-	return *this;
 }
 
 Vector2f Rect2f::origin() const
@@ -116,6 +81,16 @@ Vector2f Rect2f::maximum() const
     return MathUtils::maximum( m_origin, m_origin + m_size );
 }
 
+Vector2f Rect2f::dx() const
+{
+    return{ m_size.x, 0 };
+}
+
+Vector2f Rect2f::dy() const
+{
+    return{ 0, m_size.y };
+}
+
 float Rect2f::width() const
 {
 	return m_size.x;
@@ -136,22 +111,12 @@ Vector2f Rect2f::center() const
 	return m_origin + 0.5f * m_size;
 }
 
-bool Rect2f::isNull() const
+bool Rect2f::isStandardized() const
 {
-	return( m_size.x == 0 && m_size.y == 0 );
+	return( m_size.x >= 0 && m_size.y >= 0 );
 }
 
-bool Rect2f::isEmpty() const
-{
-	return( !isValid() );
-}
-
-bool Rect2f::isValid() const
-{
-	return( m_size.x > 0 && m_size.y > 0 );
-}
-
-Rect2f Rect2f::normalized() const
+Rect2f Rect2f::standardized() const
 {
 	Vector2f origin;
 	Vector2f size;
@@ -181,26 +146,17 @@ Rect2f Rect2f::normalized() const
 	return Rect2f( origin, size );
 }
 
-QString Rect2f::toString() const
+std::string Rect2f::toString() const
 {
-	QString out;
+	std::string out;
 
 	out.append( "Rect2f:\n" );
 	out.append( "\torigin: " );
-	out.append( m_origin.toString() );
+	out.append( m_origin.toString().toStdString() );
 	out.append( "\n\tsize: " );
-	out.append( m_size.toString() );
+	out.append( m_size.toString().toStdString() );
 
 	return out;
-}
-
-Rect2f Rect2f::flippedUD( float height ) const
-{
-	Vector2f origin;
-	origin.x = m_origin.x;
-	origin.y = height -   limit().y;
-
-	return Rect2f( origin, m_size );
 }
 
 Rect2i Rect2f::enlargedToInt() const
@@ -217,20 +173,15 @@ Rect2i Rect2f::enlargedToInt() const
 	return Rect2i( minimum, size );
 }
 
-bool Rect2f::contains( float x, float y )
+bool Rect2f::contains( const Vector2f& p ) const
 {
 	return
 	(
-		( x >= m_origin.x ) &&
-		( x < ( m_origin.x + m_size.x ) ) &&
-		( y >= m_origin.y ) &&
-		( y < ( m_origin.y + m_size.y ) )
+		( p.x >= m_origin.x ) &&
+		( p.x < ( m_origin.x + m_size.x ) ) &&
+		( p.y >= m_origin.y ) &&
+		( p.y < ( m_origin.y + m_size.y ) )
 	);
-}
-
-bool Rect2f::contains( const Vector2f& point )
-{
-	return contains( point.x, point.y );
 }
 
 bool Rect2f::intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirection,

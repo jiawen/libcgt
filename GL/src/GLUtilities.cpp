@@ -64,7 +64,7 @@ Rect2f GLUtilities::getViewport()
 {
 	float vp[4];
 	glGetFloatv( GL_VIEWPORT, vp );
-	return Rect2f( vp[0], vp[1], vp[2], vp[3] );
+    return{ vp[0], vp[1], vp[2], vp[3] };
 }
 
 // static

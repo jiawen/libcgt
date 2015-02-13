@@ -68,7 +68,7 @@ public:
 	// defined as width / height
 	float aspect() const;
 	void setAspect( float aspect );
-	void setAspect( int width, int height );
+	void setAspect( const Vector2f& screenSize );
 
 	// get/set the field of view, in radians
 	float fovXRadians() const;
@@ -128,10 +128,8 @@ public:
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its eye space coordinates (right handed, output z will be negative), w = 1
-	virtual Vector4f pixelToEye( int x, int y, float depth, const Vector2i& screenSize ) const;
-	virtual Vector4f pixelToEye( float x, float y, float depth, const Vector2i& screenSize ) const;
-	virtual Vector4f pixelToEye( const Vector2i& xy, float depth, const Vector2i& screenSize ) const;
-	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2i& screenSize ) const;
+	virtual Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const override;
+	virtual Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const override;
 
 	QString toString() const;
 	std::vector< Vector4f > frustumLines() const;
@@ -142,8 +140,14 @@ public:
 	static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
 	static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );	
 
+    // Copy the perpspective projection (aka intrinsics without a screen size), from --> to:
+    // Copies fov, aspect ratio, zNear, and zFar.
+    static void copyPerspective( const PerspectiveCamera& from, PerspectiveCamera& to );
+
 private:
 
+    // Updates the internal frustum values from m_fovYRadiand and m_aspect.
+    // Called whenever these values change.
 	void updateFrustum();
 
 	float m_fovYRadians;

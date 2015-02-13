@@ -2,6 +2,7 @@
 
 #include "common/Array1DView.h"
 #include "vecmath/Box3f.h"
+#include "vecmath/Box3i.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector3i.h"
@@ -40,7 +41,18 @@ namespace boxutils
     //     )
     void writeAxisAlignedWireframeGrid( const Box3f& box,
         const Vector3i& resolution, Array1DView< Vector4f > vertexPositions );
-}
-}
-}
-}
+
+    // Returns a standard box (cube) with the given center and side length.
+    Box3f makeCube( const Vector3f& center, float sideLength );
+
+    // Returns the 8 corners of the box in hypercube order:
+    // x changes most frequently, y next, then z least frequently.
+    std::vector< Vector3f > corners( const Box3f& b );
+
+    // Returns the 8 corners of the box in hypercube order:
+    // x changes most frequently, y next, then z least frequently.
+    std::vector< Vector3i > corners( const Box3i& b );
+} // boxutils
+} // geometry
+} // core
+} // libcgt

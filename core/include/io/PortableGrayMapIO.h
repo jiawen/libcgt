@@ -8,6 +8,7 @@ class PortableGrayMapIO
 {
 public:
 
+    // TODO: does not parse comments
     // TODO: use views, uint8_t, uint16_t
 
 	// PGM specifies that maxVal from the file is > 0 and < 65536

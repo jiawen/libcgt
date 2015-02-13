@@ -17,8 +17,24 @@ class GLSamplerObject;
 class GLTexture2D : public GLTexture
 {
 public:
-	
-    GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat );
+
+    // For a texture with dimensions baseSize, calculates the number of
+    // mipmap levels needed, equal to 1 + floor(log(max(width, height))).
+    static int calculateNumMipMapLevels( const Vector2i& baseSize );
+
+    // For a texture with base dimensions baseSize, calculates the size
+    // of a given level using the recursive formula:
+    // nextLODdim = max(1, currentLODdim >> 1).
+    // The base level is 0.
+    static Vector2i calculateMipMapSizeForLevel( const Vector2i& baseSize,
+        int level );
+
+    // Allocate a 2D texture of the specified size, internalFormat, and number
+    // of mipmap levels.
+    // If "nMipMapLevels" is set to a special value of 0, the number of levels will
+    // be automatically calculated.
+    GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat,
+        int nMipMapLevels = 1 );
 	
 	int width() const;
 	int height() const;
@@ -49,18 +65,24 @@ public:
         const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
 	// Retrieves the entire texture.
-	// Returns false if output isNull(), is not packed, or has the wrong size.    
+	// Returns false if output isNull(), is not packed, or has the wrong size.
     // Also returns false if format isn't RGBA or BGRA.
     bool get( Array2DView< uint8x4 > output, GLImageFormat format = GLImageFormat::RGBA );
 
+    // Retrieves the entire texture.
+	// Returns false if output isNull(), is not packed, or has the wrong size.
+    bool get( Array2DView< float > output );
 	bool get( Array2DView< Vector2f > output );
-	bool get( Array2DView< Vector4f > output );	
+	bool get( Array2DView< Vector4f > output );
+
+    // TODO: move into GLTexture
+    void generateMipMaps();
 
 	// Same as drawNV() below, but with
 	// windowCoords = Rect2f( 0, 0, width(), height() )
 	void drawNV( GLSamplerObject* pSampler = nullptr,
 		float z = 0,
-		const Rect2f& texCoords = Rect2f( 1.f, 1.f ) );
+        const Rect2f& texCoords = Rect2f{ { 1, 1 } } );
 
 	// Using NV_draw_texture, draw this texture to the screen
 	// to the rectangle windowCoords.
@@ -77,9 +99,10 @@ public:
 	void drawNV( const Rect2f& windowCoords,
 		GLSamplerObject* pSampler = nullptr,
 		float z = 0,
-		const Rect2f& texCoords = Rect2f( 1.f, 1.f ) );	
+        const Rect2f& texCoords = Rect2f{ { 1, 1 } } );	
 
 private:	
 
     Vector2i m_size;
+    int m_nMipMapLevels; // TODO: make this a global property of textures?
 };

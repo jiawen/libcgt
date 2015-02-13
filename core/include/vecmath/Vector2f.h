@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <initializer_list>
 
 class QString;
 
@@ -16,19 +17,20 @@ public:
 
     Vector2f(); // (0,0)
     explicit Vector2f( float f ); // (f,f)
+    Vector2f( std::initializer_list< float > xy );
     Vector2f( float _x, float _y );
 
 	// copy constructors
-    Vector2f( const Vector2f& v );
+    Vector2f( const Vector2f& v ) = default;
+	Vector2f& operator = ( const Vector2f& v ) = default;
+
+    // cast
 	Vector2f( const Vector2d& rv );
 	Vector2f( const Vector2i& rv );
 
 	// assignment operators
-	Vector2f& operator = ( const Vector2f& v );
 	Vector2f& operator = ( const Vector2d& v );
 	Vector2f& operator = ( const Vector2i& v );
-
-	// no destructor necessary
 
 	// returns the ith element
     const float& operator [] ( int i ) const;

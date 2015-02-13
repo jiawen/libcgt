@@ -42,23 +42,6 @@ Box3i::Box3i( std::initializer_list< int > os )
     m_size.z = *( os.begin() + 5 );
 }
 
-Box3i::Box3i( const Box3i& copy ) :
-	m_origin( copy.m_origin ),
-	m_size( copy.m_size )
-{
-
-}
-
-Box3i& Box3i::operator = ( const Box3i& copy )
-{
-	if( this != &copy )
-	{
-		m_origin = copy.m_origin;
-		m_size = copy.m_size;
-	}
-	return *this;
-}
-
 Vector3i Box3i::origin() const
 {
 	return m_origin;
@@ -147,6 +130,16 @@ Vector3i Box3i::leftTopFront() const
 Vector3i Box3i::rightTopFront() const
 {
     return{ right(), top(), front() };
+}
+
+Vector3i Box3i::minimum() const
+{
+    return MathUtils::minimum( m_origin, m_origin + m_size );
+}
+
+Vector3i Box3i::maximum() const
+{
+    return MathUtils::maximum( m_origin, m_origin + m_size );
 }
 
 int Box3i::width() const

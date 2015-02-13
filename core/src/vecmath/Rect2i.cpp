@@ -38,23 +38,6 @@ Rect2i::Rect2i( std::initializer_list< int > os )
     m_size.y = *( os.begin() + 3 );
 }
 
-Rect2i::Rect2i( const Rect2i& copy ) :
-	m_origin( copy.m_origin ),
-	m_size( copy.m_size )
-{
-
-}
-
-Rect2i& Rect2i::operator = ( const Rect2i& copy )
-{
-	if( this != &copy )
-	{
-		m_origin = copy.m_origin;
-		m_size = copy.m_size;
-	}
-	return *this;
-}
-
 Vector2i Rect2i::origin() const
 {
 	return m_origin;
@@ -75,44 +58,29 @@ Vector2i& Rect2i::size()
 	return m_size;
 }
 
-int Rect2i::left() const
+Vector2i Rect2i::limit() const
 {
-	return std::min( m_origin.x, m_origin.x + m_size.x );
+    return m_origin + m_size;
 }
 
-int Rect2i::right() const
+Vector2i Rect2i::minimum() const
 {
-	return left() + width();
+    return MathUtils::minimum( m_origin, m_origin + m_size );
 }
 
-int Rect2i::bottom() const
+Vector2i Rect2i::maximum() const
 {
-	return std::min( m_origin.y, m_origin.y + m_size.y );
+    return MathUtils::maximum( m_origin, m_origin + m_size );
 }
 
-int Rect2i::top() const
+Vector2i Rect2i::dx() const
 {
-	return bottom() + height();
+    return{ m_size.x, 0 };
 }
 
-Vector2i Rect2i::bottomLeft() const
+Vector2i Rect2i::dy() const
 {
-    return{ left(), bottom() };
-}
-
-Vector2i Rect2i::bottomRight() const
-{
-    return{ right(), bottom() };
-}
-
-Vector2i Rect2i::topLeft() const
-{
-    return{ left(), top() };
-}
-
-Vector2i Rect2i::topRight() const
-{
-    return{ right(), top() };
+    return{ 0, m_size.y };
 }
 
 int Rect2i::width() const
@@ -130,7 +98,12 @@ int Rect2i::area() const
 	return std::abs( m_size.x * m_size.y );
 }
 
-Vector2f Rect2i::center() const
+Vector2i Rect2i::center() const
+{
+	return ( m_origin + m_size ) / 2;
+}
+
+Vector2f Rect2i::exactCenter() const
 {
 	return m_origin + 0.5f * m_size;
 }
@@ -170,15 +143,15 @@ Rect2i Rect2i::standardized() const
 	return Rect2i( origin, size );
 }
 
-QString Rect2i::toString() const
+std::string Rect2i::toString() const
 {
-	QString out;
+    std::string out;
 
 	out.append( "Rect2f:\n" );
 	out.append( "\torigin: " );
-	out.append( m_origin.toString() );
+	out.append( m_origin.toString().toStdString() );
 	out.append( "\n\tsize: " );
-	out.append( m_size.toString() );
+	out.append( m_size.toString().toStdString() );
 
 	return out;
 }
@@ -187,27 +160,23 @@ bool Rect2i::contains( const Vector2i& p )
 {
 	return
 	(
-		( p.x >= left() ) &&
-		( p.x < right() ) &&
-        ( p.y >= bottom() ) &&
-		( p.y < top() )
+		( p.x >= m_origin.x ) &&
+		( p.x < ( m_origin.x + m_size.x ) ) &&
+		( p.y >= m_origin.y ) &&
+		( p.y < ( m_origin.y + m_size.y ) )
 	);
-}
-
-Rect2i Rect2i::flippedUD( int height ) const
-{
-	Vector2i origin;
-	origin.x = m_origin.x;
-	origin.y = height - topLeft().y;
-
-	return Rect2i( origin, m_size );
 }
 
 // static
 Rect2i Rect2i::united( const Rect2i& r0, const Rect2i& r1 )
 {
-    Vector2i unitedMin = MathUtils::minimum( r0.bottomLeft(), r1.bottomLeft() );
-	Vector2i unitedMax = MathUtils::maximum( r0.topRight(), r1.topRight() );
+    Vector2i r0Min = r0.minimum();
+	Vector2i r0Max = r0.maximum();
+	Vector2i r1Min = r1.minimum();
+	Vector2i r1Max = r1.maximum();
+
+    Vector2i unitedMin{ std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) };
+    Vector2i unitedMax{ std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) };
 
 	return Rect2i( unitedMin, unitedMax - unitedMin );
 }

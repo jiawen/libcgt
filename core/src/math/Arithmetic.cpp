@@ -286,15 +286,28 @@ Vector4i Arithmetic::ceilToInt( const Vector4f& v )
 }
 
 // static
+int Arithmetic::log2( int x )
+{
+    int output = 0;
+    x >>= 1;
+    while( x > 0 )
+    {
+        ++output;
+        x >>= 1;
+    }
+    return output;
+}
+
+// static
 float Arithmetic::log2( float x )
 {	
 	return( logf( x ) * Arithmetic::s_fReciprocalLog2 );
 }
 
 // static
-int Arithmetic::log2ToInt( float v )
+int Arithmetic::log2ToInt( float x )
 {
-	return( ( *( int* )( &v ) ) >> 23 ) - 127;
+	return( ( *( int* )( &x ) ) >> 23 ) - 127;
 }
 
 // static

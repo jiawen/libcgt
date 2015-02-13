@@ -74,7 +74,7 @@ Rect2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v
 	float maxX = max( max( v0.x, v1.x ), v2.x );
 	float maxY = max( max( v0.y, v1.y ), v2.y );
 
-	return Rect2f( minX, minY, maxX - minX, maxY - minY );
+    return{ minX, minY, maxX - minX, maxY - minY };
 }
 
 // static
@@ -91,7 +91,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, con
 	std::vector< Vector2f > pointsInside;
 	pointsInside.reserve( bbox.area() );
 
-	Iterators::for2D( bbox.bottomLeft(), bbox.size(), [&]( int x, int y )
+	Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
 	{
 		Vector2f p( x + 0.5f, y + 0.5f );
 
@@ -148,7 +148,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vecto
 	std::vector< Vector2f > pointsInside;
 	pointsInside.reserve( bbox.area() );
 
-	Iterators::for2D( bbox.bottomLeft(), bbox.size(), [&]( int x, int y )
+	Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
 	{
 		Vector2f p( x + 0.5f, y + 0.5f );
 
@@ -307,19 +307,6 @@ Matrix3f GeometryUtils::getRightHandedBasisWithPreferredUp( const Vector3f& z, c
 	Vector3f y2 = Vector3f::cross( z2, x );
 
 	return Matrix3f( x, y2, z2 );
-}
-
-// static
-bool GeometryUtils::pointInBox( const Vector3f& p, const Vector3f& origin, const Vector3f& size )
-{
-	Vector3f maximum = origin + size;
-
-	return
-	(
-		( p.x > origin.x ) && ( p.x < maximum.x ) &&
-		( p.y > origin.y ) && ( p.y < maximum.y ) &&
-		( p.z > origin.z ) && ( p.z < maximum.z )
-	);
 }
 
 // static

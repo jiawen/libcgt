@@ -86,67 +86,13 @@ GLImageInternalFormat GLTexture::internalFormat()
 	return m_internalFormat;
 }
 
-// virtual
-void GLTexture::getFloat1Data( float* afOutput, int level )
-{
-	GLenum format = GL_RED;
-	getTexImage( level, format, GL_FLOAT, afOutput );
-}
-
-// virtual
-void GLTexture::getFloat3Data( float* afOutput, int level )
-{
-	GLenum format = GL_RGB;
-	getTexImage( level, format, GL_FLOAT, afOutput );
-}
-
-// virtual
-void GLTexture::getFloat4Data( float* afOutput, int level )
-{
-	GLenum format = GL_RGBA;
-	getTexImage( level, format, GL_FLOAT, afOutput );
-}
-
-// virtual
-void GLTexture::getUnsignedByte1Data( uint8_t* aubOutput, int level )
-{
-	GLenum format = GL_RED;
-	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
-}
-
-// virtual
-void GLTexture::getUnsignedByte3Data( uint8_t* aubOutput, int level )
-{
-	GLenum format = GL_RGB;
-	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
-}
-
-// virtual
-void GLTexture::getUnsignedByte4Data( uint8_t* aubOutput, int level )
-{
-	GLenum format = GL_RGBA;
-	getTexImage( level, format, GL_UNSIGNED_BYTE, aubOutput );
-}
-
 //////////////////////////////////////////////////////////////////////////
 // Protected
 //////////////////////////////////////////////////////////////////////////
 
 GLTexture::GLTexture( GLenum target, GLImageInternalFormat internalFormat ) :
-
-m_target( target ),
+    m_target( target ),
 	m_internalFormat( internalFormat )
-
 {
 	glGenTextures( 1, &m_id );
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
-
-void GLTexture::getTexImage( GLint level, GLenum format, GLenum type, void* avOutput )
-{
-    // TODO: don't need binding with DSA
-	glGetTexImage( m_target, level, format, type, avOutput );
 }

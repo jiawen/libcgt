@@ -12,6 +12,30 @@ class GLTexture
 {
 public:
 
+    enum class Target
+    {
+        // Standard targets.
+        TEXTURE_1D = GL_TEXTURE_1D,
+        TEXTURE_2D = GL_TEXTURE_2D,
+        TEXTURE_3D = GL_TEXTURE_3D,
+
+        // Special geometric targets.
+        TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP,
+        TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE, // basically deprecated
+
+        // Array targets.
+        TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY,
+        TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY,
+        TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,
+
+        // Multisample targets.
+        TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
+        TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
+
+        // Texture buffer.
+        TEXTURE_BUFFER = GL_TEXTURE_BUFFER
+    };
+
 	// Returns the current active texture unit.
 	static GLenum activeTextureUnit();
 
@@ -23,6 +47,7 @@ public:
 	// across the entire pipeline.
 	static int maxCombinedTextureImageUnits();
 	
+    // TODO: make it 1d and 2d, returning the same thing.
 	// Max width and height
 	static int maxSize1D2D();
 
@@ -44,21 +69,11 @@ public:
 	GLenum target(); // TODO: make target also enum class
 	GLImageInternalFormat internalFormat();
 
-	virtual void getFloat1Data( float* afOutput, int level = 0 );
-	virtual void getFloat3Data( float* afOutput, int level = 0 );
-	virtual void getFloat4Data( float* afOutput, int level = 0 );
-
-	virtual void getUnsignedByte1Data( uint8_t* aubOutput, int level = 0 );
-	virtual void getUnsignedByte3Data( uint8_t* aubOutput, int level = 0 );
-	virtual void getUnsignedByte4Data( uint8_t* aubOutput, int level = 0 );
-
 protected:
 	
 	GLTexture( GLenum target, GLImageInternalFormat internalFormat );
 
 private:
-
-	void getTexImage( GLint level, GLenum format, GLenum type, void* avOutput );
 
 	GLenum m_target;
 	GLuint m_id;	

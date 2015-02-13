@@ -176,7 +176,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* file
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const uint8x4 >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DView< const uint8x4 > view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -215,7 +215,7 @@ bool ArrayUtils::saveTXT( Array2DView< const uint8x4 >& view, const char* filena
 }
 
 // static
-bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array2DView< const float > view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -225,7 +225,7 @@ bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 	
 	int retVal;
 	
-	retVal = fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
+	retVal = fprintf( fp, "Size: %d x %d\n", view.width(), view.height() );
 	if( retVal < 0 )
 	{
 		return false;
@@ -237,15 +237,15 @@ bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 		return false;
 	}
 
-	int w = array.width();
-	int h = array.height();
+	int w = view.width();
+	int h = view.height();
 
 	for( int y = 0; y < h; ++y )
 	{
 		for( int x = 0; x < w; ++x )
 		{
 			int index = y * w + x;
-            float v = array[ { x, y } ];
+            float v = view[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %f\n", index, x, y, v );
 		}
 	}
@@ -254,8 +254,9 @@ bool ArrayUtils::saveTXT( const Array2D< float >& array, const char* filename )
 	return( retVal == 0 );
 }
 
+
 // static
-bool ArrayUtils::saveTXT( const Array3D< float >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array2DView< const Vector4f > view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -265,95 +266,7 @@ bool ArrayUtils::saveTXT( const Array3D< float >& array, const char* filename )
 
 	int retVal;
 
-	retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	retVal = fprintf( fp, "Format: float\n" );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	int w = array.width();
-	int h = array.height();
-	int d = array.depth();
-
-	for( int z = 0; z < d; ++z )
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			for( int x = 0; x < w; ++x )
-			{
-				int index = z * w * h + y * w + x;
-                float v = array[ { x, y, z } ];
-				fprintf( fp, "[%d] (%d %d %d): %f\n", index, x, y, z, v );
-			}
-		}
-	}
-	
-	retVal = fclose( fp );
-	return( retVal == 0 );
-}
-
-// static
-bool ArrayUtils::saveTXT( const Array3D< Vector2f >& array, const char* filename )
-{
-	FILE* fp = fopen( filename, "w" );
-	if( fp == NULL )
-	{
-		return false;
-	}
-
-	int retVal;
-
-	retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	retVal = fprintf( fp, "Format: float2\n" );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	int w = array.width();
-	int h = array.height();
-	int d = array.depth();
-
-	for( int z = 0; z < d; ++z )
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			for( int x = 0; x < w; ++x )
-			{
-				int index = z * w * h + y * w + x;
-                Vector2f v = array[ { x, y, z } ];
-				fprintf( fp, "[%d] (%d %d %d): %f %f\n", index, x, y, z, v.x, v.y );
-			}
-		}
-	}
-
-	retVal = fclose( fp );
-	return( retVal == 0 );
-}
-
-// static
-bool ArrayUtils::saveTXT( const Array2D< Vector4f >& array, const char* filename )
-{
-	FILE* fp = fopen( filename, "w" );
-	if( fp == NULL )
-	{
-		return false;
-	}
-
-	int retVal;
-
-	retVal = fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
+	retVal = fprintf( fp, "Size: %d x %d\n", view.width(), view.height() );
 	if( retVal < 0 )
 	{
 		return false;
@@ -365,15 +278,15 @@ bool ArrayUtils::saveTXT( const Array2D< Vector4f >& array, const char* filename
 		return false;
 	}
 
-	int w = array.width();
-	int h = array.height();
+	int w = view.width();
+	int h = view.height();
 
 	for( int y = 0; y < h; ++y )
 	{
 		for( int x = 0; x < w; ++x )
 		{
 			int index = y * w + x;
-            Vector4f v = array[ { x, y } ];
+            Vector4f v = view[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %f %f %f %f\n", index, x, y, v.x, v.y, v.z, v.w );
 		}
 	}
@@ -382,6 +295,93 @@ bool ArrayUtils::saveTXT( const Array2D< Vector4f >& array, const char* filename
 	return( retVal == 0 );
 }
 
+// static
+bool ArrayUtils::saveTXT( Array3DView< const float > view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+
+	retVal = fprintf( fp, "Size: %d x %d x %d\n", view.width(), view.height(), view.depth() );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	int w = view.width();
+	int h = view.height();
+	int d = view.depth();
+
+	for( int z = 0; z < d; ++z )
+	{
+		for( int y = 0; y < h; ++y )
+		{
+			for( int x = 0; x < w; ++x )
+			{
+				int index = z * w * h + y * w + x;
+                float v = view[ { x, y, z } ];
+				fprintf( fp, "[%d] (%d %d %d): %f\n", index, x, y, z, v );
+			}
+		}
+	}
+	
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( Array3DView< const Vector2f > view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+
+	retVal = fprintf( fp, "Size: %d x %d x %d\n", view.width(), view.height(), view.depth() );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: float2\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	int w = view.width();
+	int h = view.height();
+	int d = view.depth();
+
+	for( int z = 0; z < d; ++z )
+	{
+		for( int y = 0; y < h; ++y )
+		{
+			for( int x = 0; x < w; ++x )
+			{
+				int index = z * w * h + y * w + x;
+                Vector2f v = view[ { x, y, z } ];
+				fprintf( fp, "[%d] (%d %d %d): %f %f\n", index, x, y, z, v.x, v.y );
+			}
+		}
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
 
 // static
 template<>

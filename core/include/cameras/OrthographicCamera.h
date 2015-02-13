@@ -17,15 +17,6 @@ public:
 		float bottom = -5.0f, float top = 5.0f,
 		float zNear = -1.0f, float zFar = 1.0f );		
 
-	//virtual ~OrthographicCamera();
-	
-	// gets the parameters used to set this orthographic camera
-	// note that these are simply the cached values
-	// the state can become *inconsistent* if GLCamera::setFrustum() calls are made
-	void getOrtho( float* pLeft, float* pRight, float* pBottom, float* pTop, float* pZNear, float* pZFar ) const;
-
-	void setOrtho( float left, float right, float bottom, float top, float zNear, float zFar );
-
 	virtual Matrix4f projectionMatrix() const;
 
 	bool saveTXT( QString filename );

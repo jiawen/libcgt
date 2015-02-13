@@ -1,5 +1,7 @@
 #include "geometry/BoxUtils.h"
 
+#include <cassert>
+
 void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBox( const Box3f& box,
     Array1DView< Vector4f > vertexPositions )
 {
@@ -207,4 +209,45 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
 			++k;
 		}
 	}
+}
+
+Box3f libcgt::core::geometry::boxutils::makeCube( const Vector3f& center, float sideLength )
+{
+    return Box3f( center - 0.5f * Vector3f( sideLength ), Vector3f( sideLength ) );
+}
+
+std::vector< Vector3f > libcgt::core::geometry::boxutils::corners( const Box3f& b )
+{
+    std::vector< Vector3f > out( 8 );
+
+    for( int i = 0; i < 8; ++i )
+    {
+        out[ i ] =
+            Vector3f
+            (
+                ( i & 1 ) ? b.minimum().x : b.maximum().x,
+                ( i & 2 ) ? b.minimum().y : b.maximum().y,
+                ( i & 4 ) ? b.minimum().z : b.maximum().z
+            );
+    }
+
+    return out;
+}
+
+std::vector< Vector3i > libcgt::core::geometry::boxutils::corners( const Box3i& b )
+{
+    std::vector< Vector3i > out( 8 );
+
+    for( int i = 0; i < 8; ++i )
+    {
+        out[ i ] =
+            Vector3i
+            {
+                ( i & 1 ) ? b.minimum().x : b.maximum().x,
+                ( i & 2 ) ? b.minimum().y : b.maximum().y,
+                ( i & 4 ) ? b.minimum().z : b.maximum().z
+            };
+    }
+
+    return out;
 }

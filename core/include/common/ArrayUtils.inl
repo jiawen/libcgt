@@ -147,6 +147,14 @@ Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Box3i& bo
 }
 
 // static
+template< typename S, typename T >
+Array1DView< S > ArrayUtils::componentView( Array1DView< T > view, int componentOffsetBytes )
+{
+    return Array1DView< S >( reinterpret_cast< uint8_t* >( view.pointer() ) + componentOffsetBytes,
+        view.size(), view.stride() );
+}
+
+// static
 template< typename T >
 bool ArrayUtils::copy( Array1DView< const T > src, Array1DView< T > dst )
 {

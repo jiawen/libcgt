@@ -26,14 +26,17 @@ public:
     // { origin.x, origin.y, origin.z, size.x, size.y, size.z }
     Box3i( std::initializer_list< int > os );
 
-	Box3i( const Box3i& copy ); // copy constructor
-	Box3i& operator = ( const Box3i& copy ); // assignment operator
+	Box3i( const Box3i& copy ) = default;
+	Box3i& operator = ( const Box3i& copy ) = default;
 
 	Vector3i origin() const;
 	Vector3i& origin();
 
 	Vector3i size() const;
 	Vector3i& size();
+
+    Vector3i minimum() const; // min( origin, origin + size )
+    Vector3i maximum() const; // max( origin, origin + size )
 
     // TODO: make these clear
 	int left() const; // origin.x

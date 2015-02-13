@@ -9,22 +9,7 @@ struct VertexPosition4fTexture2f;
 class D3D11RectangleUtils
 {
 public:
-
-	// ===== full screen rectangles =====
-	// 
-	// positions are in clip coordinates (-1,-1) --> (1,1)
-	// so the projection matrix should be identity (i.e., don't use one)
-	//
-	// if uv00AtTopLeft is false, the texture coordinates are flipped upside down ((0,1) at the top left corner)
-
-	// Create a DynamicVertexBuffer< VertexPosition4fTexture2f > of 6 vertices (2 triangles)
-	static DynamicVertexBuffer* createFullScreenRectangle( ID3D11Device* pDevice,
-		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
-
-	// writes a fullscreen rectangle (6 vertices, 2 triangles) into buffer
-	static void writeFullScreenRectangle( VertexPosition4fTexture2f* vertexArray,
-		bool uv00AtTopLeft = true, float z = 1, float w = 1 );
-
+    
 	// ===== screen aligned rectangles =====
 	//
 	// positions are in camera coordinates:

@@ -75,8 +75,19 @@ public:
 	static Vector4i floorToInt( const Vector4f& v );
 	static Vector4i ceilToInt( const Vector4f& v );
 
+    // Integer log2, computed with shifts and rounding down.
+    // log2( 1 ) = 0
+    // log2( 2 ) = 1
+    // log2( 3 ) = 1
+    // log2( 8 ) = 3
+    // log2( 9 ) = 3
+    // Returns -1 if x <= 0.
+    static int log2( int x );
+
+    // Fast float log2.
 	static float log2( float x );
-	static int log2ToInt( float v );
+    // Fast approximate floor(log2(x))
+	static int log2ToInt( float x );
 	
 	// From: http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
 	// returns 0 if v is 0 (add v += ( v == 0 )) to return 1 in that case

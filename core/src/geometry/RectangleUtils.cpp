@@ -1,6 +1,7 @@
 #include "geometry/RectangleUtils.h"
 
 #include <algorithm>
+#include <cassert>
 
 // static
 Rect2i RectangleUtils::bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window )
@@ -46,6 +47,50 @@ Vector2f RectangleUtils::normalizedCoordinatesWithinRectangle( const Vector2f& p
     const Rect2f& r )
 {
     return ( p - r.origin() ) / r.size();
+}
+
+// static
+Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
+{
+    assert( r.isStandardized() );
+	Vector2f origin;
+	origin.x = width - r.limit().x;
+	origin.y = r.origin().y;
+
+    return{ origin, r.size() };
+}
+
+// static
+Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
+{
+    assert( r.isStandardized() );
+	Vector2i origin;
+	origin.x = width - r.limit().x;
+	origin.y = r.origin().y;
+
+    return{ origin, r.size() };
+}
+
+// static
+Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
+{
+    assert( r.isStandardized() );
+	Vector2f origin;
+	origin.x = r.origin().x;
+	origin.y = height - r.limit().y;
+
+    return{ origin, r.size() };
+}
+
+// static
+Rect2i RectangleUtils::flipY( const Rect2i& r, int height )
+{
+    assert( r.isStandardized() );
+	Vector2i origin;
+	origin.x = r.origin().x;
+	origin.y = height - r.limit().y;
+
+    return{ origin, r.size() };
 }
 
 // static
@@ -101,4 +146,36 @@ void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
 	textureCoordinates[ 1 ] = Vector2f( rect.limit().x, rect.origin().y );
 	textureCoordinates[ 2 ] = Vector2f( rect.origin().x, rect.limit().y );
 	textureCoordinates[ 3 ] = Vector2f( rect.limit().x, rect.limit().y );
+}
+
+// static
+Rect2f RectangleUtils::makeSquare( const Vector2f& center, float sideLength )
+{
+    return Rect2f( center - 0.5f * Vector2f( sideLength ), Vector2f( sideLength ) );
+}
+
+// static
+std::vector< Vector2f > RectangleUtils::corners( const Rect2f& r )
+{
+    assert( r.isStandardized() );
+    return
+    {
+        r.origin(),
+        Vector2f{ r.limit().x, r.origin().y },
+        r.limit(),
+        Vector2f{ r.origin().x, r.limit().y }
+    };
+}
+
+// static
+std::vector< Vector2i > RectangleUtils::corners( const Rect2i& r )
+{
+    assert( r.isStandardized() );
+    return
+    {
+        r.origin(),
+        Vector2i{ r.limit().x, r.origin().y },
+        r.limit(),
+        Vector2i{ r.origin().x, r.limit().y }
+    };
 }

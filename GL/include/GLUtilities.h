@@ -27,14 +27,17 @@ public:
 
 	static void setupOrthoCamera( const Vector2i& viewportSize );
 
+    // Gets the 2D rectangular viewport, as { 0, 0, width, height }.
 	static Rect2f getViewport();
-	static Box3f getViewport3D(); // including depth range, usually [0,1]
+    // Gets the 3D box viewport, which is the 2D viewport
+    // and depth range: as { 0, 0, zNear, width, height, zFar - zNear }.
+	static Box3f getViewport3D();
 
-    // vp needs to be standard.
+    // Assumes that vp is a standard rectangle.
 	static void setViewport( const Rect2f& vp );
 
 	// Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
-	// ARB_depth_buffer_float is still clamped
+	// ARB_depth_buffer_float is still clamped.
 	static void setDepthRange( GLclampd zNear, GLclampd zFar );
 	// NV_depth_buffer_float is unclamped and takes doubles
 	// (The default is still [0,1])

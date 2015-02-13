@@ -126,7 +126,7 @@ Array1DView< T > GLBufferObject::mapAs( GLBufferObject::Access access )
 {
     return Array1DView< T >(
         glMapNamedBufferEXT( m_id, static_cast< GLbitfield >( access ) ),
-        m_nBytes / sizeof( T ) );
+        static_cast< int >( m_nBytes / sizeof( T ) ) );
 }
 
 template< typename T >

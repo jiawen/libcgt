@@ -10,8 +10,12 @@ class GLFramebufferObject
 {
 public:
 
-    // Get the id of the currently bound FBO.
+    // Get the id of the currently bound FBO, which may not correspond to a
+    // libcgt GLFramebufferObject instance (such as from an external library).
     static GLuint boundId();
+
+    // Bind an FBO allocated by an external library.
+    static void bindExternalFBO( int id );
 
     // Unbind the one and only FBO
     // (and binds the default FBO, which has id 0).

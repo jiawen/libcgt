@@ -74,11 +74,11 @@ Vector2f BSpline2f::evaluateAt( float t ) const
 	float u3 = u2 * u;
 
 	Vector4f bu = m_basis * Vector4f( 1, u, u2, u3 );
-	return Vector2f
-	(
+	return
+    {
 		g0.x * bu.x + g1.x * bu.y + g2.x * bu.z + g3.x * bu.w,
 		g0.y * bu.x + g1.y * bu.y + g2.y * bu.z + g3.y * bu.w
-	);
+    };
 }
 
 Vector2f BSpline2f::tangentAt( float t ) const
@@ -92,11 +92,11 @@ Vector2f BSpline2f::tangentAt( float t ) const
 	Vector2f g3 = m_controlPoints[ c0 + 3 ];
 
 	Vector4f bu = m_basis * Vector4f( 0, 1, 2 * u, 3 * u * u );
-	return Vector2f
-	(
+	return
+    {
 		g0.x * bu.x + g1.x * bu.y + g2.x * bu.z + g3.x * bu.w,
 		g0.y * bu.x + g1.y * bu.y + g2.y * bu.z + g3.y * bu.w
-	);
+	};
 }
 
 Vector2f BSpline2f::normalAt( float t ) const

@@ -35,9 +35,8 @@ void GLStaticTextureUnitAssignment::reset()
 void GLStaticTextureUnitAssignment::apply()
 {
 	for( int i = 0; i < static_cast< int >( m_textures.size() ); ++i )
-	{
-		glActiveTexture( GL_TEXTURE0 + i );
-		m_textures[i]->bind();
+	{		
+		m_textures[i]->bind( GL_TEXTURE0 + i );
 		if( m_samplerObjects[i].get() != nullptr )
 		{
 			m_samplerObjects[i]->bind( i );

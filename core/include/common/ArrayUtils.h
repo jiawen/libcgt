@@ -34,14 +34,13 @@ public:
 	static bool saveTXT( const std::vector< Vector3f >& array, const char* filename );
 	static bool saveTXT( const std::vector< Vector4f >& array, const char* filename );
 
-	static bool saveTXT( Array2DView< const uint8x4 >& view, const char* filename );
+	static bool saveTXT( Array2DView< const uint8x4 > view, const char* filename );
 
-	static bool saveTXT( const Array2D< float >& array, const char* filename );
-	static bool saveTXT( const Array3D< float >& array, const char* filename );
-
-	static bool saveTXT( const Array3D< Vector2f >& array, const char* filename );
-
-	static bool saveTXT( const Array2D< Vector4f >& array, const char* filename );
+	static bool saveTXT( Array2DView< const float > view, const char* filename );
+	static bool saveTXT( Array2DView< const Vector4f > view, const char* filename );
+	
+    static bool saveTXT( Array3DView< const float > view, const char* filename );
+	static bool saveTXT( Array3DView< const Vector2f > view, const char* filename );
 
     template< typename T >
     static bool clear( Array2DView< T > view );
@@ -79,6 +78,12 @@ public:
     // Get a of a box subset of a Array3DView.
 	template< typename T >
     static Array3DView< T > croppedView( Array3DView< T > view, const Box3i& box );
+
+    // Given an existing Array1DView< T >, returns a Array1DView< S > of the
+    // same stride, but with elements of type S where S is a component of T.
+    // S is at offset "componentOffsetBytes" within T.
+    template< typename S, typename T >
+    static Array1DView< S > componentView( Array1DView< T > view, int componentOffsetBytes );
 
     // Copy between two Array1DViews, with potentially varying stride.
 	// If both are packed(), uses memcpy to do a single fast copy.

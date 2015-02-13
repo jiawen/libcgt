@@ -18,6 +18,12 @@ GLuint GLFramebufferObject::boundId()
 }
 
 // static
+void GLFramebufferObject::bindExternalFBO( int id )
+{
+    glBindFramebuffer( GL_FRAMEBUFFER, id );
+}
+
+// static
 void GLFramebufferObject::unbindAll()
 {
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );

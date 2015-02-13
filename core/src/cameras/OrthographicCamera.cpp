@@ -18,23 +18,8 @@ OrthographicCamera::OrthographicCamera( const Vector3f& eye,
 	float bottom, float top,
 	float zNear, float zFar )
 {
-	setOrtho( left, right, bottom, top, zNear, zFar );
-	setLookAt( eye, center, up );
-}
-
-void OrthographicCamera::getOrtho( float* pLeft, float* pRight, float* pBottom, float* pTop, float* pZNear, float* pZFar ) const
-{
-	*pLeft = m_left;
-	*pRight = m_right;
-	*pBottom = m_bottom;
-	*pTop = m_top;
-	*pZNear = m_zNear;
-	*pZFar = m_zFar;
-}
-
-void OrthographicCamera::setOrtho( float left, float right, float bottom, float top, float zNear, float zFar )
-{
 	setFrustum( left, right, bottom, top, zNear, zFar );
+	setLookAt( eye, center, up );
 }
 
 // virtual

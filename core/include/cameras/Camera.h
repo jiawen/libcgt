@@ -65,7 +65,10 @@ public:
 		const Vector3f& up );
 
     // Sets the view matrix given an "inverse view matrix"
-    // ivm: the mapping from eye -> world.
+    // ivm: the mapping from eye coordinates -> world coordinates.
+    // ivm = [ right | up | right cross up | eye ]
+    //       [   0      0           0      |   1 ]
+    // where right, up and eye are considered column vectors in world coordinates.
 	void setLookAtFromInverseViewMatrix( const Matrix4f& ivm );
 
     Vector3f eye() const;
@@ -165,51 +168,86 @@ public:
     // as does CV-convension screen space pixels.
     Matrix3f intrinsicsCV( const Vector2f& screenSize ) const;
 
+    // ----- projection: world --> eye --> clip --> NDC --> screen -----
+
+    // Given a point in world coordinates, transforms it into eye coordinates
+    // by computing viewMatrix() * world.
 	Vector4f worldToEye( const Vector4f& world ) const;
+    
+    // Given a point in eye coordinates, transforms it into clip coordinates
+    // by computing projectionMatrix() * eye.
+    Vector4f eyeToClip( const Vector4f& eye ) const;
+
+    // Given a point in clip coordinates, transforms it into normalized device
+    // coordinates by computing:
+    // ndc = clip.homogenized(); ndc.w = clip.w;
+    // In OpenGL: ndc.xyz \in [-1,1]^3.
+    // In DirectX: ndc.xy \in [-1,1]^2, ndc.z \in [0,1].
+    // ndc.w is the orthogonal depth from the eye (not along ray).
+    Vector4f clipToNDC( const Vector4f& clip ) const;
+
+    // Rescales normalized device coordinates NDC to screen coordinates (pixels),
+    // given the screen size.
+    // (x,y) is the 2D pixel coordinate on the screen.
+    //   (outside [0,width),[0,height) is clipped)
+	// z is the nonlinear screen-space z, where [zNear,zFar] is mapped to [0,1]
+    //   (outside this range is clipped).
+    // output.w = ndc.w (the w coordinate is passed through).
+    // You should pass clip.w as ndc.w, where clip = projectionMatrix() * eye as
+    //   in eyeToClip().
+    // TODO: support viewports and depth range (aka 3D viewport).
+    Vector4f ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) const;    
+
+    // Composition of eyeToClip(), clipToNDC(), and ndcToScreen().
 	Vector4f eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) const;
 
-	// Given a point in the world and a screen of size screenSize
-	// returns (x,y,z,w) where:
-	// (x,y) is the 2D pixel coordinate on the screen (outside [0,width),[0,height) is clipped)
-	// z is the nonlinear screen-space z,
-	//   where [zNear,zFar] is mapped to [0,1] (outside this range is clipped)
-	// w is z-coordinate (not radial distance) in eye space (farther things are positive)
-	// This is what comes out as the float4 SV_POSITION in an HLSL pixel shader
+	// The composition of worldToEye() followed by eyeToScreen().
 	Vector4f worldToScreen( const Vector4f& world, const Vector2f& screenSize ) const;
 
-	// TODO: write unprojectToWorld(), that takes in the useless zScreen value
-	// just for completeness
-	// pixelToEye and pixelToWorld are much more useful.
-	// In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye), zEye = -depth
+    // ----- unprojection: screen --> eye --> world -----
+    
+    // TODO: PerspectiveCamera::pixelToEye() might be the same thing
+    //   may be able to remove and get rid of virtual
 
-	// given a 2D pixel (x,y) on a screen of size screenSize
-	// returns a 3D ray direction
-	// (call eye() to get the ray origin)
-	// (integer versions are at the center of pixel)
-	Vector3f pixelToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
-	Vector3f pixelToDirection( const Vector2f& xy, const Vector2f& screenSize ) const;
-
-	// xy and viewport are in pixel coordinates
-	Vector3f pixelToDirection( const Vector2f& xy, const Rect2f& viewport ) const;
-
-	// TODO: support viewports
-	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
-	// returns its NDC in [-1,1]^2
-	Vector2f pixelToNDC( const Vector2f& xy, const Vector2f& screenSize ) const;
-
-	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
+    // given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its eye space coordinates (right handed, output z will be negative), output.w = 1
 	// (integer versions are at the center of pixel)
-	virtual Vector4f pixelToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
-	virtual Vector4f pixelToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+	virtual Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
+	virtual Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
 
 	// given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
 	// and an actual depth value (\in [0, +inf)), not distance along ray,
 	// returns its world space coordinates, output.w = 1
 	// (integer versions are at the center of pixel)
-	Vector4f pixelToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
-	Vector4f pixelToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+	Vector4f screenToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
+	Vector4f screenToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+
+    // ----- unprojection: screen --> a ray in world space for raytracing -----
+	// TODO: write unprojectToWorld(), that takes in the useless zScreen value
+	// just for completeness
+	// pixelToEye and pixelToWorld are much more useful.
+	// In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye), zEye = -depth
+
+    // TODO: this probably only works for a PerspectiveCamera, an orthographic camera's
+    // rays don't use the eye as the origin
+	// given a 2D pixel (x,y) on a screen of size screenSize
+	// returns a 3D ray direction
+	// (call eye() to get the ray origin)
+	// (integer versions are at the center of pixel)
+	Vector3f screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
+	Vector3f screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const;
+
+	// xy and viewport are in pixel coordinates
+	Vector3f screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const;	
+
+    // TODO: support viewports
+	// Given a pixel (x,y) in screen space (\in [0,screenSize.x), [0,screenSize.y))
+	// returns its NDC \in [-1,1]^2.
+	static Vector2f screenToNDC( const Vector2f& xy, const Vector2f& screenSize );
+
+    // Copies the camera position and orientation (extrinsics), from --> to.
+    static void copyLookAt( const Camera& from, Camera& to );
 
 protected:
 

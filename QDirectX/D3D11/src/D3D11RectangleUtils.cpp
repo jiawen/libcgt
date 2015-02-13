@@ -7,23 +7,6 @@
 #include "VertexPosition4fTexture2f.h"
 
 // static
-DynamicVertexBuffer* D3D11RectangleUtils::createFullScreenRectangle( ID3D11Device* pDevice,
-	bool uv00AtTopLeft, float z, float w )
-{
-	return createScreenAlignedRectangle( pDevice,
-		-1, -1, 2, 2,
-		uv00AtTopLeft, z, w );
-}
-
-// static
-void D3D11RectangleUtils::writeFullScreenRectangle( VertexPosition4fTexture2f* vertexArray,
-	bool uv00AtTopLeft, float z, float w )
-{
-	writeScreenAlignedRectanglePositions( vertexArray, -1, -1, 2, 2, z, w );
-	writeScreenAlignedRectangleTextureCoordinates( vertexArray, uv00AtTopLeft );
-}
-
-// static
 DynamicVertexBuffer* D3D11RectangleUtils::createScreenAlignedRectangle( ID3D11Device* pDevice,
 	float x, float y, float width, float height,
 	bool uv00AtTopLeft, float z, float w )

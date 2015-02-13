@@ -17,8 +17,8 @@ public:
 	Box3f( const Vector3f& origin, const Vector3f& size );
 	explicit Box3f( const Vector3f& size );
 
-	Box3f( const Box3f& copy ); // copy constructor
-	Box3f& operator = ( const Box3f& copy ); // assignment operator
+	Box3f( const Box3f& copy ) = default;
+	Box3f& operator = ( const Box3f& copy ) = default;
 
 	Vector3f origin() const;
 	Vector3f& origin();
@@ -26,8 +26,8 @@ public:
 	Vector3f size() const;
 	Vector3f& size();
 
-    Vector3f minimum() const; // Same as origin.
-    Vector3f maximum() const; // origin + size.
+    Vector3f minimum() const; // min( origin, origin + size )
+    Vector3f maximum() const; // max( origin, origin + size )
 
 	float left() const; // origin.x
 	float right() const; // origin.x + width
@@ -54,11 +54,7 @@ public:
 	float volume() const;
 
 	Vector3f center() const;
-
-    // Returns the 8 corners of the bounding box in hypercube order:
-    // x changes most frequently, y next, then z least frequently.
-    std::vector< Vector3f > corners() const;
-
+    
 	// returns if this box is null:
 	// width == 0 and height == 0
 	// (a null box is empty and not valid)
@@ -99,7 +95,6 @@ public:
 	Box3i enlargedToInt() const;
 
 	// half-open intervals in x, y, and z
-	bool contains( float x, float y, float z );
 	bool contains( const Vector3f& p );
 
 	void enlargeToContain( const Vector3f& p );
