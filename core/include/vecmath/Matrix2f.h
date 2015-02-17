@@ -1,6 +1,6 @@
 #pragma once
 
-class Vector2f;
+#include "Vector2f.h"
 
 // 2x2 Matrix, stored in column major order (OpenGL style)
 class Matrix2f
@@ -53,9 +53,15 @@ public:
 		{
 			float m00;
 			float m10;
+
 			float m01;
 			float m11;
 		};
+        struct
+        {
+            Vector2f column0;
+            Vector2f column1;
+        };
 		float m_elements[ 4 ];
 	};
 };

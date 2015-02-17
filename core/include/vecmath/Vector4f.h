@@ -3,6 +3,8 @@
 #include "Vector2f.h"
 #include "Vector3f.h"
 
+#include <cstdio>
+
 class QString;
 
 class Vector4i;
@@ -15,7 +17,6 @@ public:
 	Vector4f(); // initialized to 0
 	explicit Vector4f( float f ); // initialized to (f, f, f, f )
 	Vector4f( float _x, float _y, float _z, float _w );
-	Vector4f( float buffer[ 4 ] );
 
 	Vector4f( const Vector2f& _xy, float _z, float _w );
 	Vector4f( float _x, const Vector2f& _yz, float _w );
@@ -26,12 +27,12 @@ public:
 	Vector4f( float _x, const Vector3f& _yzw );
 
 	// copy constructors
-	Vector4f( const Vector4f& v );
+	Vector4f( const Vector4f& v ) = default;
 	Vector4f( const Vector4d& v );
 	Vector4f( const Vector4i& v );
 
 	// assignment operators
-	Vector4f& operator = ( const Vector4f& v );
+	Vector4f& operator = ( const Vector4f& v ) = default;
 	Vector4f& operator = ( const Vector4d& v );
 	Vector4f& operator = ( const Vector4i& v );
 
@@ -41,12 +42,9 @@ public:
 	const float& operator [] ( int i ) const;
 	float& operator [] ( int i );
 	
-	Vector2f yz() const;
-	Vector2f zw() const;
 	Vector2f wx() const;
 	// TODO: the other combinations
 
-	Vector3f yzw() const;
 	Vector3f zwx() const;
 	Vector3f wxy() const;
 
@@ -85,6 +83,7 @@ public:
 
 	union
 	{
+        // Individual element access.
 		struct
 		{
 			float x;
@@ -92,15 +91,27 @@ public:
 			float z;
 			float w;
 		};
+        // Vector2.
         struct
         {
             Vector2f xy;
+            Vector2f zw;
         };
         struct
         {
-            Vector3f xyz;            
+            float __padding0;
+            Vector2f yz;
         };
-		float m_elements[4];
+        // Vector3.
+        struct
+        {
+            Vector3f xyz;
+        };
+        struct
+        {
+            float __padding1;
+            Vector3f yzw;
+        };
 	};
 };
 

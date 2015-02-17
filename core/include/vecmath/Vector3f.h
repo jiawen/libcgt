@@ -2,7 +2,8 @@
 
 class QString;
 
-class Vector2f;
+#include "Vector2f.h"
+
 class Vector3d;
 class Vector3i;
 
@@ -15,22 +16,23 @@ public:
 	static const Vector3f RIGHT;
 	static const Vector3f FORWARD;
 	
-    Vector3f(); // (0,0,0)
+    // Default constructor initializes to all 0s.
+    Vector3f();
     explicit Vector3f( float f ); // (f,f,f)
     Vector3f( float _x, float _y, float _z );
 
-	Vector3f( const Vector2f& xy, float z );
-	Vector3f( float x, const Vector2f& yz );
+	Vector3f( const Vector2f& _xy, float _z );
+	Vector3f( float _x, const Vector2f& _yz );
 
 	// copy constructors
-    Vector3f( const Vector3f& v );
-	Vector3f( const Vector3d& rv );
-	Vector3f( const Vector3i& rv );
+    Vector3f( const Vector3f& v ) = default;
+	Vector3f( const Vector3d& v );
+	Vector3f( const Vector3i& v );
 
 	// assignment operators
-    Vector3f& operator = ( const Vector3f& v );
-	Vector3f& operator = ( const Vector3d& rv );
-	Vector3f& operator = ( const Vector3i& rv );
+    Vector3f& operator = ( const Vector3f& v ) = default;
+	Vector3f& operator = ( const Vector3d& v );
+	Vector3f& operator = ( const Vector3i& v );
 
 	// no destructor necessary
 
@@ -38,9 +40,7 @@ public:
     const float& operator [] ( int i ) const;
     float& operator [] ( int i );
 	
-	Vector2f xy() const;
 	Vector2f xz() const;
-	Vector2f yz() const;
 	// TODO: all the other combinations
 
 	Vector3f xyz() const;
@@ -77,13 +77,23 @@ public:
 
 	union
 	{
+        // Individual element access.
 		struct
 		{
 			float x;
 			float y;
 			float z;
 		};
-		float m_elements[3];
+        // Vector2.
+        struct
+        {
+            Vector2f xy;
+        };
+        struct
+        {
+            float __padding0;
+            Vector2f yz;
+        };
 	};
 
 };

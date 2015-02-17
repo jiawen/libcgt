@@ -3,7 +3,8 @@
 class Matrix2f;
 class Quat4f;
 class Vector2f;
-class Vector3f;
+
+#include "Vector3f.h"
 
 // 3x3 Matrix, stored in column major order (FORTRAN / OpenGL style)
 class Matrix3f
@@ -107,6 +108,12 @@ public:
 			float m12;
 			float m22;
 		};
+        struct
+        {
+            Vector3f column0;
+            Vector3f column1;
+            Vector3f column2;
+        };
 		float m_elements[ 9 ];
 	};
 

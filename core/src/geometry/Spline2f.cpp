@@ -85,7 +85,7 @@ int Spline2f::insertControlPoint( const Vector2f& p )
 
 Vector2f Spline2f::getControlPoint( int i )
 {
-	return Vector2f( m_xSpline.getControlPoint( i ), m_ySpline.getControlPoint( i ) );
+    return{ m_xSpline.getControlPoint( i ), m_ySpline.getControlPoint( i ) };
 }
 
 // virtual
@@ -125,7 +125,7 @@ Vector2f Spline2f::evaluateAt( float t )
 	float x = m_xSpline.evaluateAt( t );
 	float y = m_ySpline.evaluateAt( t );
 
-	return Vector2f( x, y );
+    return{ x, y };
 }
 
 Vector2f Spline2f::derivativeAt( float t )
@@ -133,7 +133,7 @@ Vector2f Spline2f::derivativeAt( float t )
 	float dx = m_xSpline.derivativeAt( t );
 	float dy = m_ySpline.derivativeAt( t );
 
-	return Vector2f( dx, dy );
+    return{ dx, dy };
 }
 
 Vector2f Spline2f::normalAt( float t )
@@ -166,7 +166,7 @@ Vector2f Spline2f::closestPointOnSpline( const Vector2f& p, float* closestT, flo
 
 	int nPointsToEvaluate = numPointsToEvaluate();	
 
-	Vector2f minPoint( 0, 0 );
+	Vector2f minPoint( 0.f );
 	float minDistance = FLT_MAX;
 	float minT = -1;
 	float delta = 1.f / ( nPointsToEvaluate - 1 );

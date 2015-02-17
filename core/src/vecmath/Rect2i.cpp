@@ -9,13 +9,6 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Rect2i::Rect2i() :
-    m_origin( 0 ),
-    m_size( 0 )
-{
-
-}
-
 Rect2i::Rect2i( const Vector2i& size ) :
     m_origin( 0 ),
 	m_size( size )

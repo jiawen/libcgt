@@ -10,7 +10,6 @@
 #include "vecmath/Matrix2f.h"
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector2f.h"
-#include "vecmath/Vector3f.h"
 
 using namespace std;
 
@@ -242,12 +241,12 @@ void Matrix3f::print() const
 
 Vector2f Matrix3f::transformPoint( const Vector2f& p ) const
 {
-	return ( ( *this ) * Vector3f( p, 1 ) ).xy();
+	return ( ( *this ) * Vector3f( p, 1 ) ).xy;
 }
 
 Vector2f Matrix3f::transformVector( const Vector2f& v ) const
 {
-	return ( ( *this ) * Vector3f( v, 0 ) ).xy();
+	return ( ( *this ) * Vector3f( v, 0 ) ).xy;
 }
 
 // static

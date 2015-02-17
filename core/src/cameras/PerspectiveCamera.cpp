@@ -121,6 +121,23 @@ void PerspectiveCamera::setFovYRadians( float fovY )
 	updateFrustum();
 }
 
+float PerspectiveCamera::fovXDegrees() const
+{
+	return MathUtils::radiansToDegrees( fovXRadians() );
+}
+
+float PerspectiveCamera::fovYDegrees() const
+{
+	return MathUtils::radiansToDegrees( m_fovYRadians );
+}
+
+void PerspectiveCamera::setFovYDegrees( float fovY )
+{
+	m_fovYRadians = MathUtils::degreesToRadians( fovY );
+
+	updateFrustum();
+}
+
 float PerspectiveCamera::halfFovXRadians() const
 {
 	return atan( tanHalfFovX() );
@@ -151,21 +168,11 @@ float PerspectiveCamera::tanHalfFovY() const
 	return tan( halfFovYRadians() );
 }
 
-float PerspectiveCamera::fovXDegrees() const
+// virtual
+void PerspectiveCamera::setZNear( float zNear )
 {
-	return MathUtils::radiansToDegrees( fovXRadians() );
-}
-
-float PerspectiveCamera::fovYDegrees() const
-{
-	return MathUtils::radiansToDegrees( m_fovYRadians );
-}
-
-void PerspectiveCamera::setFovYDegrees( float fovY )
-{
-	m_fovYRadians = MathUtils::degreesToRadians( fovY );
-
-	updateFrustum();
+    Camera::setZNear( zNear );
+    updateFrustum();
 }
 
 Vector2f PerspectiveCamera::focalLengthPixels( const Vector2f& screenSize ) const
@@ -223,7 +230,7 @@ Matrix4f PerspectiveCamera::jitteredViewProjectionMatrix( float eyeX, float eyeY
 // virtual 
 Vector4f PerspectiveCamera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {
-	return screenToEye( Vector2f( xy.x + 0.5f, xy.y + 0.5f ), depth, screenSize );
+    return screenToEye( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
 }
 
 Vector4f PerspectiveCamera::screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const

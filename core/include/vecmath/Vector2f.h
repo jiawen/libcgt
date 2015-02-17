@@ -15,10 +15,10 @@ public:
 
 	// TODO: conversion operators for double <--> float on Vector3f and Vector4f
 
-    Vector2f(); // (0,0)
+    // Default constructor initializes to all 0s.
+    Vector2f() = default;
     explicit Vector2f( float f ); // (f,f)
     Vector2f( std::initializer_list< float > xy );
-    Vector2f( float _x, float _y );
 
 	// copy constructors
     Vector2f( const Vector2f& v ) = default;
@@ -71,15 +71,8 @@ public:
 	Vector2f& operator *= ( float f );
 	Vector2f& operator /= ( float f );
 
-	union
-	{
-		struct
-		{
-			float x;
-			float y;
-		};
-		float m_elements[ 2 ];
-	};
+	float x = 0.f;
+	float y = 0.f;
 };
 
 Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );

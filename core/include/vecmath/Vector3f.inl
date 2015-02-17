@@ -1,60 +1,32 @@
-inline Vector3f::Vector3f() :
-
-	x( 0 ),
-	y( 0 ),
-	z( 0 )
-
+inline Vector3f::Vector3f()
 {
-
+    x = 0;
+    y = 0;
+    z = 0;
 }
 	
-inline Vector3f::Vector3f( float f ) :
-
-	x( f ),
-	y( f ),
-	z( f )
-
+inline Vector3f::Vector3f( float f )
 {
-
+    x = f;
+    y = f;
+    z = f;
 }
 
-inline Vector3f::Vector3f( float _x, float _y, float _z ) :
-
-	x( _x ),
-	y( _y ),
-	z( _z )
-
+inline Vector3f::Vector3f( float _x, float _y, float _z )
 {
-
-}
-
-inline Vector3f::Vector3f( const Vector3f& v ) :
-
-	x( v.x ),
-	y( v.y ),
-	z( v.z )
-
-{
-	
-}
-
-inline Vector3f& Vector3f::operator = ( const Vector3f& v )
-{
-	x = v.x;
-	y = v.y;
-	z = v.z;
-
-	return( *this );
+    x = _x;
+    y = _y;
+    z = _z;
 }
 
 inline const float& Vector3f::operator [] ( int i ) const
 {
-	return m_elements[i];
+	return ( &x )[i];
 }
 
 inline float& Vector3f::operator [] ( int i )
 {
-	return m_elements[i];
+	return ( &x )[i];
 }
 
 // static
@@ -76,12 +48,12 @@ inline Vector3f Vector3f::cross( const Vector3f& v0, const Vector3f& v1 )
 
 inline Vector3f::operator const float* () const
 {
-	return m_elements;
+	return &x;
 }
 
 inline Vector3f::operator float* ()
 {
-	return m_elements;
+	return &x;
 }
 
 inline Vector3f& Vector3f::operator += ( const Vector3f& v )

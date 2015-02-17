@@ -78,13 +78,13 @@ public:
     // GLVertexAttributeType,
     // Set the format of an attribute.
     // nComponents: the number of components per elements (1, 2, 3, or 4).
-    // type: the type of data.
+    // type: the type of data: byte, int, float, etc.
     // normalized: whether or not to normalize fixed point data to float.
     //   If true and unsigned, 255 --> 1.0f, false: 255 --> 255.0f.
     //   Signed ranges map [-128, 127] --> [-1.0f, 1.0f].
-    // relativeOffsetBytes: for vertex 0, the number of bytes from the
-    //   beginning of the buffer to look for this attribute.
-    //   This is useful for interleaved formats.
+    // relativeOffsetBytes: the number of bytes from the beginning of
+    //   each vertex to look for this attribute. This is useful for interleaved
+    //   formats.
     void setAttributeFormat( GLuint attributeIndex, GLint nComponents,
         GLVertexAttributeType type = GLVertexAttributeType::FLOAT,
         bool normalized = true, GLuint relativeOffsetBytes = 0 );
@@ -93,11 +93,15 @@ public:
     void setAttributeDoubleFormat( GLuint attributeIndex, GLint nComponents,
         GLuint relativeOffsetBytes = 0 );
     
-	// glVertexArrayBindVertexBufferEXT() / glVertexArrayVertexBuffer()
-    //   - with direct_state_access, directly bind a buffer to
-    //     this VAO at index bindingIndex (with a buffer offset and stride)
-    // stride is the byte offset between the beginning of *entire vertices* and
-    //   *cannot be 0*, unlike some parts of the documentation.
+	// Attach a buffer to a binding index to be used as a vertex buffer.
+    // offset is the number of bytes from the beginning of pBuffer's data
+    //   where the vertex data starts.
+    // stride is the number of bytes between the beginning of *entire vertices*
+    //   and *cannot be 0*. It must also be <= maxVertexAttributeStride().
+    //   As stated in
+    //   https://www.opengl.org/wiki/Vertex_Specification: using the new API,
+    //   the format is not known at attachment time, so OpenGL cannot compute
+    //   it automatically.
     void attachBuffer( GLuint bindingIndex, GLBufferObject* pBuffer,
         GLintptr offset, GLsizei stride );
     void detachBuffer( GLuint bindingIndex );

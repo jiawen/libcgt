@@ -44,7 +44,7 @@ Vector2f Sampling::areaSampleDisc( float u0, float u1 )
 {
 	float r = sqrt( u0 );
 	float theta = MathUtils::TWO_PI * u1;
-	return Vector2f( r * cos( theta ), r * sin( theta ) );
+    return{ r * cos( theta ), r * sin( theta ) };
 }
 
 // static
@@ -61,7 +61,7 @@ Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
 	// Handle degeneracy at the origin
 	if( sx == 0.0 && sy == 0.0 )
 	{
-		return Vector2f( 0, 0 );
+        return{ 0, 0 };
 	}
 	
 	if( sx >= -sy )
@@ -103,14 +103,14 @@ Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
 	}
 	
 	theta *= MathUtils::QUARTER_PI;
-	return Vector2f( r * cos( theta ), r * sin( theta ) );
+    return{ r * cos( theta ), r * sin( theta ) };
 }
 
 // static
 Vector2f Sampling::perimeterSampleCircle( float u0 )
 {
 	float theta = MathUtils::TWO_PI * u0; // [0,2*pi]
-	return Vector2f( cos( theta ), sin( theta ) );
+    return{ cos( theta ), sin( theta ) };
 }
 
 // static

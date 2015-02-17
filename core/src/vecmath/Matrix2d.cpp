@@ -208,7 +208,7 @@ Matrix2d Matrix2d::rotation( double degrees )
 
 Vector2f operator * ( const Matrix2d& m, const Vector2f& v )
 {
-	Vector2f output( 0, 0 );
+    Vector2f output{ 0, 0 };
 
 	for( int i = 0; i < 2; ++i )
 	{

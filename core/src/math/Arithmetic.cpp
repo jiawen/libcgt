@@ -198,13 +198,13 @@ int Arithmetic::ceilToInt( double x )
 // static
 Vector2f Arithmetic::floor( const Vector2f& v )
 {
-	return Vector2f( ::floor( v.x ), ::floor( v.y ) );
+	return Vector2f{ ::floor( v.x ), ::floor( v.y ) };
 }
 
 // static
 Vector2f Arithmetic::ceil( const Vector2f& v )
 {
-	return Vector2f( ::ceil( v.x ), ::ceil( v.y ) );
+	return Vector2f{ ::ceil( v.x ), ::ceil( v.y ) };
 }
 
 // static

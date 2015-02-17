@@ -90,10 +90,10 @@ public:
 	Vector3f right() const;	
 	
 	float zNear() const;
-	void setZNear( float zNear );
+	virtual void setZNear( float zNear );
 
 	float zFar() const;
-	void setZFar( float zFar );
+	virtual void setZFar( float zFar );
 
 	// TODO: virtual QString toString() const;
 
@@ -260,6 +260,7 @@ protected:
 	float m_zNear;
 	float m_zFar;
 
+    // TODO: get rid of center
 	Vector3f m_eye;
 	Vector3f m_center;
 	Vector3f m_up;

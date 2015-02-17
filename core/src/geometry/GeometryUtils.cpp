@@ -93,7 +93,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, con
 
 	Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
 	{
-		Vector2f p( x + 0.5f, y + 0.5f );
+        Vector2f p = { x + 0.5f, y + 0.5f };
 
 		if( pointInTriangle( p, v0, v1, v2 ) )
 		{
@@ -125,7 +125,7 @@ float GeometryUtils::edgeTestConservative( const Vector2f& edgeNormal, const Vec
 		ty = 0.5f;
 	}
 
-	Vector2f offset( tx, ty );
+    Vector2f offset{ tx, ty };
 
 	return Vector2f::dot( edgeNormal, point ) + edgeTest( edgeNormal, edgeOrigin, offset );
 }
@@ -150,7 +150,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vecto
 
 	Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
 	{
-		Vector2f p( x + 0.5f, y + 0.5f );
+        Vector2f p = { x + 0.5f, y + 0.5f };
 
 		float passed01 = edgeTestConservative( normal01, v0, p );
 		float passed12 = edgeTestConservative( normal12, v1, p );
@@ -206,13 +206,13 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 	(
 		v0.x - v2.x, v1.x - v2.x,
 		v0.y - v2.y, v1.y - v2.y
-	);
+    );
 
-	Vector2f b
-	(
+    Vector2f b
+    {
 		p.x - v2.x,
 		p.y - v2.y
-	);
+    };
 
 	bool bSingular;
 	Matrix2f ai = a.inverse( bSingular );
@@ -291,7 +291,7 @@ Matrix3f GeometryUtils::getRightHandedBasis( const Vector3f& z )
 // static
 Matrix4f GeometryUtils::getRightHandedBasis( const Vector4f& z )
 {
-	Matrix3f m = getRightHandedBasis( z.xyz() );
+	Matrix3f m = getRightHandedBasis( z.xyz );
 	Matrix4f output; // 0 matrix
 	output.setSubmatrix3x3( 0, 0, m );
 	output( 3, 3 ) = 1;
@@ -398,7 +398,7 @@ Vector2f GeometryUtils::closestPointOnTriangle( const Vector2f& p, const Vector2
 bool GeometryUtils::rayRayIntersection( const Vector2f& p1, const Vector2f& dir1,
                                         const Vector2f& p2, const Vector2f& dir2, Vector2f &outIntersection)
 {
-    Vector2f dir90(-dir1[1], dir1[0]);
+    Vector2f dir90 = { -dir1[1], dir1[0] };
     float dirCross = Vector2f::dot(dir2, dir90);
     if(fabs(dirCross) < EPSILON)
         return false;
@@ -422,7 +422,7 @@ bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector
         return false;
     segDir = segDir / segDirLen;
 
-    Vector2f dir90(-dir[1], dir[0]);
+    Vector2f dir90 = { -dir[1], dir[0] };
     float dirCross = Vector2f::dot(segDir, dir90);
     if(fabs(dirCross) < EPSILON)
         return false;
@@ -440,7 +440,7 @@ bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vec
 						  const Vector4f& crPlane,
 						  Vector3f& rIntersectionPoint )
 {
-	Vector3f planeNormal = crPlane.xyz();
+	Vector3f planeNormal = crPlane.xyz;
 	float planeD = crPlane.w;
 
 	float Vd = Vector3f::dot( planeNormal, crRayDirection );
@@ -725,7 +725,7 @@ float GeometryUtils::pointToPlaneDistance( const Vector3f& point, const Vector4f
 	}
 
 	Vector3f vectorToPoint = point - pointOnPlane;
-	Vector3f unitNormal = plane.xyz().normalized();
+	Vector3f unitNormal = plane.xyz.normalized();
 	return Vector3f::dot( vectorToPoint, unitNormal );
 }
 

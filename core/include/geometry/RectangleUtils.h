@@ -13,9 +13,16 @@ class RectangleUtils
 {
 public:
 
+    // Fit an image of a given aspect ratio inside a rectangle,
+    // maximizing the resulting area and centering (coordinates are rounded down).
+    static Rect2i bestFitKeepAR( float imageAspectRatio, const Rect2i& window );
+
     // Fit an image inside a rectangle maximizing the resulting area and centering
     // (coordinates are rounded down).
     static Rect2i bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window );
+
+    // Fit an image inside a rectangle maximizing the resulting area and centering. 
+    static Rect2f bestFitKeepAR( float imageAspectRatio, const Rect2f& window );
 
     // Fit an image inside a rectangle maximizing the resulting area and centering. 
     static Rect2f bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window );

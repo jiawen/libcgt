@@ -230,7 +230,7 @@ Vector3f Quat4f::getAxisAngle( float* radiansOut ) const
 {
 	Vector4f axisAngle = getAxisAngle();
 	*radiansOut = axisAngle.w;
-	return axisAngle.xyz();
+	return axisAngle.xyz;
 }
 
 Vector4f Quat4f::getAxisAngle() const
@@ -272,7 +272,7 @@ void Quat4f::setAxisAngle( float radians, const Vector3f& axis )
 
 void Quat4f::setAxisAngle( const Vector4f& axisAngle )
 {
-	setAxisAngle( axisAngle.w, axisAngle.xyz() );
+	setAxisAngle( axisAngle.w, axisAngle.xyz );
 }
 
 void Quat4f::print()

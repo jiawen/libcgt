@@ -86,15 +86,28 @@ public:
 	template< typename T >
     Array1DView< T > mapAs( Access access );
 
-	// Map part of this buffer as a pointer into client memory.
-    Array1DView< uint8_t > mapRange( GLintptr offset, GLsizeiptr length, Access access );
+	// Map a range of this buffer as a pointer into client memory.
+    // access is a bitfield:
+    //   It must have one of GL_MAP_READ_BIT, or GL_MAP_WRITE_BIT.
+    //   It can be GL_MAP_PERSISTENT_BIT and/or GL_MAP_COHERENT_BIT.
+    //   It can also optionally have GL_MAP_INVALIDATE_RANGE_BIT,
+    //     GL_MAP_INVALIDATE_BUFFER_BIT, GL_MAP_FLUSH_EXPLICIT_BIT,
+    //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
+    Array1DView< uint8_t > mapRange( GLintptr offsetBytes, GLsizeiptr lengthBytes, GLbitfield access );
 
 	// Map part of this buffer as a pointer into client memory.	
-	//   byteOffset is obviously *in bytes*,
-	//   nElements is the number of elements of type T
+	//   byteOffset is the offset from the beginning of the buffer,
+    //     in bytes.
+	//   lengthBytes is the number of bytes in the range.
+    // access is a bitfield:
+    //   It must have one of GL_MAP_READ_BIT, or GL_MAP_WRITE_BIT.
+    //   It can be GL_MAP_PERSISTENT_BIT and/or GL_MAP_COHERENT_BIT.
+    //   It can also optionally have GL_MAP_INVALIDATE_RANGE_BIT,
+    //     GL_MAP_INVALIDATE_BUFFER_BIT, GL_MAP_FLUSH_EXPLICIT_BIT,
+    //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
     // TODO: make a Range1i class, just like Rect2i. For 64-bit, make Range1l
 	template< typename T >
-    Array1DView< T > mapRangeAs( GLintptr byteOffset, size_t nElements, Access access );
+    Array1DView< T > mapRangeAs( GLintptr offsetBytes, GLsizeiptr lengthBytes, GLbitfield access );
 
 	// Unmap this buffer from local memory.
 	void unmap();
@@ -125,16 +138,15 @@ template< typename T >
 Array1DView< T > GLBufferObject::mapAs( GLBufferObject::Access access )
 {
     return Array1DView< T >(
-        glMapNamedBufferEXT( m_id, static_cast< GLbitfield >( access ) ),
+        glMapNamedBufferEXT( m_id, static_cast< GLenum >( access ) ),
         static_cast< int >( m_nBytes / sizeof( T ) ) );
 }
 
 template< typename T >
-Array1DView< T > GLBufferObject::mapRangeAs( GLintptr byteOffset, size_t nElements,
-    GLBufferObject::Access access )
+Array1DView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes, GLsizeiptr lengthBytes,
+    GLbitfield access )
 {
-	GLsizeiptr nBytes = nElements * sizeof( T );
     return Array1DView< T >(
-        glMapNamedBufferRangeEXT( m_id, byteOffset, nBytes, static_cast< GLbitfield >( access ) ),
-        nElements );
+        glMapNamedBufferRangeEXT( m_id, offsetBytes, lengthBytes, access ),
+        static_cast< int >( lengthBytes / sizeof( T ) ) );
 }

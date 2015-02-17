@@ -10,122 +10,64 @@
 #include "vecmath/Vector4d.h"
 #include "vecmath/Vector4i.h"
 
-Vector4f::Vector4f( const Vector2f& _xy, float _z, float _w ) :
-
-	x( _xy.x ),
-	y( _xy.y ),
-	z( _z ),
-	w( _w )
-
+Vector4f::Vector4f( const Vector2f& _xy, float _z, float _w )
 {
-
+    xy = _xy;
+    z = _z;
+    w = _w;
 }
 
-Vector4f::Vector4f( float _x, const Vector2f& _yz, float _w ) :
-
-	x( _x ),
-	y( _yz.x ),
-	z( _yz.y ),
-	w( _w )
-
+Vector4f::Vector4f( float _x, const Vector2f& _yz, float _w )
 {
-
+	x = _x;
+    yz = _yz;
+    w = _w;
 }
 
-Vector4f::Vector4f( float _x, float _y, const Vector2f& _zw ) :
-
-	x( _x ),
-	y( _y ),
-	z( _zw.x ),
-	w( _zw.y )
-
+Vector4f::Vector4f( float _x, float _y, const Vector2f& _zw )
 {
-
+    x = _x;
+    y = _y;
+    zw = _zw;
 }
 
-Vector4f::Vector4f( const Vector2f& _xy, const Vector2f& _zw ) :
-
-	x( _xy.x ),
-	y( _xy.y ),
-	z( _zw.x ),
-	w( _zw.y )
-
+Vector4f::Vector4f( const Vector2f& _xy, const Vector2f& _zw )
 {
-
+    xy = _xy;
+    zw = _zw;
 }
 
-Vector4f::Vector4f( const Vector3f& _xyz, float _w ) :
-
-	x( _xyz.x ),
-	y( _xyz.y ),
-	z( _xyz.z ),
-	w( _w )
-
+Vector4f::Vector4f( const Vector3f& _xyz, float _w )
 {
-
+    xyz = _xyz;
+    w = _w;
 }
 
-Vector4f::Vector4f( float _x, const Vector3f& _yzw ) :
-
-	x( _x ),
-	y( _yzw.x ),
-	z( _yzw.y ),
-	w( _yzw.z )
-
+Vector4f::Vector4f( float _x, const Vector3f& _yzw )
 {
-
+    x = _x;
+    yzw = _yzw;
 }
 
-Vector4f::Vector4f( const Vector4d& v ) :
-
-	x( static_cast< float >( v.x ) ),
-	y( static_cast< float >( v.y ) ),
-	z( static_cast< float >( v.z ) ),
-	w( static_cast< float >( v.w ) )
-
+Vector4f::Vector4f( const Vector4d& v )
 {
-
+	x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
+	w = static_cast< float >( v.w );
 }
 
-Vector4f::Vector4f( const Vector4i& v ) :
-
-	x( static_cast< float >( v.x ) ),
-	y( static_cast< float >( v.y ) ),
-	z( static_cast< float >( v.z ) ),
-	w( static_cast< float >( v.w ) )
-
+Vector4f::Vector4f( const Vector4i& v )
 {
-
-}
-
-Vector2f Vector4f::xy() const
-{
-	return Vector2f( x, y );
-}
-
-Vector2f Vector4f::yz() const
-{
-	return Vector2f( y, z );
-}
-
-Vector2f Vector4f::zw() const
-{
-	return Vector2f( z, w );
+    x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
+	w = static_cast< float >( v.w );
 }
 
 Vector2f Vector4f::wx() const
 {
-	return Vector2f( w, x );
-}
-
-Vector3f Vector4f::xyz() const
-{
-	return Vector3f( x, y, z );
-}
-
-Vector3f Vector4f::yzw() const
-{
-	return Vector3f( y, z, w );
+    return{ w, x };
 }
 
 Vector3f Vector4f::zwx() const

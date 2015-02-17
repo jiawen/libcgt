@@ -62,14 +62,14 @@ size_t GLBufferObject::numBytes() const
 Array1DView< uint8_t > GLBufferObject::map( Access access )
 {
     return Array1DView< uint8_t >(
-        glMapNamedBufferEXT( m_id, static_cast< GLbitfield >( access ) ),
+        glMapNamedBufferEXT( m_id, static_cast< GLenum >( access ) ),
         m_nBytes );
 }
 
-Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offset, GLsizeiptr length, GLBufferObject::Access access )
+Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offset, GLsizeiptr length, GLbitfield access )
 {
     return Array1DView< uint8_t >(
-        glMapNamedBufferRangeEXT( m_id, offset, length, static_cast< GLbitfield >( access ) ),
+        glMapNamedBufferRangeEXT( m_id, offset, length, access ),
         length );
 }
 

@@ -12,7 +12,7 @@ float libcgt::core::imageproc::colorutils::toFloat( uint8_t x )
 
 Vector2f libcgt::core::imageproc::colorutils::toFloat( const uint8x2& v )
 {
-    return Vector2f( toFloat( v.x ), toFloat( v.y ) );
+    return Vector2f{ toFloat( v.x ), toFloat( v.y ) };
 }
 
 Vector3f libcgt::core::imageproc::colorutils::toFloat( const uint8x3& v )
@@ -52,7 +52,7 @@ float libcgt::core::imageproc::colorutils::toFloat( int8_t x )
 
 Vector2f libcgt::core::imageproc::colorutils::toFloat( const int8x2& v )
 {
-    return Vector2f( toFloat( v.x ), toFloat( v.y ) );
+    return{ toFloat( v.x ), toFloat( v.y ) };
 }
 
 Vector3f libcgt::core::imageproc::colorutils::toFloat( const int8x3& v )
@@ -196,7 +196,7 @@ Vector3f libcgt::core::imageproc::colorutils::hsv2rgb( const Vector3f& hsv )
 
 Vector4f libcgt::core::imageproc::colorutils::hsva2rgba( const Vector4f& hsva )
 {
-	return Vector4f( hsv2rgb( hsva.xyz() ), hsva.w );
+	return Vector4f( hsv2rgb( hsva.xyz ), hsva.w );
 }
 
 Vector4f libcgt::core::imageproc::colorutils::colorMapJet( float x )
@@ -252,11 +252,11 @@ float libcgt::core::imageproc::colorutils::saturate( float x )
 
 Vector2f libcgt::core::imageproc::colorutils::saturate( const Vector2f& v )
 {
-    return Vector2f
-    (
+    return
+    {
         libcgt::core::imageproc::colorutils::saturate( v[ 0 ] ),
         libcgt::core::imageproc::colorutils::saturate( v[ 1 ] )
-    );
+    };
 }
 
 Vector3f libcgt::core::imageproc::colorutils::saturate( const Vector3f& v )

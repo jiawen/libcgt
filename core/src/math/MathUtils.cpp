@@ -156,7 +156,7 @@ Vector2f MathUtils::clampToRectangle( const Vector2f& v, const Rect2f& rect )
 {
 	float x = clampToRange( v.x, rect.origin().x, rect.limit().x );
 	float y = clampToRange( v.y, rect.origin().y, rect.limit().y );
-	return Vector2f( x, y );
+    return{ x, y };
 }
 
 // static
@@ -200,7 +200,7 @@ Vector3f MathUtils::clampToBox( const Vector3f& v, const Box3f& box )
 // static
 Vector2f MathUtils::abs( const Vector2f& v )
 {
-	return Vector2f( ::abs( v.x ), ::abs( v.y ) );
+    return{ ::abs( v.x ), ::abs( v.y ) };
 }
 
 // static
@@ -344,7 +344,7 @@ int MathUtils::maximum( const Vector4i& v )
 // static
 Vector2f MathUtils::minimum( const Vector2f& v0, const Vector2f& v1 )
 {
-	return Vector2f( std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) );
+    return Vector2f{ std::min( v0.x, v1.x ), std::min( v0.y, v1.y ) };
 }
 
 // static
@@ -380,7 +380,7 @@ Vector4i MathUtils::minimum( const Vector4i& v0, const Vector4i& v1 )
 // static
 Vector2f MathUtils::maximum( const Vector2f& v0, const Vector2f& v1 )
 {
-	return Vector2f( std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) );
+    return{ std::max( v0.x, v1.x ), std::max( v0.y, v1.y ) };
 }
 
 // static

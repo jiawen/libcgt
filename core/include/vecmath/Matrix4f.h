@@ -4,8 +4,9 @@ class Matrix2f;
 class Matrix3f;
 class Quat4f;
 class Vector3f;
-class Vector4f;
 class Rect2f;
+
+#include "Vector4f.h"
 
 // 4x4 matrix, stored in column major order (FORTRAN / OpenGL style)
 class Matrix4f
@@ -32,8 +33,8 @@ public:
 	// otherwise, sets the rows
 	Matrix4f( const Vector4f& v0, const Vector4f& v1, const Vector4f& v2, const Vector4f& v3, bool setColumns = true );
 	
-	Matrix4f( const Matrix4f& rm ); // copy constructor
-	Matrix4f& operator = ( const Matrix4f& rm ); // assignment operator
+	Matrix4f( const Matrix4f& m ) = default;
+	Matrix4f& operator = ( const Matrix4f& m ) = default;
 	// no destructor necessary
 
 	// read / write element (i,j)
@@ -175,6 +176,13 @@ public:
 			float m23;
 			float m33;
 		};
+        struct
+        {
+            Vector4f column0;
+            Vector4f column1;
+            Vector4f column2;
+            Vector4f column3;
+        };
 		float m_elements[ 16 ];
 	};
 

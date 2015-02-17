@@ -89,6 +89,10 @@ public:
 	float tanHalfFovX() const;
 	float tanHalfFovY() const;
 
+    // When you change the near plane on a PerspectiveCamera, it also changes
+    // left, right, bottom, and top of the frustum.
+    virtual void setZNear( float zNear ) override;
+
 	// for an image of size (width x height)
 	// returns the "focal length in pixels"
 	// i.e., the (positive) z such that the frustum

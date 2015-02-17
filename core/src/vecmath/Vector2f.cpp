@@ -14,30 +14,32 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Vector2f::Vector2f( const Vector2d& v )
+Vector2f::Vector2f( const Vector2d& v ) :
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) )
 {
-    m_elements[0] = static_cast< float >( v.x );
-    m_elements[1] = static_cast< float >( v.y );
+    
 }
 
-Vector2f::Vector2f( const Vector2i& v )
+Vector2f::Vector2f( const Vector2i& v ) :
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) )
 {
-    m_elements[ 0 ] = static_cast< float >( v.x );
-    m_elements[ 1 ] = static_cast< float >( v.y );
+    
 }
 
 Vector2f& Vector2f::operator = ( const Vector2d& v )
 {
-    m_elements[ 0 ] = static_cast< float >( v.x );
-    m_elements[ 1 ] = static_cast< float >( v.y );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
 
     return *this;
 }
 
 Vector2f& Vector2f::operator = ( const Vector2i& v )
 {
-    m_elements[ 0 ] = static_cast< float >( v.x );
-    m_elements[ 1 ] = static_cast< float >( v.y );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
 
     return *this;
 }
@@ -45,8 +47,7 @@ Vector2f& Vector2f::operator = ( const Vector2i& v )
 // ---- Utility ----
 void Vector2f::print() const
 {
-	printf( "< %1.2f, %1.2f >\n",
-		m_elements[0], m_elements[1] );
+    printf( "%s\n", qPrintable( toString() ) );
 }
 
 QString Vector2f::toString() const

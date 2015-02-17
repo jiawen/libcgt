@@ -4,27 +4,39 @@
 #include <cassert>
 
 // static
-Rect2i RectangleUtils::bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window )
+Rect2i RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2i& window )
 {
-    int w = std::min( window.width(), window.height() * imageSize.x / imageSize.y );
-    int h = std::min( window.width() * imageSize.y / imageSize.x, window.height() );
+    int w = std::min( window.width(), static_cast< int >( window.height() * imageAspectRatio ) );
+    int h = std::min( static_cast< int >( window.width() / imageAspectRatio ), window.height() );
     
     int x = window.origin().x + ( window.width() - w ) / 2;
     int y = window.origin().y + ( window.height() - h ) / 2;
     
     return{ x, y, w, h };
 }
-  
+
 // static
-Rect2f RectangleUtils::bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window )
+Rect2i RectangleUtils::bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window )
 {
-    float w = std::min( window.width(), window.height() * imageSize.x / imageSize.y );
-    float h = std::min( window.width() * imageSize.y / imageSize.x, window.height() );
+    return bestFitKeepAR( static_cast< float >( imageSize.x ) / imageSize.y, window );
+}
+
+// static
+Rect2f RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2f& window )
+{
+    float w = std::min( window.width(), window.height() * imageAspectRatio );
+    float h = std::min( window.width() / imageAspectRatio, window.height() );
     
     float x = window.origin().x + 0.5f * ( window.width() - w );
     float y = window.origin().y + 0.5f * ( window.height() - h );
     
     return{ x, y, w, h };
+}
+
+// static
+Rect2f RectangleUtils::bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window )
+{
+    return bestFitKeepAR( imageSize.x / imageSize.y, window );
 }
 
 // static
@@ -142,10 +154,10 @@ void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
 		Array1DView< Vector2f > textureCoordinates,
 		const Rect2f& rect )
 {
-	textureCoordinates[ 0 ] = Vector2f( rect.origin().x, rect.origin().y );
-	textureCoordinates[ 1 ] = Vector2f( rect.limit().x, rect.origin().y );
-	textureCoordinates[ 2 ] = Vector2f( rect.origin().x, rect.limit().y );
-	textureCoordinates[ 3 ] = Vector2f( rect.limit().x, rect.limit().y );
+    textureCoordinates[ 0 ] = Vector2f{ rect.origin().x, rect.origin().y };
+    textureCoordinates[ 1 ] = Vector2f{ rect.limit().x, rect.origin().y };
+    textureCoordinates[ 2 ] = Vector2f{ rect.origin().x, rect.limit().y };
+    textureCoordinates[ 3 ] = Vector2f{ rect.limit().x, rect.limit().y };
 }
 
 // static

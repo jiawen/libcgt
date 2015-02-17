@@ -1,88 +1,45 @@
-inline Vector4f::Vector4f() :
-
-	x( 0 ),
-	y( 0 ),
-	z( 0 ),
-	w( 0 )
-
+inline Vector4f::Vector4f()
 {
-
+    x = 0;
+    y = 0;
+    z = 0;
+    w = 0;
 }
 
-inline Vector4f::Vector4f( float f ) :
-
-	x( f ),
-	y( f ),
-	z( f ),
-	w( f )
-
+inline Vector4f::Vector4f( float f )
 {
-
+    x = f;
+    y = f;
+    z = f;
+    w = f;
 }
 
-inline Vector4f::Vector4f( float _x, float _y, float _z, float _w ) :
-
-	x( _x ),
-	y( _y ),
-	z( _z ),
-	w( _w )
-
+inline Vector4f::Vector4f( float _x, float _y, float _z, float _w )
 {
-
-}
-
-inline Vector4f::Vector4f( float buffer[ 4 ] ) :
-
-	x( buffer[0] ),
-	y( buffer[1] ),
-	z( buffer[2] ),
-	w( buffer[3] )
-
-{
-
-}
-
-inline Vector4f::Vector4f( const Vector4f& v ) :
-
-	x( v.x ),
-	y( v.y ),
-	z( v.z ),
-	w( v.w )
-
-{
-
-}
-
-inline Vector4f& Vector4f::operator = ( const Vector4f& v )
-{
-	if( this != &v )
-	{
-		x = v.x;
-		y = v.y;
-		z = v.z;
-		w = v.w;
-	}
-	return *this;
+    x = _x;
+    y = _y;
+    z = _z;
+    w = _w;
 }
 
 inline const float& Vector4f::operator [] ( int i ) const
 {
-	return m_elements[ i ];
+	return ( &x )[ i ];
 }
 
 inline float& Vector4f::operator [] ( int i )
 {
-	return m_elements[ i ];
+	return ( &x )[ i ];
 }
 
 inline Vector4f::operator const float* () const
 {
-	return m_elements;
+	return &x;
 }
 
 inline Vector4f::operator float* ()
 {
-	return m_elements;
+	return &x;
 }
 
 inline Vector4f& Vector4f::operator += ( const Vector4f& v )

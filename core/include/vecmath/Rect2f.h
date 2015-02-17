@@ -15,7 +15,8 @@ class Rect2f
 {
 public:
 	
-	Rect2f();
+    // The default constructor makes the null rectangle with origin and size all 0.
+	Rect2f() = default;
     explicit Rect2f( const Vector2f& size ); // origin = (0, 0)
 	Rect2f( const Vector2f& origin, const Vector2f& size );
     // { origin.x, origin.y, size.x, size.y }
@@ -96,7 +97,7 @@ public:
 
 private:
 
-	Vector2f m_origin;
+    Vector2f m_origin;
 	Vector2f m_size;
 
 };

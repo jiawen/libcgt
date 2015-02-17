@@ -52,7 +52,7 @@ std::vector< Vector3f > Camera::frustumCorners() const
 		// cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
 		// cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]		
 
-		corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz();
+		corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz;
 	}
 
 	return corners;
@@ -421,7 +421,7 @@ Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport )
 	Vector4f eye = inverseProjectionMatrix() * clip;
 	Vector4f world = inverseViewMatrix() * eye;
 
-	Vector3f pointOnNearPlane = world.homogenized().xyz();
+	Vector3f pointOnNearPlane = world.homogenized().xyz;
 
 	// TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
 

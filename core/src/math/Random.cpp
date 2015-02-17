@@ -25,7 +25,7 @@ float Random::nextFloat()
 
 Vector2f Random::nextVector2f()
 {
-	return Vector2f( nextFloat(), nextFloat() );
+    return { nextFloat(), nextFloat() };
 }
 
 Vector3f Random::nextVector3f()
@@ -57,7 +57,7 @@ float Random::nextFloatRange( float lo, float hi )
 
 Vector2f Random::nextVector2fRange( const Vector2f& lo, const Vector2f& hi )
 {
-	return Vector2f( nextFloatRange( lo.x, hi.x ), nextFloatRange( lo.y, hi.y ) );
+    return{ nextFloatRange( lo.x, hi.x ), nextFloatRange( lo.y, hi.y ) };
 }
 
 Vector3f Random::nextVector3fRange( const Vector3f& lo, const Vector3f& hi )

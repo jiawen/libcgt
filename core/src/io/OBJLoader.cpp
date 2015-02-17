@@ -330,7 +330,7 @@ bool OBJLoader::parseTextureCoordinate( int lineNumber, QString line,
 			return false;
 		}		
 
-		pOBJData->textureCoordinates().push_back( Vector2f( s, t ) );
+        pOBJData->textureCoordinates().push_back( Vector2f{ s, t } );
 
 		return true;
 	}

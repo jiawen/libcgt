@@ -200,7 +200,7 @@ std::vector< Vector3f > SpotLight::getFrustumCorners() const
 		// cubePoint[2] = ( i & 4 ) ? 1.f : ( m_bDirectX ? 0.f : -1.f );
 		cubePoint[2] = ( i & 4 ) ? 1.f : 0;
 
-		out[ i ] = ( invProj * cubePoint ).homogenized().xyz();
+		out[ i ] = ( invProj * cubePoint ).homogenized().xyz;
 	}
 
 	return out;

@@ -1,5 +1,7 @@
 #include "GLVertexArrayObject.h"
 
+#include <cassert>
+
 #include "GLBufferObject.h"
 
 // static
@@ -104,11 +106,10 @@ void GLVertexArrayObject::setAttributeDoubleFormat( GLuint attributeIndex, GLint
 void GLVertexArrayObject::attachBuffer( GLuint bindingIndex, GLBufferObject* pBuffer,
         GLintptr offset, GLsizei stride )
 {
+    assert( stride != 0 );
+    assert( stride <= maxVertexAttributeStride() );
     glVertexArrayBindVertexBufferEXT( m_id, bindingIndex,
         pBuffer->id(), offset, stride );
-
-    // TODO: --> OpenGL wiki (https://www.opengl.org/wiki/Vertex_Specification)
-    // stride of 0 is broken, no error reported
 
     // TODO: ARB_DSA:
     // glVertexArrayVertexBuffer(), glVertexArrayVertexBuffers()

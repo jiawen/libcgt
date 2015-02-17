@@ -14,7 +14,7 @@ class Rect2i
 {
 public:
 
-	Rect2i(); // { 0, 0, 0, 0 }, a null rectangle.
+	Rect2i() = default;
 	explicit Rect2i( const Vector2i& size ); // origin = (0, 0)
 	Rect2i( const Vector2i& origin, const Vector2i& size );
     // { origin.x, origin.y, size.x, size.y }

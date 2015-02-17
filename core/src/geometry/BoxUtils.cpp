@@ -67,52 +67,52 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBoxTextureCoordinate
     Array1DView< Vector2f > vertexTextureCoordinates )
 {
 	// front
-	vertexTextureCoordinates[  0 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[  1 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[  2 ] = Vector2f( 0, 1 );
+	vertexTextureCoordinates[  0 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[  1 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[  2 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[  3 ] = vertexTextureCoordinates[ 2 ];
 	vertexTextureCoordinates[  4 ] = vertexTextureCoordinates[ 1 ];
-	vertexTextureCoordinates[  5 ] = Vector2f( 1, 1 );
+	vertexTextureCoordinates[  5 ] = Vector2f{ 1, 1 };
 
 	// right
-    vertexTextureCoordinates[  6 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[  7 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[  8 ] = Vector2f( 0, 1 );
+    vertexTextureCoordinates[  6 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[  7 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[  8 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[  9 ] = vertexTextureCoordinates[ 8 ];
 	vertexTextureCoordinates[ 10 ] = vertexTextureCoordinates[ 7 ];
-    vertexTextureCoordinates[ 11 ] = Vector2f( 1, 1 );
+    vertexTextureCoordinates[ 11 ] = Vector2f{ 1, 1 };
 
 	// back
-	vertexTextureCoordinates[ 12 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[ 13 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[ 14 ] = Vector2f( 0, 1 );
+	vertexTextureCoordinates[ 12 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[ 13 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[ 14 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[ 15 ] = vertexTextureCoordinates[ 14 ];
 	vertexTextureCoordinates[ 16 ] = vertexTextureCoordinates[ 13 ];
-	vertexTextureCoordinates[ 17 ] = Vector2f( 1, 1 );
+	vertexTextureCoordinates[ 17 ] = Vector2f{ 1, 1 };
 
 	// left
-	vertexTextureCoordinates[ 18 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[ 19 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[ 20 ] = Vector2f( 0, 1 );
+	vertexTextureCoordinates[ 18 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[ 19 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[ 20 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[ 21 ] = vertexTextureCoordinates[ 20 ];
 	vertexTextureCoordinates[ 22 ] = vertexTextureCoordinates[ 19 ];
-	vertexTextureCoordinates[ 23 ] = Vector2f( 1, 1 );
+	vertexTextureCoordinates[ 23 ] = Vector2f{ 1, 1 };
 
 	// top
-	vertexTextureCoordinates[ 24 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[ 25 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[ 26 ] = Vector2f( 0, 1 );
+	vertexTextureCoordinates[ 24 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[ 25 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[ 26 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[ 27 ] = vertexTextureCoordinates[ 26 ];
 	vertexTextureCoordinates[ 28 ] = vertexTextureCoordinates[ 25 ];
-	vertexTextureCoordinates[ 29 ] = Vector2f( 1, 1 );
+	vertexTextureCoordinates[ 29 ] = Vector2f{ 1, 1 };
 
 	// bottom
-	vertexTextureCoordinates[ 30 ] = Vector2f( 0, 0 );
-	vertexTextureCoordinates[ 31 ] = Vector2f( 1, 0 );
-	vertexTextureCoordinates[ 32 ] = Vector2f( 0, 1 );
+	vertexTextureCoordinates[ 30 ] = Vector2f{ 0, 0 };
+	vertexTextureCoordinates[ 31 ] = Vector2f{ 1, 0 };
+	vertexTextureCoordinates[ 32 ] = Vector2f{ 0, 1 };
 	vertexTextureCoordinates[ 33 ] = vertexTextureCoordinates[ 32 ];
 	vertexTextureCoordinates[ 34 ] = vertexTextureCoordinates[ 31 ];
-	vertexTextureCoordinates[ 35 ] = Vector2f( 1, 1 );
+	vertexTextureCoordinates[ 35 ] = Vector2f{ 1, 1 };
 }
 
 void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeBox( const Box3f& box,

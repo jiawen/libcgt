@@ -18,7 +18,7 @@ void libcgt::core::imageproc::compositing::over( Array2DView< const Vector4f > f
 			float fa = f.w;
 			float ba = b.w;
 
-			Vector3f compositeColor = fa * f.xyz() + ( 1.f - fa ) * ( b.xyz() );
+			Vector3f compositeColor = fa * f.xyz + ( 1.f - fa ) * ( b.xyz );
 			float compositeAlpha = fa + ba * ( 1 - fa );
 
             output[ { x, y } ] = Vector4f( compositeColor, compositeAlpha );
@@ -80,8 +80,8 @@ Vector4f libcgt::core::imageproc::compositing::extractBackgroundColor( const Vec
 	// c_a = f_a + b_a * ( 1 - f_a )
 	// b_a = ( c_a - f_a ) / ( 1 - f_a )
 
-	Vector3f cRGB = composite.xyz();
-	Vector3f fRGB = foreground.xyz();
+	Vector3f cRGB = composite.xyz;
+	Vector3f fRGB = foreground.xyz;
 
 	Vector4f bRGBA;
 

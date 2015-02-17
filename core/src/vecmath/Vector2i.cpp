@@ -13,48 +13,26 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Vector2i::Vector2i()
-{
-	m_elements[0] = 0;
-	m_elements[1] = 0;
-}
-
 Vector2i::Vector2i( int i )
 {
-	m_elements[0] = i;
-	m_elements[1] = i;
+	x = i;
+	y = i;
 }
 
 Vector2i::Vector2i( std::initializer_list< int > xy )
 {
-	m_elements[ 0 ] = *( xy.begin() );
-    m_elements[ 1 ] = *( xy.begin() + 1 );
-}
-
-Vector2i::Vector2i( const Vector2i& rv )
-{
-	m_elements[0] = rv.m_elements[0];
-	m_elements[1] = rv.m_elements[1];
-}
-
-Vector2i& Vector2i::operator = ( const Vector2i& rv )
-{
-	if( this != &rv )
-	{
-		m_elements[0] = rv.m_elements[0];
-		m_elements[1] = rv.m_elements[1];
-	}
-	return *this;
+	x = *( xy.begin() );
+    y = *( xy.begin() + 1 );
 }
 
 const int& Vector2i::operator [] ( int i ) const
 {
-	return m_elements[ i ];
+	return ( &x )[ i ];
 }
 
 int& Vector2i::operator [] ( int i )
 {
-	return m_elements[ i ];
+	return ( &x )[ i ];
 }
 
 Vector2i Vector2i::xy() const
@@ -91,11 +69,11 @@ Vector2f Vector2i::normalized() const
 {
 	float n = 1.f / norm();
 
-	return Vector2f
-	(
+	return
+    {
 		n * x,
 		n * y
-	);
+    };
 }
 
 void Vector2i::negate()
@@ -111,12 +89,12 @@ Vector2i Vector2i::flippedUD( int height ) const
 
 Vector2i::operator const int* () const
 {
-	return m_elements;
+	return &x;
 }
 
 Vector2i::operator int* ()
 {
-	return m_elements;
+	return &x;
 }
 
 QString Vector2i::toString() const
@@ -179,12 +157,12 @@ Vector2i operator * ( const Vector2i& v, int c )
 
 Vector2f operator * ( float f, const Vector2i& v )
 {
-	return Vector2f( f * v.x, f * v.y );
+    return{ f * v.x, f * v.y };
 }
 
 Vector2f operator * ( const Vector2i& v, float f )
 {
-	return Vector2f( f * v.x, f * v.y );
+    return{ f * v.x, f * v.y };
 }
 
 Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 )

@@ -11,7 +11,6 @@
 #include "vecmath/Matrix3f.h"
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector3f.h"
-#include "vecmath/Vector4f.h"
 #include "vecmath/Rect2f.h"
 
 using namespace std;
@@ -93,20 +92,6 @@ Matrix4f::Matrix4f( const Vector4f& v0, const Vector4f& v1, const Vector4f& v2, 
 		setRow( 2, v2 );
 		setRow( 3, v3 );
 	}
-}
-
-Matrix4f::Matrix4f( const Matrix4f& rm )
-{
-	memcpy( m_elements, rm.m_elements, 16 * sizeof( float ) );
-}
-
-Matrix4f& Matrix4f::operator = ( const Matrix4f& rm )
-{
-	if( this != &rm )
-	{
-		memcpy( m_elements, rm.m_elements, 16 * sizeof( float ) );
-	}
-	return *this;
 }
 
 const float& Matrix4f::operator () ( int i, int j ) const
@@ -324,7 +309,7 @@ void Matrix4f::decomposeRotationTranslation( Quat4f& rotation, Vector3f& transla
 void Matrix4f::decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const
 {
 	rotation = getSubmatrix3x3();
-	translation = getCol( 3 ).xyz();
+	translation = getCol( 3 ).xyz;
 }
 
 void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const
@@ -339,7 +324,7 @@ void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& 
 	r.m11 /= scaling.y;
 	r.m22 /= scaling.z;
 
-	translation = getCol( 3 ).xyz();
+	translation = getCol( 3 ).xyz;
 
 	rotation = Quat4f::fromRotationMatrix( r );
 }
@@ -365,12 +350,12 @@ void Matrix4f::print() const
 
 Vector3f Matrix4f::transformPoint( const Vector3f& p ) const
 {
-	return ( ( *this ) * Vector4f( p, 1 ) ).xyz();
+	return ( ( *this ) * Vector4f( p, 1 ) ).xyz;
 }
 
 Vector3f Matrix4f::transformVector( const Vector3f& v ) const
 {
-	return ( ( *this ) * Vector4f( v, 0 ) ).xyz();
+	return ( ( *this ) * Vector4f( v, 0 ) ).xyz;
 }
 
 Vector3f Matrix4f::transformNormal( const Vector3f& n ) const

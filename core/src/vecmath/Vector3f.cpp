@@ -7,7 +7,7 @@
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector3i.h"
-#include "vecmath/Vector2f.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -25,65 +25,53 @@ const Vector3f Vector3f::RIGHT = Vector3f( 1, 0, 0 );
 // static
 const Vector3f Vector3f::FORWARD = Vector3f( 0, 0, -1 );
 
-Vector3f::Vector3f( const Vector2f& xy, float z )
+Vector3f::Vector3f( const Vector2f& _xy, float _z )
 {
-	m_elements[0] = xy.x;
-	m_elements[1] = xy.y;
-	m_elements[2] = z;
+    xy = _xy;
+    z = _z;
 }
 
-Vector3f::Vector3f( float x, const Vector2f& yz )
+Vector3f::Vector3f( float _x, const Vector2f& _yz )
 {
-	m_elements[0] = x;
-	m_elements[1] = yz.x;
-	m_elements[2] = yz.y;
+    x = _x;
+    yz = _yz;
 }
 
-Vector3f::Vector3f( const Vector3d& rv )
+Vector3f::Vector3f( const Vector3d& v )
 {
-	m_elements[0] = static_cast< float >( rv.x );
-	m_elements[1] = static_cast< float >( rv.y );
-	m_elements[2] = static_cast< float >( rv.z );
+	x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
 }
 
-Vector3f::Vector3f( const Vector3i& rv )
+Vector3f::Vector3f( const Vector3i& v )
 {
-	m_elements[0] = static_cast< float >( rv.x );
-	m_elements[1] = static_cast< float >( rv.y );
-	m_elements[2] = static_cast< float >( rv.z );
+	x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
 }
 
-Vector3f& Vector3f::operator = ( const Vector3d& rv )
+Vector3f& Vector3f::operator = ( const Vector3d& v )
 {
-	m_elements[ 0 ] = static_cast< float >( rv.x );
-	m_elements[ 1 ] = static_cast< float >( rv.y );
-	m_elements[ 2 ] = static_cast< float >( rv.z );
+	x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
 
 	return *this;
 }
 
-Vector3f& Vector3f::operator = ( const Vector3i& rv )
+Vector3f& Vector3f::operator = ( const Vector3i& v )
 {
-	m_elements[ 0 ] = static_cast< float >( rv.x );
-	m_elements[ 1 ] = static_cast< float >( rv.y );
-	m_elements[ 2 ] = static_cast< float >( rv.z );
+	x = static_cast< float >( v.x );
+	y = static_cast< float >( v.y );
+	z = static_cast< float >( v.z );
 
 	return *this;
-}
-
-Vector2f Vector3f::xy() const
-{
-	return Vector2f( x, y );
 }
 
 Vector2f Vector3f::xz() const
 {
-	return Vector2f( x, z );
-}
-
-Vector2f Vector3f::yz() const
-{
-	return Vector2f( y, z );
+    return{ x, z };
 }
 
 Vector3f Vector3f::xyz() const

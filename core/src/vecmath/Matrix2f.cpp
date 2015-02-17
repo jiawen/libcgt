@@ -5,8 +5,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include "vecmath/Vector2f.h"
-
 using namespace std;
 
 Matrix2f::Matrix2f( float fill )
@@ -66,11 +64,11 @@ float& Matrix2f::operator () ( int i, int j )
 
 Vector2f Matrix2f::getRow( int i ) const
 {
-	return Vector2f
-	(
+    return
+    {
 		m_elements[ i ],
 		m_elements[ i + 2 ]
-	);
+    };
 }
 
 void Matrix2f::setRow( int i, const Vector2f& v )
@@ -83,11 +81,11 @@ Vector2f Matrix2f::getCol( int j ) const
 {
 	int colStart = 2 * j;
 
-	return Vector2f
-	(
+	return
+    {
 		m_elements[ colStart ],
 		m_elements[ colStart + 1 ]
-	);
+    };
 }
 
 void Matrix2f::setCol( int j, const Vector2f& v )
@@ -271,7 +269,7 @@ Matrix2f operator * ( const Matrix2f& m, float f )
 
 Vector2f operator * ( const Matrix2f& m, const Vector2f& v )
 {
-	Vector2f output( 0, 0 );
+	Vector2f output( 0 );
 
 	for( int i = 0; i < 2; ++i )
 	{

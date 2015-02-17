@@ -10,15 +10,8 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Rect2f::Rect2f() :
-    m_origin( 0.f ),
-    m_size( 0.f )
-{
-
-}
-
 Rect2f::Rect2f( const Vector2f& size ) :
-	m_origin( 0.f, 0.f ),
+	m_origin( 0.f ),
 	m_size( size )
 {
 
@@ -229,8 +222,8 @@ Rect2f Rect2f::united( const Rect2f& r0, const Rect2f& r1 )
 	Vector2f r1Min = r1.minimum();
 	Vector2f r1Max = r1.maximum();
 
-	Vector2f unitedMin( std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) );
-	Vector2f unitedMax( std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) );
+    Vector2f unitedMin{ std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) };
+    Vector2f unitedMax{ std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) };
 
 	return Rect2f( unitedMin, unitedMax - unitedMin );
 }
