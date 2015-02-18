@@ -51,8 +51,8 @@ GLTexture2D::GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFo
 {
     assert( size.x > 0 );
     assert( size.y > 0 );
-    assert( size.x <= GLTexture::maxSize1D2D() );
-    assert( size.y <= GLTexture::maxSize1D2D() );
+    assert( size.x <= GLTexture::maxSize2D() );
+    assert( size.y <= GLTexture::maxSize2D() );
     assert( nMipMapLevels >= 0 );
 
     // TODO: this can be put into GLTexture as well!

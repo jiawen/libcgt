@@ -46,15 +46,17 @@ public:
 	// Returns the maximum number of texture image units
 	// across the entire pipeline.
 	static int maxCombinedTextureImageUnits();
-	
-    // TODO: make it 1d and 2d, returning the same thing.
-	// Max width and height
-	static int maxSize1D2D();
 
-	// Max width, height, and depth
+    // Max width.
+	static int maxSize1D();
+
+	// Max width and height.
+	static int maxSize2D();
+
+	// Max width, height, and depth.
 	static int maxSize3D();
 
-	// Max for any face
+	// Max width/height for any individual face.
 	static int maxSizeCubeMap();
 
 	virtual ~GLTexture();

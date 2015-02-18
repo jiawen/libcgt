@@ -23,8 +23,8 @@ GLTextureRectangle::GLTextureRectangle( const Vector2i& size, GLImageInternalFor
 {
     assert( size.x > 0 );
     assert( size.y > 0 );
-    assert( size.x <= GLTexture::maxSize1D2D() );
-    assert( size.y <= GLTexture::maxSize1D2D() );
+    assert( size.x <= GLTexture::maxSize2D() );
+    assert( size.y <= GLTexture::maxSize2D() );
 
     glTextureStorage2DEXT( id(), GL_TEXTURE_RECTANGLE, 1, static_cast< GLenum >( internalFormat ), size.x, size.y );
 }

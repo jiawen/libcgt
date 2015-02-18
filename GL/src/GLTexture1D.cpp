@@ -17,7 +17,7 @@ GLTexture1D::GLTexture1D( int width, GLImageInternalFormat internalFormat ) :
 	m_width( width )
 {
 	assert( width > 0 );
-    assert( width <= GLTexture::maxSize1D2D() );
+    assert( width <= GLTexture::maxSize1D() );
 	glTextureStorage1DEXT( id(), GL_TEXTURE_1D, 1, static_cast< GLenum >( internalFormat ), width );
 }
 

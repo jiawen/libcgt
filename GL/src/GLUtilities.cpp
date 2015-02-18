@@ -60,10 +60,10 @@ void GLUtilities::setupOrthoCamera( const Vector2i& viewportSize )
 }
 
 // static
-Rect2f GLUtilities::getViewport()
+Rect2i GLUtilities::getViewport()
 {
-	float vp[4];
-	glGetFloatv( GL_VIEWPORT, vp );
+	int vp[4];
+	glGetIntegerv( GL_VIEWPORT, vp );
     return{ vp[0], vp[1], vp[2], vp[3] };
 }
 
@@ -82,7 +82,7 @@ Box3f GLUtilities::getViewport3D()
 }
 
 // static
-void GLUtilities::setViewport( const Rect2f& vp )
+void GLUtilities::setViewport( const Rect2i& vp )
 {
 	glViewport( vp.origin().x, vp.origin().y, vp.size().x, vp.size().y );
 }

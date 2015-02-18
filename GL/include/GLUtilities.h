@@ -4,7 +4,7 @@
 
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector2i.h>
-#include <vecmath/Rect2f.h>
+#include <vecmath/Rect2i.h>
 #include <vecmath/Box3f.h>
 
 class GLUtilities
@@ -28,13 +28,13 @@ public:
 	static void setupOrthoCamera( const Vector2i& viewportSize );
 
     // Gets the 2D rectangular viewport, as { 0, 0, width, height }.
-	static Rect2f getViewport();
+	static Rect2i getViewport();
     // Gets the 3D box viewport, which is the 2D viewport
     // and depth range: as { 0, 0, zNear, width, height, zFar - zNear }.
 	static Box3f getViewport3D();
 
     // Assumes that vp is a standard rectangle.
-	static void setViewport( const Rect2f& vp );
+	static void setViewport( const Rect2i& vp );
 
 	// Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
 	// ARB_depth_buffer_float is still clamped.

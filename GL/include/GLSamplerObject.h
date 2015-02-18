@@ -28,14 +28,18 @@ class GLSamplerObject
 public:
 
 	static GLfloat getLargestSupportedAnisotropy();
-	static void unbind( GLuint textureUnit );
+    // textureUnitIndex is an unsigned integer index (0, 1, ...)
+    // and *not* a GLenum (GL_TEXTURE0, GL_TEXTURE1, ...)
+	static void unbind( GLuint textureUnitIndex );
 
 	GLSamplerObject();
 	virtual ~GLSamplerObject();
 
 	GLuint id() const;
 
-	void bind( GLuint textureUnit );
+    // textureUnitIndex is an unsigned integer index (0, 1, ...)
+    // and *not* a GLenum (GL_TEXTURE0, GL_TEXTURE1, ...)
+	void bind( GLuint textureUnitIndex );
 
 	// Filter modes.
 	GLTextureFilterMode minFilterMode() const;

@@ -31,7 +31,15 @@ int GLTexture::maxCombinedTextureImageUnits()
 }
 
 // static
-int GLTexture::maxSize1D2D()
+int GLTexture::maxSize1D()
+{
+	int maxSize;
+	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &maxSize );
+	return maxSize;
+}
+
+// static
+int GLTexture::maxSize2D()
 {
 	int maxSize;
 	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &maxSize );

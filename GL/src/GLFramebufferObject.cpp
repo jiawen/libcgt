@@ -1,9 +1,10 @@
 #include "GLFramebufferObject.h"
 
-#include "GLTexture.h"
-
 #include <cassert>
 #include <cstdio>
+
+#include "GLTexture.h"
+#include "GLRenderbufferObject.h"
 
 // ========================================
 // Public
@@ -58,8 +59,12 @@ void GLFramebufferObject::bind()
 	glBindFramebuffer( GL_FRAMEBUFFER, m_id );
 }
 
-void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture, GLint zSlice )
+void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture, int mipmapLevel,
+    int layerIndex )
 {
+    assert( pTexture->target() != GL_TEXTURE_1D );
+    assert( layerIndex == 0 ); // TODO: not supported
+
 	// TODO: 1d texture?
 	// rectangle can be target, not the same as type apparently
 	// also cube maps
@@ -72,26 +77,28 @@ void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture,
 		{
 		// TODO:
 		// http://www.opengl.org/wiki/Framebuffer_Object
-		// to bind a mipmap level as a layered image, use glNamedFramebufferTextureEXT
+		// to bind a mipmap level as a layered image, use glNamedFramebufferTextureEXT:
+        // (without the 1D/2D/Layer suffix): it only has a level parameter
+        // attach the different layers into a multi-layer framebuffer?
 
 		case GL_TEXTURE_2D:
 			glNamedFramebufferTexture2DEXT( m_id, attachment,
 				GL_TEXTURE_2D, textureId,
-				0 ); // mipmap level
+				mipmapLevel ); // mipmap level
 			break;
 
 		case GL_TEXTURE_RECTANGLE:
 			glNamedFramebufferTexture2DEXT( m_id, attachment,			
 				GL_TEXTURE_RECTANGLE, textureId,
-				0 ); // mipmap level
+				0 ); // rectangle textures can't be mipmapped.
 			break;
 
 		// TODO: 3D and mipmap should just get their own functions
 		case GL_TEXTURE_3D:
-			glNamedFramebufferTexture3DEXT( m_id, attachment,
-				GL_TEXTURE_3D, textureId,
-				0, // mipmap level
-				zSlice );			
+			glNamedFramebufferTextureLayerEXT( m_id, attachment,
+				textureId,
+				mipmapLevel, // mipmap level
+				layerIndex );
 			break;
 
 		default:
@@ -99,10 +106,13 @@ void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture,
 			assert( false );
 			break;
 		}
-	}	
+    }
+    // Note: glFramebufferTexture3D() is deprecated.
+
+    // TODO: 
 }
 
-void GLFramebufferObject::detachTexture( GLenum attachment )
+void GLFramebufferObject::detach( GLenum attachment )
 {
 	GLenum type = getAttachedType( attachment );
 	switch( type )
@@ -110,11 +120,13 @@ void GLFramebufferObject::detachTexture( GLenum attachment )
 	case GL_NONE:
 		break;
 
+    case GL_FRAMEBUFFER_DEFAULT:
+        break;
+
 	case GL_RENDERBUFFER:
 		glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, 0 ); // 0 ==> detach		
 		break;
 
-	// TODO: 3D?
 	case GL_TEXTURE:
 		glNamedFramebufferTexture2DEXT( m_id, attachment,
 			GL_TEXTURE_2D, // ignored, since detaching			
@@ -123,10 +135,15 @@ void GLFramebufferObject::detachTexture( GLenum attachment )
 		break;
 
 	default:
-		fprintf( stderr, "FramebufferObject::unbind_attachment ERROR: Unknown attached resource type\n" );
+		fprintf( stderr, "GLFramebufferObject::detach() ERROR: Unknown attached resource type\n" );
 		assert( false );
 		break;
 	}
+}
+
+void GLFramebufferObject::attachRenderbuffer( GLenum attachment, GLRenderbufferObject* pRenderbuffer )
+{
+    glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, pRenderbuffer->id() );
 }
 
 GLuint GLFramebufferObject::getAttachedId( GLenum attachment )
@@ -143,15 +160,6 @@ GLuint GLFramebufferObject::getAttachedType( GLenum attachment )
 	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
 		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type );
 	return type;
-}
-
-GLint GLFramebufferObject::getAttachedZSlice( GLenum attachment )
-{
-	GLint slice = -1;
-	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
-		GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_EXT,
-		&slice );
-	return slice;
 }
 
 void GLFramebufferObject::setDrawBuffer( GLenum attachment )

@@ -5,6 +5,7 @@
 #include <common/Array1DView.h>
 
 class GLTexture;
+class GLRenderbufferObject;
 
 class GLFramebufferObject
 {
@@ -37,17 +38,39 @@ public:
 
 	// Attachment can be GL_COLOR_ATTACHMENT0, ... GL_COLOR_ATTACHMENTn,
 	// GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT.
-	void attachTexture( GLenum attachment, GLTexture* pTexture, GLint zSlice = 0 );
-	void detachTexture( GLenum attachment );
-    // TODO: attachRenderBuffer()
+    // layerIndex:
+    //   If pTexture is a GLTexture2DArray, then layerIndex corresponds to the
+    //     array index. (TODO: NOT SUPPORTED)
+    //   If pTexture is a GLTexture3D
+	void attachTexture( GLenum attachment, GLTexture* pTexture, int mipmapLevel = 0,
+        int layerIndex = 0 );
+    void attachRenderbuffer( GLenum attachment, GLRenderbufferObject* pRenderbuffer );
+	void detach( GLenum attachment );
 
     void setDrawBuffer( GLenum attachment );
     void setDrawBuffers( Array1DView< GLenum > attachments ); // attachments must be packed.
     void setReadBuffer( GLenum attachment );
 
+    // Returns the id of the object attached to attachment.
+    // If the type is GL_RENDERBUFFER, then it's the renderbuffer object id.
+    // If the type is GL_TEXTURE, then it's the texture id.
 	GLuint getAttachedId( GLenum attachment );
+
+    // Returns the type of the object attached to attachment.
+    // It is one of:
+    // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER.
 	GLuint getAttachedType( GLenum attachment );
-	GLint getAttachedZSlice( GLenum attachment );
+
+    // Assuming the attached object is a texture, returns the mipmap level that
+    // was attached.
+    GLint getAttachedTextureMipMapLevel( GLenum attachment );
+
+    // Assuming the attached object is a texture, returns the face index that
+    // was attached. // TODO: check if it's GL_TEXTURE_CUBE_MAP_POSITIVE_X, etc, or 0, 1, 2...
+    GLint getAttachedTextureCubeMapFace( GLenum attachment );    
+
+    // TODO: query for red_size, ..., depth_size, stencil_size, etc
+    // TODO: query for component_type, color_encoding
 
 	bool checkStatus( GLenum* pStatus = nullptr );
 
