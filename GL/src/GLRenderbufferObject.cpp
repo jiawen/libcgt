@@ -5,8 +5,8 @@ GLRenderbufferObject::GLRenderbufferObject( const Vector2i& size,
     m_size( size ),
     m_internalFormat( internalFormat )
 {
-    glGenRenderbuffers( 1, &m_id );
-    glNamedRenderbufferStorageEXT( m_id, static_cast< GLenum >( internalFormat ),
+    glCreateRenderbuffers( 1, &m_id );
+    glNamedRenderbufferStorage( m_id, static_cast< GLenum >( internalFormat ),
         size.x, size.y );
 }
 

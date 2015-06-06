@@ -2,30 +2,34 @@
 
 #include <GL/glew.h>
 
+#include <common/Array1DView.h>
 #include "GLVertexAttributeType.h"
 
 class GLBufferObject;
 
 // http://us.download.nvidia.com/opengl/specs/GL_ARB_vertex_attrib_binding.txt
-    // - originally, there were (at least) 16 vertex attributes and 16 buffer bindings
-    //   with a fixed maping between them.
-    // - This extension changes the mapping.
-	// - glVertexAttribFormat() glVertexArrayVertexAttribFormatEXT() / glVertexArrayVertexAttribFormat()
-    //   - Describe the format of an attrib index.
-    //   - Replaces glVertexAttribPointer
-    // glVertexArrayBindingDivisor(): only for instancing
+// - originally, there were (at least) 16 vertex attributes and 16 buffer bindings
+//   with a fixed maping between them.
+// - This extension changes the mapping.
+// - glBindVertexBuffer() binds a vertex buffer to a binding index.
+// - glVertexAttribBinding() / glVertexArrayAttribBinding() lets you bind
+//   map attribute indices to binding indices.
+// - glVertexAttribFormat() / glVertexArrayVertexAttribFormat().
+//   - Describe the format of an attrib index.
+//   - Replaces glVertexAttribPointer().
+// glVertexArrayBindingDivisor(): only for instancing
 class GLVertexArrayObject
 {
 public:
 
     // Returns the id of the currently bound VAO.
     // Returns 0 if there is none.
-    // (to get an actual GLVertexArrayObject object, you will have to main
-    // a hash table).
+    // (To get an actual GLVertexArrayObject object, you will have to make a
+    // hash table).
     static GLuint boundId();
 
-    // Unbinds all vertex array objects
-    // (only one can be bound at a time anyway).
+    // Unbinds all vertex array objects (only one can be bound at a time
+    // anyway).
 	static void unbindAll();
 
     // The maximum number of vertex attributes,
@@ -48,19 +52,18 @@ public:
 
 	GLuint id() const;
 
-	// TODO:
-	// once GLEW is more mature, wrt EXT_direct_state_access:
-	// (still broken as of GLEW 1.11.1).
-	// http://sourceforge.net/p/glew/bugs/195/
-	
     // TODO: can query for all the properties back:
     // glGetVertexArrayIndexediv() / glGetVertexArrayIndexed64iv()
 
 	void bind();
 
-    // Corresponds to glEnableVertexArrayAttribEXT() and glDisableVertexArrayAttribEXT().
+    // Enable the attribute at the given index. Corresponds to
+    // glEnableVertexArrayAttrib().
 	void enableAttribute( GLuint attributeIndex );
-	void disableAttribute( GLuint attributeIndex );
+
+    // Enable the attribute at the given index. Corresponds to
+    // glDisableVertexArrayAttrib().
+    void disableAttribute( GLuint attributeIndex );
 
     // Associate attributeIndex with bindingIndex.
     // By default, the mapping is one-to-one:
@@ -68,10 +71,10 @@ public:
     //   attribute 1 maps to binding 1.
     //   etc.
     //
-    // It's useful to specify this mapping as many to one, especially for interleaved formats:
-    // For example, if attribute 0 is POSITION, and attribute 1 is NORMAL,
-    // they can both come from binding 0.
-    // TODO: default? call get() to find out.
+    // It's useful to specify this mapping as many to one, especially for
+    // interleaved formats. For example, if attribute 0 is POSITION, and
+    // attribute 1 is NORMAL, they can both come from binding 0, which has an
+    // interleaved buffer.
     void mapAttributeIndexToBindingIndex( GLuint attributeIndex,
         GLuint bindingIndex );
 
@@ -104,12 +107,23 @@ public:
     //   it automatically.
     void attachBuffer( GLuint bindingIndex, GLBufferObject* pBuffer,
         GLintptr offset, GLsizei stride );
-    void detachBuffer( GLuint bindingIndex );
+    // Attach count vertex buffers simultaneously. The three Array1DViews must
+    // have the same size.
+    void attachBuffers( GLuint firstBindingIndex, Array1DView< GLBufferObject* > buffers,
+        Array1DView< GLintptr > offsets, Array1DView< GLsizei > strides );
 
-    // TODO(ARB_DSA): element array buffers (aka index buffer)
-    // are not supported in EXT_direct_state_access. Need ARB_DSA.
-    // The call would be: glVertexArrayElementBuffer()
-    // http://stackoverflow.com/questions/3776726/how-to-bind-a-element-buffer-array-to-vertex-array-object-using-direct-state-a
+    // Attach an index buffer (in OpenGL terminology, an element buffer).
+    // There is only one slot.
+    void attachIndexBuffer( GLBufferObject* pBuffer );
+
+    // Gets the index of the attached index buffer.
+    // Note: this VAO must have been bound to the pipeline at least once
+    // or this will fail with GL_INVALID_OPERATION.
+    // Corresponds to glGetVertexArrayiv();
+    GLint getAttachedIndexBufferId();
+
+    void detachBuffer( GLuint bindingIndex );
+    void detachBuffers( GLuint firstBindingIndex, int count );
 
 private:
 
@@ -118,18 +132,14 @@ private:
 };
 
 
-// TODO: query for current bindings
+// TODO(ARB_DSA): query for current bindings
 // // without DSA
 // glGetVertexAttribiv
-
 // GL_VERTEX_ARRAY_BINDING: which vertex array is bound (confirmed)
 // GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING: which buffer is bound to what slot (confirmed)
 // GL_VERTEX_ATTRIB_BINDING: the mappping between  be the binding index
 //    confirmed working with glGetVertexAttribiv(), but needs binding
 //
 // ARB_DSA:
+// https://www.opengl.org/sdk/docs/man/html/glGetVertexArrayIndexed.xhtml
 // glGetVertexArrayIndexediv() and glGetVertexArrayIndexed64iv()
-//
-// Should work but doesn't:
-// glGetVertexArrayIntegeri_vEXT( m_pVAO->id(), 0, GL_VERTEX_ATTRIB_BINDING, &binding0 );
-// glGetVertexArrayIntegeri_vEXT( m_pVAO->id(), 1, GL_VERTEX_ATTRIB_BINDING, &binding1 );

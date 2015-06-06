@@ -3,12 +3,11 @@
 #include <cassert>
 #include <cstdio>
 
-#include "GLTexture.h"
+#include "GLTexture2D.h"
+#include "GLTexture3D.h"
+#include "GLTextureCubeMap.h"
+#include "GLTextureRectangle.h"
 #include "GLRenderbufferObject.h"
-
-// ========================================
-// Public
-// ========================================
 
 // static
 GLuint GLFramebufferObject::boundId()
@@ -34,7 +33,7 @@ void GLFramebufferObject::unbindAll()
 GLint GLFramebufferObject::maxColorAttachments()
 {
 	GLint maxColorAttachments;
-	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &maxColorAttachments );
+	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments );
 	return maxColorAttachments;
 }
 
@@ -46,9 +45,17 @@ GLint GLFramebufferObject::maxNumDrawBuffers()
 	return maxDrawBuffers;
 }
 
-GLFramebufferObject::GLFramebufferObject()
+GLFramebufferObject::GLFramebufferObject() :
+    m_isExternal( false )
 {
-	glGenFramebuffers( 1, &m_id );
+	glCreateFramebuffers( 1, &m_id );
+}
+
+GLFramebufferObject::GLFramebufferObject( int externalId ) :
+    m_id( externalId ),
+    m_isExternal( true )
+{
+
 }
 
 GLuint GLFramebufferObject::id() const
@@ -56,10 +63,20 @@ GLuint GLFramebufferObject::id() const
     return m_id;
 }
 
+bool GLFramebufferObject::isExternal() const
+{
+    return m_isExternal;
+}
+
 // virtual
 GLFramebufferObject::~GLFramebufferObject()
 {
-	glDeleteFramebuffers( 1, &m_id );
+    // Don't delete the default FBO if it was wrapped.
+    if( !m_isExternal )
+    {
+	    glDeleteFramebuffers( 1, &m_id );
+        m_id = 0;
+    }
 }
 
 void GLFramebufferObject::bind()
@@ -67,57 +84,26 @@ void GLFramebufferObject::bind()
 	glBindFramebuffer( GL_FRAMEBUFFER, m_id );
 }
 
-void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture* pTexture, int mipmapLevel,
-    int layerIndex )
+void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture2D* pTexture, int mipmapLevel )
 {
-    assert( pTexture->target() != GL_TEXTURE_1D );
-    assert( layerIndex == 0 ); // TODO: not supported
+    glNamedFramebufferTexture( m_id, attachment, pTexture->id(), mipmapLevel );
+}
 
-	// TODO: 1d texture?
-	// rectangle can be target, not the same as type apparently
-	// also cube maps
+void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture3D* pTexture, int zSlice, int mipmapLevel )
+{
+    glNamedFramebufferTextureLayer( m_id, attachment, pTexture->id(), mipmapLevel, zSlice );
+}
 
-	GLuint textureId = pTexture->id();
-	if( getAttachedId( attachment ) != textureId )
-	{
-		GLenum textureTarget = pTexture->target();
-		switch( textureTarget )
-		{
-		// TODO:
-		// http://www.opengl.org/wiki/Framebuffer_Object
-		// to bind a mipmap level as a layered image, use glNamedFramebufferTextureEXT:
-        // (without the 1D/2D/Layer suffix): it only has a level parameter
-        // attach the different layers into a multi-layer framebuffer?
+void GLFramebufferObject::attachTexture( GLenum attachment, GLTextureRectangle* pTexture, int mipmapLevel )
+{
+    glNamedFramebufferTexture( m_id, attachment, pTexture->id(), mipmapLevel );
+}
 
-		case GL_TEXTURE_2D:
-			glNamedFramebufferTexture2DEXT( m_id, attachment,
-				GL_TEXTURE_2D, textureId,
-				mipmapLevel ); // mipmap level
-			break;
-
-		case GL_TEXTURE_RECTANGLE:
-			glNamedFramebufferTexture2DEXT( m_id, attachment,			
-				GL_TEXTURE_RECTANGLE, textureId,
-				0 ); // rectangle textures can't be mipmapped.
-			break;
-
-		// TODO: 3D and mipmap should just get their own functions
-		case GL_TEXTURE_3D:
-			glNamedFramebufferTextureLayerEXT( m_id, attachment,
-				textureId,
-				mipmapLevel, // mipmap level
-				layerIndex );
-			break;
-
-		default:
-
-			assert( false );
-			break;
-		}
-    }
-    // Note: glFramebufferTexture3D() is deprecated.
-
-    // TODO: 
+void GLFramebufferObject::attachTexture( GLenum attachment,
+    GLTextureCubeMap* pTexture, GLCubeMapFace face, int mipmapLevel )
+{
+    glNamedFramebufferTextureLayer( m_id, attachment, pTexture->id(),
+        mipmapLevel, static_cast< GLint >( face ) );
 }
 
 void GLFramebufferObject::detach( GLenum attachment )
@@ -132,14 +118,14 @@ void GLFramebufferObject::detach( GLenum attachment )
         break;
 
 	case GL_RENDERBUFFER:
-		glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, 0 ); // 0 ==> detach		
+        // 0 ==> detach
+		glNamedFramebufferRenderbuffer( m_id, attachment, GL_RENDERBUFFER, 0 );
 		break;
 
 	case GL_TEXTURE:
-		glNamedFramebufferTexture2DEXT( m_id, attachment,
-			GL_TEXTURE_2D, // ignored, since detaching			
-			0, // 0 ==> detach
-			0 ); // mipmap level
+		glNamedFramebufferTexture( m_id, attachment,
+            0, // texture id, 0 ==> detach
+            0 ); // mipmap level
 		break;
 
 	default:
@@ -151,13 +137,13 @@ void GLFramebufferObject::detach( GLenum attachment )
 
 void GLFramebufferObject::attachRenderbuffer( GLenum attachment, GLRenderbufferObject* pRenderbuffer )
 {
-    glNamedFramebufferRenderbufferEXT( m_id, attachment, GL_RENDERBUFFER, pRenderbuffer->id() );
+    glNamedFramebufferRenderbuffer( m_id, attachment, GL_RENDERBUFFER, pRenderbuffer->id() );
 }
 
 GLuint GLFramebufferObject::getAttachedId( GLenum attachment )
 {
 	GLint id;
-	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
+	glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
 		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &id );
 	return id;
 }
@@ -165,51 +151,20 @@ GLuint GLFramebufferObject::getAttachedId( GLenum attachment )
 GLuint GLFramebufferObject::getAttachedType( GLenum attachment )
 {
 	GLint type = 0;
-	glGetNamedFramebufferAttachmentParameterivEXT( m_id, attachment,
+	glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
 		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type );
 	return type;
 }
 
-GLenum GLFramebufferObject::getDrawBuffer( int index ) const
-{
-    // TODO(ARB_DSA): glGetNamedFramebufferParameteriv
-    GLenum param;
-    glGetFramebufferParameterivEXT( m_id, GL_DRAW_BUFFER0 + index,
-        reinterpret_cast< GLint* >( &param ) );
-    return param;
-}
-
-Array1D< GLenum > GLFramebufferObject::getDrawBuffers() const
-{
-    int n = maxNumDrawBuffers();
-    Array1D< GLenum > output( n );
-    for( int i = 0; i < n; ++i )
-    {
-        output[ i ] = getDrawBuffer( i );
-    }
-    return output;
-}
-
 void GLFramebufferObject::setDrawBuffer( GLenum attachment )
 {
-    // TODO(ARB_DSA): glNamedFramebufferDrawBuffer()
-    glFramebufferDrawBufferEXT( m_id, attachment );
+    glNamedFramebufferDrawBuffer( m_id, attachment );
 }
 
-void GLFramebufferObject::setDrawBuffers( Array1DView< GLenum > attachments )
+void GLFramebufferObject::setDrawBuffers( Array1DView< const GLenum > attachments )
 {
-    // TODO(ARB_DSA): glNamedFramebufferDrawBuffers()
     assert( attachments.packed() );
-    glFramebufferDrawBuffersEXT( m_id, attachments.size(), attachments.pointer() );
-}
-
-GLenum GLFramebufferObject::getReadBuffer() const
-{
-    // TODO(ARB_DSA): glGetNamedFramebufferParameteriv
-    GLenum param;
-    glGetFramebufferParameterivEXT( m_id, GL_READ_BUFFER,
-        reinterpret_cast< GLint* >( &param ) );
-    return param;
+    glNamedFramebufferDrawBuffers( m_id, attachments.size(), attachments.pointer() );
 }
 
 void GLFramebufferObject::setReadBuffer( GLenum attachment )
@@ -221,37 +176,32 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 {
 	bool isComplete = false;	
 
-	GLenum status = glCheckNamedFramebufferStatusEXT( m_id, GL_FRAMEBUFFER );
+	GLenum status = glCheckNamedFramebufferStatus( m_id, GL_FRAMEBUFFER );
 	switch( status )
 	{
 	case GL_FRAMEBUFFER_COMPLETE:
-		// fprintf( stderr, "Framebuffer is complete.\n" );
 		isComplete = true;
-		break;
-	case GL_FRAMEBUFFER_UNSUPPORTED:
-		fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
 		break;
 	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 		fprintf( stderr, "Framebuffer incomplete: incomplete attachment.\n" );
 		break;
 	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-		fprintf( stderr, "Framebuffer incomplete: missing attachment.\n" );
+		fprintf( stderr, "Framebuffer incomplete: no attachments.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-		fprintf( stderr, "Framebuffer incomplete: dimension mismatch.\n" );
-		break;		
-	case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-		fprintf( stderr, "Framebuffer incomplete: incompatible formats.\n" );
+    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
+        fprintf( stderr, "Framebuffer incomplete: drawbuffer set to GL_NONE.\n" );
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+		fprintf( stderr, "framebuffer incpmplete: readbuffer set to GL_NONE.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-		fprintf( stderr, "framebuffer INCOMPLETE_DRAW_BUFFER\n" );
+    case GL_FRAMEBUFFER_UNSUPPORTED:
+		fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
 		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-		fprintf( stderr, "framebuffer INCOMPLETE_READ_BUFFER\n" );
+    case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+        fprintf( stderr, "Framebuffer incomplete: inconsistent numbers of multisamples.\n" );
 		break;
-	case GL_FRAMEBUFFER_BINDING:
-		fprintf( stderr, "framebuffer BINDING\n" );
-		break;
+    case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS :
+        fprintf(stderr, "Framebuffer incomplete: inconsistent layering.\n" );
 	default:
 		fprintf( stderr, "Can't get here!\n" );
 		assert( false );
@@ -262,4 +212,36 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 		*pStatus = status;
 	}
 	return isComplete;
+}
+
+void GLFramebufferObject::clearColor( int drawBufferIndex, const int8x4& color )
+{
+    glClearNamedFramebufferiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex,
+        reinterpret_cast< const GLint* >( &color ) );
+}
+
+void GLFramebufferObject::clearColor( int drawBufferIndex, const uint8x4& color )
+{
+    glClearNamedFramebufferuiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex,
+        reinterpret_cast< const GLuint* >( &color ) );
+}
+
+void GLFramebufferObject::clearColor( int drawBufferIndex, const Vector4f& color )
+{
+    glClearNamedFramebufferfv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex, color );
+}
+
+void GLFramebufferObject::clearDepth( float depth )
+{
+    glClearNamedFramebufferfv( m_id, GL_DEPTH, 0, &depth );
+}
+
+void GLFramebufferObject::clearStencil( int stencil )
+{
+    glClearNamedFramebufferiv( m_id, GL_STENCIL, 0, &stencil );
+}
+
+void GLFramebufferObject::clearDepthStencil( float depth, int stencil )
+{
+    glClearNamedFramebufferfi( m_id, GL_DEPTH_STENCIL, depth, stencil );
 }

@@ -24,7 +24,7 @@ GLTexture3D::GLTexture3D( const Vector3i& size, GLImageInternalFormat internalFo
     assert( m_size.y <= GLTexture::maxSize3D( ) );
     assert( m_size.z <= GLTexture::maxSize3D( ) );
 
-    glTextureStorage3DEXT( id(), GL_TEXTURE_3D, 1, static_cast< GLenum >( internalFormat ),
+    glTextureStorage3D( id(), 1, static_cast< GLenum >( internalFormat ),
         size.x, size.y, size.z );
 }
 
@@ -55,7 +55,7 @@ Vector3i GLTexture3D::size() const
 
 void GLTexture3D::setFloat1Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
-	bind( GL_TEXTURE0 );
+	bind();
 
 	if( width == 0 )
 	{

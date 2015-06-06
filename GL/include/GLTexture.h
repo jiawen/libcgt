@@ -8,6 +8,9 @@
 #include "GLImageInternalFormat.h"
 #include "GLImageFormat.h"
 
+// TODO: move mipmap levels and clear() here.
+// TODO: fix GLTexture1D and GLTexture3D.
+// TOD: migrate cube maps to ARB_DSA. Needs documentation.
 class GLTexture
 {
 public:
@@ -66,10 +69,15 @@ public:
 	virtual ~GLTexture();
 
 	// Binds this texture object to the texture unit;
-	void bind( GLenum texunit = GL_TEXTURE0 );
+	void bind( GLuint textureUnitIndex = 0 );
 
 	// Unbinds this texture from the texture unit.
-	void unbind( GLenum texunit = GL_TEXTURE0 );
+	void unbind( GLuint textureUnitIndex = 0 );
+
+    // TODO(multi_bind):
+    // glBindTextures( GLuint firstTextureUnitIndex, int count, GLuint* textureIds )
+    // glBindSamplers()
+    // glBindTexturesSamplers()
 
 	GLuint id() const;
 	GLenum target() const; // TODO: make target also enum class

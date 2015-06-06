@@ -14,19 +14,28 @@
 
 class GLSamplerObject;
 
+enum class GLCubeMapFace
+{
+    POSITIVE_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    NEGATIVE_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    POSITIVE_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    NEGATIVE_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    POSITIVE_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+    NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+};
+
+// When attached to a layered framebuffer, layers are mapped 0...6 to correspond to
+// +x, -x, +y, -y, +z, -z.
+// If it's a mipmapped cube map:
+// array_layer = floor(layer / 6).
+// face_index = layer % 6.
+// (faces are packed all together. [ layer0( f0 ... f5 ), layer1( f0 ... f5 ), ... ]
 class GLTextureCubeMap : public GLTexture
 {
 public:
 
-    enum class Face
-    {
-        POSITIVE_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-        NEGATIVE_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-        POSITIVE_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-        NEGATIVE_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-        POSITIVE_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-        NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-    };
+    // TODO: enable global seamless texture filtering:
+    // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS).
 	
     GLTextureCubeMap( int sideLength, GLImageInternalFormat internalFormat );
 
@@ -39,7 +48,7 @@ public:
 
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
-    bool set( Face face, Array2DView< const uint8x4 > data,
+    bool set( GLCubeMapFace face, Array2DView< const uint8x4 > data,
 		GLImageFormat format = GLImageFormat::RGBA,
 		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
@@ -76,7 +85,7 @@ public:
     // Retrieves the entire texture.
 	// Returns false if output isNull(), is not packed, or has the wrong size.
     // Also returns false if format isn't RGBA or BGRA.
-    bool get( Face face, Array2DView< uint8x4 > output,
+    bool get( GLCubeMapFace face, Array2DView< uint8x4 > output,
         GLImageFormat format = GLImageFormat::RGBA );
 
 private:

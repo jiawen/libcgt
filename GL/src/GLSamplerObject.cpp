@@ -16,7 +16,7 @@ void GLSamplerObject::unbind( GLuint textureUnit )
 
 GLSamplerObject::GLSamplerObject()
 {
-	glGenSamplers( 1, &m_id );
+	glCreateSamplers( 1, &m_id );
 }
 
 // virtual

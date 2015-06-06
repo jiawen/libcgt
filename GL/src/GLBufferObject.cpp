@@ -20,27 +20,26 @@ bool GLBufferObject::copy( GLBufferObject* pSource, GLBufferObject* pDestination
 		return false;
 	}
 
-	glNamedCopyBufferSubDataEXT( pSource->m_id, pDestination->m_id,
+	glCopyNamedBufferSubData( pSource->m_id, pDestination->m_id,
 		sourceOffsetBytes, destinationOffsetBytes,
 		nBytes );
 	return true;
 }
 
-GLBufferObject::GLBufferObject( size_t nBytes,
-							   GLbitfield flags,
-							   const void* data ) :
-
+GLBufferObject::GLBufferObject( GLbitfield flags, GLsizeiptr nBytes ) :
 	m_id( 0 ),
 	m_nBytes( nBytes )
-
 {
-	// printf( "GLBufferObject: allocating %f megabytes\n", nElements * bytesPerElement / 1048576.f );
+    glCreateBuffers( 1, &m_id );
+	glNamedBufferStorage( m_id, nBytes, nullptr, flags );
+}
 
-	// TODO: OpenGL 4.4: move to glBufferStorage and different flags
-	// http://www.opengl.org/wiki/GLAPI/glBufferStorage
-
-	glGenBuffers( 1, &m_id );
-	glNamedBufferStorageEXT( m_id, nBytes, data, flags );
+GLBufferObject::GLBufferObject( GLbitfield flags, Array1DView< uint8_t > data ) :
+	m_id( 0 ),
+	m_nBytes( data.size() )
+{
+    glCreateBuffers( 1, &m_id );
+	glNamedBufferStorage( m_id, m_nBytes, data.pointer(), flags );
 }
 
 // virtual
@@ -62,20 +61,25 @@ size_t GLBufferObject::numBytes() const
 Array1DView< uint8_t > GLBufferObject::map( Access access )
 {
     return Array1DView< uint8_t >(
-        glMapNamedBufferEXT( m_id, static_cast< GLenum >( access ) ),
+        glMapNamedBuffer( m_id, static_cast< GLenum >( access ) ),
         m_nBytes );
 }
 
-Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offset, GLsizeiptr length, GLbitfield access )
+Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offsetBytes, GLsizeiptr sizeBytes, GLbitfield access )
 {
     return Array1DView< uint8_t >(
-        glMapNamedBufferRangeEXT( m_id, offset, length, access ),
-        length );
+        glMapNamedBufferRange( m_id, offsetBytes, sizeBytes, access ),
+        sizeBytes );
+}
+
+void GLBufferObject::flushRange( GLintptr offsetBytes, GLintptr sizeBytes )
+{
+    glFlushMappedNamedBufferRange( m_id, offsetBytes, sizeBytes );
 }
 
 void GLBufferObject::unmap()
 {
-	glUnmapNamedBufferEXT( m_id );
+	glUnmapNamedBuffer( m_id );
 }
 
 bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
@@ -85,7 +89,7 @@ bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
 		return false;
 	}
 
-	glGetNamedBufferSubDataEXT( m_id, srcOffset, dst.size(), dst.pointer() );
+	glGetNamedBufferSubData( m_id, srcOffset, dst.size(), dst.pointer() );
 	return true;
 }
 
@@ -100,6 +104,45 @@ bool GLBufferObject::set( Array1DView< const uint8_t > src, GLintptr dstOffset )
 		return false;
 	}
 	
-	glNamedBufferSubDataEXT( m_id, dstOffset, src.size(), src.pointer() );
+	glNamedBufferSubData( m_id, dstOffset, src.size(), src.pointer() );
 	return true;
+}
+
+void GLBufferObject::clear()
+{
+    glClearNamedBufferData( m_id, GL_R8, GL_RED, GL_UNSIGNED_BYTE, NULL );
+}
+
+void GLBufferObject::clear( GLImageInternalFormat dstInternalFormat, GLImageFormat srcFormat,
+        GLenum srcType, const void* srcValue )
+{
+    glClearNamedBufferData( m_id, static_cast< GLenum >( dstInternalFormat ),
+        static_cast< GLenum >( srcFormat ), static_cast< GLenum >( srcType ),
+        srcValue );
+}
+
+void GLBufferObject::clearRange( GLintptr offsetBytes, GLintptr sizeBytes )
+{
+    glClearNamedBufferSubData( m_id, GL_R8, offsetBytes, sizeBytes, GL_RED,
+        GL_UNSIGNED_BYTE, NULL );
+}
+
+void GLBufferObject::clearRange( GLImageInternalFormat dstInternalFormat,
+    GLImageFormat srcFormat, GLintptr dstOffsetBytes, GLintptr dstSizeBytes,
+    GLenum srcType, const void* srcValue )
+{
+    glClearNamedBufferSubData( m_id, static_cast< GLenum >( dstInternalFormat ),
+        dstOffsetBytes, dstSizeBytes,
+        static_cast< GLenum >( srcFormat ), static_cast< GLenum >( srcType ),
+        srcValue );
+}
+
+void GLBufferObject::invalidate()
+{
+    glInvalidateBufferData( m_id );
+}
+
+void GLBufferObject::invalidateRange( GLintptr offset, GLintptr size )
+{
+    glInvalidateBufferSubData( m_id, offset, size );
 }

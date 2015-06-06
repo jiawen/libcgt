@@ -25,7 +25,7 @@ GLTextureCubeMap::GLTextureCubeMap( int sideLength, GLImageInternalFormat intern
     assert( sideLength > 0 );    
     assert( sideLength <= GLTexture::maxSizeCubeMap() );    
 
-    glTextureStorage2DEXT( id(), target(), 1, static_cast< GLenum >( internalFormat ), sideLength, sideLength );
+    glTextureStorage2D( id(), 1, static_cast< GLenum >( internalFormat ), sideLength, sideLength );
 }
 
 int GLTextureCubeMap::sideLength() const
@@ -49,7 +49,7 @@ void GLTextureCubeMap::clear( const Vector4f& clearValue )
     glClearTexImage( id(), 0, GL_RGBA, GL_FLOAT, &clearValue );
 }
 
-bool GLTextureCubeMap::set( GLTextureCubeMap::Face face,
+bool GLTextureCubeMap::set( GLCubeMapFace face,
     Array2DView< const uint8x4 > data,
 	GLImageFormat format,
 	const Vector2i& dstOffset )
@@ -68,10 +68,12 @@ bool GLTextureCubeMap::set( GLTextureCubeMap::Face face,
 	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 	// TODO: alignment, strides, ..., has to be packed
 
-    glTextureSubImage2DEXT
+    // DSA treats a cube map as a 2D array texture.
+    glTextureSubImage3D
     (
-        id(), static_cast< GLenum >( face ), 0,
-        dstOffset.x, dstOffset.y, data.width(), data.height(),
+        id(), 0,
+        dstOffset.x, dstOffset.y, static_cast< int >( face ),
+        data.width(), data.height(), 1, // 1 face
         static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
         data.pointer()
     );
@@ -269,7 +271,7 @@ bool GLTextureCubeMap::get( Array2DView< Vector4f > output )
 #endif
 
 
-bool GLTextureCubeMap::get( GLTextureCubeMap::Face face, Array2DView< uint8x4 > output, GLImageFormat format )
+bool GLTextureCubeMap::get( GLCubeMapFace face, Array2DView< uint8x4 > output, GLImageFormat format )
 {
 	// TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
@@ -289,7 +291,10 @@ bool GLTextureCubeMap::get( GLTextureCubeMap::Face face, Array2DView< uint8x4 > 
     }
 	
 	// TODO: mipmap level
-	glGetTextureImageEXT( id(), static_cast< GLenum >( face ), 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
+	glGetTextureSubImage( id(), 0,
+		0, 0, static_cast< GLenum >( face ),
+        sideLength(), sideLength(), 1,
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+        output.width() * output.height() * output.elementStrideBytes(), output );
 	return true;
 }

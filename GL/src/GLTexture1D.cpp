@@ -12,13 +12,12 @@
 //////////////////////////////////////////////////////////////////////////
 
 GLTexture1D::GLTexture1D( int width, GLImageInternalFormat internalFormat ) :
-
     GLTexture( GL_TEXTURE_1D, internalFormat ),
 	m_width( width )
 {
 	assert( width > 0 );
     assert( width <= GLTexture::maxSize1D() );
-	glTextureStorage1DEXT( id(), GL_TEXTURE_1D, 1, static_cast< GLenum >( internalFormat ), width );
+	glTextureStorage1D( id(), 1, static_cast< GLenum >( internalFormat ), width );
 }
 
 void GLTexture1D::setFloat1Data( const float* data, int xOffset, int width )

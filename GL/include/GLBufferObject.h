@@ -8,6 +8,11 @@
 #include <common/BasicTypes.h>
 #include <common/Array1DView.h>
 
+#include "GLImageFormat.h"
+#include "GLImageInternalFormat.h"
+
+// A "mutable data store" in the OpenGL sense is explicitly not supported.
+// I.e., no call to glNamedBufferData().
 class GLBufferObject
 {
 public:
@@ -49,9 +54,10 @@ public:
 		GLintptr sourceOffsetBytes, GLintptr destinationOffsetBytes,
 		GLsizeiptr nBytes );
 
-	// Construct a buffer object with capacity nBytes, access permissions in flags,
-	// and optional initial data. If data is nullptr (default), then it creates an empty
-	// buffer with undefined data.
+	// Construct a buffer object with access permissions in flags.
+    // In the first form, creates a buffer with capacity nBytes and undefined
+    // contents.
+    // In the second form, creates a buffer exactly matching the input data.
 	//
 	// flags is an OR mask of:
 	// GL_MAP_READ_BIT​: user can read using map() (glMapBuffer)
@@ -67,8 +73,9 @@ public:
 	// Static vertex data: set flags to 0 with initial data.
 	// Read-back only: use GL_MAP_READ_BIT and map(), glGetBufferSubData() isn't very efficient.
 	// Updatable: use GL_MAP_WRITE_BIT and map(), glBufferSubData() isn't very efficient.
-	GLBufferObject( size_t nBytes,
-		GLbitfield flags, const void* data = nullptr );
+	GLBufferObject( GLbitfield flags, GLsizeiptr nBytes );
+    // TODO(size): Array1DView.size needs to be a size_t.
+    GLBufferObject( GLbitfield flags, Array1DView< uint8_t > data );
 
 	// destroy a GLBufferObject
 	virtual ~GLBufferObject();
@@ -93,21 +100,25 @@ public:
     //   It can also optionally have GL_MAP_INVALIDATE_RANGE_BIT,
     //     GL_MAP_INVALIDATE_BUFFER_BIT, GL_MAP_FLUSH_EXPLICIT_BIT,
     //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
-    Array1DView< uint8_t > mapRange( GLintptr offsetBytes, GLsizeiptr lengthBytes, GLbitfield access );
+    Array1DView< uint8_t > mapRange( GLintptr offsetBytes, GLsizeiptr sizeBytes, GLbitfield access );
 
 	// Map part of this buffer as a pointer into client memory.	
 	//   byteOffset is the offset from the beginning of the buffer,
     //     in bytes.
-	//   lengthBytes is the number of bytes in the range.
+	//   sizeBytes is the number of bytes in the range.
     // access is a bitfield:
     //   It must have one of GL_MAP_READ_BIT, or GL_MAP_WRITE_BIT.
     //   It can be GL_MAP_PERSISTENT_BIT and/or GL_MAP_COHERENT_BIT.
     //   It can also optionally have GL_MAP_INVALIDATE_RANGE_BIT,
     //     GL_MAP_INVALIDATE_BUFFER_BIT, GL_MAP_FLUSH_EXPLICIT_BIT,
     //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
-    // TODO: make a Range1i class, just like Rect2i. For 64-bit, make Range1l
+    // TODO: make a Range2l class for 64-bit ranges (and use it here).
 	template< typename T >
-    Array1DView< T > mapRangeAs( GLintptr offsetBytes, GLsizeiptr lengthBytes, GLbitfield access );
+    Array1DView< T > mapRangeAs( GLintptr offsetBytes, GLsizeiptr sizeBytes, GLbitfield access );
+
+    // If the buffer was mapped with GL_MAP_FLUSH_EXPLICIT_BIT, flushRange()
+    // tells OpenGL that this range should now be visible to calls after this.
+    void flushRange( GLintptr offsetBytes, GLintptr sizeBytes );
 
 	// Unmap this buffer from local memory.
 	void unmap();
@@ -122,31 +133,61 @@ public:
 	// if dstOffset + src.length() > numBytes().
 	bool set( Array1DView< const uint8_t > src, GLintptr dstOffset );
 
-	// TODO: glClearNamedBufferDataEXT / glClearNamedBufferSubDataEXT
+    // Fills the entire buffer with 0.
+    void clear();
+
+    // Clears the entire buffer to a single value.
+    // The buffer's contents are written in the internal format specified.
+    // The input is considered srcFormat with type srcType.
+    // srcValue is a single element of this (type, format).
+    // Note that not all internal formats and source input formats are allowed.
+    // Consult:
+    // https://www.opengl.org/registry/specs/ARB/clear_buffer_object.txt for up
+    // to date information.
+    void clear( GLImageInternalFormat dstInternalFormat, GLImageFormat srcFormat,
+        GLenum srcType, const void* srcValue );
+
+    void clearRange( GLintptr offset, GLintptr size );
+    void clearRange( GLImageInternalFormat dstInternalFormat, GLImageFormat srcFormat,
+        GLintptr dstOffsetBytes, GLintptr dstSizeBytes, GLenum srcType, const void* srcValue );
+
+    // Give a hint to the implementation to invalidate the old contents of the
+    // buffer. Pending reads issued before this call will still get the old
+    // values, but later calls are not guaranteed. You are expected to set new
+    // data (via set or map) before reading again.
+    void invalidate();
+
+    // Same as invalidate() but on a range.
+    void invalidateRange( GLintptr offsetBytes, GLintptr sizeBytes );
+
 	// TODO: persistent mapping:
-	//  glMemoryBarrier( GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT ),
-	//  glFlushMappedBufferRange,
-	//  glInvalidateBufferData / glInvalidateBufferSubData
+	// glMemoryBarrier( GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT ),
+
+    // TODO: nice to have:
+    // glGetNamedBufferParameteriv(), glGetNamedBufferParameteri64v(): to retrieve
+    // parameters about the buffer object.
+    // glGetNamedBufferPointerv(): not very useful. If it's mapped and you lost the pointer,
+    // call this to get it again.
 
 private:
 
 	GLuint m_id;
-	size_t m_nBytes;
+	GLsizeiptr m_nBytes;
 };
 
 template< typename T >
 Array1DView< T > GLBufferObject::mapAs( GLBufferObject::Access access )
 {
     return Array1DView< T >(
-        glMapNamedBufferEXT( m_id, static_cast< GLenum >( access ) ),
+        glMapNamedBuffer( m_id, static_cast< GLenum >( access ) ),
         static_cast< int >( m_nBytes / sizeof( T ) ) );
 }
 
 template< typename T >
-Array1DView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes, GLsizeiptr lengthBytes,
+Array1DView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes, GLsizeiptr sizeBytes,
     GLbitfield access )
 {
     return Array1DView< T >(
-        glMapNamedBufferRangeEXT( m_id, offsetBytes, lengthBytes, access ),
-        static_cast< int >( lengthBytes / sizeof( T ) ) );
+        glMapNamedBufferRange( m_id, offsetBytes, sizeBytes, access ),
+        static_cast< int >( sizeBytes / sizeof( T ) ) );
 }

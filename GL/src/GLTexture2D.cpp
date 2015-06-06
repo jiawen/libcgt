@@ -65,7 +65,7 @@ GLTexture2D::GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFo
         m_nMipMapLevels = nMipMapLevels;
     }
 
-    glTextureStorage2DEXT( id(), GL_TEXTURE_2D, m_nMipMapLevels, static_cast< GLenum >( internalFormat ), size.x, size.y );
+    glTextureStorage2D( id(), m_nMipMapLevels, static_cast< GLenum >( internalFormat ), size.x, size.y );
 }
 
 int GLTexture2D::width() const
@@ -114,10 +114,12 @@ bool GLTexture2D::set( Array2DView< const uint8x3 > data,
 		return false;
 	}
 
+    // TODO(ARB_DSA): https://www.opengl.org/registry/specs/ARB/direct_state_access.txt
+    // See 18): it was resolved to not deal with the pixel store bit.
 	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 	// TODO: alignment, strides, ..., has to be packed: return false if not
 
-	glTextureSubImage2DEXT( id(), GL_TEXTURE_2D, 0,
+	glTextureSubImage2D( id(), 0,
 		dstOffset.x, dstOffset.y, data.width(), data.height(),
 		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
 		data.pointer()
@@ -147,9 +149,9 @@ bool GLTexture2D::set( Array2DView< const uint8x4 > data,
 	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 	// TODO: alignment, strides, ..., has to be packed
 
-    glTextureSubImage2DEXT
+    glTextureSubImage2D
     (
-        id(), GL_TEXTURE_2D, 0,
+        id(), 0,
         dstOffset.x, dstOffset.y, data.width(), data.height(),
         static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
         data.pointer()
@@ -181,9 +183,9 @@ bool GLTexture2D::set( Array2DView< const float > data,
 	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 	// TODO: alignment, strides, ..., has to be packed
 
-    glTextureSubImage2DEXT
+    glTextureSubImage2D
     (
-        id(), GL_TEXTURE_2D, 0,
+        id(), 0,
         dstOffset.x, dstOffset.y, data.width(), data.height(),
         static_cast< GLenum >( format ), GL_FLOAT,
         data.pointer()
@@ -216,8 +218,9 @@ bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat format )
     }
 	
 	// TODO: mipmap level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
+    // TODO: glGetTextureSubImage()
+	glGetTextureImage( id(), 0,
+		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output.width() * output.height(), output );
 	return true;
 }
 
@@ -241,8 +244,9 @@ bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
     }
 	
 	// TODO: mipmap level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
+	glGetTextureImage( id(), 0,
+		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+        output.width() * output.height() * output.elementStrideBytes(), output );
 	return true;
 }
 
@@ -264,8 +268,9 @@ bool GLTexture2D::get( Array2DView< float > output )
 	// GL_RG_INTEGER for not normalized
 
 	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RED, GL_FLOAT, output );
+	glGetTextureImage( id(), 0,
+		GL_RED, GL_FLOAT,
+        output.width() * output.height() * output.elementStrideBytes(), output );
 	return true;
 }
 
@@ -287,8 +292,9 @@ bool GLTexture2D::get( Array2DView< Vector2f > output )
 	// GL_RG_INTEGER for not normalized
 
 	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RG, GL_FLOAT, output );
+	glGetTextureImage( id(), 0,
+		GL_RG, GL_FLOAT,
+        output.width() * output.height() * output.elementStrideBytes(), output );
 	return true;
 }
 
@@ -305,14 +311,15 @@ bool GLTexture2D::get( Array2DView< Vector4f > output )
 	}
 	
 	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RGBA, GL_FLOAT, output );
+	glGetTextureImage( id(), 0,
+		GL_RGBA, GL_FLOAT,
+        output.width() * output.height() * output.elementStrideBytes(), output );
 	return true;
 }
 
 void GLTexture2D::generateMipMaps()
 {
-    glGenerateTextureMipmapEXT( id(), target() );
+    glGenerateTextureMipmap( id() );
 }
 
 void GLTexture2D::drawNV( GLSamplerObject* pSampler,

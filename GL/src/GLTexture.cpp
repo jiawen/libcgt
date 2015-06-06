@@ -76,15 +76,14 @@ GLTexture::~GLTexture()
 	glDeleteTextures( 1, &m_id );
 }
 
-void GLTexture::bind( GLenum texunit )
+void GLTexture::bind( GLuint textureUnitIndex )
 {
-    // TODO: ARB_DSA: glBindTextureUnit: takes an uint, not an enum!
-    glBindMultiTextureEXT( texunit, m_target, m_id );
+    glBindTextureUnit( textureUnitIndex, m_id );
 }
 
-void GLTexture::unbind( GLenum texunit )
+void GLTexture::unbind( GLuint textureUnitIndex )
 {
-    glBindMultiTextureEXT( texunit, m_target, 0 );
+    glBindTextureUnit( textureUnitIndex, 0 );
 }
 
 GLuint GLTexture::id() const
@@ -107,8 +106,9 @@ GLImageInternalFormat GLTexture::internalFormat() const
 //////////////////////////////////////////////////////////////////////////
 
 GLTexture::GLTexture( GLenum target, GLImageInternalFormat internalFormat ) :
+    m_id( 0 ),
     m_target( target ),
 	m_internalFormat( internalFormat )
 {
-	glGenTextures( 1, &m_id );
+    glCreateTextures( target, 1, &m_id );
 }

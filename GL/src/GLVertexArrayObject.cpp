@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include <common/Array1D.h>
 #include "GLBufferObject.h"
 
 // static
@@ -45,7 +46,7 @@ int GLVertexArrayObject::maxVertexAttributeStride()
 GLVertexArrayObject::GLVertexArrayObject() :
 	m_id( 0 )
 {
-	glGenVertexArrays( 1, &m_id );
+    glCreateVertexArrays( 1, &m_id );
 }
 
 // virtual
@@ -66,40 +67,38 @@ void GLVertexArrayObject::bind()
 
 void GLVertexArrayObject::enableAttribute( GLuint attributeIndex )
 {
-    // TODO: ARB_DSA: use glEnableVertexAttribArray() / glDisableVertexAttribArray().
-	glEnableVertexArrayAttribEXT( m_id, attributeIndex );
+	glEnableVertexArrayAttrib( m_id, attributeIndex );
 }
 
 void GLVertexArrayObject::disableAttribute( GLuint attributeIndex )
 {
-	glDisableVertexArrayAttribEXT( m_id, attributeIndex );
+	glDisableVertexArrayAttrib( m_id, attributeIndex );
 }
 
 void GLVertexArrayObject::mapAttributeIndexToBindingIndex( GLuint attributeIndex,
     GLuint bindingIndex )
 {
-    // TODO: ARB_DSA: glVertexArrayVertexAttribBinding()
-    glVertexArrayVertexAttribBindingEXT( m_id, attributeIndex, bindingIndex );
+    glVertexArrayAttribBinding( m_id, attributeIndex, bindingIndex );
 }
 
 void GLVertexArrayObject::setAttributeFormat( GLuint attributeIndex, GLint nComponents,
     GLVertexAttributeType type, bool normalized, GLuint relativeOffsetBytes )
 {
-    glVertexArrayVertexAttribFormatEXT( m_id, attributeIndex, nComponents,
-        static_cast< GLint >( type ), normalized, relativeOffsetBytes );
+    glVertexArrayAttribFormat( m_id, attributeIndex, nComponents,
+        static_cast< GLenum >( type ), normalized, relativeOffsetBytes );
 }
 
 void GLVertexArrayObject::setAttributeIntegerFormat( GLuint attributeIndex, GLint nComponents,
     GLVertexAttributeType type, GLuint relativeOffsetBytes )
 {
-    glVertexArrayVertexAttribIFormatEXT( m_id, attributeIndex, nComponents,
-        static_cast< GLint >( type ), relativeOffsetBytes );
+    glVertexArrayAttribIFormat( m_id, attributeIndex, nComponents,
+        static_cast< GLenum >( type ), relativeOffsetBytes );
 }
 
 void GLVertexArrayObject::setAttributeDoubleFormat( GLuint attributeIndex, GLint nComponents,
     GLuint relativeOffsetBytes )
 {
-    glVertexArrayVertexAttribIFormatEXT( m_id, attributeIndex, nComponents,
+    glVertexArrayAttribLFormat( m_id, attributeIndex, nComponents,
         GL_DOUBLE, relativeOffsetBytes );
 }
 
@@ -108,14 +107,43 @@ void GLVertexArrayObject::attachBuffer( GLuint bindingIndex, GLBufferObject* pBu
 {
     assert( stride != 0 );
     assert( stride <= maxVertexAttributeStride() );
-    glVertexArrayBindVertexBufferEXT( m_id, bindingIndex,
+    glVertexArrayVertexBuffer( m_id, bindingIndex,
         pBuffer->id(), offset, stride );
+}
 
-    // TODO: ARB_DSA:
-    // glVertexArrayVertexBuffer(), glVertexArrayVertexBuffers()
+void GLVertexArrayObject::attachBuffers( GLuint firstBindingIndex, Array1DView< GLBufferObject* > buffers,
+    Array1DView< GLintptr > offsets, Array1DView< GLsizei > strides )
+{
+    int count = buffers.size();
+    Array1D< GLuint > ids( count );
+    for( int i = 0; i < count; ++i )
+    {
+        ids[i] = buffers[i]->id();
+    }
+    glVertexArrayVertexBuffers( m_id, firstBindingIndex, count, ids, offsets.pointer(), strides.pointer() );
+}
+
+void GLVertexArrayObject::attachIndexBuffer( GLBufferObject* pBuffer )
+{
+    glVertexArrayElementBuffer( m_id, pBuffer->id() );
+}
+
+int GLVertexArrayObject::getAttachedIndexBufferId()
+{
+    GLint bufferId; 
+    glGetVertexArrayiv( m_id, GL_ELEMENT_ARRAY_BUFFER_BINDING, &bufferId );
+    return bufferId;
 }
 
 void GLVertexArrayObject::detachBuffer( GLuint bindingIndex )
 {
-    glVertexArrayBindVertexBufferEXT( m_id, bindingIndex, 0, 0, 0 );
+    glVertexArrayVertexBuffer( m_id, bindingIndex, 0, 0, 0 );
+}
+
+void GLVertexArrayObject::detachBuffers( GLuint firstBindingIndex, int count )
+{
+    Array1D< GLuint > ids( count, 0 );
+    Array1D< GLintptr > offsets( count, 0 );
+    Array1D< GLsizei > strides( count, sizeof( int ), 0 ); // To resolve ambiguous constructor.
+    glVertexArrayVertexBuffers( m_id, firstBindingIndex, count, ids, offsets.pointer(), strides );
 }

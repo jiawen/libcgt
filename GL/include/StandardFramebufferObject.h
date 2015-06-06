@@ -1,13 +1,11 @@
 #pragma once
 
-#include <memory>
-
-#include "GLImageInternalFormat.h"
-
 class Vector2i;
-class GLFramebufferObject;
-class GLTexture2D;
-class GLRenderbufferObject;
+
+#include "GLFramebufferObject.h"
+#include "GLImageInternalFormat.h"
+#include "GLRenderbufferObject.h"
+#include "GLTexture2D.h"
 
 class StandardFramebufferObject
 {
@@ -17,8 +15,8 @@ public:
         GLImageInternalFormat colorFormat = GLImageInternalFormat::RGBA8,
         GLImageInternalFormat depthFormat = GLImageInternalFormat::DEPTH24_STENCIL8 );
 
-    std::shared_ptr< GLFramebufferObject > m_pFBO;
-    std::shared_ptr< GLTexture2D > m_pColor;
-    std::shared_ptr< GLRenderbufferObject > m_pDepthStencil;
+    GLFramebufferObject m_fbo;
+    GLTexture2D m_color;
+    GLRenderbufferObject m_depthStencil;
 
 };

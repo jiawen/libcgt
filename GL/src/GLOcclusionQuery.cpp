@@ -22,6 +22,7 @@ GLint GLOcclusionQuery::nBits()
 
 GLOcclusionQuery::GLOcclusionQuery()
 {
+    // TODO(ARB_DSA): use glCreateQueries().
 	glGenQueries( 1, &m_uiQueryId );
 }
 

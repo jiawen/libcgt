@@ -24,22 +24,40 @@ public:
     int height() const;
     Vector2i size() const;
 
-	// Uploads data to hardware.
-    // Data must be linear.
-    // TODO: do range checking, return a bool
-    // TODO: the functions are almost all the same across formats,
-    //   use a function that does the checking and finds the right formats.
-    // TODO: make a version that converts?
-    void set( Array2DView< const uint8_t > data );
-    void set( Array2DView< const uint8x2 > data );
-    void set( Array2DView< const uint8x3 > data );
-    void set( Array2DView< const uint8x4 > data );
-    void set( Array2DView< const float > data );
-    void set( Array2DView< const Vector2f > data );
-    void set( Array2DView< const Vector3f > data );
-    void set( Array2DView< const Vector4f > data );
+    // Data must be packed().
+
+    bool set( Array2DView< const uint8_t > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RED,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const uint8x2 > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RG,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const uint8x3 > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RGB,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const uint8x4 > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RGBA,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const float > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RED,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const Vector2f > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RG,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const Vector3f > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RGB,
+		const Vector2i& dstOffset = { 0, 0 } );
+    bool set( Array2DView< const Vector4f > srcData,
+        GLImageFormat srcFormat = GLImageFormat::RGBA,
+		const Vector2i& dstOffset = { 0, 0 } );
 
 private:	
 
     Vector2i m_size;
+
+    // TODO: make a GLenum getGLType( Array2DView< T > );
+    bool checkSize( const Vector2i& srcSize, const Vector2i& dstOffset );
+    void set2D( const void* srcPtr, const Vector2i& srcSize,
+        GLImageFormat srcFormat, GLenum srcType,
+	    const Vector2i& dstOffset );
 };
