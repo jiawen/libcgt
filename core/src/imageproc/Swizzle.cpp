@@ -42,6 +42,27 @@ void libcgt::core::imageproc::swizzle::RGBAToARGB( Array2DView< const uint8x4 > 
 	}
 }
 
+void libcgt::core::imageproc::swizzle::BGRAToRGBA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output )
+{
+	if( input.size() != output.size() )
+	{
+		return;
+	}
+
+	int w = input.width();
+	int h = input.height();
+
+	for( int y = 0; y < h; ++y )
+	{
+		for( int x = 0; x < w; ++x )
+		{
+            uint8x4 bgra = input[ { x, y } ];
+			uint8x4 rgba = { bgra.z, bgra.y, bgra.x, bgra.w };
+            output[ { x, y } ] = rgba;
+		}
+	}
+}
+
 void libcgt::core::imageproc::swizzle::RGBAToRGB( Array2DView< const uint8x4 > input, Array2DView< uint8x3 > output )
 {
 	if( input.size() != output.size() )

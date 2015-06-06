@@ -19,13 +19,13 @@ public:
         int bitDepth;
         int nComponents;
 
-        Array2D< uint8_t > grey8;
-        Array2D< uint8x2 > greyalpha8;
+        Array2D< uint8_t > gray8;
+        Array2D< uint8x2 > grayalpha8;
         Array2D< uint8x3 > rgb8;
         Array2D< uint8x4 > rgba8;
 
-        Array2D< uint16_t > grey16;
-        Array2D< uint16x2 > greyalpha16;
+        Array2D< uint16_t > gray16;
+        Array2D< uint16x2 > grayalpha16;
         Array2D< uint16x3 > rgb16;
         Array2D< uint16x4 > rgba16;
     };

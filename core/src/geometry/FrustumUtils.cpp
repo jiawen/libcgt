@@ -2,7 +2,7 @@
 
 #include "geometry/Plane3f.h"
 #include "geometry/BoxUtils.h"
-#include "vecmath/Box3f.h";
+#include "vecmath/Box3f.h"
 
 // static
 FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Box3f& box, const Plane3f planes[ 6 ] )

@@ -31,11 +31,19 @@ void GLFramebufferObject::unbindAll()
 }
 
 // static
-GLint GLFramebufferObject::getMaxColorAttachments()
+GLint GLFramebufferObject::maxColorAttachments()
 {
 	GLint maxColorAttachments;
 	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &maxColorAttachments );
 	return maxColorAttachments;
+}
+
+// static
+GLint GLFramebufferObject::maxNumDrawBuffers()
+{
+    GLint maxDrawBuffers;
+	glGetIntegerv( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
+	return maxDrawBuffers;
 }
 
 GLFramebufferObject::GLFramebufferObject()
@@ -162,14 +170,46 @@ GLuint GLFramebufferObject::getAttachedType( GLenum attachment )
 	return type;
 }
 
+GLenum GLFramebufferObject::getDrawBuffer( int index ) const
+{
+    // TODO(ARB_DSA): glGetNamedFramebufferParameteriv
+    GLenum param;
+    glGetFramebufferParameterivEXT( m_id, GL_DRAW_BUFFER0 + index,
+        reinterpret_cast< GLint* >( &param ) );
+    return param;
+}
+
+Array1D< GLenum > GLFramebufferObject::getDrawBuffers() const
+{
+    int n = maxNumDrawBuffers();
+    Array1D< GLenum > output( n );
+    for( int i = 0; i < n; ++i )
+    {
+        output[ i ] = getDrawBuffer( i );
+    }
+    return output;
+}
+
 void GLFramebufferObject::setDrawBuffer( GLenum attachment )
 {
+    // TODO(ARB_DSA): glNamedFramebufferDrawBuffer()
     glFramebufferDrawBufferEXT( m_id, attachment );
 }
 
 void GLFramebufferObject::setDrawBuffers( Array1DView< GLenum > attachments )
 {
+    // TODO(ARB_DSA): glNamedFramebufferDrawBuffers()
+    assert( attachments.packed() );
     glFramebufferDrawBuffersEXT( m_id, attachments.size(), attachments.pointer() );
+}
+
+GLenum GLFramebufferObject::getReadBuffer() const
+{
+    // TODO(ARB_DSA): glGetNamedFramebufferParameteriv
+    GLenum param;
+    glGetFramebufferParameterivEXT( m_id, GL_READ_BUFFER,
+        reinterpret_cast< GLint* >( &param ) );
+    return param;
 }
 
 void GLFramebufferObject::setReadBuffer( GLenum attachment )

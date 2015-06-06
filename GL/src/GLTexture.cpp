@@ -62,6 +62,14 @@ int GLTexture::maxSizeCubeMap()
 	return maxSize;
 }
 
+// static
+int GLTexture::maxArrayLayers()
+{
+    int maxLayers;
+	glGetIntegerv( GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers );
+	return maxLayers;
+}
+
 // virtual
 GLTexture::~GLTexture()
 {
@@ -79,17 +87,17 @@ void GLTexture::unbind( GLenum texunit )
     glBindMultiTextureEXT( texunit, m_target, 0 );
 }
 
-GLuint GLTexture::id()
+GLuint GLTexture::id() const
 {
 	return m_id;
 }
 
-GLenum GLTexture::target()
+GLenum GLTexture::target() const
 {
 	return m_target;
 }
 
-GLImageInternalFormat GLTexture::internalFormat()
+GLImageInternalFormat GLTexture::internalFormat() const
 {
 	return m_internalFormat;
 }

@@ -65,6 +65,23 @@ bool ArrayUtils::clear( Array2DView< T > view )
 
 // static
 template< typename T >
+bool ArrayUtils::fill( Array1DView< T > view, const T& value )
+{
+    if( view.isNull() )
+    {
+        return false;
+    }
+
+	int ne = view.numElements();
+	for( int k = 0; k < ne; ++k )
+	{
+		view[ k ] = value;
+	}
+	return true;
+}
+
+// static
+template< typename T >
 bool ArrayUtils::fill( Array2DView< T > view, const T& value )
 {
     if( view.isNull() )
@@ -82,7 +99,7 @@ bool ArrayUtils::fill( Array2DView< T > view, const T& value )
 
 // static
 template< typename T >
-Array1DView< T > ArrayUtils::flippedLRView( Array1DView< T > view )
+Array1DView< T > ArrayUtils::flippedLeftRightView( Array1DView< T > view )
 {
     return Array1DView< T >
     (
@@ -94,11 +111,11 @@ Array1DView< T > ArrayUtils::flippedLRView( Array1DView< T > view )
 
 // static
 template< typename T >
-Array2DView< T > ArrayUtils::flippedLRView( Array2DView< T > view )
+Array2DView< T > ArrayUtils::flippedLeftRightView( Array2DView< T > view )
 {
 	return Array2DView< T >
 	(
-		&( view( view.width() - 1, 0 ) ),
+        view.elementPointer( view.length() - 1, 0 ),
 		view.size(),
         { -view.elementStrideBytes(), view.rowStrideBytes() }
 	);
@@ -226,4 +243,39 @@ bool ArrayUtils::copy( Array2DView< const T > src, Array2DView< T > dst )
 	}
 
 	return true;
+}
+
+// static
+#if 0
+template< typename TSrc, typename TDst >
+bool ArrayUtils::map( Array1DView< TSrc > src, Array1DView< TDst > dst,
+    std::function< TDst( TSrc ) > f )
+#else
+template< typename TSrc, typename TDst, typename Func >
+bool ArrayUtils::map( Array1DView< TSrc > src, Array1DView< TDst > dst,
+    Func f )
+#endif
+{
+    std::function< TDst( TSrc ) > f2( f );
+
+    if( src.isNull() || dst.isNull() )
+	{
+		return false;
+	}
+
+	if( src.size() != dst.size() )
+	{
+		return false;
+	}
+
+    for( int x = 0; x < src.size(); ++x )
+    {
+#if 0
+        dst[ x ] = f( src[ x ] );
+#else
+        dst[ x ] = f2( src[ x ] );
+#endif
+	}
+
+    return true;
 }

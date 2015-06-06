@@ -16,6 +16,10 @@ namespace swizzle
     void RGBAToBGRA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output );
     void RGBAToARGB( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output );
 
+    // BGRA source
+    // 4 -> 4
+    void BGRAToRGBA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output );
+
     // 4 -> 3
     void RGBAToRGB( Array2DView< const uint8x4 > input, Array2DView< uint8x3 > output );
     void RGBAToBGR( Array2DView< const uint8x4 > input, Array2DView< uint8x3 > output );

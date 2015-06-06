@@ -18,31 +18,19 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-GLTextureCubeMap::GLTextureCubeMap( const Vector2i& size, GLImageInternalFormat internalFormat ) :
+GLTextureCubeMap::GLTextureCubeMap( int sideLength, GLImageInternalFormat internalFormat ) :
     GLTexture( GL_TEXTURE_CUBE_MAP, internalFormat ),
-    m_size( size )
+    m_sideLength( sideLength )
 {
-    assert( size.x > 0 );
-    assert( size.y > 0 );
-    assert( size.x <= GLTexture::maxSizeCubeMap() );
-    assert( size.y <= GLTexture::maxSizeCubeMap() );
+    assert( sideLength > 0 );    
+    assert( sideLength <= GLTexture::maxSizeCubeMap() );    
 
-    glTextureStorage2DEXT( id(), target(), 1, static_cast< GLenum >( internalFormat ), size.x, size.y );
+    glTextureStorage2DEXT( id(), target(), 1, static_cast< GLenum >( internalFormat ), sideLength, sideLength );
 }
 
-int GLTextureCubeMap::width() const
+int GLTextureCubeMap::sideLength() const
 {
-    return m_size.x;
-}
-
-int GLTextureCubeMap::height() const
-{
-    return m_size.y;
-}
-
-Vector2i GLTextureCubeMap::size() const
-{
-    return m_size;
+    return m_sideLength;
 }
 
 void GLTextureCubeMap::clear( const uint8x4& clearValue )
@@ -66,8 +54,8 @@ bool GLTextureCubeMap::set( GLTextureCubeMap::Face face,
 	GLImageFormat format,
 	const Vector2i& dstOffset )
 {
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
+	if( dstOffset.x + data.width() > sideLength() ||
+		dstOffset.y + data.height() > sideLength() )
 	{
 		return false;
 	}
@@ -287,8 +275,8 @@ bool GLTextureCubeMap::get( GLTextureCubeMap::Face face, Array2DView< uint8x4 > 
     // GL_PACK_ALIGNMENT
 
 	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
+		output.width() != sideLength() ||
+		output.height() != sideLength() ||
 		!( output.packed() ) )
 	{
 		return false;

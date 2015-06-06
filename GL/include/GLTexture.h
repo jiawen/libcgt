@@ -56,8 +56,12 @@ public:
 	// Max width, height, and depth.
 	static int maxSize3D();
 
-	// Max width/height for any individual face.
+	// Max width/height for any individual face (must be square).
+    // This corresponds to GL_MAX_ARRAY_TEXTURE_LAYERS.
 	static int maxSizeCubeMap();
+
+    // The maximum number of "layers" in an array texture (array length).
+    static int maxArrayLayers();
 
 	virtual ~GLTexture();
 
@@ -67,9 +71,9 @@ public:
 	// Unbinds this texture from the texture unit.
 	void unbind( GLenum texunit = GL_TEXTURE0 );
 
-	GLuint id();
-	GLenum target(); // TODO: make target also enum class
-	GLImageInternalFormat internalFormat();
+	GLuint id() const;
+	GLenum target() const; // TODO: make target also enum class
+	GLImageInternalFormat internalFormat() const;
 
 protected:
 	

@@ -83,20 +83,20 @@ Vector2i GLTexture2D::size() const
     return m_size;
 }
 
-void GLTexture2D::clear( const uint8x4& clearValue )
+void GLTexture2D::clear( const uint8x4& clearValue, int level )
 {
-    glClearTexImage( id(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &clearValue );
+    glClearTexImage( id(), level, GL_RGBA, GL_UNSIGNED_BYTE, &clearValue );
 }
 
-void GLTexture2D::clear( float clearValue, GLImageFormat format )
+void GLTexture2D::clear( float clearValue, GLImageFormat format, int level )
 {
-    glClearTexImage( id(), 0, static_cast< GLenum >( format ), GL_FLOAT,
+    glClearTexImage( id(), level, static_cast< GLenum >( format ), GL_FLOAT,
         &clearValue );
 }
 
-void GLTexture2D::clear( const Vector4f& clearValue )
+void GLTexture2D::clear( const Vector4f& clearValue, int level )
 {
-    glClearTexImage( id(), 0, GL_RGBA, GL_FLOAT, &clearValue );
+    glClearTexImage( id(), level, GL_RGBA, GL_FLOAT, &clearValue );
 }
 
 bool GLTexture2D::set( Array2DView< const uint8x3 > data,
@@ -194,6 +194,33 @@ bool GLTexture2D::set( Array2DView< const float > data,
 	return true;
 }
 
+bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat format )
+{
+	// TODO: glPixelStorei allows some packing?
+    // GL_PACK_ALIGNMENT
+
+	if( output.isNull() ||
+		output.width() != width() ||
+		output.height() != height() ||
+		!( output.packed() ) )
+	{
+		return false;
+	}
+
+    if( format != GLImageFormat::RED &&
+        format != GLImageFormat::GREEN &&
+        format != GLImageFormat::BLUE &&
+        format != GLImageFormat::ALPHA )
+    {
+        return false;
+    }
+	
+	// TODO: mipmap level
+	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
+	return true;
+}
+
 bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
 {
 	// TODO: glPixelStorei allows some packing?
@@ -218,7 +245,6 @@ bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
 		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
 	return true;
 }
-
 
 bool GLTexture2D::get( Array2DView< float > output )					  
 {

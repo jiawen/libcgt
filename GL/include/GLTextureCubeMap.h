@@ -28,11 +28,9 @@ public:
         NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
     };
 	
-    GLTextureCubeMap( const Vector2i& size, GLImageInternalFormat internalFormat );
-	
-	int width() const;
-	int height() const;
-	Vector2i size() const;
+    GLTextureCubeMap( int sideLength, GLImageInternalFormat internalFormat );
+
+    int sideLength() const;
 
     // TODO: clear with a rectangle
     void clear( const uint8x4& clearValue = uint8x4{ 0, 0, 0, 0 } );
@@ -83,5 +81,5 @@ public:
 
 private:
 
-    Vector2i m_size;
+    int m_sideLength;
 };

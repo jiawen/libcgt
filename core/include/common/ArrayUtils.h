@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
 #include <vector>
+
 #include "Array1DView.h"
 #include "Array2D.h"
 #include "Array3D.h"
@@ -27,14 +30,18 @@ public:
 	template< typename T >
 	static bool saveBinary( const std::vector< T >& input, FILE* fp );
 
-	static bool saveTXT( const std::vector< float >& array, const char* filename );
-	static bool saveTXT( const std::vector< int >& array, const char* filename );
+    static bool saveTXT( Array1DView< const int16_t > view, const char* filename );
+	static bool saveTXT( Array1DView< const int32_t > view, const char* filename );
 
-	static bool saveTXT( const std::vector< Vector2f >& array, const char* filename );
-	static bool saveTXT( const std::vector< Vector3f >& array, const char* filename );
-	static bool saveTXT( const std::vector< Vector4f >& array, const char* filename );
+	static bool saveTXT( Array1DView< const float >& view, const char* filename );
+	static bool saveTXT( Array1DView< const Vector2f >& view, const char* filename );
+	static bool saveTXT( Array1DView< const Vector3f >& view, const char* filename );
+	static bool saveTXT( Array1DView< const Vector4f >& view, const char* filename );
 
+    static bool saveTXT( Array2DView< const uint8_t > view, const char* filename );
 	static bool saveTXT( Array2DView< const uint8x4 > view, const char* filename );
+
+    static bool saveTXT( Array2DView< const int16_t > view, const char* filename );
 
 	static bool saveTXT( Array2DView< const float > view, const char* filename );
 	static bool saveTXT( Array2DView< const Vector4f > view, const char* filename );
@@ -42,8 +49,13 @@ public:
     static bool saveTXT( Array3DView< const float > view, const char* filename );
 	static bool saveTXT( Array3DView< const Vector2f > view, const char* filename );
 
+    // TODO: implement clear() using fill(), specialize fill() on uint8_t
+    // use specialized view if isPacked() and T == 0?
     template< typename T >
     static bool clear( Array2DView< T > view );
+
+    template< typename T >
+    static bool fill( Array1DView< T > view, const T& value );
 
     template< typename T >
     static bool fill( Array2DView< T > view, const T& value );
@@ -51,12 +63,12 @@ public:
 	// returns a view that's flipped left <--> right
 	// using it twice flips it back to normal
 	template< typename T >
-    static Array1DView< T > flippedLRView( Array1DView< T > view );
+    static Array1DView< T > flippedLeftRightView( Array1DView< T > view );
 
 	// returns a view that's flipped left <--> right
 	// using it twice flips it back to normal
 	template< typename T >
-	static Array2DView< T > flippedLRView( Array2DView< T > view );
+	static Array2DView< T > flippedLeftRightView( Array2DView< T > view );
 
 	// returns a view that's flipped up <--> down
 	// using it twice flips it back to normal
@@ -79,9 +91,11 @@ public:
 	template< typename T >
     static Array3DView< T > croppedView( Array3DView< T > view, const Box3i& box );
 
-    // Given an existing Array1DView< T >, returns a Array1DView< S > of the
-    // same stride, but with elements of type S where S is a component of T.
-    // S is at offset "componentOffsetBytes" within T.
+    // TODO: transposedView
+
+    // Given an existing Array1DView< T >, returns a Array1DView< S > with the
+    // same stride, but with elements of type S where S is a component of T,
+    // and is at offset "componentOffsetBytes" within T.
     template< typename S, typename T >
     static Array1DView< S > componentView( Array1DView< T > view, int componentOffsetBytes );
 
@@ -99,6 +113,20 @@ public:
 	// Returns false if the dimensions don't match, or if either is null.
 	template< typename T >
 	static bool copy( Array2DView< const T > src, Array2DView< T > dst );
+
+    // Classical "map" function: dst[ i ] = f( src[ i ] )
+#if 0
+    // TODO(MSVC_2015): the following should work but does not in VS2013.
+    template< typename TSrc, typename TDst >
+    static bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
+        std::function< TDst( TSrc ) > f );
+#else
+    // f should be a function object that mapping TSrc -> TDst
+    template< typename TSrc, typename TDst, typename Func >
+    static bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
+        Func f );
+#endif
+
 };
 
 #include "common/ArrayUtils.inl"

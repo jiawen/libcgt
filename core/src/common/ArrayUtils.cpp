@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 // static
-bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array1DView< const int16_t > view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -17,7 +17,73 @@ bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filenam
 	}
 
 	int retVal;
-	int n = static_cast< int >( array.size() );
+	int n = static_cast< int >( view.width() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: int16_t\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		fprintf( fp, "[%d]: %d\n", i, view[ i ] );
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( Array1DView< const int32_t > view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( view.width() );
+
+	retVal = fprintf( fp, "Size: %d\n", n );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: int32_t\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	for( int i = 0; i < n; ++i )
+	{
+		fprintf( fp, "[%d]: %d\n", i, view[ i ] );
+	}
+
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( Array1DView< const float >& view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+
+	int retVal;
+	int n = static_cast< int >( view.width() );
 
 	retVal = fprintf( fp, "Size: %d\n", n );
 	if( retVal < 0 )
@@ -33,15 +99,16 @@ bool ArrayUtils::saveTXT( const std::vector< float >& array, const char* filenam
 
 	for( int i = 0; i < n; ++i )
 	{
-		fprintf( fp, "[%d]: %f\n", i, array[ i ] );
+		float v = view[i];
+		fprintf( fp, "[%d]: %f %f\n", i, v );
 	}
-	
+
 	retVal = fclose( fp );
 	return( retVal == 0 );
 }
 
 // static
-bool ArrayUtils::saveTXT( const std::vector< int >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array1DView< const Vector2f >& view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -50,40 +117,7 @@ bool ArrayUtils::saveTXT( const std::vector< int >& array, const char* filename 
 	}
 
 	int retVal;
-	int n = static_cast< int >( array.size() );
-
-	retVal = fprintf( fp, "Size: %d\n", n );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	retVal = fprintf( fp, "Format: int\n" );
-	if( retVal < 0 )
-	{
-		return false;
-	}
-
-	for( int i = 0; i < n; ++i )
-	{
-		fprintf( fp, "[%d]: %d\n", i, array[ i ] );
-	}
-
-	retVal = fclose( fp );
-	return( retVal == 0 );
-}
-
-// static
-bool ArrayUtils::saveTXT( const std::vector< Vector2f >& array, const char* filename )
-{
-	FILE* fp = fopen( filename, "w" );
-	if( fp == NULL )
-	{
-		return false;
-	}
-
-	int retVal;
-	int n = static_cast< int >( array.size() );
+	int n = static_cast< int >( view.width() );
 
 	retVal = fprintf( fp, "Size: %d\n", n );
 	if( retVal < 0 )
@@ -99,7 +133,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector2f >& array, const char* file
 
 	for( int i = 0; i < n; ++i )
 	{
-		Vector2f v = array[i];
+		Vector2f v = view[i];
 		fprintf( fp, "[%d]: %f %f\n", i, v.x, v.y );
 	}
 
@@ -108,7 +142,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector2f >& array, const char* file
 }
 
 // static
-bool ArrayUtils::saveTXT( const std::vector< Vector3f >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array1DView< const Vector3f >& view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -117,7 +151,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector3f >& array, const char* file
 	}
 
 	int retVal;
-	int n = static_cast< int >( array.size() );
+	int n = static_cast< int >( view.width() );
 
 	retVal = fprintf( fp, "Size: %d\n", n );
 	if( retVal < 0 )
@@ -133,7 +167,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector3f >& array, const char* file
 
 	for( int i = 0; i < n; ++i )
 	{
-		Vector3f v = array[i];
+		Vector3f v = view[i];
 		fprintf( fp, "[%d]: %f %f %f\n", i, v.x, v.y, v.z );
 	}
 
@@ -142,7 +176,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector3f >& array, const char* file
 }
 
 // static
-bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* filename )
+bool ArrayUtils::saveTXT( Array1DView< const Vector4f >& view, const char* filename )
 {
 	FILE* fp = fopen( filename, "w" );
 	if( fp == NULL )
@@ -151,7 +185,7 @@ bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* file
 	}
 
 	int retVal;
-	int n = static_cast< int >( array.size() );
+	int n = static_cast< int >( view.width() );
 
 	retVal = fprintf( fp, "Size: %d\n", n );
 	if( retVal < 0 )
@@ -167,10 +201,49 @@ bool ArrayUtils::saveTXT( const std::vector< Vector4f >& array, const char* file
 
 	for( int i = 0; i < n; ++i )
 	{
-		Vector4f v = array[i];
+		Vector4f v = view[i];
 		fprintf( fp, "[%d]: %f %f %f %f\n", i, v.x, v.y, v.z, v.w );
 	}
 
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( Array2DView< const uint8_t > view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+	
+	int retVal;
+	int w = view.width();
+	int h = view.height();
+
+	retVal = fprintf( fp, "Size: %d x %d\n", w, h );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: uint8_t\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}	
+
+	for( int y = 0; y < h; ++y )
+	{
+		for( int x = 0; x < w; ++x )
+		{
+			int index = y * w + x;
+            uint8_t v = view[ { x, y } ];
+			fprintf( fp, "[%d] (%d %d): %d\n", index, x, y, v );
+		}
+	}
+	
 	retVal = fclose( fp );
 	return( retVal == 0 );
 }
@@ -207,6 +280,45 @@ bool ArrayUtils::saveTXT( Array2DView< const uint8x4 > view, const char* filenam
 			int index = y * w + x;
             uint8x4 v = view[ { x, y } ];
 			fprintf( fp, "[%d] (%d %d): %d %d %d %d\n", index, x, y, v.x, v.y, v.z, v.w );
+		}
+	}
+	
+	retVal = fclose( fp );
+	return( retVal == 0 );
+}
+
+// static
+bool ArrayUtils::saveTXT( Array2DView< const int16_t > view, const char* filename )
+{
+	FILE* fp = fopen( filename, "w" );
+	if( fp == NULL )
+	{
+		return false;
+	}
+	
+	int retVal;
+	int w = view.width();
+	int h = view.height();
+
+	retVal = fprintf( fp, "Size: %d x %d\n", w, h );
+	if( retVal < 0 )
+	{
+		return false;
+	}
+
+	retVal = fprintf( fp, "Format: int16_t\n" );
+	if( retVal < 0 )
+	{
+		return false;
+	}	
+
+	for( int y = 0; y < h; ++y )
+	{
+		for( int x = 0; x < w; ++x )
+		{
+			int index = y * w + x;
+            int16_t v = view[ { x, y } ];
+			fprintf( fp, "[%d] (%d %d): %d\n", index, x, y, v );
 		}
 	}
 	

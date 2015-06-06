@@ -66,7 +66,8 @@ GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView( int nVertices
 template< typename T >
 Array1DView< T > GLInterleavedVertexBufferView< T >::mapForWrite()
 {
-    return m_pVBO->mapRangeAs< T >( m_offsetBytes, m_nBytes, GL_MAP_WRITE_BIT );
+    return m_pVBO->mapRangeAs< T >( m_offsetBytes, m_nBytes,
+        GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT );
 }
 
 template< typename T >

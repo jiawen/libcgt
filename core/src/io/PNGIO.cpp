@@ -55,11 +55,11 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
         output.nComponents = 1;
         if( output.bitDepth == 8 )
         {
-            output.grey8 = Array2D< uint8_t >( bits, size );
+            output.gray8 = Array2D< uint8_t >( bits, size );
         }
         else
         {
-            output.grey16 = Array2D< uint16_t >( bits, size );
+            output.gray16 = Array2D< uint16_t >( bits, size );
         }
         output.valid = true;
         break;
@@ -81,11 +81,11 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
         output.nComponents = 2;
         if( output.bitDepth == 8 )
         {
-            output.greyalpha8 = Array2D< uint8x2 >( bits, size );
+            output.grayalpha8 = Array2D< uint8x2 >( bits, size );
         }
         else
         {
-            output.greyalpha16 = Array2D< uint16x2 >( bits, size );
+            output.grayalpha16 = Array2D< uint16x2 >( bits, size );
         }
         output.valid = true;
         break;

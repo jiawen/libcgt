@@ -82,7 +82,7 @@ public:
     Array1DView< uint8_t > map( Access access );
 
 	// Map the entire buffer into client memory, with length
-	//   numBytes() / sizeof( T ).
+	// numBytes() / sizeof( T ).
 	template< typename T >
     Array1DView< T > mapAs( Access access );
 

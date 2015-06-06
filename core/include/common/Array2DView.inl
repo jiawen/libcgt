@@ -148,3 +148,15 @@ Array2DView< T >::operator Array2DView< const T >() const
 {
     return Array2DView< const T >( m_pPointer, m_size, m_strides );
 }
+
+template< typename T >
+Array1DView< T > Array2DView< T >::row( int y )
+{
+    return Array1DView< T >( rowPointer( y ), m_size.x, m_strides.x );
+}
+
+template< typename T >
+Array1DView< T > Array2DView< T >::column( int x )
+{
+    return Array1DView< T >( elementPointer( x, 0 ), m_size.y, m_strides.y );
+}

@@ -41,9 +41,9 @@ public:
 	Vector2i size() const;
 
     // TODO: clear with a rectangle
-    void clear( const uint8x4& clearValue = uint8x4{ 0, 0, 0, 0 } );
-    void clear( float clearValue = 0.f, GLImageFormat format = GLImageFormat::RED );
-    void clear( const Vector4f& clearValue = Vector4f( 0, 0, 0, 0 ) );
+    void clear( const uint8x4& clearValue = { 0, 0, 0, 0 }, int level = 0 );
+    void clear( float clearValue = 0.f, GLImageFormat format = GLImageFormat::RED, int level = 0 );
+    void clear( const Vector4f& clearValue = { 0, 0, 0, 0 }, int level = 0 );
 
 	// TODO: set: arbitrary format and void*?
 
@@ -51,18 +51,25 @@ public:
     // Only accepts RGB and BGR for now.
 	bool set( Array2DView< const uint8x3 > data,
         GLImageFormat format = GLImageFormat::RGB,
-		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+		const Vector2i& dstOffset = { 0, 0 } );
 
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
     bool set( Array2DView< const uint8x4 > data,
 		GLImageFormat format = GLImageFormat::RGBA,
-		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+		const Vector2i& dstOffset = { 0, 0 } );
 
     // Data must be packed().
     bool set( Array2DView< const float > data,
         GLImageFormat format = GLImageFormat::RED,
-        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = { 0, 0 } );
+
+    // Retrieves the entire texture.
+	// Returns false if output isNull(), is not packed, or has the wrong size.
+    // Also returns false if format isn't GL_RED, GL_GREEN, GL_BLUE, or GL_ALPHA.
+    // TODO: integer formats?
+    // TODO: document the conversions done better.
+    bool get( Array2DView< uint8_t > output, GLImageFormat format = GLImageFormat::RED );
 
 	// Retrieves the entire texture.
 	// Returns false if output isNull(), is not packed, or has the wrong size.
@@ -82,7 +89,7 @@ public:
 	// windowCoords = Rect2f( 0, 0, width(), height() )
 	void drawNV( GLSamplerObject* pSampler = nullptr,
 		float z = 0,
-        const Rect2f& texCoords = Rect2f{ { 1, 1 } } );
+        const Rect2f& texCoords = { 0, 0, 1, 1 } );
 
 	// Using NV_draw_texture, draw this texture to the screen
 	// to the rectangle windowCoords.
@@ -99,10 +106,10 @@ public:
 	void drawNV( const Rect2f& windowCoords,
 		GLSamplerObject* pSampler = nullptr,
 		float z = 0,
-        const Rect2f& texCoords = Rect2f{ { 1, 1 } } );	
+        const Rect2f& texCoords = { 0, 0, 1, 1 } );	
 
 private:	
 
     Vector2i m_size;
-    int m_nMipMapLevels; // TODO: make this a global property of textures?
+    int m_nMipMapLevels; // TODO: make this a property of textures?
 };

@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-#include "common/WrapConstPointerT.h"
+#include "Array1DView.h"
+#include "WrapConstPointerT.h"
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
@@ -70,6 +71,12 @@ public:
 
     // Conversion operator to Array2DView< const T >
     operator Array2DView< const T >() const;
+
+    // Extract row y from this Array2DView as a Array1DView.
+    Array1DView< T > row( int y );
+
+    // Extract column x from this Array2DView as a Array1DView.
+    Array1DView< T > column( int x );
 
 private:
 

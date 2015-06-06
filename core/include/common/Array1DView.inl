@@ -119,5 +119,5 @@ bool Array1DView< T >::packed() const
 template< typename T >
 Array1DView< T >::operator Array1DView< const T >() const
 {
-    return Array1DView< const T >( m_pPointer, m_size, m_strides );
+    return Array1DView< const T >( m_pPointer, m_size, m_stride );
 }

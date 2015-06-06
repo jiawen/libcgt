@@ -15,52 +15,52 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBox( const Box3f& bo
     // TODO: z may be flipped on all of these, since z = 0 is the back, z = d is the front
 
 	// front
-	vertexPositions[  0 ] = Vector4f( x, y, z, 1 );
-	vertexPositions[  1 ] = Vector4f( x + width, y, z, 1 );
-	vertexPositions[  2 ] = Vector4f( x, y + height, z, 1 );
-	vertexPositions[  3 ] = vertexPositions[ 2 ];
-	vertexPositions[  4 ] = vertexPositions[ 1 ];
-	vertexPositions[  5 ] = Vector4f( x + width, y + height, z, 1 );
+    vertexPositions[  0 ] = { x, y, z, 1 };
+	vertexPositions[  1 ] = { x + width, y, z, 1 };
+	vertexPositions[  2 ] = { x, y + height, z, 1 };
+    vertexPositions[  3 ] = { x, y + height, z, 1 };
+    vertexPositions[  4 ] = { x + width, y, z, 1 };
+    vertexPositions[  5 ] = { x + width, y + height, z, 1 };
 
 	// right
-	vertexPositions[  6 ] = Vector4f( x + width, y, z, 1 );
-	vertexPositions[  7 ] = Vector4f( x + width, y, z + depth, 1 );
-	vertexPositions[  8 ] = Vector4f( x + width, y + height, z, 1 );
-	vertexPositions[  9 ] = vertexPositions[ 8 ];
-	vertexPositions[ 10 ] = vertexPositions[ 7 ];
-	vertexPositions[ 11 ] = Vector4f( x + width, y + height, z + depth, 1 );
+	vertexPositions[  6 ] = { x + width, y, z, 1 };
+	vertexPositions[  7 ] = { x + width, y, z + depth, 1 };
+	vertexPositions[  8 ] = { x + width, y + height, z, 1 };
+	vertexPositions[  9 ] = { x + width, y + height, z, 1 };
+	vertexPositions[ 10 ] = { x + width, y, z + depth, 1 };
+	vertexPositions[ 11 ] = { x + width, y + height, z + depth, 1 };
 
 	// back
-	vertexPositions[ 12 ] = Vector4f( x + width, y, z + depth, 1 );
-	vertexPositions[ 13 ] = Vector4f( x, y, z + depth, 1 );
-	vertexPositions[ 14 ] = Vector4f( x + width, y + height, z + depth, 1 );
-	vertexPositions[ 15 ] = vertexPositions[ 14 ];
-	vertexPositions[ 16 ] = vertexPositions[ 13 ];
-	vertexPositions[ 17 ] = Vector4f( x, y + height, z + depth, 1 );
+	vertexPositions[ 12 ] = { x + width, y, z + depth, 1 };
+	vertexPositions[ 13 ] = { x, y, z + depth, 1 };
+	vertexPositions[ 14 ] = { x + width, y + height, z + depth, 1 };
+	vertexPositions[ 15 ] = { x + width, y + height, z + depth, 1 };
+	vertexPositions[ 16 ] = { x, y, z + depth, 1 };
+	vertexPositions[ 17 ] = { x, y + height, z + depth, 1 };
 
 	// left
-	vertexPositions[ 18 ] = Vector4f( x, y, z + depth, 1 );
-	vertexPositions[ 19 ] = Vector4f( x, y, z, 1 );
-	vertexPositions[ 20 ] = Vector4f( x, y + height, z + depth, 1 );
-	vertexPositions[ 21 ] = vertexPositions[ 20 ];
-	vertexPositions[ 22 ] = vertexPositions[ 19 ];
-	vertexPositions[ 23 ] = Vector4f( x, y + height, z, 1 );
+	vertexPositions[ 18 ] = { x, y, z + depth, 1 };
+	vertexPositions[ 19 ] = { x, y, z, 1 };
+	vertexPositions[ 20 ] = { x, y + height, z + depth, 1 };
+	vertexPositions[ 21 ] = { x, y + height, z + depth, 1 };
+	vertexPositions[ 22 ] = { x, y, z, 1 };
+	vertexPositions[ 23 ] = { x, y + height, z, 1 };
 
 	// top
-	vertexPositions[ 24 ] = Vector4f( x, y + height, z, 1 );
-	vertexPositions[ 25 ] = Vector4f( x + width, y + height, z, 1 );
-	vertexPositions[ 26 ] = Vector4f( x, y + height, z + depth, 1 );
-	vertexPositions[ 27 ] = vertexPositions[ 26 ];
-	vertexPositions[ 28 ] = vertexPositions[ 25 ];
-	vertexPositions[ 29 ] = Vector4f( x + width, y + height, z + depth, 1 );
+	vertexPositions[ 24 ] = { x, y + height, z, 1 };
+	vertexPositions[ 25 ] = { x + width, y + height, z, 1 };
+	vertexPositions[ 26 ] = { x, y + height, z + depth, 1 };
+	vertexPositions[ 27 ] = { x, y + height, z + depth, 1 };
+	vertexPositions[ 28 ] = { x + width, y + height, z, 1 };
+	vertexPositions[ 29 ] = { x + width, y + height, z + depth, 1 };
 
 	// bottom
-	vertexPositions[ 30 ] = Vector4f( x, y, z + depth, 1 );
-	vertexPositions[ 31 ] = Vector4f( x + width, y, z + depth, 1 );
-	vertexPositions[ 32 ] = Vector4f( x, y, z, 1 );
-	vertexPositions[ 33 ] = vertexPositions[ 32 ];
-	vertexPositions[ 34 ] = vertexPositions[ 31 ];
-	vertexPositions[ 35 ] = Vector4f( x + width, y, z, 1 );
+	vertexPositions[ 30 ] = { x, y, z + depth, 1 };
+	vertexPositions[ 31 ] = { x + width, y, z + depth, 1 };
+	vertexPositions[ 32 ] = { x, y, z, 1 };
+	vertexPositions[ 33 ] = { x, y, z, 1 };
+	vertexPositions[ 34 ] = { x + width, y, z + depth, 1 };
+	vertexPositions[ 35 ] = { x + width, y, z, 1 };
 }
 
 void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBoxTextureCoordinates(

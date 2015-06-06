@@ -1,106 +1,36 @@
 #pragma once
 
-#include <common/Array2D.h>
+#include <cctype>
+#include <cstdio>
 
-class QString;
+#include <common/Array2D.h>
+#include <common/Array2DView.h>
 
 class PortableGrayMapIO
 {
 public:
 
+    struct PGMData
+    {
+        bool valid;
+
+        int bitDepth; // 8 or 16
+        int maxVal; // < 65536.
+
+        Array2D< uint8_t > gray8;
+        Array2D< uint16_t > gray16;
+    };
+
     // TODO: does not parse comments
-    // TODO: use views, uint8_t, uint16_t
+    // TODO: reads P5 (binary) only, P2 is the text version
 
-	// PGM specifies that maxVal from the file is > 0 and < 65536
-	// TODO: reads P5 (binary) only
-	// P2 is the text version
-	//
-	// if maxVal < 256, then the array can be used as is
-	// else, then maxVal is guaranteed to be < 65536 and the array is (2 * width x height)
-	//   and it should be reinterpreted with:
-	//   outputShort = inputUint8_t.reinterpretAs< ushort >()
-    // TODO: return a variant
-	static bool read( QString filename, Array2D< uint8_t >& output, int& maxVal );
+	// The PGM format specifies that there is a maxVal in the header
+    // which is > 0 and < 65536.
+	// If maxVal < 256, then gray8 is populated and bitDepth = 8.
+    // Else if maxVal < 65536, gray16 is populated and bitDepth = 16.
+    // Otherwise, valid = false.	
+	static PGMData read( const char* filename );
+
+    static bool writeBinary( const char* filename, Array2DView< const uint8_t > image );
+    static bool writeBinary( const char* filename, Array2DView< const uint16_t > image );
 };
-
-#include <QString>
-
-// static
-bool PortableGrayMapIO::read( QString filename, Array2D< uint8_t >& output, int& maxVal )
-{
-	QByteArray cstrFilename = filename.toLocal8Bit();
-	FILE* pFile = fopen( cstrFilename.constData(), "rb" );
-	if( pFile == nullptr )
-	{
-		return false;
-	}
-	
-	char str[255];
-
-	int width;
-	int height;
-
-	fscanf( pFile, " %s", str );
-
-	if( ferror( pFile ) || feof( pFile ) ||
-		( strcmp( str, "P5" ) != 0 ) )
-	{
-		fclose( pFile );
-		return false;
-	}
-
-	// TODO: parse comments
-
-	int nMatches;
-	
-	nMatches = fscanf( pFile, " %d", &width );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return false;
-	}
-
-	nMatches = fscanf( pFile, " %d", &height );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return false;
-	}
-
-	nMatches = fscanf( pFile, " %d", &maxVal );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return false;
-	}
-
-	// there must be exactly one whitespace character after the maxVal specifier
-	int whitespace = getc( pFile );
-	if( !isspace( whitespace ) )
-	{
-		fclose( pFile );
-		return false;
-	}
-
-	if( maxVal < 0 || maxVal > 65535 )
-	{
-		fclose( pFile );
-		return false;
-	}
-	else if( maxVal < 256 )
-	{
-		output.resize( width, height );
-		fread( output, 1, width * height, pFile );
-	}
-	else // maxVal < 65536
-	{
-		output.resize( 2 * width, height );
-		fread( output, 2, width * height, pFile );
-	}	
-
-	fclose( pFile );
-	return true;
-}
