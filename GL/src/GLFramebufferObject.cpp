@@ -172,6 +172,7 @@ void GLFramebufferObject::setReadBuffer( GLenum attachment )
     glFramebufferReadBufferEXT( m_id, attachment );
 }
 
+#include "GLUtilities.h"
 bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 {
 	bool isComplete = false;	
@@ -204,6 +205,7 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
         fprintf(stderr, "Framebuffer incomplete: inconsistent layering.\n" );
 	default:
 		fprintf( stderr, "Can't get here!\n" );
+        GLUtilities::printLastError();
 		assert( false );
 	}
 

@@ -69,10 +69,10 @@ public:
 	virtual ~GLTexture();
 
 	// Binds this texture object to the texture unit;
-	void bind( GLuint textureUnitIndex = 0 );
+	void bind( GLuint textureUnitIndex = 0 ) const;
 
 	// Unbinds this texture from the texture unit.
-	void unbind( GLuint textureUnitIndex = 0 );
+	void unbind( GLuint textureUnitIndex = 0 ) const;
 
     // TODO(multi_bind):
     // glBindTextures( GLuint firstTextureUnitIndex, int count, GLuint* textureIds )

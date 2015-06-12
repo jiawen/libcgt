@@ -115,6 +115,20 @@ public:
 	static Matrix4f scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
 		const Vector3f& dstOrigin, const Vector3f& dstSize );
 
+    // Construct a Euclidean transformation matrix from a rotation vector and a translation.
+    // E = [R|t]. Rotation is applied first, then translation.
+    // The rotation vector's direction is the axis,
+    // its norm is the number of radians, counterclockwise.
+    static Matrix4f euclidean( const Vector3f& rotationVector, const Vector3f& translation );
+
+    // Invert a Euclidean transformation.
+    // If it is known that tr is a Euclidean transformation: M = T*R = [R|t]
+    // (apply R, then T), computes inv(M):
+    // inv(T*R) = inv(R)*inv(T)
+    //          = transpose(R) * (-T)    (apply -T, then transpose(R))
+    //          = [R'|-R'*t]
+    static Matrix4f inverseEuclidean( const Matrix4f& tr );
+
 	static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 	
 	// orthographicProjection from (0,0) to (width,height), zNear = -1, zFar = 1

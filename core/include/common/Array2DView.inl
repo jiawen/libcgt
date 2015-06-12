@@ -158,5 +158,5 @@ Array1DView< T > Array2DView< T >::row( int y )
 template< typename T >
 Array1DView< T > Array2DView< T >::column( int x )
 {
-    return Array1DView< T >( elementPointer( x, 0 ), m_size.y, m_strides.y );
+    return Array1DView< T >( elementPointer( { x, 0 } ), m_size.y, m_strides.y );
 }

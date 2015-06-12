@@ -53,8 +53,8 @@ void PerspectiveCamera::getPerspective( float& fovYRadians, float aspect,
     fovYRadians = m_fovYRadians;
     aspect = m_aspect;
 
-    zNear = m_zNear;
-    zFar = m_zFar;
+    zNear = m_frustum.zNear;
+    zFar = m_frustum.zFar;
 }
 
 void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
@@ -64,8 +64,8 @@ void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 	m_fovYRadians = fovYRadians;
 	m_aspect = aspect;
 
-	m_zNear = zNear;
-	m_zFar = zFar;
+	m_frustum.zNear = zNear;
+	m_frustum.zFar = zFar;
 
 	updateFrustum();	
 }
@@ -83,8 +83,8 @@ void PerspectiveCamera::setPerspectiveFromIntrinsics( const Vector2f& focalLengt
 	const Vector2f& imageSize,
 	float zNear, float zFar )
 {
-	m_zNear = zNear;
-	m_zFar = zFar;
+	m_frustum.zNear = zNear;
+	m_frustum.zFar = zFar;
 
 	setPerspectiveFromIntrinsics( focalLengthPixels, imageSize );
 }
@@ -185,36 +185,36 @@ Vector2f PerspectiveCamera::focalLengthPixels( const Vector2f& screenSize ) cons
 // virtual
 Matrix4f PerspectiveCamera::projectionMatrix() const
 {
-	if( isinf( m_zFar ) )
+	if( isinf( m_frustum.zFar ) )
 	{
-		return Matrix4f::infinitePerspectiveProjection( m_left, m_right,
-			m_bottom, m_top,
-			m_zNear, m_directX );
+		return Matrix4f::infinitePerspectiveProjection( m_frustum.left, m_frustum.right,
+			m_frustum.bottom, m_frustum.top,
+			m_frustum.zNear, m_directX );
 	}
 	else
 	{
-		return Matrix4f::perspectiveProjection( m_left, m_right,
-			m_bottom, m_top,
-			m_zNear, m_zFar, m_directX );
+		return Matrix4f::perspectiveProjection( m_frustum.left, m_frustum.right,
+			m_frustum.bottom, m_frustum.top,
+			m_frustum.zNear, m_frustum.zFar, m_directX );
 	}
 }
 
 Matrix4f PerspectiveCamera::jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
 {
-	float dx = -eyeX * m_zNear / focusZ;
-	float dy = -eyeY * m_zNear / focusZ;
+	float dx = -eyeX * m_frustum.zNear / focusZ;
+	float dy = -eyeY * m_frustum.zNear / focusZ;
 
-	if( isinf( m_zFar ) )
+	if( isinf( m_frustum.zFar ) )
 	{
-		return Matrix4f::infinitePerspectiveProjection( m_left + dx, m_right + dx,
-			m_bottom + dy, m_top + dy,
-			m_zNear, m_directX );
+		return Matrix4f::infinitePerspectiveProjection( m_frustum.left + dx, m_frustum.right + dx,
+			m_frustum.bottom + dy, m_frustum.top + dy,
+			m_frustum.zNear, m_directX );
 	}
 	else
 	{
-		return Matrix4f::perspectiveProjection( m_left + dx, m_right + dx,
-			m_bottom + dy, m_top + dy,
-			m_zNear, m_zFar, m_directX );
+		return Matrix4f::perspectiveProjection( m_frustum.left + dx, m_frustum.right + dx,
+			m_frustum.bottom + dy, m_frustum.top + dy,
+			m_frustum.zNear, m_frustum.zFar, m_directX );
 	}
 }
 
@@ -371,14 +371,14 @@ bool PerspectiveCamera::saveTXT( QString filename )
 	outputTextStream << "eye " << m_eye[ 0 ] << " " << m_eye[ 1 ] << " " << m_eye[ 2 ] << "\n";
 	outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
 	outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
-	outputTextStream << "zNear " << m_zNear << "\n";
-    if( isinf( m_zFar ) )
+	outputTextStream << "zNear " << m_frustum.zNear << "\n";
+    if( isinf( m_frustum.zFar ) )
     {
         outputTextStream << "zFar " << -1 << "\n";
     }
     else
     {
-        outputTextStream << "zFar " << m_zFar << "\n";
+        outputTextStream << "zFar " << m_frustum.zFar << "\n";
     }
 	outputTextStream << "fovYRadians " << m_fovYRadians << "\n";
 	outputTextStream << "aspect " << m_aspect << "\n";
@@ -394,8 +394,8 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 	float fov = MathUtils::lerp( c0.m_fovYRadians, c1.m_fovYRadians, t );
 	float aspect = MathUtils::lerp( c0.m_aspect, c1.m_aspect, t );
 
-	float zNear = MathUtils::lerp( c0.m_zNear, c1.m_zNear, t );
-	float zFar = MathUtils::lerp( c0.m_zFar, c1.m_zFar, t );
+	float zNear = MathUtils::lerp( c0.m_frustum.zNear, c1.m_frustum.zNear, t );
+	float zFar = MathUtils::lerp( c0.m_frustum.zFar, c1.m_frustum.zFar, t );
 
 	bool isDirectX = c0.m_directX;
 
@@ -429,8 +429,8 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& 
 	float fov = MathUtils::cubicInterpolate( c0.m_fovYRadians, c1.m_fovYRadians, c2.m_fovYRadians, c3.m_fovYRadians, t );
 	float aspect = MathUtils::cubicInterpolate( c0.m_aspect, c1.m_aspect, c2.m_aspect, c3.m_aspect, t );
 
-	float zNear = MathUtils::cubicInterpolate( c0.m_zNear, c1.m_zNear, c2.m_zNear, c3.m_zNear, t );
-	float zFar = MathUtils::cubicInterpolate( c0.m_zFar, c1.m_zFar, c2.m_zFar, c3.m_zFar, t );
+	float zNear = MathUtils::cubicInterpolate( c0.m_frustum.zNear, c1.m_frustum.zNear, c2.m_frustum.zNear, c3.m_frustum.zNear, t );
+	float zFar = MathUtils::cubicInterpolate( c0.m_frustum.zFar, c1.m_frustum.zFar, c2.m_frustum.zFar, c3.m_frustum.zFar, t );
 
 	bool isDirectX = c0.m_directX;
 
@@ -464,8 +464,8 @@ void PerspectiveCamera::copyPerspective( const PerspectiveCamera& from, Perspect
 {
     to.m_fovYRadians = from.m_fovYRadians;
     to.m_aspect = from.m_aspect;
-    to.m_zNear = from.m_zNear;
-    to.m_zFar = from.m_zFar;
+    to.m_frustum.zNear = from.m_frustum.zNear;
+    to.m_frustum.zFar = from.m_frustum.zFar;
 
     to.updateFrustum();
 }
@@ -473,12 +473,10 @@ void PerspectiveCamera::copyPerspective( const PerspectiveCamera& from, Perspect
 void PerspectiveCamera::updateFrustum()
 {
 	// tan( theta / 2 ) = up / zNear
-	float top = m_zNear * tanHalfFovY();
-	float bottom = -top;
+	m_frustum.top = m_frustum.zNear * tanHalfFovY();
+	m_frustum.bottom = -m_frustum.top;
 
 	// aspect = width / height = ( right - left ) / ( top - bottom )
-	float right = m_aspect * top;
-	float left = -right;
-
-	setFrustum( left, right, bottom, top, m_zNear, m_zFar );
+	m_frustum.right = m_aspect * m_frustum.top;
+	m_frustum.left = -m_frustum.right;
 }

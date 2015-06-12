@@ -76,12 +76,12 @@ GLTexture::~GLTexture()
 	glDeleteTextures( 1, &m_id );
 }
 
-void GLTexture::bind( GLuint textureUnitIndex )
+void GLTexture::bind( GLuint textureUnitIndex ) const
 {
     glBindTextureUnit( textureUnitIndex, m_id );
 }
 
-void GLTexture::unbind( GLuint textureUnitIndex )
+void GLTexture::unbind( GLuint textureUnitIndex ) const
 {
     glBindTextureUnit( textureUnitIndex, 0 );
 }

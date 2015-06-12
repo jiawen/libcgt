@@ -13,9 +13,7 @@ public:
 	OrthographicCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
 		const Vector3f& center = Vector3f( 0, 0, 0 ),
 		const Vector3f& up = Vector3f( 0, 1, 0 ),
-		float left = -5.0f, float right = 5.0f,
-		float bottom = -5.0f, float top = 5.0f,
-		float zNear = -1.0f, float zFar = 1.0f );		
+        const GLFrustum& frustum = { -5.0f, 5.0f, -5.0f, 5.0f, -1.0f, 1.0f } );
 
 	virtual Matrix4f projectionMatrix() const;
 

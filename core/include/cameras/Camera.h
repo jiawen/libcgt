@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "GLFrustum.h"
+
 #include "geometry/Plane3f.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2f.h"
@@ -16,9 +18,8 @@ public:
 
     void setDirectX( bool directX );
 
-	void getFrustum( float& left, float& right,
-		float& bottom, float& top,
-		float& zNear, float& zFar ) const;
+    const GLFrustum& getFrustum() const;
+    void setFrustum( const GLFrustum& frustum );
 
 	// return the 8 corners of the camera frustum
 	// 0-3 are the near plane, in ccw order
@@ -32,18 +33,12 @@ public:
 
 	bool isZFarInfinite() const;
 
-    // Sets the camera frustum, OpenGL-style (glFrustum()).
-    // zFar can be std::numeric_limits< float >::infinity()
-    // to get a proper infinite view frustum.
-	void setFrustum( float left, float right,
-		float bottom, float top,
-		float zNear, float zFar );
-
-	// same as below, but uses existing zNear and zFar
+	// Same as below, but uses existing zNear and zFar.
 	void setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
 		const Vector2f& imageSize );
 
 	// Sets the perspective projection given computer-vision style intrinsics:
+    // TODO: principal point needs to specify which direction is up.
 	// focal length and image size in pixels
 	// Does not allow for radial distortion
 	void setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
@@ -251,14 +246,7 @@ public:
 
 protected:
 
-	float m_left;
-	float m_right;
-	
-	float m_top;
-	float m_bottom;
-
-	float m_zNear;
-	float m_zFar;
+    GLFrustum m_frustum;
 
     // TODO: get rid of center
 	Vector3f m_eye;

@@ -17,4 +17,5 @@ public:
 	static const Vector4f TRANSPARENT_BLACK;
 	static const Vector4f TRANSPARENT_WHITE;
 
+    static const Vector4f AMBER;
 };

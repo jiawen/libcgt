@@ -530,6 +530,32 @@ Matrix4f Matrix4f::scaleTranslate( const Vector3f& srcOrigin, const Vector3f& sr
 }
 
 // static
+Matrix4f Matrix4f::euclidean( const Vector3f& rotationVector, const Vector3f& translation )
+{
+    Matrix4f output;
+
+    output.setSubmatrix3x3( 0, 0, Matrix3f::rotation( rotationVector.normalized(), rotationVector.norm() ) );
+    output.setCol( 3, Vector4f( translation, 1 ) );
+
+    return output;
+}
+
+// static
+Matrix4f Matrix4f::inverseEuclidean( const Matrix4f& tr )
+{
+    Matrix4f output;
+
+    Matrix3f rTranspose = tr.getSubmatrix3x3( ).transposed( );
+    output.setSubmatrix3x3( 0, 0, rTranspose );
+
+    Vector3f t = tr.getCol( 3 ).xyz;
+    Vector3f minusRTransposeT = -rTranspose * t;
+    output.setCol( 3, Vector4f( minusRTransposeT, 1 ) );
+
+    return output;
+}
+
+// static
 Matrix4f Matrix4f::randomRotation( float u0, float u1, float u2 )
 {
 	return Matrix4f::fromQuat( Quat4f::randomRotation( u0, u1, u2 ) );

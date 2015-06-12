@@ -29,3 +29,6 @@ const Vector4f Color4f::TRANSPARENT_BLACK = Vector4f( 0, 0, 0, 0 );
 
 // static
 const Vector4f Color4f::TRANSPARENT_WHITE = Vector4f( 1, 1, 1, 0 );
+
+// static
+const Vector4f Color4f::AMBER = Vector4f( 1, 0.75f, 0, 1 );

@@ -18,18 +18,9 @@ void Camera::setDirectX( bool directX )
 	m_directX = directX;
 }
 
-void Camera::getFrustum( float& left, float& right,
-	float& bottom, float& top,
-	float& zNear, float& zFar ) const
+const GLFrustum& Camera::getFrustum() const
 {
-    left = m_left;
-    right = m_right;
-
-    bottom = m_bottom;
-    top = m_top;
-
-    zNear = m_zNear;
-    zFar = m_zFar;
+    return m_frustum;    
 }
 
 std::vector< Vector3f > Camera::frustumCorners() const
@@ -81,26 +72,17 @@ std::vector< Plane3f > Camera::frustumPlanes() const
 
 bool Camera::isZFarInfinite() const
 {
-	return isinf( m_zFar );
+	return isinf( m_frustum.zFar );
 }
 
-void Camera::setFrustum( float left, float right,
-	float bottom, float top,
-	float zNear, float zFar )
+void Camera::setFrustum( const GLFrustum& frustum )
 {
-	assert( zNear > 0 );
-    assert( zFar > zNear );
-    assert( left < right );
-    assert( bottom < top );
+	assert( frustum.zNear > 0 );
+    assert( frustum.zFar > frustum.zNear );
+    assert( frustum.left < frustum.right );
+    assert( frustum.bottom < frustum.top );
 
-	m_left = left;
-	m_right = right;
-
-	m_bottom = bottom;
-	m_top = top;
-
-	m_zNear = zNear;
-	m_zFar = zFar;
+    m_frustum = frustum;
 }
 
 void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
@@ -111,9 +93,9 @@ void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const 
 		focalLengthPixels, principalPointPixels,
 		imageSize,
 
-		m_zNear,
-		m_left, m_right,
-		m_bottom, m_top
+		m_frustum.zNear,
+		m_frustum.left, m_frustum.right,
+		m_frustum.bottom, m_frustum.top
 	);
 }
 
@@ -123,10 +105,16 @@ void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const 
 {
 	assert( zNear > 0 );	
 
-	m_zNear = zNear;
-	m_zFar = zFar;
+    CameraUtils::intrinsicsToFrustum
+	(
+		focalLengthPixels, principalPointPixels,
+		imageSize,
 
-	setFrustumFromIntrinsics( focalLengthPixels, principalPointPixels, imageSize );
+		zNear,
+		m_frustum.left, m_frustum.right,
+		m_frustum.bottom, m_frustum.top
+	);
+    m_frustum.zFar = zFar;
 }
 
 void Camera::getLookAt( Vector3f& eye,
@@ -200,23 +188,23 @@ Vector3f Camera::right() const
 
 float Camera::zNear() const
 {
-	return m_zNear;
+	return m_frustum.zNear;
 }
 
 void Camera::setZNear( float zNear )
 {
 	assert( zNear > 0 );
-	m_zNear = zNear;
+	m_frustum.zNear = zNear;
 }
 
 float Camera::zFar() const
 {
-	return m_zFar;
+	return m_frustum.zFar;
 }
 
 void Camera::setZFar( float zFar )
 {
-	m_zFar = zFar;
+	m_frustum.zFar = zFar;
 }
 
 Matrix4f Camera::viewMatrix() const
@@ -280,10 +268,12 @@ Matrix4f Camera::extrinsicsCV() const
 
 Matrix3f Camera::intrinsicsCV( const Vector2f& screenSize ) const
 {
-    float fx = screenSize.x * m_zNear / ( m_right - m_left );
-    float fy = screenSize.y * m_zNear / ( m_top - m_bottom );
-    float cx = 0.5f * screenSize.x + 0.5f * screenSize.x * ( m_left + m_right ) / ( m_right - m_left );
-    float cy = 0.5f * screenSize.y + 0.5f * screenSize.y * ( m_bottom + m_top ) / ( m_top - m_bottom );
+    float fx = screenSize.x * m_frustum.zNear /
+        ( m_frustum.right - m_frustum.left );
+    float fy = screenSize.y * m_frustum.zNear /
+        ( m_frustum.top - m_frustum.bottom );
+    float cx = 0.5f * screenSize.x + 0.5f * screenSize.x * ( m_frustum.left + m_frustum.right ) / ( m_frustum.right - m_frustum.left );
+    float cy = 0.5f * screenSize.y + 0.5f * screenSize.y * ( m_frustum.bottom + m_frustum.top ) / ( m_frustum.top - m_frustum.bottom );
 
     return Matrix3f
     (
@@ -369,11 +359,11 @@ Vector4f Camera::screenToEye( const Vector2f& xy, float depth, const Vector2f& s
 	float xClip = ndcXY.x * depth;
 	float yClip = ndcXY.y * depth;
 
-	float xNumerator = xClip + depth * ( m_right + m_left ) / ( m_right - m_left );
-	float yNumerator = yClip + depth * ( m_top + m_bottom ) / ( m_top - m_bottom );
+	float xNumerator = xClip + depth * ( m_frustum.right + m_frustum.left ) / ( m_frustum.right - m_frustum.left );
+	float yNumerator = yClip + depth * ( m_frustum.top + m_frustum.bottom ) / ( m_frustum.top - m_frustum.bottom );
 
-	float xDenominator = ( 2 * m_zNear ) / ( m_right - m_left );
-	float yDenominator = ( 2 * m_zNear ) / ( m_top - m_bottom );
+	float xDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.right - m_frustum.left );
+	float yDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.top - m_frustum.bottom );
 
 	float xEye = xNumerator / xDenominator;
 	float yEye = yNumerator / yDenominator;
