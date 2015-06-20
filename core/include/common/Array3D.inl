@@ -2,7 +2,7 @@ template< typename T >
 Array3D< T >::Array3D() :
     m_size( 0 ),
     m_strides( 0 ),
-	m_array( nullptr )
+    m_array( nullptr )
 {
 
 }
@@ -34,7 +34,7 @@ Array3D< T >::Array3D( const char* filename ) :
     m_strides( 0 ),
     m_array( nullptr )
 {
-	load( filename );
+    load( filename );
 }
 
 template< typename T >
@@ -43,8 +43,8 @@ Array3D< T >::Array3D( const Vector3i& size, const T& fillValue ) :
     m_strides( 0 ),
     m_array( nullptr )
 {
-	resize( size );
-	fill( fillValue );
+    resize( size );
+    fill( fillValue );
 }
 
 template< typename T >
@@ -85,15 +85,15 @@ Array3D< T >::Array3D( Array3D< T >&& move )
 template< typename T >
 Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 {
-	if( this != &copy )
-	{
-		resize( copy.m_width, copy.m_height, copy.m_depth );
-		if( copy.notNull() )
-		{
+    if( this != &copy )
+    {
+        resize( copy.m_width, copy.m_height, copy.m_depth );
+        if( copy.notNull() )
+        {
             memcpy( m_array, copy.m_array, m_strides.z * m_size.z );
-		}
-	}
-	return *this;
+        }
+    }
+    return *this;
 }
 
 template< typename T >
@@ -121,19 +121,19 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 template< typename T >
 Array3D< T >::~Array3D()
 {
-	invalidate();
+    invalidate();
 }
 
 template< typename T >
 bool Array3D< T >::isNull() const
 {
-	return( m_array == nullptr );
+    return( m_array == nullptr );
 }
 
 template< typename T >
 bool Array3D< T >::notNull() const
 {
-	return( m_array != nullptr );
+    return( m_array != nullptr );
 }
 
 template< typename T >
@@ -163,19 +163,19 @@ void Array3D< T >::invalidate()
 template< typename T >
 int Array3D< T >::width() const
 {
-	return m_size.x;
+    return m_size.x;
 }
 
 template< typename T >
 int Array3D< T >::height() const
 {
-	return m_size.y;
+    return m_size.y;
 }
 
 template< typename T >
 int Array3D< T >::depth() const
 {
-	return m_size.z;
+    return m_size.z;
 }
 
 template< typename T >
@@ -217,11 +217,11 @@ Vector3i Array3D< T >::strides() const
 template< typename T >
 void Array3D< T >::fill( const T& fillValue )
 {
-	int ne = numElements();
-	for( int k = 0; k < ne; ++k )
-	{
-		( *this )[ k ] = fillValue;
-	}
+    int ne = numElements();
+    for( int k = 0; k < ne; ++k )
+    {
+        ( *this )[ k ] = fillValue;
+    }
 }
 
 template< typename T >
@@ -339,20 +339,20 @@ Array3D< T >::operator T* ()
 template< typename T >
 const T& Array3D< T >::operator [] ( int k ) const
 {
-	int x;
-	int y;
-	int z;
-	Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
+    int x;
+    int y;
+    int z;
+    Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
 template< typename T >
 T& Array3D< T >::operator [] ( int k )
 {
-	int x;
-	int y;
-	int z;
-	Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
+    int x;
+    int y;
+    int z;
+    Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
@@ -371,35 +371,35 @@ T& Array3D< T >::operator [] ( const Vector3i& xyz )
 template< typename T >
 bool Array3D< T >::load( const char* filename )
 {
-	FILE* fp = fopen( filename, "rb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
+    FILE* fp = fopen( filename, "rb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
-	bool succeeded = load( fp );
+    bool succeeded = load( fp );
 
-	// close file
-	int fcloseRetVal = fclose( fp );
-	if( fcloseRetVal != 0 )
-	{
-		return false;
-	}
+    // close file
+    int fcloseRetVal = fclose( fp );
+    if( fcloseRetVal != 0 )
+    {
+        return false;
+    }
 
-	return succeeded;
+    return succeeded;
 }
 
 template< typename T >
 bool Array3D< T >::load( FILE* fp )
-{	
-	int dims[6];
-	size_t elementsRead;
-	
+{
+    int dims[6];
+    size_t elementsRead;
+
     elementsRead = fread( dims, sizeof( int ), 6, fp );
-	if( elementsRead != 6 )
-	{
-		return false;
-	}
+    if( elementsRead != 6 )
+    {
+        return false;
+    }
 
     int width = dims[ 0 ];
     int height = dims[ 1 ];
@@ -409,51 +409,51 @@ bool Array3D< T >::load( FILE* fp )
     int sliceStrideBytes = dims[ 5 ];
 
     size_t nBytes = sliceStrideBytes * depth;
-	uint8_t* pBuffer = new uint8_t[ nBytes ];
+    uint8_t* pBuffer = new uint8_t[ nBytes ];
 
-	// read elements
-	elementsRead = fread( pBuffer, 1, nBytes, fp );
-	if( elementsRead != nBytes )
-	{
-		delete[] pBuffer;
-		return false;
-	}
+    // read elements
+    elementsRead = fread( pBuffer, 1, nBytes, fp );
+    if( elementsRead != nBytes )
+    {
+        delete[] pBuffer;
+        return false;
+    }
 
-	// read succeeded, swap contents
+    // read succeeded, swap contents
     m_size = { width, height, depth };
     m_strides = { elementStrideBytes, rowStrideBytes, sliceStrideBytes };
-	
-	if( m_array != nullptr )
-	{
-		delete[] m_array;
-	}
+
+    if( m_array != nullptr )
+    {
+        delete[] m_array;
+    }
     m_array = pBuffer;
 
-	return true;
+    return true;
 }
 
 template< typename T >
 bool Array3D< T >::save( const char* filename )
 {
-	FILE* fp = fopen( filename, "wb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
-	
-	bool succeeded = save( fp );
-	fclose( fp );
-	return succeeded;
+    FILE* fp = fopen( filename, "wb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
+
+    bool succeeded = save( fp );
+    fclose( fp );
+    return succeeded;
 }
 
 template< typename T >
 bool Array3D< T >::save( FILE* fp )
 {
-	// TODO: error checking
+    // TODO: error checking
 
     fwrite( &m_size, sizeof( int ), 3, fp );
     fwrite( &m_strides, sizeof( int ), 3, fp );
     fwrite( m_array, 1, m_size.z * m_strides.z, fp );
 
-	return true;
+    return true;
 }

@@ -6,91 +6,91 @@ PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
     PortableGrayMapIO::PGMData output;
     output.valid = false;
 
-	FILE* pFile = fopen( filename, "rb" );
-	if( pFile == nullptr )
-	{        
-		return output;
-	}
-	
-	char str[255];
+    FILE* pFile = fopen( filename, "rb" );
+    if( pFile == nullptr )
+    {
+        return output;
+    }
 
-	int width;
-	int height;
+    char str[255];
+
+    int width;
+    int height;
     int maxVal;
 
-	fscanf( pFile, " %s", str );
+    fscanf( pFile, " %s", str );
 
-	if( ferror( pFile ) || feof( pFile ) ||
-		( strcmp( str, "P5" ) != 0 ) )
-	{
-		fclose( pFile );
-		return output;
-	}
+    if( ferror( pFile ) || feof( pFile ) ||
+        ( strcmp( str, "P5" ) != 0 ) )
+    {
+        fclose( pFile );
+        return output;
+    }
 
-	// TODO: parse comments
+    // TODO: parse comments
 
-	int nMatches;
-	
-	nMatches = fscanf( pFile, " %d", &width );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return output;
-	}
+    int nMatches;
 
-	nMatches = fscanf( pFile, " %d", &height );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return output;
-	}
+    nMatches = fscanf( pFile, " %d", &width );
+    if( ferror( pFile ) || feof( pFile ) ||
+        ( nMatches < 1 ) )
+    {
+        fclose( pFile );
+        return output;
+    }
 
-	nMatches = fscanf( pFile, " %d", &maxVal );
-	if( ferror( pFile ) || feof( pFile ) ||
-		( nMatches < 1 ) )
-	{
-		fclose( pFile );
-		return output;
-	}
+    nMatches = fscanf( pFile, " %d", &height );
+    if( ferror( pFile ) || feof( pFile ) ||
+        ( nMatches < 1 ) )
+    {
+        fclose( pFile );
+        return output;
+    }
 
-	// There must be exactly one whitespace character after the maxVal specifier.
-	int whitespace = getc( pFile );
-	if( !isspace( whitespace ) )
-	{
-		fclose( pFile );
-		return output;
-	}
+    nMatches = fscanf( pFile, " %d", &maxVal );
+    if( ferror( pFile ) || feof( pFile ) ||
+        ( nMatches < 1 ) )
+    {
+        fclose( pFile );
+        return output;
+    }
 
-	if( maxVal < 0 || maxVal > 65535 )
-	{
-		fclose( pFile );
-		return output;
-	}
+    // There must be exactly one whitespace character after the maxVal specifier.
+    int whitespace = getc( pFile );
+    if( !isspace( whitespace ) )
+    {
+        fclose( pFile );
+        return output;
+    }
+
+    if( maxVal < 0 || maxVal > 65535 )
+    {
+        fclose( pFile );
+        return output;
+    }
 
     output.maxVal = maxVal;
-	if( maxVal < 256 )
-	{
+    if( maxVal < 256 )
+    {
         output.gray8.resize( { width, height } );
-		int nElementsRead = fread( output.gray8, 1, width * height, pFile );
+        int nElementsRead = fread( output.gray8, 1, width * height, pFile );
         if( nElementsRead == width * height )
         {
             output.valid = true;
         }
-	}
-	else // maxVal < 65536
-	{
+    }
+    else // maxVal < 65536
+    {
         output.gray16.resize( { width, height } );
-		int nElementsRead = fread( output.gray16, 2, width * height, pFile );
+        int nElementsRead = fread( output.gray16, 2, width * height, pFile );
         if( nElementsRead == width * height )
         {
             output.valid = true;
         }
     }
 
-	fclose( pFile );
-	return output;
+    fclose( pFile );
+    return output;
 }
 
 
@@ -108,7 +108,7 @@ bool PortableGrayMapIO::writeBinary( const char* filename, Array2DView< const ui
 
     if( image.packed() )
     {
-        fwrite( image, 1, image.width() * image.height(), pf );        
+        fwrite( image, 1, image.width() * image.height(), pf );
     }
     else if( image.elementsArePacked() )
     {
@@ -147,7 +147,7 @@ bool PortableGrayMapIO::writeBinary( const char* filename, Array2DView< const ui
 
     if( image.packed() )
     {
-        fwrite( image, 2, image.width() * image.height(), pf );        
+        fwrite( image, 2, image.width() * image.height(), pf );
     }
     else if( image.elementsArePacked() )
     {

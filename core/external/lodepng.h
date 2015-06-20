@@ -525,7 +525,7 @@ void lodepng_decoder_settings_init(LodePNGDecoderSettings* settings);
 typedef enum LodePNGFilterStrategy
 {
   /*every filter at zero*/
-  LFS_ZERO, 
+  LFS_ZERO,
   /*Use filter that gives minumum sum, as described in the official PNG filter heuristic.*/
   LFS_MINSUM,
   /*Use the filter type that gives smallest Shannon entropy for this scanline. Depending
@@ -537,7 +537,7 @@ typedef enum LodePNGFilterStrategy
   */
   LFS_BRUTE_FORCE,
   /*use predefined_filters buffer: you specify the filter type for each scanline*/
-  LFS_PREDEFINED 
+  LFS_PREDEFINED
 } LodePNGFilterStrategy;
 
 /*automatically use color type with less bits per pixel if losslessly possible. Default: LAC_AUTO*/

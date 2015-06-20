@@ -21,7 +21,7 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
     {
         fclose( fp );
         return false;
-    }    
+    }
 
     if( image.packed() )
     {
@@ -74,7 +74,7 @@ bool PortablePixelMapIO::writeRGBText( const std::string& filename, Array2DView<
     }
 
     int nCharsWritten = 0;
-    
+
     nCharsWritten = fprintf( fp, "P3\n%d %d\n255\n", image.width(), image.height() );
     if( nCharsWritten < 0 )
     {

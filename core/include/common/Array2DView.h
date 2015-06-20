@@ -15,14 +15,14 @@ public:
 
     // The null Array2DView:
     // pointer = nullptr, width = height = 0.
-	Array2DView();
+    Array2DView();
 
-	// Create an Array2DView with:
+    // Create an Array2DView with:
     // the default element stride of sizeof( T )
-	// and the default row stride of width * sizeof( T ).
-	Array2DView( void* pPointer, const Vector2i& size );
+    // and the default row stride of width * sizeof( T ).
+    Array2DView( void* pPointer, const Vector2i& size );
 
-	// Create an Array2DView with specified
+    // Create an Array2DView with specified
     // size { x, y } in elements
     // and strides { elementStride, rowStride } in bytes.
     Array2DView( void* pPointer, const Vector2i& size, const Vector2i& strides );
@@ -37,37 +37,37 @@ public:
     T* pointer();
 
     T* elementPointer( const Vector2i& xy );
-	T* rowPointer( int y );
+    T* rowPointer( int y );
 
-	T& operator [] ( int k );
-	T& operator [] ( const Vector2i& xy );
+    T& operator [] ( int k );
+    T& operator [] ( const Vector2i& xy );
 
-	// The logical size of the array view
-	// (i.e., how many elements of type T there are).
-	int width() const;
-	int height() const;
-	Vector2i size() const;    
+    // The logical size of the array view
+    // (i.e., how many elements of type T there are).
+    int width() const;
+    int height() const;
+    Vector2i size() const;
     int numElements() const;
 
-	// The space between the start of elements in bytes.
-	int elementStrideBytes() const;
+    // The space between the start of elements in bytes.
+    int elementStrideBytes() const;
 
-	// The space between the start of rows in bytes.
-	int rowStrideBytes() const;
+    // The space between the start of rows in bytes.
+    int rowStrideBytes() const;
 
     // { elementStride, rowStride } in bytes.
     Vector2i strides() const;
 
-	// Returns true if there is no space between adjacent elements *within* a row.
-	bool elementsArePacked() const;
+    // Returns true if there is no space between adjacent elements *within* a row.
+    bool elementsArePacked() const;
 
-	// Returns true if there is no space between adjacent rows,
-	// i.e., if rowStrideBytes() == width() * elementStrideBytes().
-	bool rowsArePacked() const;
+    // Returns true if there is no space between adjacent rows,
+    // i.e., if rowStrideBytes() == width() * elementStrideBytes().
+    bool rowsArePacked() const;
 
-	// Returns true if elementsArePacked() && rowsArePacked(),
-	// also known as "linear".
-	bool packed() const;
+    // Returns true if elementsArePacked() && rowsArePacked(),
+    // also known as "linear".
+    bool packed() const;
 
     // Conversion operator to Array2DView< const T >
     operator Array2DView< const T >() const;

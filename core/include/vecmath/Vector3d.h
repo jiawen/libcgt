@@ -7,58 +7,58 @@ class Vector3d
 {
 public:
 
-	Vector3d();
-	Vector3d( double fx, double fy, double fz );
-	Vector3d( const Vector2d& xy, double z );
-	Vector3d( double x, const Vector2d& yz );
+    Vector3d();
+    Vector3d( double fx, double fy, double fz );
+    Vector3d( const Vector2d& xy, double z );
+    Vector3d( double x, const Vector2d& yz );
 
-	Vector3d( const Vector3d& rv ); // copy constructor
-	Vector3d( const Vector3f& rv );
-	Vector3d& operator = ( const Vector3d& rv ); // assignment operator
-	// no destructor necessary
+    Vector3d( const Vector3d& rv ); // copy constructor
+    Vector3d( const Vector3f& rv );
+    Vector3d& operator = ( const Vector3d& rv ); // assignment operator
+    // no destructor necessary
 
-	// returns the ith element
-	const double& operator [] ( int i ) const;
-	double& operator [] ( int i );
-	
-	Vector2d xy() const;
-	Vector2d xz() const;
-	Vector2d yz() const;
-	// TODO: all the other combinations
+    // returns the ith element
+    const double& operator [] ( int i ) const;
+    double& operator [] ( int i );
 
-	Vector3d xyz() const;
-	Vector3d yzx() const;
-	Vector3d zxy() const;
-	// TODO: all the other combinations
+    Vector2d xy() const;
+    Vector2d xz() const;
+    Vector2d yz() const;
+    // TODO: all the other combinations
 
-	double abs() const;
-	double absSquared() const;
-	void normalize();
-	Vector3d normalized() const;
+    Vector3d xyz() const;
+    Vector3d yzx() const;
+    Vector3d zxy() const;
+    // TODO: all the other combinations
 
-	void negate();
+    double abs() const;
+    double absSquared() const;
+    void normalize();
+    Vector3d normalized() const;
 
-	// ---- Utility ----
-	operator const double* (); // automatic type conversion for GL
-	void print() const;
+    void negate();
 
-	static double dot( const Vector3d& v0, const Vector3d& v1 );	
+    // ---- Utility ----
+    operator const double* (); // automatic type conversion for GL
+    void print() const;
 
-	static Vector3d cross( const Vector3d& v0, const Vector3d& v1 );
+    static double dot( const Vector3d& v0, const Vector3d& v1 );
 
-	// returns v0 * ( 1 - alpha ) * v1 * alpha
-	static Vector3d lerp( const Vector3d& v0, const Vector3d& v1, double alpha );
+    static Vector3d cross( const Vector3d& v0, const Vector3d& v1 );
 
-	union
-	{
-		struct
-		{
-			double x;
-			double y;
-			double z;
-		};
-		double m_elements[3];
-	};
+    // returns v0 * ( 1 - alpha ) * v1 * alpha
+    static Vector3d lerp( const Vector3d& v0, const Vector3d& v1, double alpha );
+
+    union
+    {
+        struct
+        {
+            double x;
+            double y;
+            double z;
+        };
+        double m_elements[3];
+    };
 
 };
 

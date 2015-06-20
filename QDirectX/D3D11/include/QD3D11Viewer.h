@@ -15,7 +15,7 @@
 //    change up vector with middle mouse button
 //    zoom in/out with wheel
 //    deal with switching modes: when the camera isn't nicely facing the scene center
-// 
+//
 //    keep moving when the mouse move point leaves the sphere
 //      - keep previous rotation around
 //      - switch to accumulating rotations?
@@ -27,62 +27,62 @@
 
 class QD3D11Viewer : public QD3D11Widget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
-	QD3D11Viewer( QWidget* parent = nullptr,
-		bool useTrackballMode = true,
-		const Vector3f& sceneCenter = Vector3f( 0, 0, 0 ),
-		const Vector3f& sceneUpVector = Vector3f( 0, 1, 0 ) );
+    QD3D11Viewer( QWidget* parent = nullptr,
+        bool useTrackballMode = true,
+        const Vector3f& sceneCenter = Vector3f( 0, 0, 0 ),
+        const Vector3f& sceneUpVector = Vector3f( 0, 1, 0 ) );
 
-	bool useTrackballMode() const;
-	void setUseTrackballMode( bool b );
+    bool useTrackballMode() const;
+    void setUseTrackballMode( bool b );
 
-	PerspectiveCamera& camera();
-	void setCamera( const PerspectiveCamera& camera );
+    PerspectiveCamera& camera();
+    void setCamera( const PerspectiveCamera& camera );
 
-	FPSControls& fpsControls();
-	TrackballControls& trackballControls();
+    FPSControls& fpsControls();
+    TrackballControls& trackballControls();
 
-	// TODO: xboxController and upVector goes into FPSControls
-	XboxController* xboxController0();
+    // TODO: xboxController and upVector goes into FPSControls
+    XboxController* xboxController0();
 
 signals:
 
-	// Convenient signals to move scene logic outside of viewer subclasses
-	// (say, into a controller class)
-	void keyReleased( QKeyEvent* event );
-	void viewpointChanged( const PerspectiveCamera& camera, int width, int height );
+    // Convenient signals to move scene logic outside of viewer subclasses
+    // (say, into a controller class)
+    void keyReleased( QKeyEvent* event );
+    void viewpointChanged( const PerspectiveCamera& camera, int width, int height );
 
 protected:
 
-	// keyboard handlers
-	virtual void keyPressEvent( QKeyEvent* event );
-	virtual void keyReleaseEvent( QKeyEvent* event );
+    // keyboard handlers
+    virtual void keyPressEvent( QKeyEvent* event );
+    virtual void keyReleaseEvent( QKeyEvent* event );
 
-	// mouse handlers
-	virtual void mousePressEvent( QMouseEvent* event );
-	virtual void mouseMoveEvent( QMouseEvent* event );
-	virtual void mouseReleaseEvent( QMouseEvent* event );
-	virtual void wheelEvent( QWheelEvent* event );
+    // mouse handlers
+    virtual void mousePressEvent( QMouseEvent* event );
+    virtual void mouseMoveEvent( QMouseEvent* event );
+    virtual void mouseReleaseEvent( QMouseEvent* event );
+    virtual void wheelEvent( QWheelEvent* event );
 
-	virtual void resizeD3D( int width, int height );
+    virtual void resizeD3D( int width, int height );
 
-	// sample keyboard state (moves the camera)
-	virtual void updateKeyboard();
+    // sample keyboard state (moves the camera)
+    virtual void updateKeyboard();
 
-	// sample xbox controller state (i.e. move the camera with thumbsticks)
-	virtual void updateXboxController();
-	
-	XboxController* m_pXboxController0;
+    // sample xbox controller state (i.e. move the camera with thumbsticks)
+    virtual void updateXboxController();
+
+    XboxController* m_pXboxController0;
 
 private:
 
-	PerspectiveCamera m_camera;
+    PerspectiveCamera m_camera;
 
-	bool m_useTrackballMode;
+    bool m_useTrackballMode;
 
-	FPSControls m_fpsControls;
-	TrackballControls m_trackballControls;
+    FPSControls m_fpsControls;
+    TrackballControls m_trackballControls;
 };

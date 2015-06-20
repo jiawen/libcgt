@@ -9,19 +9,19 @@
 enum class GLVertexAttributeType
 {
     // Available to both glVertexAttribFormat() and glVertexAttribIFormat()
-	UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
-	UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
-	UNSIGNED_INT = GL_UNSIGNED_INT,	
+    UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+    UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
+    UNSIGNED_INT = GL_UNSIGNED_INT,
 
-	BYTE = GL_BYTE,
-	SHORT = GL_SHORT,
-	INT = GL_INT,
+    BYTE = GL_BYTE,
+    SHORT = GL_SHORT,
+    INT = GL_INT,
 
     // Also available to glVertexAttribFormat(), but not glVertexAttribIFormat()
     FIXED = GL_FIXED,
-	
+
     HALF_FLOAT = GL_HALF_FLOAT,
-	FLOAT = GL_FLOAT,
+    FLOAT = GL_FLOAT,
 
     // 4 signed integers packed into a single 32-bit quantity.
     INT_2_10_10_10_REV = GL_INT_2_10_10_10_REV,

@@ -9,17 +9,17 @@
 
 struct VertexPosition4fNormal3fColor4fTexture2f
 {
-	VertexPosition4fNormal3fColor4fTexture2f();
-	VertexPosition4fNormal3fColor4fTexture2f( Vector4f position, Vector3f normal, Vector4f color, Vector2f texture );
+    VertexPosition4fNormal3fColor4fTexture2f();
+    VertexPosition4fNormal3fColor4fTexture2f( Vector4f position, Vector3f normal, Vector4f color, Vector2f texture );
 
-	Vector4f m_position;
-	Vector3f m_normal;
-	Vector4f m_color;
-	Vector2f m_texture;
+    Vector4f m_position;
+    Vector3f m_normal;
+    Vector4f m_color;
+    Vector2f m_texture;
 
-	static int numElements();
-	static int sizeInBytes();
-	static D3D10_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static D3D10_INPUT_ELEMENT_DESC s_layout[];
 };
 
 #endif // VERTEX_POSITION4F_NORMAL3F_COLOR4F_TEXTURE2F_H

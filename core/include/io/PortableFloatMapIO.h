@@ -31,8 +31,8 @@ public:
     // Writes a standard "PFM" format.
     // Header is "PF" - rgb.
     static bool write( const std::string& filename, Array2DView< const Vector3f > image );
-	
-	// Writes a *nonstandard* "PFM4" format.
-	// (header is "PF4", and includes an alpha channel)
+
+    // Writes a *nonstandard* "PFM4" format.
+    // (header is "PF4", and includes an alpha channel)
     static bool write( const std::string& filename, Array2DView< const Vector4f > image );
 };

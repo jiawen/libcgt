@@ -16,23 +16,23 @@ class Clock
 {
 public:
 
-	Clock();
+    Clock();
 
-	// Returns the current time in counts
-	int64 getCounterValue() const;
+    // Returns the current time in counts
+    int64 getCounterValue() const;
 
-	// Returns the frequency (counts per second)	
-	float getFrequency() const;
+    // Returns the frequency (counts per second)
+    float getFrequency() const;
 
-	// Given a difference in counts (two calls to getCounterValue())
-	// Returns the milliseconds between them
-	float convertIntervalToMillis( int64 interval ) const;
+    // Given a difference in counts (two calls to getCounterValue())
+    // Returns the milliseconds between them
+    float convertIntervalToMillis( int64 interval ) const;
 
-	// The inverse of convertIntervalToMillis()
-	int64 convertMillisToCounterInterval( float millis ) const;
+    // The inverse of convertIntervalToMillis()
+    int64 convertMillisToCounterInterval( float millis ) const;
 
 private:
 
-	float m_frequency;
+    float m_frequency;
 };
 #endif

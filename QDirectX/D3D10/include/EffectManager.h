@@ -11,18 +11,18 @@ class EffectManager
 {
 public:
 
-	EffectManager( ID3D10Device* pDevice );
-	virtual ~EffectManager();
+    EffectManager( ID3D10Device* pDevice );
+    virtual ~EffectManager();
 
-	bool loadFromFile( QString name, QString filename );
-	bool loadFromBinaryFile( QString name, QString filename );
-	
-	ID3D10Effect* getEffect( QString name );
+    bool loadFromFile( QString name, QString filename );
+    bool loadFromBinaryFile( QString name, QString filename );
+
+    ID3D10Effect* getEffect( QString name );
 
 private:
 
-	ID3D10Device* m_pDevice;
-	QHash< QString, ID3D10Effect* > m_effects;
+    ID3D10Device* m_pDevice;
+    QHash< QString, ID3D10Effect* > m_effects;
 
 };
 

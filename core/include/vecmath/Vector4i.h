@@ -10,80 +10,80 @@ class Vector4f;
 
 class Vector4i
 {
-public:	
+public:
 
-	Vector4i(); // (0,0,0,0)
-	explicit Vector4i( int i ); // fills all 4 components with i
+    Vector4i(); // (0,0,0,0)
+    explicit Vector4i( int i ); // fills all 4 components with i
     Vector4i( std::initializer_list< int > xyzw );
-	Vector4i( const Vector2i& xy, int z, int w );
-	Vector4i( int x, const Vector2i& yz, int w );
-	Vector4i( int x, int y, const Vector2i& zw );
-	Vector4i( const Vector2i& xy, const Vector2i& zw );
-	Vector4i( const Vector3i& xyz, int w );
-	Vector4i( int x, const Vector3i& yzw );
-    
-	Vector4i( const Vector4i& rv ); // copy constructor	
-	Vector4i& operator = ( const Vector4i& rv ); // assignment operator
-	// no destructor necessary
+    Vector4i( const Vector2i& xy, int z, int w );
+    Vector4i( int x, const Vector2i& yz, int w );
+    Vector4i( int x, int y, const Vector2i& zw );
+    Vector4i( const Vector2i& xy, const Vector2i& zw );
+    Vector4i( const Vector3i& xyz, int w );
+    Vector4i( int x, const Vector3i& yzw );
 
-	// returns the ith element
-	const int& operator [] ( int i ) const;
-	int& operator [] ( int i );
-	
-	Vector2i xy() const;
-	Vector2i yz() const;
-	Vector2i zw() const;
-	Vector2i wx() const;
-	// TODO: the other combinations
+    Vector4i( const Vector4i& rv ); // copy constructor
+    Vector4i& operator = ( const Vector4i& rv ); // assignment operator
+    // no destructor necessary
 
-	Vector3i xyz() const;
-	Vector3i yzw() const;
-	Vector3i zwx() const;
-	Vector3i wxy() const;
+    // returns the ith element
+    const int& operator [] ( int i ) const;
+    int& operator [] ( int i );
 
-	Vector3i xyw() const;
-	Vector3i yzx() const;
-	Vector3i zwy() const;
-	Vector3i wxz() const;
-	// TODO: the rest of the vec3 combinations
+    Vector2i xy() const;
+    Vector2i yz() const;
+    Vector2i zw() const;
+    Vector2i wx() const;
+    // TODO: the other combinations
 
-	// TODO: swizzle all the vec4s
+    Vector3i xyz() const;
+    Vector3i yzw() const;
+    Vector3i zwx() const;
+    Vector3i wxy() const;
 
-	float norm() const;
-	int normSquared() const;
-	Vector4f normalized() const;
+    Vector3i xyw() const;
+    Vector3i yzx() const;
+    Vector3i zwy() const;
+    Vector3i wxz() const;
+    // TODO: the rest of the vec3 combinations
 
-	// if v.z != 0, v = v / v.w
-	void homogenize();
-	Vector4i homogenized() const;
+    // TODO: swizzle all the vec4s
 
-	void negate();
-	
-	// implicit cast
-	operator const int* () const;
-	operator int* ();
-	QString toString() const;
+    float norm() const;
+    int normSquared() const;
+    Vector4f normalized() const;
 
-	Vector4i& operator += ( const Vector4i& v );
-	Vector4i& operator -= ( const Vector4i& v );
-	Vector4i& operator *= ( int i );
-	Vector4i& operator /= ( int i );
+    // if v.z != 0, v = v / v.w
+    void homogenize();
+    Vector4i homogenized() const;
+
+    void negate();
+
+    // implicit cast
+    operator const int* () const;
+    operator int* ();
+    QString toString() const;
+
+    Vector4i& operator += ( const Vector4i& v );
+    Vector4i& operator -= ( const Vector4i& v );
+    Vector4i& operator *= ( int i );
+    Vector4i& operator /= ( int i );
 
 
-	static int dot( const Vector4i& v0, const Vector4i& v1 );
-	static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
+    static int dot( const Vector4i& v0, const Vector4i& v1 );
+    static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
 
-	union
-	{
-		struct
-		{
-			int x;
-			int y;
-			int z;
-			int w;
-		};
-		int m_elements[ 4 ];
-	};
+    union
+    {
+        struct
+        {
+            int x;
+            int y;
+            int z;
+            int w;
+        };
+        int m_elements[ 4 ];
+    };
 
 };
 

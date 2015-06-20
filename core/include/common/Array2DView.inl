@@ -2,7 +2,7 @@ template< typename T >
 Array2DView< T >::Array2DView() :
     m_size( Vector2i{ 0, 0, } ),
     m_strides( Vector2i{ 0, 0 } ),
-	m_pPointer( nullptr )
+    m_pPointer( nullptr )
 
 {
 
@@ -64,7 +64,7 @@ T* Array2DView< T >::pointer()
 
 template< typename T >
 T* Array2DView< T >::elementPointer( const Vector2i& xy )
-{    
+{
     return reinterpret_cast< T* >( &( m_pPointer[ Vector2i::dot( xy, m_strides ) ] ) );
 }
 
@@ -77,9 +77,9 @@ T* Array2DView< T >::rowPointer( int y )
 template< typename T >
 T& Array2DView< T >::operator [] ( int k )
 {
-	int x;
-	int y;
-	Indexing::indexToSubscript2D( k, m_size.x, x, y );
+    int x;
+    int y;
+    Indexing::indexToSubscript2D( k, m_size.x, x, y );
     return ( *this )[ { x, y } ];
 }
 
@@ -116,13 +116,13 @@ int Array2DView< T >::numElements() const
 template< typename T >
 int Array2DView< T >::elementStrideBytes() const
 {
-	return m_strides.x;
+    return m_strides.x;
 }
 
 template< typename T >
 int Array2DView< T >::rowStrideBytes() const
 {
-	return m_strides.y;
+    return m_strides.y;
 }
 
 template< typename T >
@@ -140,7 +140,7 @@ bool Array2DView< T >::rowsArePacked() const
 template< typename T >
 bool Array2DView< T >::packed() const
 {
-	return elementsArePacked() && rowsArePacked();
+    return elementsArePacked() && rowsArePacked();
 }
 
 template< typename T >

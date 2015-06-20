@@ -103,51 +103,51 @@ bool GLTexture2D::set( Array2DView< const uint8x3 > data,
     GLImageFormat format,
     const Vector2i& dstOffset )
 {
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
     if( format != GLImageFormat::RGB &&
-		format != GLImageFormat::BGR )
-	{
-		return false;
-	}
+        format != GLImageFormat::BGR )
+    {
+        return false;
+    }
 
     // TODO(ARB_DSA): https://www.opengl.org/registry/specs/ARB/direct_state_access.txt
     // See 18): it was resolved to not deal with the pixel store bit.
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed: return false if not
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed: return false if not
 
-	glTextureSubImage2D( id(), 0,
-		dstOffset.x, dstOffset.y, data.width(), data.height(),
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
-		data.pointer()
-	);
+    glTextureSubImage2D( id(), 0,
+        dstOffset.x, dstOffset.y, data.width(), data.height(),
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+        data.pointer()
+    );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTexture2D::set( Array2DView< const uint8x4 > data,
-	GLImageFormat format,
-	const Vector2i& dstOffset )
+    GLImageFormat format,
+    const Vector2i& dstOffset )
 {
 
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
-	if( format != GLImageFormat::RGBA &&
-		format != GLImageFormat::BGRA )
-	{
-		return false;
-	}
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
+    if( format != GLImageFormat::RGBA &&
+        format != GLImageFormat::BGRA )
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed
 
     glTextureSubImage2D
     (
@@ -157,31 +157,31 @@ bool GLTexture2D::set( Array2DView< const uint8x4 > data,
         data.pointer()
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTexture2D::set( Array2DView< const float > data,
-	GLImageFormat format,
+    GLImageFormat format,
     const Vector2i& dstOffset )
 {
 
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
-	if( format != GLImageFormat::RED &&
-		format != GLImageFormat::GREEN &&
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
+    if( format != GLImageFormat::RED &&
+        format != GLImageFormat::GREEN &&
         format != GLImageFormat::BLUE &&
         format != GLImageFormat::ALPHA )
-	{
-		return false;
-	}
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed
 
     glTextureSubImage2D
     (
@@ -191,23 +191,23 @@ bool GLTexture2D::set( Array2DView< const float > data,
         data.pointer()
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat format )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
     if( format != GLImageFormat::RED &&
         format != GLImageFormat::GREEN &&
@@ -216,105 +216,105 @@ bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat format )
     {
         return false;
     }
-	
-	// TODO: mipmap level
+
+    // TODO: mipmap level
     // TODO: glGetTextureSubImage()
-	glGetTextureImage( id(), 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output.width() * output.height(), output );
-	return true;
+    glGetTextureImage( id(), 0,
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output.width() * output.height(), output );
+    return true;
 }
 
 bool GLTexture2D::get( Array2DView< uint8x4 > output, GLImageFormat format )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
     if( format != GLImageFormat::RGBA &&
         format != GLImageFormat::BGRA )
     {
         return false;
     }
-	
-	// TODO: mipmap level
-	glGetTextureImage( id(), 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+
+    // TODO: mipmap level
+    glGetTextureImage( id(), 0,
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
         output.width() * output.height() * output.elementStrideBytes(), output );
-	return true;
+    return true;
 }
 
-bool GLTexture2D::get( Array2DView< float > output )					  
+bool GLTexture2D::get( Array2DView< float > output )
 {
-	// TODO: glPixelStorei allows some packing:
+    // TODO: glPixelStorei allows some packing:
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: GL_RG_INTEGER
-	// output can be normalized or not
-	// GL_RG_INTEGER for not normalized
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
-	// TODO: level
-	glGetTextureImage( id(), 0,
-		GL_RED, GL_FLOAT,
+    // TODO: GL_RG_INTEGER
+    // output can be normalized or not
+    // GL_RG_INTEGER for not normalized
+
+    // TODO: level
+    glGetTextureImage( id(), 0,
+        GL_RED, GL_FLOAT,
         output.width() * output.height() * output.elementStrideBytes(), output );
-	return true;
+    return true;
 }
 
-bool GLTexture2D::get( Array2DView< Vector2f > output )					  
+bool GLTexture2D::get( Array2DView< Vector2f > output )
 {
-	// TODO: glPixelStorei allows some packing:
+    // TODO: glPixelStorei allows some packing:
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: GL_RG_INTEGER
-	// output can be normalized or not
-	// GL_RG_INTEGER for not normalized
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
-	// TODO: level
-	glGetTextureImage( id(), 0,
-		GL_RG, GL_FLOAT,
+    // TODO: GL_RG_INTEGER
+    // output can be normalized or not
+    // GL_RG_INTEGER for not normalized
+
+    // TODO: level
+    glGetTextureImage( id(), 0,
+        GL_RG, GL_FLOAT,
         output.width() * output.height() * output.elementStrideBytes(), output );
-	return true;
+    return true;
 }
 
-bool GLTexture2D::get( Array2DView< Vector4f > output )					  
+bool GLTexture2D::get( Array2DView< Vector4f > output )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: level
-	glGetTextureImage( id(), 0,
-		GL_RGBA, GL_FLOAT,
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
+
+    // TODO: level
+    glGetTextureImage( id(), 0,
+        GL_RGBA, GL_FLOAT,
         output.width() * output.height() * output.elementStrideBytes(), output );
-	return true;
+    return true;
 }
 
 void GLTexture2D::generateMipMaps()
@@ -323,18 +323,18 @@ void GLTexture2D::generateMipMaps()
 }
 
 void GLTexture2D::drawNV( GLSamplerObject* pSampler,
-						 float z,
-						 const Rect2f& texCoords )
+                         float z,
+                         const Rect2f& texCoords )
 {
-	drawNV( Rect2f( size() ), pSampler, z, texCoords );
+    drawNV( Rect2f( size() ), pSampler, z, texCoords );
 }
 
 void GLTexture2D::drawNV( const Rect2f& windowCoords,
-						 GLSamplerObject* pSampler,
-						 float z,
-						 const Rect2f& texCoords )
+                         GLSamplerObject* pSampler,
+                         float z,
+                         const Rect2f& texCoords )
 {
-	GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
+    GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
 
     Vector2f p0 = windowCoords.origin();
     Vector2f p1 = windowCoords.limit();
@@ -345,8 +345,8 @@ void GLTexture2D::drawNV( const Rect2f& windowCoords,
     glDrawTextureNV( id(), samplerId,
         p0.x, p0.y,
         p1.x, p1.y,
-		z,
+        z,
         t0.x, t0.y,
         t1.x, t1.y
-	);
+    );
 }

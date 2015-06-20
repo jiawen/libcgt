@@ -26,95 +26,95 @@ class D3D11Utils
 {
 public:
 
-	// Returns a std::vector of DXGI adapter on this machine
-	// Be sure to release the pointers
-	static std::vector< IDXGIAdapter* > getDXGIAdapters();
+    // Returns a std::vector of DXGI adapter on this machine
+    // Be sure to release the pointers
+    static std::vector< IDXGIAdapter* > getDXGIAdapters();
 
-	static D3D11_VIEWPORT createViewport( int width, int height );
-	static D3D11_VIEWPORT createViewport( const Vector2i& wh );
-	static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin = 0, float zMax = 1 );
-	static D3D11_VIEWPORT createViewport( const Rect2f& rect, float zMin = 0, float zMax = 1 );
+    static D3D11_VIEWPORT createViewport( int width, int height );
+    static D3D11_VIEWPORT createViewport( const Vector2i& wh );
+    static D3D11_VIEWPORT createViewport( int topLeftX, int topLeftY, int width, int height, float zMin = 0, float zMax = 1 );
+    static D3D11_VIEWPORT createViewport( const Rect2f& rect, float zMin = 0, float zMax = 1 );
 
-	// creates a unit box [0,1]^3
-	static std::vector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
+    // creates a unit box [0,1]^3
+    static std::vector< VertexPosition4fNormal3fTexture2f > createBox( bool normalsPointOutward = true );
 
-	// TODO: move these into its own class
-	template< typename T >
-	static ID3D11InputLayout* createInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
-	{
-		ID3D11InputLayout* pInputLayout;
+    // TODO: move these into its own class
+    template< typename T >
+    static ID3D11InputLayout* createInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
+    {
+        ID3D11InputLayout* pInputLayout;
 
-		D3DX11_PASS_DESC passDesc;
-		pPass->GetDesc( &passDesc );
-		HRESULT hr = pDevice->CreateInputLayout( T::s_layout, T::numElements(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
-		if( SUCCEEDED( hr ) )
-		{
-			return pInputLayout;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-	
-	template< typename TVertex, typename TInstance >
-	static ID3D11InputLayout* createInstancedInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
-	{
-		ID3D11InputLayout* pInputLayout;
+        D3DX11_PASS_DESC passDesc;
+        pPass->GetDesc( &passDesc );
+        HRESULT hr = pDevice->CreateInputLayout( T::s_layout, T::numElements(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
+        if( SUCCEEDED( hr ) )
+        {
+            return pInputLayout;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
 
-		D3DX11_PASS_DESC passDesc;
-		pPass->GetDesc( &passDesc );
+    template< typename TVertex, typename TInstance >
+    static ID3D11InputLayout* createInstancedInputLayout( ID3D11Device* pDevice, ID3DX11EffectPass* pPass )
+    {
+        ID3D11InputLayout* pInputLayout;
 
-		// merge the input layouts
-		int nVertexElements = TVertex::numElements();
-		int nInstanceElements = TInstance::numElements();
+        D3DX11_PASS_DESC passDesc;
+        pPass->GetDesc( &passDesc );
 
-		std::vector< D3D11_INPUT_ELEMENT_DESC > layout( nVertexElements + nInstanceElements );
-		for( int i = 0; i < nVertexElements; ++i )
-		{
-			layout[i] = TVertex::s_layout[i];
-		}
-		for( int j = 0; j < nInstanceElements; ++j )
-		{
-			layout[ nVertexElements + j ] = TInstance::s_defaultInstanceLayout[j];
-		}
+        // merge the input layouts
+        int nVertexElements = TVertex::numElements();
+        int nInstanceElements = TInstance::numElements();
 
-		HRESULT hr = pDevice->CreateInputLayout( layout.data(), layout.size(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
-		if( SUCCEEDED( hr ) )
-		{
-			return pInputLayout;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
+        std::vector< D3D11_INPUT_ELEMENT_DESC > layout( nVertexElements + nInstanceElements );
+        for( int i = 0; i < nVertexElements; ++i )
+        {
+            layout[i] = TVertex::s_layout[i];
+        }
+        for( int j = 0; j < nInstanceElements; ++j )
+        {
+            layout[ nVertexElements + j ] = TInstance::s_defaultInstanceLayout[j];
+        }
 
-	// TODO: take in a PerspectiveCamera
-	// TODO: make a version that takes in a color, one that doesn't
-	// TODO: use frustumLines
-	// Create a DynamicVertexBuffer< VertexPosition4fColor4f >
-	// it has length 24 (12 lines, 2 * 12 vertices)
-	static DynamicVertexBuffer* createFrustum( ID3D11Device* pDevice,
-		const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
-		const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
+        HRESULT hr = pDevice->CreateInputLayout( layout.data(), layout.size(), passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &pInputLayout );
+        if( SUCCEEDED( hr ) )
+        {
+            return pInputLayout;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
 
-	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray );
-	static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
+    // TODO: take in a PerspectiveCamera
+    // TODO: make a version that takes in a color, one that doesn't
+    // TODO: use frustumLines
+    // Create a DynamicVertexBuffer< VertexPosition4fColor4f >
+    // it has length 24 (12 lines, 2 * 12 vertices)
+    static DynamicVertexBuffer* createFrustum( ID3D11Device* pDevice,
+        const Vector3f& eye, const std::vector< Vector3f >& frustumCorners,
+        const Vector4f& color = Vector4f( 1, 1, 1, 1 ) );
 
-	static std::vector< Vector4f > createAxes();
+    static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, VertexPosition4f* vertexArray );
+    static void writeFrustum( const Vector3f& eye, const std::vector< Vector3f >& frustumCorners, const Vector4f& color, VertexPosition4fColor4f* vertexArray );
 
-	// Create a DynamicVertexBuffer of 6 vertices
-	// each vertex is a VertexPosition4fColor4f
-	static DynamicVertexBuffer* createAxes( ID3D11Device* pDevice );
+    static std::vector< Vector4f > createAxes();
 
-	// writes a set of axes into buffer
-	static void writeAxes( VertexPosition4fColor4f* vertexArray );	
+    // Create a DynamicVertexBuffer of 6 vertices
+    // each vertex is a VertexPosition4fColor4f
+    static DynamicVertexBuffer* createAxes( ID3D11Device* pDevice );
 
-	
-	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename );
-	static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename );	
+    // writes a set of axes into buffer
+    static void writeAxes( VertexPosition4fColor4f* vertexArray );
 
-	
+
+    static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticDataBuffer > pBuffer, QString filename );
+    static bool saveFloat2BufferToTXT( ID3D11Device* pDevice, std::shared_ptr< StaticStructuredBuffer > pBuffer, QString filename );
+
+
 
 };

@@ -15,27 +15,27 @@ class FPSEstimator
 {
 public:
 
-	FPSEstimator( int nSamples = 128 );
+    FPSEstimator( int nSamples = 128 );
 
-	void update();
+    void update();
 
-	float framePeriodMilliseconds() const;
-	float framesPerSecond() const;
+    float framePeriodMilliseconds() const;
+    float framesPerSecond() const;
 
-	// Returns the average frame period, rounded to the nearest millisecond, as a QString
-	QString framePeriodMillisecondsString() const;
+    // Returns the average frame period, rounded to the nearest millisecond, as a QString
+    QString framePeriodMillisecondsString() const;
 
-	// Returns the average framerate, rounded to the nearest Hz, as a QString
-	QString framesPerSecondString() const;	
+    // Returns the average framerate, rounded to the nearest Hz, as a QString
+    QString framesPerSecondString() const;
 
 private:
 
   QElapsedTimer m_clock;
-	
-	bool m_isFirstUpdate;
-	qint64 m_lastUpdateTime;
-	int m_nextSampleIndex;
-	int m_nActualSamples;
-	std::vector< qint64 > m_frameTimeSamples;
+
+    bool m_isFirstUpdate;
+    qint64 m_lastUpdateTime;
+    int m_nextSampleIndex;
+    int m_nActualSamples;
+    std::vector< qint64 > m_frameTimeSamples;
 
 };

@@ -9,67 +9,67 @@
 // static
 GLProgram* GLProgram::fromShaders( std::vector< GLShader* > shaders )
 {
-	// Create the program.
-	GLuint id = glCreateProgram();
-	
-	// Attach all the shaders.
-	for( size_t i = 0; i < shaders.size(); ++i )
-	{
-		glAttachShader( id, shaders[i]->id() );
-	}
-	
-    // Link.
-	glLinkProgram( id );
+    // Create the program.
+    GLuint id = glCreateProgram();
 
-	// If it failed, then print the info log and return nullptr.
-	GLint status;
+    // Attach all the shaders.
+    for( size_t i = 0; i < shaders.size(); ++i )
+    {
+        glAttachShader( id, shaders[i]->id() );
+    }
+
+    // Link.
+    glLinkProgram( id );
+
+    // If it failed, then print the info log and return nullptr.
+    GLint status;
     glGetProgramiv( id, GL_LINK_STATUS, &status );
     if( status == GL_FALSE )
-	{
+    {
         // infoLogLength includes the terminating '\0'.
-		GLint infoLogLength;
-		glGetProgramiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
+        GLint infoLogLength;
+        glGetProgramiv( id, GL_INFO_LOG_LENGTH, &infoLogLength );
 
-		std::string infoLog( infoLogLength, '\0' );
-		glGetProgramInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
-			NULL, &( infoLog[0] ) );
+        std::string infoLog( infoLogLength, '\0' );
+        glGetProgramInfoLog( id, static_cast< GLsizei >( infoLog.size() ),
+            NULL, &( infoLog[0] ) );
 
-		printf( "Program linking failed:\n%s\n", infoLog.c_str() );
+        printf( "Program linking failed:\n%s\n", infoLog.c_str() );
 
-		glDeleteProgram( id );
+        glDeleteProgram( id );
 
-		return nullptr;
-	}
+        return nullptr;
+    }
 
-	return new GLProgram( id );
+    return new GLProgram( id );
 }
 
 // static
 void GLProgram::disableAll()
 {
-	glUseProgram( 0 );
+    glUseProgram( 0 );
 }
 
 GLProgram::~GLProgram()
 {
-	glDeleteProgram( m_id );
+    glDeleteProgram( m_id );
 }
 
 GLuint GLProgram::id() const
 {
-	return m_id;
+    return m_id;
 }
 
 GLint GLProgram::numActiveUniforms() const
 {
-	GLint numActiveUniforms;
-	glGetProgramiv( m_id, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
-	return numActiveUniforms;
+    GLint numActiveUniforms;
+    glGetProgramiv( m_id, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
+    return numActiveUniforms;
 }
 
 GLint GLProgram::uniformLocation( const GLchar* name ) const
 {
-	return glGetUniformLocation( m_id, name );
+    return glGetUniformLocation( m_id, name );
 }
 
 Matrix4f GLProgram::getUniformMatrix4f( GLint uniformLocation )
@@ -81,17 +81,17 @@ Matrix4f GLProgram::getUniformMatrix4f( GLint uniformLocation )
 
 void GLProgram::setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix )
 {
-	glProgramUniformMatrix4fv( m_id, uniformLocation, 1, false, matrix );
+    glProgramUniformMatrix4fv( m_id, uniformLocation, 1, false, matrix );
 }
 
 void GLProgram::setUniformInt( GLint uniformLocation, int x )
 {
-	glProgramUniform1i( m_id, uniformLocation, x );
+    glProgramUniform1i( m_id, uniformLocation, x );
 }
 
 void GLProgram::setUniformFloat( GLint uniformLocation, float x )
 {
-	glProgramUniform1f( m_id, uniformLocation, x );
+    glProgramUniform1f( m_id, uniformLocation, x );
 }
 
 void GLProgram::setUniformFloat( const GLchar* name, float x )
@@ -105,7 +105,7 @@ void GLProgram::setUniformMatrix4f( const GLchar* name, const Matrix4f& matrix )
 }
 
 void GLProgram::setUniformVector2f( const GLchar* name, float x, float y )
-{    
+{
     glProgramUniform2f( m_id, uniformLocation( name ), x, y );
 }
 
@@ -175,6 +175,6 @@ void GLProgram::use()
 }
 
 GLProgram::GLProgram( GLuint id ) :
-	m_id( id )
+    m_id( id )
 {
 }

@@ -63,13 +63,13 @@ CStaticMediaBuffer *KinectStream::GetWriteBuffer()
     //Get a free buffer if available. Otherwise, get the oldest buffer
     //from the read queue. This is a way of overwriting the oldest data
     if (_writeBufferStack.size() > 0)
-    {   
+    {
         pBuf = _writeBufferStack.top();
         _writeBufferStack.pop();
         pBuf->SetLength(0);
         goto exit;
     }
-                                
+
     if (_readBufferQueue.size() > 0)
     {
         puts("Threw away unread data\n");
@@ -240,7 +240,7 @@ HRESULT KinectStream::ReadOneBuffer(BYTE **ppbData, ULONG* pcbData, ULONG *pcbRe
     EnterCriticalSection(&_csLock);
 
     //Do we already have a buffer we are reading from? Otherwise grab one from the queue
-    if (_curReadBuffer == NULL) 
+    if (_curReadBuffer == NULL)
     {
         if(_readBufferQueue.size() != 0)
         {
@@ -250,8 +250,8 @@ HRESULT KinectStream::ReadOneBuffer(BYTE **ppbData, ULONG* pcbData, ULONG *pcbRe
     }
 
     LeaveCriticalSection(&_csLock);
-                        
-    if (_curReadBuffer != NULL) 
+
+    if (_curReadBuffer != NULL)
     {
         //Copy as much data as we can or need
         BYTE *pData = NULL;
@@ -322,7 +322,7 @@ STDMETHODIMP KinectStream::Write(const void *,ULONG,ULONG *)
     return E_NOTIMPL;
 }
 
-STDMETHODIMP KinectStream::Seek(LARGE_INTEGER dlibMove,DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition )   
+STDMETHODIMP KinectStream::Seek(LARGE_INTEGER dlibMove,DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition )
 {
     if (plibNewPosition != NULL)
     {

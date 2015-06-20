@@ -7,15 +7,15 @@
 
 struct VertexPosition4f
 {
-	VertexPosition4f();
-	VertexPosition4f( float x, float y, float z, float w );
-	VertexPosition4f( Vector4f position );
+    VertexPosition4f();
+    VertexPosition4f( float x, float y, float z, float w );
+    VertexPosition4f( Vector4f position );
 
-	Vector4f m_position;
+    Vector4f m_position;
 
-	static int numElements();
-	static int sizeInBytes();
-	static D3D10_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static D3D10_INPUT_ELEMENT_DESC s_layout[];
 };
 
 #endif // VERTEX_POSITION4F_H

@@ -12,19 +12,19 @@ class CgUtilities
 {
 public:
 
-	// enables / disables the latest vertex and fragment profiles
-	static void setShadersEnabled( bool b );
+    // enables / disables the latest vertex and fragment profiles
+    static void setShadersEnabled( bool b );
 
-	// enables / disables the latest vertex profile
-	static void setVertexShadersEnabled( bool b );
+    // enables / disables the latest vertex profile
+    static void setVertexShadersEnabled( bool b );
 
-	// enables / disables the latest fragment profile
-	static void setFragmentShadersEnabled( bool b );
+    // enables / disables the latest fragment profile
+    static void setFragmentShadersEnabled( bool b );
 
-	static void setupOrthoCamera( int viewportWidth, int viewportHeight,
-		CGparameter modelViewProjectionParameter );
+    static void setupOrthoCamera( int viewportWidth, int viewportHeight,
+        CGparameter modelViewProjectionParameter );
 
-	static bool validateTechnique( CGtechnique technique, CGcontext context = NULL );
+    static bool validateTechnique( CGtechnique technique, CGcontext context = NULL );
 };
 
 #endif // CG_UTILITIES_H

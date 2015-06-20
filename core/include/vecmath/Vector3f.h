@@ -11,79 +11,79 @@ class Vector3f
 {
 public:
 
-	static const Vector3f ZERO;
-	static const Vector3f UP;
-	static const Vector3f RIGHT;
-	static const Vector3f FORWARD;
-	
+    static const Vector3f ZERO;
+    static const Vector3f UP;
+    static const Vector3f RIGHT;
+    static const Vector3f FORWARD;
+
     // Default constructor initializes to all 0s.
     Vector3f();
     explicit Vector3f( float f ); // (f,f,f)
     Vector3f( float _x, float _y, float _z );
 
-	Vector3f( const Vector2f& _xy, float _z );
-	Vector3f( float _x, const Vector2f& _yz );
+    Vector3f( const Vector2f& _xy, float _z );
+    Vector3f( float _x, const Vector2f& _yz );
 
-	// copy constructors
+    // copy constructors
     Vector3f( const Vector3f& v ) = default;
-	Vector3f( const Vector3d& v );
-	Vector3f( const Vector3i& v );
+    Vector3f( const Vector3d& v );
+    Vector3f( const Vector3i& v );
 
-	// assignment operators
+    // assignment operators
     Vector3f& operator = ( const Vector3f& v ) = default;
-	Vector3f& operator = ( const Vector3d& v );
-	Vector3f& operator = ( const Vector3i& v );
+    Vector3f& operator = ( const Vector3d& v );
+    Vector3f& operator = ( const Vector3i& v );
 
-	// no destructor necessary
+    // no destructor necessary
 
-	// returns the ith element
+    // returns the ith element
     const float& operator [] ( int i ) const;
     float& operator [] ( int i );
-	
-	Vector2f xz() const;
-	// TODO: all the other combinations
 
-	Vector3f xyz() const;
-	Vector3f yzx() const;
-	Vector3f zxy() const;
-	// TODO: all the other combinations
+    Vector2f xz() const;
+    // TODO: all the other combinations
 
-	float norm() const;
-	float normSquared() const;
+    Vector3f xyz() const;
+    Vector3f yzx() const;
+    Vector3f zxy() const;
+    // TODO: all the other combinations
 
-	void normalize();
-	Vector3f normalized() const;
+    float norm() const;
+    float normSquared() const;
 
-	void homogenize();
-	Vector3f homogenized() const;
+    void normalize();
+    Vector3f normalized() const;
 
-	void negate();
+    void homogenize();
+    Vector3f homogenized() const;
 
-	// automatic type conversion to float pointer
+    void negate();
+
+    // automatic type conversion to float pointer
     operator const float* () const;
     operator float* ();
-	QString toString() const;
+    QString toString() const;
 
-	// dot product
+    // dot product
     static float dot( const Vector3f& v0, const Vector3f& v1 );
 
-	// cross product
-	static Vector3f cross( const Vector3f& v0, const Vector3f& v1 );
+    // cross product
+    static Vector3f cross( const Vector3f& v0, const Vector3f& v1 );
 
-	Vector3f& operator += ( const Vector3f& v );
-	Vector3f& operator -= ( const Vector3f& v );
+    Vector3f& operator += ( const Vector3f& v );
+    Vector3f& operator -= ( const Vector3f& v );
     Vector3f& operator *= ( float f );
-	Vector3f& operator /= ( float f );
+    Vector3f& operator /= ( float f );
 
-	union
-	{
+    union
+    {
         // Individual element access.
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		};
+        struct
+        {
+            float x;
+            float y;
+            float z;
+        };
         // Vector2.
         struct
         {
@@ -94,7 +94,7 @@ public:
             float __padding0;
             Vector2f yz;
         };
-	};
+    };
 
 };
 

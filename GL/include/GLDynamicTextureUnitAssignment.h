@@ -16,22 +16,22 @@ class GLDynamicTextureUnitAssignment
 {
 public:
 
-	GLDynamicTextureUnitAssignment( std::shared_ptr< GLProgram > pProgram );
+    GLDynamicTextureUnitAssignment( std::shared_ptr< GLProgram > pProgram );
 
-	// Binds pTexture to the next available texture unit i (starting at 0),
-	// and sets the sampler to i.
-	void assign( const char* samplerName, std::shared_ptr< GLTexture > pTexture );
+    // Binds pTexture to the next available texture unit i (starting at 0),
+    // and sets the sampler to i.
+    void assign( const char* samplerName, std::shared_ptr< GLTexture > pTexture );
 
-	// Binds pTexture and pSamplerObject to the next available texture unit i
-	// (starting at 0), and sets the sampler to i.
-	void assign( const char* samplerName,
-		std::shared_ptr< GLTexture > pTexture, std::shared_ptr< GLSamplerObject > pSamplerObject );
+    // Binds pTexture and pSamplerObject to the next available texture unit i
+    // (starting at 0), and sets the sampler to i.
+    void assign( const char* samplerName,
+        std::shared_ptr< GLTexture > pTexture, std::shared_ptr< GLSamplerObject > pSamplerObject );
 
-	// Resets the counter to 0.
-	void reset();
+    // Resets the counter to 0.
+    void reset();
 
 private:
 
-	std::shared_ptr< GLProgram > m_pProgram;
-	int m_count;
+    std::shared_ptr< GLProgram > m_pProgram;
+    int m_count;
 };

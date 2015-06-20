@@ -6,18 +6,18 @@ class ComputeDevice
 {
 public:
 
-	// Creates a compute device using the specified adapter.
-	// A NULL adapter means the "default" adapter.
-	static ComputeDevice* create( IDXGIAdapter* pAdapter = NULL );
-	virtual ~ComputeDevice();
+    // Creates a compute device using the specified adapter.
+    // A NULL adapter means the "default" adapter.
+    static ComputeDevice* create( IDXGIAdapter* pAdapter = NULL );
+    virtual ~ComputeDevice();
 
-	ID3D11Device* device();
-	ID3D11DeviceContext* immediateContext();
+    ID3D11Device* device();
+    ID3D11DeviceContext* immediateContext();
 
 private:
 
-	ComputeDevice( ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext );
+    ComputeDevice( ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext );
 
-	ID3D11Device* m_pDevice;
-	ID3D11DeviceContext* m_pImmediateContext;
+    ID3D11Device* m_pDevice;
+    ID3D11DeviceContext* m_pImmediateContext;
 };

@@ -10,18 +10,18 @@ class MainWidget : public QWidget
 Q_OBJECT
 
 public:
-     
-	MainWidget( QWidget* parent = 0 );
 
-	void setTriangleWidget( SimpleTriangleWidget* w );
+    MainWidget( QWidget* parent = 0 );
+
+    void setTriangleWidget( SimpleTriangleWidget* w );
 
 private:
 
-	SimpleTriangleWidget* m_pSTW;
+    SimpleTriangleWidget* m_pSTW;
 
 private slots:
 
-	void handleButtonPushed();
+    void handleButtonPushed();
 
 };
 

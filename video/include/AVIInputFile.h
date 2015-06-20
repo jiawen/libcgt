@@ -11,29 +11,29 @@ class AVIInputFile
 {
 public:
 
-	static AVIInputFile* open( QString filename );
-	virtual ~AVIInputFile();
+    static AVIInputFile* open( QString filename );
+    virtual ~AVIInputFile();
 
-	int numStreams() const;
+    int numStreams() const;
 
-	int width() const;
-	int height() const;
-	Vector2i size() const;
-	int numFrames() const;
+    int width() const;
+    int height() const;
+    Vector2i size() const;
+    int numFrames() const;
 
-	// can be different for each stream
-	float framesPerSecond() const;
-	void framesPerSecondRational( int& numerator, int& denominator ) const;
+    // can be different for each stream
+    float framesPerSecond() const;
+    void framesPerSecondRational( int& numerator, int& denominator ) const;
 
-	bool allKeyFrames() const;
-	bool uncompressed() const;
+    bool allKeyFrames() const;
+    bool uncompressed() const;
 
-	AVIInputVideoStream* openVideoStream( int streamIndex = 0 );
+    AVIInputVideoStream* openVideoStream( int streamIndex = 0 );
 
 private:
 
-	AVIInputFile();
+    AVIInputFile();
 
-	PAVIFILE m_pAVIFile;
-	AVIFILEINFO m_fileInfo;
+    PAVIFILE m_pAVIFile;
+    AVIFILEINFO m_fileInfo;
 };

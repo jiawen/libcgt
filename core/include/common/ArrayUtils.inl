@@ -2,44 +2,44 @@ template< typename T >
 // static
 bool ArrayUtils::loadBinary( FILE* fp, std::vector< T >& output )
 {
-	int length;
+    int length;
 
-	fread( &length, sizeof( int ), 1, fp );
-	output.resize( length );
+    fread( &length, sizeof( int ), 1, fp );
+    output.resize( length );
 
-	fread( output.data(), sizeof( T ), length, fp );
+    fread( output.data(), sizeof( T ), length, fp );
 
-	// TODO: error checking
-	return true;
+    // TODO: error checking
+    return true;
 }
 
 template< typename T >
 // static
 bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename )
 {
-	FILE* fp = fopen( filename, "wb" );
-	if( fp == nullptr )
-	{
-		return false;
-	}
+    FILE* fp = fopen( filename, "wb" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
-	bool succeeded = saveBinary( input, fp );	
-	fclose( fp );
-	return succeeded;
+    bool succeeded = saveBinary( input, fp );
+    fclose( fp );
+    return succeeded;
 }
 
 template< typename T >
 // static
 bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
 {
-	// TODO: error check
+    // TODO: error check
 
-	int length = static_cast< int >( input.size() );
-	fwrite( &length, sizeof( int ), 1, fp );
+    int length = static_cast< int >( input.size() );
+    fwrite( &length, sizeof( int ), 1, fp );
 
-	fwrite( input.data(), sizeof( T ), length, fp );
+    fwrite( input.data(), sizeof( T ), length, fp );
 
-	return true;
+    return true;
 }
 
 // static
@@ -72,12 +72,12 @@ bool ArrayUtils::fill( Array1DView< T > view, const T& value )
         return false;
     }
 
-	int ne = view.numElements();
-	for( int k = 0; k < ne; ++k )
-	{
-		view[ k ] = value;
-	}
-	return true;
+    int ne = view.numElements();
+    for( int k = 0; k < ne; ++k )
+    {
+        view[ k ] = value;
+    }
+    return true;
 }
 
 // static
@@ -89,12 +89,12 @@ bool ArrayUtils::fill( Array2DView< T > view, const T& value )
         return false;
     }
 
-	int ne = view.numElements();
-	for( int k = 0; k < ne; ++k )
-	{
-		view[ k ] = value;
-	}
-	return true;
+    int ne = view.numElements();
+    for( int k = 0; k < ne; ++k )
+    {
+        view[ k ] = value;
+    }
+    return true;
 }
 
 // static
@@ -113,12 +113,12 @@ Array1DView< T > ArrayUtils::flippedLeftRightView( Array1DView< T > view )
 template< typename T >
 Array2DView< T > ArrayUtils::flippedLeftRightView( Array2DView< T > view )
 {
-	return Array2DView< T >
-	(
+    return Array2DView< T >
+    (
         view.elementPointer( view.length() - 1, 0 ),
-		view.size(),
+        view.size(),
         { -view.elementStrideBytes(), view.rowStrideBytes() }
-	);
+    );
 }
 
 // static
@@ -152,7 +152,7 @@ Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, const Rect2i& r
 template< typename T >
 Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Vector3i& xyz )
 {
-	return croppedView( view, xyz, view.width() - xyz.x, view.height() - xyz.y, view.depth() - xyz.z );
+    return croppedView( view, xyz, view.width() - xyz.x, view.height() - xyz.y, view.depth() - xyz.z );
 }
 
 // static
@@ -175,31 +175,31 @@ Array1DView< S > ArrayUtils::componentView( Array1DView< T > view, int component
 template< typename T >
 bool ArrayUtils::copy( Array1DView< const T > src, Array1DView< T > dst )
 {
-	if( src.isNull() || dst.isNull() )
-	{
-		return false;
-	}
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
 
-	if( src.size() != dst.size() )
-	{
-		return false;
-	}
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
 
-	// Both views are packed, do a single memcpy.
-	if( src.packed() && dst.packed() )
-	{
-		memcpy( dst.pointer(), src.pointer(), src.size() * src.stride() );
-	}
-	// Otherwise, iterate.
-	else
-	{
-		for( int x = 0; x < src.size(); ++x )
+    // Both views are packed, do a single memcpy.
+    if( src.packed() && dst.packed() )
+    {
+        memcpy( dst.pointer(), src.pointer(), src.size() * src.stride() );
+    }
+    // Otherwise, iterate.
+    else
+    {
+        for( int x = 0; x < src.size(); ++x )
         {
             dst[ x ] = src[ x ];
-		}
-	}
+        }
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -207,42 +207,42 @@ bool ArrayUtils::copy( Array1DView< const T > src, Array1DView< T > dst )
 template< typename T >
 bool ArrayUtils::copy( Array2DView< const T > src, Array2DView< T > dst )
 {
-	if( src.isNull() || dst.isNull() )
-	{
-		return false;
-	}
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
 
-	if( src.size() != dst.size() )
-	{
-		return false;
-	}
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
 
-	// Both views are packed, do a single memcpy.
-	if( src.packed() && dst.packed() )
-	{
-		memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
-	}
-	// Elements are packed within each row, do a memcpy per row.
-	else if( src.elementsArePacked() && dst.elementsArePacked() )
-	{
-		for( int y = 0; y < src.height(); ++y )
-		{
-			memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.elementStrideBytes() );
-		}
-	}
-	// Otherwise, iterate.
-	else
-	{
-		for( int y = 0; y < src.height(); ++y )
-		{
-			for( int x = 0; x < src.width(); ++x )
+    // Both views are packed, do a single memcpy.
+    if( src.packed() && dst.packed() )
+    {
+        memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
+    }
+    // Elements are packed within each row, do a memcpy per row.
+    else if( src.elementsArePacked() && dst.elementsArePacked() )
+    {
+        for( int y = 0; y < src.height(); ++y )
+        {
+            memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.elementStrideBytes() );
+        }
+    }
+    // Otherwise, iterate.
+    else
+    {
+        for( int y = 0; y < src.height(); ++y )
+        {
+            for( int x = 0; x < src.width(); ++x )
             {
                 dst[ { x, y } ] = src[ { x, y } ];
-			}
-		}
-	}
+            }
+        }
+    }
 
-	return true;
+    return true;
 }
 
 // static
@@ -259,14 +259,14 @@ bool ArrayUtils::map( Array1DView< TSrc > src, Array1DView< TDst > dst,
     std::function< TDst( TSrc ) > f2( f );
 
     if( src.isNull() || dst.isNull() )
-	{
-		return false;
-	}
+    {
+        return false;
+    }
 
-	if( src.size() != dst.size() )
-	{
-		return false;
-	}
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
 
     for( int x = 0; x < src.size(); ++x )
     {
@@ -275,7 +275,7 @@ bool ArrayUtils::map( Array1DView< TSrc > src, Array1DView< TDst > dst,
 #else
         dst[ x ] = f2( src[ x ] );
 #endif
-	}
+    }
 
     return true;
 }

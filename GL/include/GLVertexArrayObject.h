@@ -30,7 +30,7 @@ public:
 
     // Unbinds all vertex array objects (only one can be bound at a time
     // anyway).
-	static void unbindAll();
+    static void unbindAll();
 
     // The maximum number of vertex attributes,
     // numbered 0 through maxNumVertexAttributes() - 1.
@@ -47,19 +47,19 @@ public:
     // Corresponds to GL_MAX_VERTEX_ATTRIB_STRIDE.
     static int maxVertexAttributeStride();
 
-	GLVertexArrayObject();
-	virtual ~GLVertexArrayObject();
+    GLVertexArrayObject();
+    virtual ~GLVertexArrayObject();
 
-	GLuint id() const;
+    GLuint id() const;
 
     // TODO: can query for all the properties back:
     // glGetVertexArrayIndexediv() / glGetVertexArrayIndexed64iv()
 
-	void bind();
+    void bind();
 
     // Enable the attribute at the given index. Corresponds to
     // glEnableVertexArrayAttrib().
-	void enableAttribute( GLuint attributeIndex );
+    void enableAttribute( GLuint attributeIndex );
 
     // Enable the attribute at the given index. Corresponds to
     // glDisableVertexArrayAttrib().
@@ -95,8 +95,8 @@ public:
         GLVertexAttributeType type, GLuint relativeOffsetBytes = 0 );
     void setAttributeDoubleFormat( GLuint attributeIndex, GLint nComponents,
         GLuint relativeOffsetBytes = 0 );
-    
-	// Attach a buffer to a binding index to be used as a vertex buffer.
+
+    // Attach a buffer to a binding index to be used as a vertex buffer.
     // offset is the number of bytes from the beginning of pBuffer's data
     //   where the vertex data starts.
     // stride is the number of bytes between the beginning of *entire vertices*
@@ -127,7 +127,7 @@ public:
 
 private:
 
-	GLuint m_id;
+    GLuint m_id;
 
 };
 

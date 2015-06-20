@@ -14,31 +14,31 @@
 class CgProgramWrapper
 {
 public:
-	
-	static Reference< CgProgramWrapper > create( QString filename, QString entryPoint, CGcontext context, CGprofile profile );
-	virtual ~CgProgramWrapper();
 
-	Reference< CgParameterSet > createParameterSet();
-	
-	bool isCompiled();
+    static Reference< CgProgramWrapper > create( QString filename, QString entryPoint, CGcontext context, CGprofile profile );
+    virtual ~CgProgramWrapper();
 
-	// applies all the parameters in the set
-	// and then binds the program for execution
-	void bind();
+    Reference< CgParameterSet > createParameterSet();
 
-	// loads the program into the GL runtime
-	void load();
-	bool isLoaded();
+    bool isCompiled();
 
-	// returns the stored program
-	CGprogram getProgram();
+    // applies all the parameters in the set
+    // and then binds the program for execution
+    void bind();
+
+    // loads the program into the GL runtime
+    void load();
+    bool isLoaded();
+
+    // returns the stored program
+    CGprogram getProgram();
 
 private:
 
-	CgProgramWrapper( CGprogram program );
+    CgProgramWrapper( CGprogram program );
 
-	CGprogram m_cgProgram;
-	QHash< QString, CGparameter > m_programParameters;
+    CGprogram m_cgProgram;
+    QHash< QString, CGparameter > m_programParameters;
 
 };
 

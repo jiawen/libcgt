@@ -79,7 +79,7 @@ FFMPEGVideo* FFMPEGVideo::fromFile( const char* filename )
                     retVal = avcodec_open2( pCodecContext, pCodec, NULL );
                     if( retVal >= 0 )
                     {
-                        // Allocate a frame for the incoming data	                        
+                        // Allocate a frame for the incoming data
                         pFrameRaw = av_frame_alloc();
                         if( pFrameRaw != NULL )
                         {
@@ -252,7 +252,7 @@ bool FFMPEGVideo::setNextFrameIndex( int64_t frameIndex )
     // if frameIndex is out of range, then return false
     if( frameIndex < 0 || frameIndex >= m_nFrames )
     {
-#if _WIN32		
+#if _WIN32
         fprintf( stderr, "Cannot seek to frame %I64d, frameIndex must be between 0 and %I64d\n", frameIndex, m_nFrames );
 #else
         fprintf( stderr, "Cannot seek to frame %lld, frameIndex must be between 0 and %lld\n", frameIndex, m_nFrames );
@@ -285,7 +285,7 @@ bool FFMPEGVideo::setNextFrameIndex( int64_t frameIndex )
     //int retVal = avformat_seek_file( m_pFormatContext, m_videoStreamIndex, frameIndex, frameIndex, frameIndex, seekFlags );
     if( retVal < 0 )
     {
-#if _WIN32		
+#if _WIN32
         fprintf( stderr, "ffmpeg error seeking to frame: %I64d\n", frameIndex );
 #else
         fprintf( stderr, "ffmpeg error seeking to frame: %lld\n", frameIndex );
@@ -400,7 +400,7 @@ FFMPEGVideo::FFMPEGVideo( AVFormatContext* pFormatContext, int videoStreamIndex,
 
 {
     m_nFrames = m_pFormatContext->streams[ m_videoStreamIndex ]->nb_frames;
-    
+
     m_nBytesPerFrame = avpicture_get_size( PIX_FMT_RGB24, width(), height() );
 
     AVRational averageFrameRate = m_pFormatContext->streams[ m_videoStreamIndex ]->avg_frame_rate;

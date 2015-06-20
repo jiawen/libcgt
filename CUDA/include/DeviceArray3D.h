@@ -15,92 +15,92 @@ class DeviceArray3D
 {
 public:
 
-	DeviceArray3D();
-	DeviceArray3D( int width, int height, int depth );
-	DeviceArray3D( const int& size );
-	DeviceArray3D( const Array3D< T >& src );
-	DeviceArray3D( const DeviceArray3D< T >& copy );
-	DeviceArray3D( DeviceArray3D< T >&& move );
-	DeviceArray3D< T >& operator = ( const Array3D< T >& src );
-	DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
-	DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
-	virtual ~DeviceArray3D();
-	
-	bool isNull() const;
-	bool notNull() const;
+    DeviceArray3D();
+    DeviceArray3D( int width, int height, int depth );
+    DeviceArray3D( const int& size );
+    DeviceArray3D( const Array3D< T >& src );
+    DeviceArray3D( const DeviceArray3D< T >& copy );
+    DeviceArray3D( DeviceArray3D< T >&& move );
+    DeviceArray3D< T >& operator = ( const Array3D< T >& src );
+    DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
+    DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
+    virtual ~DeviceArray3D();
 
-	int width() const;
-	int height() const;
-	int depth() const;
-	int3 size() const;
-	int numElements() const;
+    bool isNull() const;
+    bool notNull() const;
 
-	// The number of bytes between rows within any slice
-	size_t rowPitch() const;
+    int width() const;
+    int height() const;
+    int depth() const;
+    int3 size() const;
+    int numElements() const;
 
-	// The number of bytes between slices
-	size_t slicePitch() const;	
+    // The number of bytes between rows within any slice
+    size_t rowPitch() const;
 
-	// Total size of the data in bytes (counting alignment)
-	size_t sizeInBytes() const;
+    // The number of bytes between slices
+    size_t slicePitch() const;
 
-	// resizes the array, original data is not preserved
-	void resize( int width, int height, int depth );
-	void resize( const int3& size );
-	
-	// TODO: implement get/set/operator() with int3, vector3
-	// TODO: implement constructors for strided, pitched, slicePitched
+    // Total size of the data in bytes (counting alignment)
+    size_t sizeInBytes() const;
 
-	// fills this array with the 0 byte pattern
-	void clear();
+    // resizes the array, original data is not preserved
+    void resize( int width, int height, int depth );
+    void resize( const int3& size );
 
-	// fills this array with value
-	void fill( const T& value );
+    // TODO: implement get/set/operator() with int3, vector3
+    // TODO: implement constructors for strided, pitched, slicePitched
 
-	// get an element of the array from the device
-	// WARNING: probably slow as it incurs a cudaMemcpy
-	T get( int x, int y, int z ) const;
-	T get( const int3& subscript ) const;
+    // fills this array with the 0 byte pattern
+    void clear();
 
-	// get an element of the array from the device
-	// WARNING: probably slow as it incurs a cudaMemcpy
-	T operator () ( int x, int y, int z ) const;
-	T operator [] ( const int3& subscript ) const;
+    // fills this array with value
+    void fill( const T& value );
 
-	// sets an element of the array from the host
-	// WARNING: probably slow as it incurs a cudaMemcpy
-	void set( int x, int y, int z, const T& value );
+    // get an element of the array from the device
+    // WARNING: probably slow as it incurs a cudaMemcpy
+    T get( int x, int y, int z ) const;
+    T get( const int3& subscript ) const;
 
-	// copy from another DeviceArray3D to this
-	// this is automatically resized
-	void copyFromDevice( const DeviceArray3D< T >& src );
+    // get an element of the array from the device
+    // WARNING: probably slow as it incurs a cudaMemcpy
+    T operator () ( int x, int y, int z ) const;
+    T operator [] ( const int3& subscript ) const;
 
-	// copy from host array src to this
-	void copyFromHost( const Array3D< T >& src );
+    // sets an element of the array from the host
+    // WARNING: probably slow as it incurs a cudaMemcpy
+    void set( int x, int y, int z, const T& value );
 
-	// copy from this to host array dst
-	void copyToHost( Array3D< T >& dst ) const;
+    // copy from another DeviceArray3D to this
+    // this is automatically resized
+    void copyFromDevice( const DeviceArray3D< T >& src );
 
-	const cudaPitchedPtr pitchedPointer() const;
-	cudaPitchedPtr pitchedPointer();
+    // copy from host array src to this
+    void copyFromHost( const Array3D< T >& src );
 
-	KernelArray3D< T > kernelArray() const;
+    // copy from this to host array dst
+    void copyToHost( Array3D< T >& dst ) const;
 
-	void load( const char* filename );
-	void save( const char* filename ) const;
+    const cudaPitchedPtr pitchedPointer() const;
+    cudaPitchedPtr pitchedPointer();
+
+    KernelArray3D< T > kernelArray() const;
+
+    void load( const char* filename );
+    void save( const char* filename ) const;
 
 private:
 
-	int m_width;
-	int m_height;
-	int m_depth;
+    int m_width;
+    int m_height;
+    int m_depth;
 
-	size_t m_sizeInBytes;
-	cudaPitchedPtr m_pitchedPointer;
-	cudaExtent m_extent;
+    size_t m_sizeInBytes;
+    cudaPitchedPtr m_pitchedPointer;
+    cudaExtent m_extent;
 
-	// frees the memory if this is not null
-	void destroy();	
+    // frees the memory if this is not null
+    void destroy();
 };
 
 #include "DeviceArray3D.inl"

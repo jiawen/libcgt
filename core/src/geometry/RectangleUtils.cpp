@@ -8,10 +8,10 @@ Rect2i RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2i& wind
 {
     int w = std::min( window.width(), static_cast< int >( window.height() * imageAspectRatio ) );
     int h = std::min( static_cast< int >( window.width() / imageAspectRatio ), window.height() );
-    
+
     int x = window.origin().x + ( window.width() - w ) / 2;
     int y = window.origin().y + ( window.height() - h ) / 2;
-    
+
     return{ x, y, w, h };
 }
 
@@ -26,10 +26,10 @@ Rect2f RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2f& wind
 {
     float w = std::min( window.width(), window.height() * imageAspectRatio );
     float h = std::min( window.width() / imageAspectRatio, window.height() );
-    
+
     float x = window.origin().x + 0.5f * ( window.width() - w );
     float y = window.origin().y + 0.5f * ( window.height() - h );
-    
+
     return{ x, y, w, h };
 }
 
@@ -65,9 +65,9 @@ Vector2f RectangleUtils::normalizedCoordinatesWithinRectangle( const Vector2f& p
 Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
 {
     assert( r.isStandardized() );
-	Vector2f origin;
-	origin.x = width - r.limit().x;
-	origin.y = r.origin().y;
+    Vector2f origin;
+    origin.x = width - r.limit().x;
+    origin.y = r.origin().y;
 
     return{ origin, r.size() };
 }
@@ -76,9 +76,9 @@ Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
 Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
 {
     assert( r.isStandardized() );
-	Vector2i origin;
-	origin.x = width - r.limit().x;
-	origin.y = r.origin().y;
+    Vector2i origin;
+    origin.x = width - r.limit().x;
+    origin.y = r.origin().y;
 
     return{ origin, r.size() };
 }
@@ -87,9 +87,9 @@ Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
 Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
 {
     assert( r.isStandardized() );
-	Vector2f origin;
-	origin.x = r.origin().x;
-	origin.y = height - r.limit().y;
+    Vector2f origin;
+    origin.x = r.origin().x;
+    origin.y = height - r.limit().y;
 
     return{ origin, r.size() };
 }
@@ -98,9 +98,9 @@ Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
 Rect2i RectangleUtils::flipY( const Rect2i& r, int height )
 {
     assert( r.isStandardized() );
-	Vector2i origin;
-	origin.x = r.origin().x;
-	origin.y = height - r.limit().y;
+    Vector2i origin;
+    origin.x = r.origin().x;
+    origin.y = height - r.limit().y;
 
     return{ origin, r.size() };
 }
@@ -125,34 +125,34 @@ Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
 
 // static
 void RectangleUtils::writeScreenAlignedTriangleStrip(
-		Array1DView< Vector4f > positions,
-		Array1DView< Vector2f > textureCoordinates,
-		const Rect2f& positionRectangle,
-		float z, float w,
-		const Rect2f& textureRectangle )
+        Array1DView< Vector4f > positions,
+        Array1DView< Vector2f > textureCoordinates,
+        const Rect2f& positionRectangle,
+        float z, float w,
+        const Rect2f& textureRectangle )
 {
-	writeScreenAlignedTriangleStripPositions(
-		positions, positionRectangle, z, w );
-	writeScreenAlignedTriangleStripTextureCoordinates(
-		textureCoordinates, textureRectangle );
+    writeScreenAlignedTriangleStripPositions(
+        positions, positionRectangle, z, w );
+    writeScreenAlignedTriangleStripTextureCoordinates(
+        textureCoordinates, textureRectangle );
 }
 
 // static
 void RectangleUtils::writeScreenAlignedTriangleStripPositions(
-		Array1DView< Vector4f > positions,
-		const Rect2f& rect,
-		float z, float w )
+        Array1DView< Vector4f > positions,
+        const Rect2f& rect,
+        float z, float w )
 {
-	positions[ 0 ] = Vector4f( rect.origin().x, rect.origin().y, z, w );
-	positions[ 1 ] = Vector4f( rect.limit().x, rect.origin().y, z, w );
-	positions[ 2 ] = Vector4f( rect.origin().x, rect.limit().y, z, w );
-	positions[ 3 ] = Vector4f( rect.limit().x, rect.limit().y, z, w );
+    positions[ 0 ] = Vector4f( rect.origin().x, rect.origin().y, z, w );
+    positions[ 1 ] = Vector4f( rect.limit().x, rect.origin().y, z, w );
+    positions[ 2 ] = Vector4f( rect.origin().x, rect.limit().y, z, w );
+    positions[ 3 ] = Vector4f( rect.limit().x, rect.limit().y, z, w );
 }
 
-// 	static
+//  static
 void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
-		Array1DView< Vector2f > textureCoordinates,
-		const Rect2f& rect )
+        Array1DView< Vector2f > textureCoordinates,
+        const Rect2f& rect )
 {
     textureCoordinates[ 0 ] = Vector2f{ rect.origin().x, rect.origin().y };
     textureCoordinates[ 1 ] = Vector2f{ rect.limit().x, rect.origin().y };

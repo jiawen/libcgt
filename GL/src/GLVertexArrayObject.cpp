@@ -9,42 +9,42 @@
 GLuint GLVertexArrayObject::boundId()
 {
     int bid;
-	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &bid );
-	return bid;
+    glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &bid );
+    return bid;
 }
 
 // static
 void GLVertexArrayObject::unbindAll()
 {
-	glBindVertexArray( 0 );
+    glBindVertexArray( 0 );
 }
 
 // static
 int GLVertexArrayObject::maxNumVertexAttributes()
 {
     int n;
-	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &n );
-	return n;
+    glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &n );
+    return n;
 }
 
 // static
 int GLVertexArrayObject::maxNumVertexAttributeBindings()
 {
     int n;
-	glGetIntegerv( GL_MAX_VERTEX_ATTRIB_BINDINGS, &n );
-	return n;
+    glGetIntegerv( GL_MAX_VERTEX_ATTRIB_BINDINGS, &n );
+    return n;
 }
 
 // static
 int GLVertexArrayObject::maxVertexAttributeStride()
 {
     int n;
-	glGetIntegerv( GL_MAX_VERTEX_ATTRIB_STRIDE, &n );
-	return n;
+    glGetIntegerv( GL_MAX_VERTEX_ATTRIB_STRIDE, &n );
+    return n;
 }
 
 GLVertexArrayObject::GLVertexArrayObject() :
-	m_id( 0 )
+    m_id( 0 )
 {
     glCreateVertexArrays( 1, &m_id );
 }
@@ -52,27 +52,27 @@ GLVertexArrayObject::GLVertexArrayObject() :
 // virtual
 GLVertexArrayObject::~GLVertexArrayObject()
 {
-	glDeleteVertexArrays( 1, &m_id );
+    glDeleteVertexArrays( 1, &m_id );
 }
 
 GLuint GLVertexArrayObject::id() const
 {
-	return m_id;
+    return m_id;
 }
-	
+
 void GLVertexArrayObject::bind()
 {
-	glBindVertexArray( m_id );
+    glBindVertexArray( m_id );
 }
 
 void GLVertexArrayObject::enableAttribute( GLuint attributeIndex )
 {
-	glEnableVertexArrayAttrib( m_id, attributeIndex );
+    glEnableVertexArrayAttrib( m_id, attributeIndex );
 }
 
 void GLVertexArrayObject::disableAttribute( GLuint attributeIndex )
 {
-	glDisableVertexArrayAttrib( m_id, attributeIndex );
+    glDisableVertexArrayAttrib( m_id, attributeIndex );
 }
 
 void GLVertexArrayObject::mapAttributeIndexToBindingIndex( GLuint attributeIndex,
@@ -130,7 +130,7 @@ void GLVertexArrayObject::attachIndexBuffer( GLBufferObject* pBuffer )
 
 int GLVertexArrayObject::getAttachedIndexBufferId()
 {
-    GLint bufferId; 
+    GLint bufferId;
     glGetVertexArrayiv( m_id, GL_ELEMENT_ARRAY_BUFFER_BINDING, &bufferId );
     return bufferId;
 }

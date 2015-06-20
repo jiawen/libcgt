@@ -6,14 +6,14 @@
 
 struct VertexPosition4fNormal3fColor4f
 {
-	VertexPosition4fNormal3fColor4f();
-	VertexPosition4fNormal3fColor4f( const Vector4f& _position, const Vector3f& _normal, const Vector4f& _color );
+    VertexPosition4fNormal3fColor4f();
+    VertexPosition4fNormal3fColor4f( const Vector4f& _position, const Vector3f& _normal, const Vector4f& _color );
 
-	Vector4f position;
-	Vector3f normal;
-	Vector4f color;
+    Vector4f position;
+    Vector3f normal;
+    Vector4f color;
 
-	static int numElements();
-	static int sizeInBytes();
-	static D3D11_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static D3D11_INPUT_ELEMENT_DESC s_layout[];
 };

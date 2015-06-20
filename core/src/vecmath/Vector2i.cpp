@@ -15,24 +15,24 @@
 
 Vector2i::Vector2i( int i )
 {
-	x = i;
-	y = i;
+    x = i;
+    y = i;
 }
 
 Vector2i::Vector2i( std::initializer_list< int > xy )
 {
-	x = *( xy.begin() );
+    x = *( xy.begin() );
     y = *( xy.begin() + 1 );
 }
 
 const int& Vector2i::operator [] ( int i ) const
 {
-	return ( &x )[ i ];
+    return ( &x )[ i ];
 }
 
 int& Vector2i::operator [] ( int i )
 {
-	return ( &x )[ i ];
+    return ( &x )[ i ];
 }
 
 Vector2i Vector2i::xy() const
@@ -57,29 +57,29 @@ Vector2i Vector2i::yy() const
 
 float Vector2i::norm() const
 {
-	return sqrt( static_cast< float >( normSquared() ) );
+    return sqrt( static_cast< float >( normSquared() ) );
 }
 
 int Vector2i::normSquared() const
 {
-	return( x * x + y * y );
+    return( x * x + y * y );
 }
 
 Vector2f Vector2i::normalized() const
 {
-	float n = 1.f / norm();
+    float n = 1.f / norm();
 
-	return
+    return
     {
-		n * x,
-		n * y
+        n * x,
+        n * y
     };
 }
 
 void Vector2i::negate()
 {
-	x = -x;
-	y = -y;
+    x = -x;
+    y = -y;
 }
 
 Vector2i Vector2i::flippedUD( int height ) const
@@ -89,36 +89,36 @@ Vector2i Vector2i::flippedUD( int height ) const
 
 Vector2i::operator const int* () const
 {
-	return &x;
+    return &x;
 }
 
 Vector2i::operator int* ()
 {
-	return &x;
+    return &x;
 }
 
 QString Vector2i::toString() const
 {
-	QString out;
+    QString out;
 
-	out.append( "( " );
-	out.append( QString( "%1" ).arg( x, 10 ) );
-	out.append( QString( "%1" ).arg( y, 10 ) );
-	out.append( " )" );
+    out.append( "( " );
+    out.append( QString( "%1" ).arg( x, 10 ) );
+    out.append( QString( "%1" ).arg( y, 10 ) );
+    out.append( " )" );
 
-	return out;
+    return out;
 }
 
 // static
 int Vector2i::dot( const Vector2i& v0, const Vector2i& v1 )
 {
-	return v0.x * v1.x + v0.y * v1.y;
+    return v0.x * v1.x + v0.y * v1.y;
 }
 
 //static
 Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 {
-	return
+    return
     {
         0,
         0,
@@ -182,14 +182,14 @@ Vector2i operator / ( const Vector2i& v, int c )
 
 bool operator == ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return
-	(
-		v0.x == v1.x &&
-		v0.y == v1.y
-	);
+    return
+    (
+        v0.x == v1.x &&
+        v0.y == v1.y
+    );
 }
 
 bool operator != ( const Vector2i& v0, const Vector2i& v1 )
 {
-	return !( v0 == v1 );
+    return !( v0 == v1 );
 }

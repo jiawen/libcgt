@@ -13,42 +13,42 @@ class RenderTarget
 {
 public:
 
-	// TODO: test for failure in texture/view creation, return NULL
+    // TODO: test for failure in texture/view creation, return NULL
 
-	static RenderTarget* createFloat1( ID3D11Device* pDevice, int width, int height );
-	static RenderTarget* createFloat2( ID3D11Device* pDevice, int width, int height );
-	static RenderTarget* createFloat4( ID3D11Device* pDevice, int width, int height );
-	static RenderTarget* createUnsignedShort1( ID3D11Device* pDevice, int width, int height );
-	static RenderTarget* createUnsignedShort1UNorm( ID3D11Device* pDevice, int width, int height );
-	static RenderTarget* createUnsignedByte4( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createFloat1( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createFloat2( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createFloat4( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createUnsignedShort1( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createUnsignedShort1UNorm( ID3D11Device* pDevice, int width, int height );
+    static RenderTarget* createUnsignedByte4( ID3D11Device* pDevice, int width, int height );
 
-	virtual ~RenderTarget();
-	
-	int width();
-	int height();
-	Vector2i size();
+    virtual ~RenderTarget();
 
-	// updates this texture using the contents of im
-	void update( ID3D11DeviceContext* pContext, const Image4f& im );
+    int width();
+    int height();
+    Vector2i size();
 
-	ID3D11Texture2D* texture();
-	ID3D11RenderTargetView* renderTargetView();
-	ID3D11ShaderResourceView* shaderResourceView();
-	ID3D11UnorderedAccessView* unorderedAccessView();
+    // updates this texture using the contents of im
+    void update( ID3D11DeviceContext* pContext, const Image4f& im );
+
+    ID3D11Texture2D* texture();
+    ID3D11RenderTargetView* renderTargetView();
+    ID3D11ShaderResourceView* shaderResourceView();
+    ID3D11UnorderedAccessView* unorderedAccessView();
 
 private:
 
-	static D3D11_TEXTURE2D_DESC makeTextureDescription( int width, int height, DXGI_FORMAT format );
+    static D3D11_TEXTURE2D_DESC makeTextureDescription( int width, int height, DXGI_FORMAT format );
 
-	RenderTarget( ID3D11Device* pDevice, int width, int height, ID3D11Texture2D* pTexture );
+    RenderTarget( ID3D11Device* pDevice, int width, int height, ID3D11Texture2D* pTexture );
 
-	int m_width;
-	int m_height;
+    int m_width;
+    int m_height;
 
-	ID3D11Texture2D* m_pTexture;
-	ID3D11RenderTargetView* m_pRenderTargetView;
-	ID3D11ShaderResourceView* m_pShaderResourceView;	
-	ID3D11UnorderedAccessView* m_pUnorderedAccessView;
+    ID3D11Texture2D* m_pTexture;
+    ID3D11RenderTargetView* m_pRenderTargetView;
+    ID3D11ShaderResourceView* m_pShaderResourceView;
+    ID3D11UnorderedAccessView* m_pUnorderedAccessView;
 
 
 };

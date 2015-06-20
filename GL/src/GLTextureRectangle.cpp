@@ -50,7 +50,7 @@ Vector2i GLTextureRectangle::size() const
 }
 
 bool GLTextureRectangle::set( Array2DView< const uint8_t > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_UNSIGNED_BYTE;
@@ -63,7 +63,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8_t > srcData,
 }
 
 bool GLTextureRectangle::set( Array2DView< const uint8x2 > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_UNSIGNED_BYTE;
@@ -76,7 +76,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x2 > srcData,
 }
 
 bool GLTextureRectangle::set( Array2DView< const uint8x3 > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_UNSIGNED_BYTE;
@@ -89,7 +89,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x3 > srcData,
 }
 
 bool GLTextureRectangle::set( Array2DView< const uint8x4 > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_UNSIGNED_BYTE;
@@ -103,7 +103,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x4 > srcData,
 
 bool GLTextureRectangle::set( Array2DView< const float > srcData,
     GLImageFormat srcFormat,
-	const Vector2i& dstOffset )
+    const Vector2i& dstOffset )
 {
     GLenum srcType = GL_FLOAT;
     if( srcData.packed() && checkSize( srcData.size(), dstOffset ) )
@@ -115,7 +115,7 @@ bool GLTextureRectangle::set( Array2DView< const float > srcData,
 }
 
 bool GLTextureRectangle::set( Array2DView< const Vector2f > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_FLOAT;
@@ -129,7 +129,7 @@ bool GLTextureRectangle::set( Array2DView< const Vector2f > srcData,
 
 bool GLTextureRectangle::set( Array2DView< const Vector3f > srcData,
     GLImageFormat srcFormat,
-	const Vector2i& dstOffset )
+    const Vector2i& dstOffset )
 {
     GLenum srcType = GL_FLOAT;
     if( srcData.packed() && checkSize( srcData.size(), dstOffset ) )
@@ -141,7 +141,7 @@ bool GLTextureRectangle::set( Array2DView< const Vector3f > srcData,
 }
 
 bool GLTextureRectangle::set( Array2DView< const Vector4f > srcData,
-	GLImageFormat srcFormat,
+    GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
     GLenum srcType = GL_FLOAT;
@@ -156,18 +156,18 @@ bool GLTextureRectangle::set( Array2DView< const Vector4f > srcData,
 bool GLTextureRectangle::checkSize( const Vector2i& srcSize, const Vector2i& dstOffset )
 {
     if( dstOffset.x + srcSize.x > m_size.x ||
-		dstOffset.y + srcSize.y > m_size.y )
-	{
-		return false;
-	}
+        dstOffset.y + srcSize.y > m_size.y )
+    {
+        return false;
+    }
     return true;
 }
 
 void GLTextureRectangle::set2D( const void* srcPtr, const Vector2i& srcSize,
     GLImageFormat srcFormat, GLenum srcType,
-	const Vector2i& dstOffset )
+    const Vector2i& dstOffset )
 {
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
 
     glTextureSubImage2D
     (
@@ -177,5 +177,5 @@ void GLTextureRectangle::set2D( const void* srcPtr, const Vector2i& srcSize,
         srcPtr
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 }

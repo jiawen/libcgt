@@ -11,53 +11,53 @@ class AVIInputVideoStream
 {
 public:
 
-	static AVIInputVideoStream* open( PAVIFILE pAVIFile, int streamIndex,
-		int width, int height );
+    static AVIInputVideoStream* open( PAVIFILE pAVIFile, int streamIndex,
+        int width, int height );
 
-	virtual ~AVIInputVideoStream();
+    virtual ~AVIInputVideoStream();
 
-	int width() const;
-	int height() const;
-	Vector2i size() const;
+    int width() const;
+    int height() const;
+    Vector2i size() const;
 
-	int numFrames() const;
+    int numFrames() const;
 
-	// can be different from container file
-	float framesPerSecond() const;
-	void framesPerSecondRational( int& numerator, int& denominator ) const;
+    // can be different from container file
+    float framesPerSecond() const;
+    void framesPerSecondRational( int& numerator, int& denominator ) const;
 
-	// Returns a view of frame frameIndex
-	// in RGBA format with custom alpha
-	// (Same as getFrameBGR and then swizzling it)
-	//
-	// Returns NULL if frameIndex is out of range
+    // Returns a view of frame frameIndex
+    // in RGBA format with custom alpha
+    // (Same as getFrameBGR and then swizzling it)
+    //
+    // Returns NULL if frameIndex is out of range
     Array2DView< uint8x4 > getFrameRGBA( int frameIndex, uint8_t alpha = 255 );
 
-	// Returns a view of frame frameIndex
-	// in BGRA format with custom alpha
-	// (Same as getFrameBGR and then swizzling it)
-	//
-	// Returns NULL if frameIndex is out of range
+    // Returns a view of frame frameIndex
+    // in BGRA format with custom alpha
+    // (Same as getFrameBGR and then swizzling it)
+    //
+    // Returns NULL if frameIndex is out of range
     Array2DView< uint8x4 > getFrameBGRA( int frameIndex, uint8_t alpha = 255 );
 
-	// Returns a view of frame frameIndex
-	// in the natural BGR (24 bits per pixel, 8 bits per channel) format
-	//
-	// Returns NULL if frameIndex is out of range
+    // Returns a view of frame frameIndex
+    // in the natural BGR (24 bits per pixel, 8 bits per channel) format
+    //
+    // Returns NULL if frameIndex is out of range
     Array2DView< uint8x3 > getFrameBGR( int frameIndex );
 
 private:
 
-	AVIInputVideoStream();
+    AVIInputVideoStream();
 
-	int m_width;
-	int m_height;
+    int m_width;
+    int m_height;
     Array2D< uint8x4 > m_ubyte4Data;
 
-	PAVISTREAM m_pStream;
-	PGETFRAME m_pFrame;	
-	AVISTREAMINFO m_info;
+    PAVISTREAM m_pStream;
+    PGETFRAME m_pFrame;
+    AVISTREAMINFO m_info;
 
-	int m_streamStartIndex;
-	int m_nSamples;
+    int m_streamStartIndex;
+    int m_nSamples;
 };

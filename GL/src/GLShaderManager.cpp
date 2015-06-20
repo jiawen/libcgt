@@ -2,7 +2,7 @@
 
 #include "GLProgram.h"
 #include "GLShader.h"
-   
+
 bool GLShaderManager::add( const std::string& programName,
     const std::string& vertexShaderSourceFile,
     const std::string& fragmentShaderSourceFile )

@@ -12,32 +12,32 @@ class MeshFace2f
 {
 public:
 
-	MeshFace2f( int index, MeshHalfEdge2f* pInitialEdge );
-	MeshFace2f( MeshFace2f* pCopy );
+    MeshFace2f( int index, MeshHalfEdge2f* pInitialEdge );
+    MeshFace2f( MeshFace2f* pCopy );
 
-	QString toString();
+    QString toString();
 
-	int index();
-	void setIndex( int newIndex );
+    int index();
+    void setIndex( int newIndex );
 
-	// a single outgoing edge
-	MeshHalfEdge2f* initialEdge();
-	void setInitialEdge( MeshHalfEdge2f* pe );
+    // a single outgoing edge
+    MeshHalfEdge2f* initialEdge();
+    void setInitialEdge( MeshHalfEdge2f* pe );
 
-	// utility
-	QVector< MeshHalfEdge2f* > edges();
-	QVector< MeshVertex2f* > vertices();
-	// QVector< MeshHalfEdge2f* > MeshFace2f::incidentEdges()
+    // utility
+    QVector< MeshHalfEdge2f* > edges();
+    QVector< MeshVertex2f* > vertices();
+    // QVector< MeshHalfEdge2f* > MeshFace2f::incidentEdges()
 
-	BoundingBox2f boundingBox();
+    BoundingBox2f boundingBox();
 
-	// TODO: make it work for non-triangles
-	Vector2f pointInsidePolygon();
+    // TODO: make it work for non-triangles
+    Vector2f pointInsidePolygon();
 
 private:
 
-	int m_iIndex;
-	MeshHalfEdge2f* m_pInitialEdge;
+    int m_iIndex;
+    MeshHalfEdge2f* m_pInitialEdge;
 
 };
 

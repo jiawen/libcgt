@@ -10,25 +10,25 @@ class OpenEXRIO
 {
 public:
 
-	enum ChannelType
-	{
-		UNSIGNED_INT = 0,	// 32-bit unsigned int
-		HALF = 1,			// 16-bit float
-		FLOAT = 2			// 32-bit float
-	};
+    enum ChannelType
+    {
+        UNSIGNED_INT = 0,   // 32-bit unsigned int
+        HALF = 1,           // 16-bit float
+        FLOAT = 2           // 32-bit float
+    };
 
-	// returns a vector of pairs
-	// each pair is a channel name and a channel type	
-	static QVector< QPair< QString, ChannelType > >
-		getChannelNamesAndTypes( const char* filename );
+    // returns a vector of pairs
+    // each pair is a channel name and a channel type
+    static QVector< QPair< QString, ChannelType > >
+        getChannelNamesAndTypes( const char* filename );
 
-	static FloatMatrix getFloatBufferByName( const char* filename,
-		const char* channelName );
+    static FloatMatrix getFloatBufferByName( const char* filename,
+        const char* channelName );
 
 #if 0
-	static void readZBuffer( const char* filename,
-		Imf::Array2D< float >& zPixels,
-		int& width, int& height );
+    static void readZBuffer( const char* filename,
+        Imf::Array2D< float >& zPixels,
+        int& width, int& height );
 #endif
 };
 

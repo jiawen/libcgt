@@ -18,61 +18,61 @@ class SequenceExporter
 {
 public:
 
-	// prefix can be relative like "frame_"
-	// or absolute, like "c:/tmp/frame_"
-	//
-	// extension can be either "png" or "pfm"
-	SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, QString extension = "png", int startFrameIndex = 0 );
-	virtual ~SequenceExporter();
+    // prefix can be relative like "frame_"
+    // or absolute, like "c:/tmp/frame_"
+    //
+    // extension can be either "png" or "pfm"
+    SequenceExporter( ID3D11Device* pDevice, int width, int height, QString prefix, QString extension = "png", int startFrameIndex = 0 );
+    virtual ~SequenceExporter();
 
-	D3D11_VIEWPORT viewport();
-	RenderTarget* renderTarget();
-	DepthStencilTarget* depthStencilTarget();
+    D3D11_VIEWPORT viewport();
+    RenderTarget* renderTarget();
+    DepthStencilTarget* depthStencilTarget();
 
-	// saves the current render target, depth stencil target, and viewport
-	// so frames can be saved out without destroying UI state
-	void begin();
+    // saves the current render target, depth stencil target, and viewport
+    // so frames can be saved out without destroying UI state
+    void begin();
 
-	// call before starting a new frame to notify the exporter
-	// to clears its color and depth stencil targets
-	void beginFrame();
+    // call before starting a new frame to notify the exporter
+    // to clears its color and depth stencil targets
+    void beginFrame();
 
-	// call after rendering a new frame to notify the exporter
-	// to save the frame to disk and increment the internal frame index
-	void endFrame();
+    // call after rendering a new frame to notify the exporter
+    // to save the frame to disk and increment the internal frame index
+    void endFrame();
 
-	// restores the render target, depth stencil target, and viewport for UI
-	void end();
+    // restores the render target, depth stencil target, and viewport for UI
+    void end();
 
-	// resets the prefix
-	void setPrefix( QString prefix );
+    // resets the prefix
+    void setPrefix( QString prefix );
 
-	// resets the frame index,
-	// in case the user wants to start somewhere else, or re-start and overwrite
-	void setFrameIndex( int i );
+    // resets the frame index,
+    // in case the user wants to start somewhere else, or re-start and overwrite
+    void setFrameIndex( int i );
 
 private:
 
-	int m_frameIndex;
-	int m_width;
-	int m_height;
-	NumberedFilenameBuilder m_builder;
-	QString m_prefix;
-	QString m_extension;
+    int m_frameIndex;
+    int m_width;
+    int m_height;
+    NumberedFilenameBuilder m_builder;
+    QString m_prefix;
+    QString m_extension;
 
-	ID3D11Device* m_pDevice;
-	ID3D11DeviceContext* m_pImmediateContext;
+    ID3D11Device* m_pDevice;
+    ID3D11DeviceContext* m_pImmediateContext;
 
-	std::unique_ptr< RenderTarget > m_pRT;
-	std::unique_ptr< DepthStencilTarget > m_pDST;
-	std::unique_ptr< StagingTexture2D > m_pStagingTexture;
-	D3D11_VIEWPORT m_viewport;
+    std::unique_ptr< RenderTarget > m_pRT;
+    std::unique_ptr< DepthStencilTarget > m_pDST;
+    std::unique_ptr< StagingTexture2D > m_pStagingTexture;
+    D3D11_VIEWPORT m_viewport;
 
-	Array2D< ubyte4 > m_image4ub;
-	Array2D< Vector4f > m_image4f;
+    Array2D< ubyte4 > m_image4ub;
+    Array2D< Vector4f > m_image4f;
 
-	// saved for begin / end
-	D3D11_VIEWPORT m_savedViewport;
-	ID3D11RenderTargetView* m_pSavedRTV;
-	ID3D11DepthStencilView* m_pSavedDSV;
+    // saved for begin / end
+    D3D11_VIEWPORT m_savedViewport;
+    ID3D11RenderTargetView* m_pSavedRTV;
+    ID3D11DepthStencilView* m_pSavedDSV;
 };

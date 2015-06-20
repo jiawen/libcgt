@@ -15,69 +15,69 @@
 
 void Camera::setDirectX( bool directX )
 {
-	m_directX = directX;
+    m_directX = directX;
 }
 
 const GLFrustum& Camera::getFrustum() const
 {
-    return m_frustum;    
+    return m_frustum;
 }
 
 std::vector< Vector3f > Camera::frustumCorners() const
 {
-	std::vector< Vector3f > corners( 8 );
+    std::vector< Vector3f > corners( 8 );
 
-	Vector4f cubePoint( 0.f, 0.f, 0.f, 1.f );
-	Matrix4f invViewProj = inverseViewProjectionMatrix();
+    Vector4f cubePoint( 0.f, 0.f, 0.f, 1.f );
+    Matrix4f invViewProj = inverseViewProjectionMatrix();
 
-	// take the NDC cube and unproject it
-	for( int i = 0; i < 8; ++i )
-	{
-		// so vertices go around in order counterclockwise
-		cubePoint[0] = ( ( i & 1 ) ^ ( ( i & 2 ) >> 1 ) ? 1.f : -1.f );
-		cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
-		cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
+    // take the NDC cube and unproject it
+    for( int i = 0; i < 8; ++i )
+    {
+        // so vertices go around in order counterclockwise
+        cubePoint[0] = ( ( i & 1 ) ^ ( ( i & 2 ) >> 1 ) ? 1.f : -1.f );
+        cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
+        cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
 
-		// this would be the hypercube ordering
-		// cubePoint[0] = ( i & 1 ) ? 1.f : -1.f;
-		// cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
-		// cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]		
+        // this would be the hypercube ordering
+        // cubePoint[0] = ( i & 1 ) ? 1.f : -1.f;
+        // cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
+        // cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
 
-		corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz;
-	}
+        corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz;
+    }
 
-	return corners;
+    return corners;
 }
 
 std::vector< Plane3f > Camera::frustumPlanes() const
 {
-	auto corners = frustumCorners();
-	std::vector< Plane3f > planes( 6 );
+    auto corners = frustumCorners();
+    std::vector< Plane3f > planes( 6 );
 
-	// left
-	planes[ 0 ] = Plane3f( corners[ 0 ], corners[ 3 ], corners[ 4 ] );
-	// bottom
-	planes[ 1 ] = Plane3f( corners[ 1 ], corners[ 0 ], corners[ 4 ] );
-	// right
-	planes[ 2 ] = Plane3f( corners[ 2 ], corners[ 1 ], corners[ 5 ] );
-	// top
-	planes[ 3 ] = Plane3f( corners[ 3 ], corners[ 2 ], corners[ 6 ] );
-	// near
-	planes[ 4 ] = Plane3f( corners[ 0 ], corners[ 1 ], corners[ 2 ] );
-	// far
-	planes[ 5 ] = Plane3f( corners[ 5 ], corners[ 4 ], corners[ 6 ] );
+    // left
+    planes[ 0 ] = Plane3f( corners[ 0 ], corners[ 3 ], corners[ 4 ] );
+    // bottom
+    planes[ 1 ] = Plane3f( corners[ 1 ], corners[ 0 ], corners[ 4 ] );
+    // right
+    planes[ 2 ] = Plane3f( corners[ 2 ], corners[ 1 ], corners[ 5 ] );
+    // top
+    planes[ 3 ] = Plane3f( corners[ 3 ], corners[ 2 ], corners[ 6 ] );
+    // near
+    planes[ 4 ] = Plane3f( corners[ 0 ], corners[ 1 ], corners[ 2 ] );
+    // far
+    planes[ 5 ] = Plane3f( corners[ 5 ], corners[ 4 ], corners[ 6 ] );
 
-	return planes;
+    return planes;
 }
 
 bool Camera::isZFarInfinite() const
 {
-	return isinf( m_frustum.zFar );
+    return isinf( m_frustum.zFar );
 }
 
 void Camera::setFrustum( const GLFrustum& frustum )
 {
-	assert( frustum.zNear > 0 );
+    assert( frustum.zNear > 0 );
     assert( frustum.zFar > frustum.zNear );
     assert( frustum.left < frustum.right );
     assert( frustum.bottom < frustum.top );
@@ -86,174 +86,174 @@ void Camera::setFrustum( const GLFrustum& frustum )
 }
 
 void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-	const Vector2f& imageSize )
+    const Vector2f& imageSize )
 {
-	CameraUtils::intrinsicsToFrustum
-	(
-		focalLengthPixels, principalPointPixels,
-		imageSize,
+    CameraUtils::intrinsicsToFrustum
+    (
+        focalLengthPixels, principalPointPixels,
+        imageSize,
 
-		m_frustum.zNear,
-		m_frustum.left, m_frustum.right,
-		m_frustum.bottom, m_frustum.top
-	);
+        m_frustum.zNear,
+        m_frustum.left, m_frustum.right,
+        m_frustum.bottom, m_frustum.top
+    );
 }
 
 void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-	const Vector2f& imageSize,
-	float zNear, float zFar )
+    const Vector2f& imageSize,
+    float zNear, float zFar )
 {
-	assert( zNear > 0 );	
+    assert( zNear > 0 );
 
     CameraUtils::intrinsicsToFrustum
-	(
-		focalLengthPixels, principalPointPixels,
-		imageSize,
+    (
+        focalLengthPixels, principalPointPixels,
+        imageSize,
 
-		zNear,
-		m_frustum.left, m_frustum.right,
-		m_frustum.bottom, m_frustum.top
-	);
+        zNear,
+        m_frustum.left, m_frustum.right,
+        m_frustum.bottom, m_frustum.top
+    );
     m_frustum.zFar = zFar;
 }
 
 void Camera::getLookAt( Vector3f& eye,
-	Vector3f& center,
-	Vector3f& up ) const
+    Vector3f& center,
+    Vector3f& up ) const
 {
-	eye = m_eye;
-	center = m_center;
-	up = m_up;
+    eye = m_eye;
+    center = m_center;
+    up = m_up;
 }
 
 void Camera::setLookAt( const Vector3f& eye,
-	const Vector3f& center,
-	const Vector3f& up )
+    const Vector3f& center,
+    const Vector3f& up )
 {
-	m_eye = eye;
-	m_center = center;
-	m_up = up;
+    m_eye = eye;
+    m_center = center;
+    m_up = up;
 }
 
 void Camera::setLookAtFromInverseViewMatrix( const Matrix4f& ivm )
 {
-	float d = ( center() - eye() ).norm();
-	setLookAt
-	(
-		ivm.transformPoint( Vector3f::ZERO ),
-		ivm.transformPoint( Vector3f( 0, 0, -d ) ),
-		ivm.transformVector( Vector3f::UP )
-	);
+    float d = ( center() - eye() ).norm();
+    setLookAt
+    (
+        ivm.transformPoint( Vector3f::ZERO ),
+        ivm.transformPoint( Vector3f( 0, 0, -d ) ),
+        ivm.transformVector( Vector3f::UP )
+    );
 }
 
 Vector3f Camera::eye() const
 {
-	return m_eye;
+    return m_eye;
 }
 
 void Camera::setEye( const Vector3f& eye )
 {
-	m_eye = eye;
+    m_eye = eye;
 }
 
 Vector3f Camera::center() const
 {
-	return m_center;
+    return m_center;
 }
 
 void Camera::setCenter( const Vector3f& center )
 {
-	m_center = center;	
+    m_center = center;
 }
 
 Vector3f Camera::up() const
 {
-	return m_up;
+    return m_up;
 }
 
 void Camera::setUp( const Vector3f& up )
 {
-	m_up = up;
+    m_up = up;
 }
 
 Vector3f Camera::forward() const
 {
-	return ( m_center - m_eye ).normalized();
+    return ( m_center - m_eye ).normalized();
 }
 
 Vector3f Camera::right() const
 {
-	return Vector3f::cross( forward(), m_up );
+    return Vector3f::cross( forward(), m_up );
 }
 
 float Camera::zNear() const
 {
-	return m_frustum.zNear;
+    return m_frustum.zNear;
 }
 
 void Camera::setZNear( float zNear )
 {
-	assert( zNear > 0 );
-	m_frustum.zNear = zNear;
+    assert( zNear > 0 );
+    m_frustum.zNear = zNear;
 }
 
 float Camera::zFar() const
 {
-	return m_frustum.zFar;
+    return m_frustum.zFar;
 }
 
 void Camera::setZFar( float zFar )
 {
-	m_frustum.zFar = zFar;
+    m_frustum.zFar = zFar;
 }
 
 Matrix4f Camera::viewMatrix() const
 {
-	return Matrix4f::lookAt( m_eye, m_center, m_up );
+    return Matrix4f::lookAt( m_eye, m_center, m_up );
 }
 
 Matrix4f Camera::jitteredViewMatrix( float eyeX, float eyeY ) const
 {
-	// TODO: use Matrix4f::lookAt()
+    // TODO: use Matrix4f::lookAt()
 
-	Matrix4f view;
+    Matrix4f view;
 
-	// z is negative forward
-	Vector3f z = -forward();
-	Vector3f y = up();
-	Vector3f x = right();
+    // z is negative forward
+    Vector3f z = -forward();
+    Vector3f y = up();
+    Vector3f x = right();
 
-	// the x, y, and z vectors define the orthonormal coordinate system
-	// the affine part defines the overall translation
+    // the x, y, and z vectors define the orthonormal coordinate system
+    // the affine part defines the overall translation
 
-	Vector3f jitteredEye = m_eye + eyeX * x + eyeY * y;
+    Vector3f jitteredEye = m_eye + eyeX * x + eyeY * y;
 
-	view.setRow( 0, Vector4f( x, -Vector3f::dot( x, jitteredEye ) ) );
-	view.setRow( 1, Vector4f( y, -Vector3f::dot( y, jitteredEye ) ) );
-	view.setRow( 2, Vector4f( z, -Vector3f::dot( z, jitteredEye ) ) );
-	view.setRow( 3, Vector4f( 0, 0, 0, 1 ) );
+    view.setRow( 0, Vector4f( x, -Vector3f::dot( x, jitteredEye ) ) );
+    view.setRow( 1, Vector4f( y, -Vector3f::dot( y, jitteredEye ) ) );
+    view.setRow( 2, Vector4f( z, -Vector3f::dot( z, jitteredEye ) ) );
+    view.setRow( 3, Vector4f( 0, 0, 0, 1 ) );
 
-	return view;
+    return view;
 }
 
 Matrix4f Camera::viewProjectionMatrix() const
 {
-	return projectionMatrix() * viewMatrix();
+    return projectionMatrix() * viewMatrix();
 }
 
 Matrix4f Camera::inverseProjectionMatrix() const
 {
-	return projectionMatrix().inverse();
+    return projectionMatrix().inverse();
 }
 
 Matrix4f Camera::inverseViewMatrix() const
 {
-	return viewMatrix().inverse();
+    return viewMatrix().inverse();
 }
 
 Matrix4f Camera::inverseViewProjectionMatrix() const
 {
-	return viewProjectionMatrix().inverse();
+    return viewProjectionMatrix().inverse();
 }
 
 Matrix4f Camera::extrinsicsCG2CV() const
@@ -285,7 +285,7 @@ Matrix3f Camera::intrinsicsCV( const Vector2f& screenSize ) const
 
 Vector4f Camera::worldToEye( const Vector4f& world ) const
 {
-    return viewMatrix() * world;	
+    return viewMatrix() * world;
 }
 
 Vector4f Camera::eyeToClip( const Vector4f& eye ) const
@@ -303,7 +303,7 @@ Vector4f Camera::clipToNDC( const Vector4f& clip ) const
 Vector4f Camera::eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) const
 {
     Vector4f clip = eyeToClip( eye );
-	Vector4f ndc = clip.homogenized();
+    Vector4f ndc = clip.homogenized();
     ndc.w = clip.w;
     return ndcToScreen( ndc, screenSize );
 }
@@ -321,12 +321,12 @@ Vector4f Camera::ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) 
 
 Vector4f Camera::worldToScreen( const Vector4f& world, const Vector2f& screenSize ) const
 {
-	Vector4f eye = worldToEye( world );
-	return eyeToScreen( eye, screenSize );
+    Vector4f eye = worldToEye( world );
+    return eyeToScreen( eye, screenSize );
 }
 
 
-// virtual 
+// virtual
 Vector4f Camera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {
     return screenToEye( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
@@ -335,41 +335,41 @@ Vector4f Camera::screenToEye( const Vector2i& xy, float depth, const Vector2f& s
 // virtual
 Vector4f Camera::screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
 {
-	Vector2f ndcXY = screenToNDC( xy, screenSize );
+    Vector2f ndcXY = screenToNDC( xy, screenSize );
 
-	// forward transformation:
-	//
-	// depth = -zEye
-	//
-	// xClip = xEye * ( 2 * zNear ) / ( right - left ) + zEye * ( right + left ) / ( right - left )
-	// wClip = -zEye
-	//
-	// xNDC = xClip / wClip = xClip / -zEye = xClip / depth
-	//	
-	// -->
-	// inverse transformation:	
-	//
-	// xClip = xNDC * depth
-	//
-	// xClip - zEye * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
-	// xClip + depth * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
-	//
-	// xEye = [ xClip + depth * ( right + left ) / ( right - left ) ] / [ ( 2 * zNear ) / ( right - left ) ]
+    // forward transformation:
+    //
+    // depth = -zEye
+    //
+    // xClip = xEye * ( 2 * zNear ) / ( right - left ) + zEye * ( right + left ) / ( right - left )
+    // wClip = -zEye
+    //
+    // xNDC = xClip / wClip = xClip / -zEye = xClip / depth
+    //
+    // -->
+    // inverse transformation:
+    //
+    // xClip = xNDC * depth
+    //
+    // xClip - zEye * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
+    // xClip + depth * ( right + left ) / ( right - left ) = xEye * ( 2 * zNear ) / ( right - left )
+    //
+    // xEye = [ xClip + depth * ( right + left ) / ( right - left ) ] / [ ( 2 * zNear ) / ( right - left ) ]
 
-	float xClip = ndcXY.x * depth;
-	float yClip = ndcXY.y * depth;
+    float xClip = ndcXY.x * depth;
+    float yClip = ndcXY.y * depth;
 
-	float xNumerator = xClip + depth * ( m_frustum.right + m_frustum.left ) / ( m_frustum.right - m_frustum.left );
-	float yNumerator = yClip + depth * ( m_frustum.top + m_frustum.bottom ) / ( m_frustum.top - m_frustum.bottom );
+    float xNumerator = xClip + depth * ( m_frustum.right + m_frustum.left ) / ( m_frustum.right - m_frustum.left );
+    float yNumerator = yClip + depth * ( m_frustum.top + m_frustum.bottom ) / ( m_frustum.top - m_frustum.bottom );
 
-	float xDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.right - m_frustum.left );
-	float yDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.top - m_frustum.bottom );
+    float xDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.right - m_frustum.left );
+    float yDenominator = ( 2 * m_frustum.zNear ) / ( m_frustum.top - m_frustum.bottom );
 
-	float xEye = xNumerator / xDenominator;
-	float yEye = yNumerator / yDenominator;
-	float zEye = -depth;
+    float xEye = xNumerator / xDenominator;
+    float yEye = yNumerator / yDenominator;
+    float zEye = -depth;
 
-	return Vector4f( xEye, yEye, zEye, 1 );
+    return Vector4f( xEye, yEye, zEye, 1 );
 }
 
 Vector4f Camera::screenToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
@@ -379,8 +379,8 @@ Vector4f Camera::screenToWorld( const Vector2i& xy, float depth, const Vector2f&
 
 Vector4f Camera::screenToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
 {
-	Vector4f eye = screenToEye( xy, depth, screenSize );
-	return inverseViewMatrix() * eye;
+    Vector4f eye = screenToEye( xy, depth, screenSize );
+    return inverseViewMatrix() * eye;
 }
 
 Vector3f Camera::screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const
@@ -388,42 +388,42 @@ Vector3f Camera::screenToDirection( const Vector2i& xy, const Vector2f& screenSi
     return screenToDirection
     (
         Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-		Rect2f( screenSize )
-	);
+        Rect2f( screenSize )
+    );
 }
 
 Vector3f Camera::screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const
 {
-	return screenToDirection
-	(
-		xy,
+    return screenToDirection
+    (
+        xy,
         Rect2f( screenSize )
-	);
+    );
 }
 
 Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const
 {
-	// convert from screen coordinates to NDC
-	float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
-	float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
+    // convert from screen coordinates to NDC
+    float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
+    float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
 
-	Vector4f clip( ndcX, ndcY, 0, 1 );
-	Vector4f eye = inverseProjectionMatrix() * clip;
-	Vector4f world = inverseViewMatrix() * eye;
+    Vector4f clip( ndcX, ndcY, 0, 1 );
+    Vector4f eye = inverseProjectionMatrix() * clip;
+    Vector4f world = inverseViewMatrix() * eye;
 
-	Vector3f pointOnNearPlane = world.homogenized().xyz;
+    Vector3f pointOnNearPlane = world.homogenized().xyz;
 
-	// TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
+    // TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
 
-	return ( pointOnNearPlane - m_eye ).normalized();
+    return ( pointOnNearPlane - m_eye ).normalized();
 }
 
 // static
 Vector2f Camera::screenToNDC( const Vector2f& xy, const Vector2f& screenSize )
 {
-	// convert from screen coordinates to NDC
-	float ndcX = 2 * xy.x / screenSize.x - 1;
-	float ndcY = 2 * xy.y / screenSize.y - 1;
+    // convert from screen coordinates to NDC
+    float ndcX = 2 * xy.x / screenSize.x - 1;
+    float ndcY = 2 * xy.y / screenSize.y - 1;
 
     return{ ndcX, ndcY };
 }

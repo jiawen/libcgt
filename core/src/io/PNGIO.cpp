@@ -122,57 +122,57 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
 // static
 bool PNGIO::write( const std::string& filename, Array2DView< const uint8x3 > image )
 {
-	Array2D< uint8x3 > tmpImage;
-	const uint8_t* pSrcPointer;
+    Array2D< uint8x3 > tmpImage;
+    const uint8_t* pSrcPointer;
 
-	if( !image.packed() )
-	{
-		tmpImage.resize( image.size() );
-		ArrayUtils::copy< uint8x3 >( image, tmpImage );
-		pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
-	}
-	else
-	{
-		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
-	}
+    if( !image.packed() )
+    {
+        tmpImage.resize( image.size() );
+        ArrayUtils::copy< uint8x3 >( image, tmpImage );
+        pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
+    }
+    else
+    {
+        pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
+    }
 
-	unsigned int errVal = lodepng_encode24_file
-	(
-		filename.c_str(),
-		pSrcPointer,
-		image.width(),
-		image.height()
-	);
+    unsigned int errVal = lodepng_encode24_file
+    (
+        filename.c_str(),
+        pSrcPointer,
+        image.width(),
+        image.height()
+    );
 
-	bool succeeded = ( errVal == 0 );
-	return succeeded;
+    bool succeeded = ( errVal == 0 );
+    return succeeded;
 }
 
 // static
 bool PNGIO::write( const std::string& filename, Array2DView< const uint8x4 > image )
 {
-	Array2D< uint8x4 > tmpImage;
-	const uint8_t* pSrcPointer;
+    Array2D< uint8x4 > tmpImage;
+    const uint8_t* pSrcPointer;
 
-	if( !image.packed() )
-	{
-		tmpImage.resize( image.size() );
-		ArrayUtils::copy< uint8x4 >( image, tmpImage );
-		pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
-	}
-	else
-	{
-		pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
-	}
+    if( !image.packed() )
+    {
+        tmpImage.resize( image.size() );
+        ArrayUtils::copy< uint8x4 >( image, tmpImage );
+        pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
+    }
+    else
+    {
+        pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
+    }
 
-	unsigned int errVal = lodepng_encode32_file
-	(
-		filename.c_str(),
-		pSrcPointer,
-		image.width(),
-		image.height()
-	);
+    unsigned int errVal = lodepng_encode32_file
+    (
+        filename.c_str(),
+        pSrcPointer,
+        image.width(),
+        image.height()
+    );
 
-	bool succeeded = ( errVal == 0 );
-	return succeeded;
+    bool succeeded = ( errVal == 0 );
+    return succeeded;
 }

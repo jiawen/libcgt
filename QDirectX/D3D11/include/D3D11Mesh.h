@@ -19,73 +19,73 @@ class D3D11Mesh
 {
 public:
 
-	// capacity is in number of vertices
-	D3D11Mesh( ID3D11Device* pDevice, int capacity );
-	D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fColor4fTexture2f* vertexArray, int capacity );
-	
-	// TODO: make this not a constructor
-	// TODO: texture path is pretty silly
-	D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData, QString texturePath, bool generatePerFaceNormalsIfNonExistent = true );
+    // capacity is in number of vertices
+    D3D11Mesh( ID3D11Device* pDevice, int capacity );
+    D3D11Mesh( ID3D11Device* pDevice, VertexPosition4fNormal3fColor4fTexture2f* vertexArray, int capacity );
 
-	virtual ~D3D11Mesh();
+    // TODO: make this not a constructor
+    // TODO: texture path is pretty silly
+    D3D11Mesh( ID3D11Device* pDevice, std::shared_ptr< OBJData > pOBJData, QString texturePath, bool generatePerFaceNormalsIfNonExistent = true );
 
-	int capacity() const;
-	
-	std::vector< Vector2i >& vertexRanges();
-	std::vector< Vector3f >& diffuseColors();
-	std::vector< Vector4f >& specularColors();
-	std::vector< std::shared_ptr< DynamicTexture2D > >& diffuseTextures()
-	{
-		return m_diffuseTexturesRanges;
-	}
+    virtual ~D3D11Mesh();
 
-	//void addVertexRange( const Vector2i& vr, const Vector3f& kd );
-	void addVertexRange( const Vector2i& vr,
-		const Vector3f& kd, const Vector4f& ks = Vector4f( 0, 0, 0, 0 ),
-		std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
+    int capacity() const;
 
-	std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray();
-	const std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray() const;
+    std::vector< Vector2i >& vertexRanges();
+    std::vector< Vector3f >& diffuseColors();
+    std::vector< Vector4f >& specularColors();
+    std::vector< std::shared_ptr< DynamicTexture2D > >& diffuseTextures()
+    {
+        return m_diffuseTexturesRanges;
+    }
 
-	// updates the backing vertex buffer on the GPU
-	// by copying from the cpu vertex array
-	void updateGPUBuffer();
+    //void addVertexRange( const Vector2i& vr, const Vector3f& kd );
+    void addVertexRange( const Vector2i& vr,
+        const Vector3f& kd, const Vector4f& ks = Vector4f( 0, 0, 0, 0 ),
+        std::shared_ptr< DynamicTexture2D > pDiffuseTexture = nullptr );
 
-	// object space bounding box
-	const BoundingBox3f& boundingBox() const;
-	
-	// returns the matrix that centers this object at the origin
-	// and uniformly scales the object such that axis (0, 1, or 2 for x, y, z, or -1 for longest)
-	// of its bounding box maps to [-1,1]
-	Matrix4f twoUnitCubeWorldMatrix( int axis = -1 ) const;
+    std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray();
+    const std::vector< VertexPosition4fNormal3fColor4fTexture2f >& vertexArray() const;
 
-	Matrix4f worldMatrix() const;
-	void setWorldMatrix( const Matrix4f& m );
+    // updates the backing vertex buffer on the GPU
+    // by copying from the cpu vertex array
+    void updateGPUBuffer();
 
-	// get the inverse transpose of the top-left 3x3 submatrix of worldMatrix()
-	Matrix3f normalMatrix() const;
-	// for Direct3D: returns normalMatrix() as a 4x4 matrix (with 0 everywhere else)
-	Matrix4f normalMatrix4x4() const;
+    // object space bounding box
+    const BoundingBox3f& boundingBox() const;
 
-	std::shared_ptr< DynamicVertexBuffer > vertexBuffer() const;
+    // returns the matrix that centers this object at the origin
+    // and uniformly scales the object such that axis (0, 1, or 2 for x, y, z, or -1 for longest)
+    // of its bounding box maps to [-1,1]
+    Matrix4f twoUnitCubeWorldMatrix( int axis = -1 ) const;
+
+    Matrix4f worldMatrix() const;
+    void setWorldMatrix( const Matrix4f& m );
+
+    // get the inverse transpose of the top-left 3x3 submatrix of worldMatrix()
+    Matrix3f normalMatrix() const;
+    // for Direct3D: returns normalMatrix() as a 4x4 matrix (with 0 everywhere else)
+    Matrix4f normalMatrix4x4() const;
+
+    std::shared_ptr< DynamicVertexBuffer > vertexBuffer() const;
 
 private:
-	
-	void updateBoundingBox();
 
-	BoundingBox3f m_boundingBox;
+    void updateBoundingBox();
 
-	Matrix4f m_worldMatrix;
+    BoundingBox3f m_boundingBox;
 
-	ID3D11Device* m_pDevice;
-	std::vector< VertexPosition4fNormal3fColor4fTexture2f > m_vertexArray;
-	std::shared_ptr< DynamicVertexBuffer > m_pVertexBuffer;
+    Matrix4f m_worldMatrix;
 
-	std::vector< Vector2i > m_vertexRanges;
-	std::vector< Vector3f > m_diffuseColors;
-	std::vector< Vector4f > m_specularColors;
-	std::vector< std::shared_ptr< DynamicTexture2D > > m_diffuseTexturesRanges;
+    ID3D11Device* m_pDevice;
+    std::vector< VertexPosition4fNormal3fColor4fTexture2f > m_vertexArray;
+    std::shared_ptr< DynamicVertexBuffer > m_pVertexBuffer;
 
-	QHash< QString, std::shared_ptr< DynamicTexture2D > > m_diffuseTextures;
+    std::vector< Vector2i > m_vertexRanges;
+    std::vector< Vector3f > m_diffuseColors;
+    std::vector< Vector4f > m_specularColors;
+    std::vector< std::shared_ptr< DynamicTexture2D > > m_diffuseTexturesRanges;
+
+    QHash< QString, std::shared_ptr< DynamicTexture2D > > m_diffuseTextures;
 
 };

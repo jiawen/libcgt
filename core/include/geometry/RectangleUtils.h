@@ -21,10 +21,10 @@ public:
     // (coordinates are rounded down).
     static Rect2i bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window );
 
-    // Fit an image inside a rectangle maximizing the resulting area and centering. 
+    // Fit an image inside a rectangle maximizing the resulting area and centering.
     static Rect2f bestFitKeepAR( float imageAspectRatio, const Rect2f& window );
 
-    // Fit an image inside a rectangle maximizing the resulting area and centering. 
+    // Fit an image inside a rectangle maximizing the resulting area and centering.
     static Rect2f bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window );
 
     // Given a point p and a rectangle r, returns the normalized [0,1] coordinates of
@@ -42,7 +42,7 @@ public:
     // [Requires a standard rectangle].
     // Returns the exact same rectangle as r, but in a coordinate system
     // that counts from [0, width) but where x points left.
-	// This function is useful for handling rectangles within 2D images where
+    // This function is useful for handling rectangles within 2D images where
     // the x axis points left.
     //
     // Let r = { 1, y, 2, height }.
@@ -53,7 +53,7 @@ public:
     // [Requires a standard rectangle].
     // Returns the exact same rectangle as r, but in a coordinate system
     // that counts from [0, width) but where x points left.
-	// This function is useful for handling rectangles within 2D images where
+    // This function is useful for handling rectangles within 2D images where
     // the x axis points left.
     //
     // Let r = { 1, y, 2, height }.
@@ -64,7 +64,7 @@ public:
     // [Requires a standard rectangle].
     // Returns the exact same rectangle as this, but in a coordinate system
     // that counts from [0, height) but where y points down.
-	// This function is useful for handling rectangles within 2D images where
+    // This function is useful for handling rectangles within 2D images where
     // the y axis points down.
     //
     // Let r = { x, 1, width, 2 }.
@@ -75,7 +75,7 @@ public:
     // [Requires a standard rectangle].
     // Returns the exact same rectangle as this, but in a coordinate system
     // that counts from [0, height) but where y points down.
-	// This function is useful for handling rectangles within 2D images where
+    // This function is useful for handling rectangles within 2D images where
     // the y axis points down.
     //
     // Let r = { x, 1, width, 2 }.
@@ -92,36 +92,36 @@ public:
     // the output has the same minimum() and maximum(), but has negative height.
     // Calling it twice flips it back.
     static Rect2f flipStandardizationY( const Rect2f& rect );
-    
-	static void writeScreenAlignedTriangleStrip(
-		Array1DView< Vector4f > positions,
-		Array1DView< Vector2f > textureCoordinates,
+
+    static void writeScreenAlignedTriangleStrip(
+        Array1DView< Vector4f > positions,
+        Array1DView< Vector2f > textureCoordinates,
         const Rect2f& positionRectangle = Rect2f{ -1, -1, 2, 2 },
-		float z = 0.f, float w = 1.f,
+        float z = 0.f, float w = 1.f,
         const Rect2f& textureRectangle = Rect2f{ 0, 0, 1, 1 }
-	);
+    );
 
     // Write the positions of a screen-aligned rectangle as a triangle strip
     // into positions.
     //
-    // The default rect is already in clip space, and 
+    // The default rect is already in clip space, and
     // projection matrix is needed.
     //
     // If rect = { x, y, width, height },
     // then the projection matrix should be:
     // orthographicProjection( 0, 0, width, height ).
-	static void writeScreenAlignedTriangleStripPositions(
-		Array1DView< Vector4f > positions,
+    static void writeScreenAlignedTriangleStripPositions(
+        Array1DView< Vector4f > positions,
         const Rect2f& rect = Rect2f{ -1, -1, 2, 2 },
-		float z = 0.f, float w = 1.f
-	);
+        float z = 0.f, float w = 1.f
+    );
 
-	// For a DirectX style rectangle,
-	// pass in Rect2f( 0, 1, 1, -1 )
-	static void writeScreenAlignedTriangleStripTextureCoordinates(
-		Array1DView< Vector2f > textureCoordinates,
+    // For a DirectX style rectangle,
+    // pass in Rect2f( 0, 1, 1, -1 )
+    static void writeScreenAlignedTriangleStripTextureCoordinates(
+        Array1DView< Vector2f > textureCoordinates,
         const Rect2f& rect = Rect2f{ 0, 0, 1, 1 }
-	);
+    );
 
     // Returns a standard rectangle (square) with the given center and side length.
     static Rect2f makeSquare( const Vector2f& center, float sideLength );

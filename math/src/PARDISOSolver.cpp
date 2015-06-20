@@ -8,139 +8,139 @@
 template<>
 PARDISOSolver< float, true >::PARDISOSolver() :
 
-	m_nRowsA( -1 ),
-	m_nColsA( -1 )
+    m_nRowsA( -1 ),
+    m_nColsA( -1 )
 
 {
-	int options = MKL_DSS_DEFAULTS;
-	options += MKL_DSS_SINGLE_PRECISION;
-	options += MKL_DSS_ZERO_BASED_INDEXING;
-	int retval = dss_create( m_handle, options );
-	assert( retval == MKL_DSS_SUCCESS );
-	( void )retval;
+    int options = MKL_DSS_DEFAULTS;
+    options += MKL_DSS_SINGLE_PRECISION;
+    options += MKL_DSS_ZERO_BASED_INDEXING;
+    int retval = dss_create( m_handle, options );
+    assert( retval == MKL_DSS_SUCCESS );
+    ( void )retval;
 }
 
 template<>
 PARDISOSolver< float, false >::PARDISOSolver() :
 
-	m_nRowsA( -1 ),
-	m_nColsA( -1 )
+    m_nRowsA( -1 ),
+    m_nColsA( -1 )
 
 {
-	int options = MKL_DSS_DEFAULTS;
-	options += MKL_DSS_SINGLE_PRECISION;
-	int retval = dss_create( m_handle, options );
-	assert( retval == MKL_DSS_SUCCESS );
-	( void )retval;
+    int options = MKL_DSS_DEFAULTS;
+    options += MKL_DSS_SINGLE_PRECISION;
+    int retval = dss_create( m_handle, options );
+    assert( retval == MKL_DSS_SUCCESS );
+    ( void )retval;
 }
 
 template<>
 PARDISOSolver< double, true >::PARDISOSolver() :
 
-	m_nRowsA( -1 ),
-	m_nColsA( -1 )
+    m_nRowsA( -1 ),
+    m_nColsA( -1 )
 
 {
-	int options = MKL_DSS_DEFAULTS;
-	options += MKL_DSS_ZERO_BASED_INDEXING;
-	int retval = dss_create( m_handle, options );
-	assert( retval == MKL_DSS_SUCCESS );
-	( void )retval;
+    int options = MKL_DSS_DEFAULTS;
+    options += MKL_DSS_ZERO_BASED_INDEXING;
+    int retval = dss_create( m_handle, options );
+    assert( retval == MKL_DSS_SUCCESS );
+    ( void )retval;
 }
 
 template<>
 PARDISOSolver< double, false >::PARDISOSolver() :
 
-	m_nRowsA( -1 ),
-	m_nColsA( -1 )
+    m_nRowsA( -1 ),
+    m_nColsA( -1 )
 
 {
-	int options = MKL_DSS_DEFAULTS;
-	int retval = dss_create( m_handle, options );
-	assert( retval == MKL_DSS_SUCCESS );
-	( void )retval;
+    int options = MKL_DSS_DEFAULTS;
+    int retval = dss_create( m_handle, options );
+    assert( retval == MKL_DSS_SUCCESS );
+    ( void )retval;
 }
 
 // virtual
 template< typename valueType, bool zeroBased >
 PARDISOSolver< valueType, zeroBased >::~PARDISOSolver()
 {
-	int options = MKL_DSS_DEFAULTS;
-	dss_delete( m_handle, options );
+    int options = MKL_DSS_DEFAULTS;
+    dss_delete( m_handle, options );
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::analyzePattern( int m, int n, int* rowIndex, int* columns, int nNonZeroes )
 {
-	int structureOptions = MKL_DSS_SYMMETRIC;
-	int retval = dss_define_structure( m_handle, structureOptions, rowIndex, m, n, columns, nNonZeroes );
-	bool succeeded = ( retval == MKL_DSS_SUCCESS );
-	assert( succeeded );
+    int structureOptions = MKL_DSS_SYMMETRIC;
+    int retval = dss_define_structure( m_handle, structureOptions, rowIndex, m, n, columns, nNonZeroes );
+    bool succeeded = ( retval == MKL_DSS_SUCCESS );
+    assert( succeeded );
 
-	if( succeeded )
-	{
-		m_nRowsA = m;
-		m_nColsA = n;
+    if( succeeded )
+    {
+        m_nRowsA = m;
+        m_nColsA = n;
 
-		int reorderOptions = MKL_DSS_AUTO_ORDER;
-		retval = dss_reorder( m_handle, reorderOptions, NULL );
-		succeeded = ( retval == MKL_DSS_SUCCESS );
-		assert( succeeded );
-	}
+        int reorderOptions = MKL_DSS_AUTO_ORDER;
+        retval = dss_reorder( m_handle, reorderOptions, NULL );
+        succeeded = ( retval == MKL_DSS_SUCCESS );
+        assert( succeeded );
+    }
 
-	return succeeded;
+    return succeeded;
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::analyzePattern( CompressedSparseMatrix< valueType >& A )
 {
-	return analyzePattern( A.numRows(), A.numCols(),
-		reinterpret_cast< int* >( A.outerIndexPointers().data() ),
-		reinterpret_cast< int* >( A.innerIndices().data() ),
-		A.numNonZeros() );
+    return analyzePattern( A.numRows(), A.numCols(),
+        reinterpret_cast< int* >( A.outerIndexPointers().data() ),
+        reinterpret_cast< int* >( A.innerIndices().data() ),
+        A.numNonZeros() );
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::factorize( valueType* values )
 {
-	//int options = MKL_DSS_INDEFINITE;
-	int options = MKL_DSS_POSITIVE_DEFINITE;
-	int retval = dss_factor_real( m_handle, options, values );
-	bool succeeded = ( retval == MKL_DSS_SUCCESS );
-	assert( succeeded );
+    //int options = MKL_DSS_INDEFINITE;
+    int options = MKL_DSS_POSITIVE_DEFINITE;
+    int retval = dss_factor_real( m_handle, options, values );
+    bool succeeded = ( retval == MKL_DSS_SUCCESS );
+    assert( succeeded );
 
-	return succeeded;
+    return succeeded;
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::factorize( CompressedSparseMatrix< valueType >& A )
 {
-	assert( A.matrixType() == SYMMETRIC );
-	assert( A.numRows() == m_nRowsA );
-	assert( A.numCols() == m_nColsA );
+    assert( A.matrixType() == SYMMETRIC );
+    assert( A.numRows() == m_nRowsA );
+    assert( A.numCols() == m_nColsA );
 
-	return factorize( A.values().data() );
+    return factorize( A.values().data() );
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::solve( const valueType* rhs, valueType* solution )
 {
-	int options = MKL_DSS_DEFAULTS;
-	int nRhs = 1;
-	int retval = dss_solve_real( m_handle, options, rhs, nRhs, solution );
-	bool succeeded = ( retval == MKL_DSS_SUCCESS );
-	assert( succeeded );
+    int options = MKL_DSS_DEFAULTS;
+    int nRhs = 1;
+    int retval = dss_solve_real( m_handle, options, rhs, nRhs, solution );
+    bool succeeded = ( retval == MKL_DSS_SUCCESS );
+    assert( succeeded );
 
-	return succeeded;
+    return succeeded;
 }
 
 template< typename valueType, bool zeroBased >
 bool PARDISOSolver< valueType, zeroBased >::solve( const FloatMatrix& rhs, FloatMatrix& solution )
 {
-	assert( rhs.numRows() == m_nColsA );
+    assert( rhs.numRows() == m_nColsA );
 
-	solution.resize( m_nRowsA, 1 );
-	return solve( rhs.data(), solution.data() );
+    solution.resize( m_nRowsA, 1 );
+    return solve( rhs.data(), solution.data() );
 }
 
 // instantiate

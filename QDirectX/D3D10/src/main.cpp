@@ -5,15 +5,15 @@
 
 int main( int argc, char* argv[] )
 {
-	QApplication app( argc, argv );
+    QApplication app( argc, argv );
 
-	SimpleTriangleWidget stw;
-	stw.initialize( 800, 800 );
-	stw.show();
+    SimpleTriangleWidget stw;
+    stw.initialize( 800, 800 );
+    stw.show();
 
-	MainWidget w;
-	w.setTriangleWidget( &stw );
-	w.show();
+    MainWidget w;
+    w.setTriangleWidget( &stw );
+    w.show();
 
-	return app.exec();
+    return app.exec();
 }

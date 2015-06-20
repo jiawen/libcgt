@@ -14,10 +14,10 @@ using namespace std;
 
 GLTexture3D::GLTexture3D( const Vector3i& size, GLImageInternalFormat internalFormat ) :
 
-	GLTexture( GL_TEXTURE_3D, internalFormat ),
+    GLTexture( GL_TEXTURE_3D, internalFormat ),
     m_size( size )
 {
-	assert( m_size.x > 0 );
+    assert( m_size.x > 0 );
     assert( m_size.y > 0 );
     assert( m_size.z > 0 );
     assert( m_size.x <= GLTexture::maxSize3D() );
@@ -35,12 +35,12 @@ int GLTexture3D::numElements() const
 
 int GLTexture3D::width() const
 {
-	return m_size.x;
+    return m_size.x;
 }
 
 int GLTexture3D::height() const
 {
-	return m_size.y;
+    return m_size.y;
 }
 
 int GLTexture3D::depth() const
@@ -55,27 +55,27 @@ Vector3i GLTexture3D::size() const
 
 void GLTexture3D::setFloat1Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
-	bind();
+    bind();
 
-	if( width == 0 )
-	{
-		width = m_size.x;
-	}
-	if( height == 0 )
-	{
-		height = m_size.y;
-	}
-	if( depth == 0 )
-	{
+    if( width == 0 )
+    {
+        width = m_size.x;
+    }
+    if( height == 0 )
+    {
+        height = m_size.y;
+    }
+    if( depth == 0 )
+    {
         depth = m_size.z;
-	}
+    }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RED, GL_FLOAT, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RED, GL_FLOAT, data );
 }
 
 void GLTexture3D::setFloat3Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
-	bind();
+    bind();
 
     if( width == 0 )
     {
@@ -90,12 +90,12 @@ void GLTexture3D::setFloat3Data( const float* data, int xOffset, int yOffset, in
         depth = m_size.z;
     }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGB, GL_FLOAT, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGB, GL_FLOAT, data );
 }
 
 void GLTexture3D::setFloat4Data( const float* data, int xOffset, int yOffset, int zOffset, int width, int height, int depth )
 {
-	bind();
+    bind();
 
     if( width == 0 )
     {
@@ -110,14 +110,14 @@ void GLTexture3D::setFloat4Data( const float* data, int xOffset, int yOffset, in
         depth = m_size.z;
     }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGBA, GL_FLOAT, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGBA, GL_FLOAT, data );
 }
 
 void GLTexture3D::setUnsignedByte1Data( const uint8_t* data,
-									   int xOffset, int yOffset, int zOffset,
-									   int width, int height, int depth )
+                                       int xOffset, int yOffset, int zOffset,
+                                       int width, int height, int depth )
 {
-	bind();
+    bind();
 
     if( width == 0 )
     {
@@ -132,14 +132,14 @@ void GLTexture3D::setUnsignedByte1Data( const uint8_t* data,
         depth = m_size.z;
     }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RED, GL_UNSIGNED_BYTE, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RED, GL_UNSIGNED_BYTE, data );
 }
 
 void GLTexture3D::setUnsignedByte3Data( const uint8_t* data,
-									   int xOffset, int yOffset, int zOffset,
-									   int width, int height, int depth )
+                                       int xOffset, int yOffset, int zOffset,
+                                       int width, int height, int depth )
 {
-	bind();
+    bind();
 
     if( width == 0 )
     {
@@ -154,14 +154,14 @@ void GLTexture3D::setUnsignedByte3Data( const uint8_t* data,
         depth = m_size.z;
     }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
 }
 
 void GLTexture3D::setUnsignedByte4Data( const uint8_t* data,
-									   int xOffset, int yOffset, int zOffset,
-									   int width, int height, int depth )
+                                       int xOffset, int yOffset, int zOffset,
+                                       int width, int height, int depth )
 {
-	bind();
+    bind();
 
     if( width == 0 )
     {
@@ -176,5 +176,5 @@ void GLTexture3D::setUnsignedByte4Data( const uint8_t* data,
         depth = m_size.z;
     }
 
-	glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+    glTexImage3D( GL_TEXTURE_3D, 0, static_cast< GLint >( internalFormat() ), width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 }

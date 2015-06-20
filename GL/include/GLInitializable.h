@@ -6,7 +6,7 @@ class GLInitializable
 {
 public:
 
-	virtual void initializeGL() = 0;
+    virtual void initializeGL() = 0;
 };
 
 #endif

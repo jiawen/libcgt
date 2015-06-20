@@ -8,65 +8,65 @@
 // static
 Reference< CgProgramWrapper > CgProgramWrapper::create( QString filename, QString entryPoint, CGcontext context, CGprofile profile )
 {
-	CGprogram program = cgCreateProgramFromFile
-	(
-		context,
-		CG_SOURCE,
-		qPrintable( filename ),
-		profile,
-		qPrintable( entryPoint ),
-		NULL
-	);
+    CGprogram program = cgCreateProgramFromFile
+    (
+        context,
+        CG_SOURCE,
+        qPrintable( filename ),
+        profile,
+        qPrintable( entryPoint ),
+        NULL
+    );
 
-	if( program != NULL )
-	{
-		return new CgProgramWrapper( program );
-	}
-	else
-	{
+    if( program != NULL )
+    {
+        return new CgProgramWrapper( program );
+    }
+    else
+    {
 #if _DEBUG
-		fprintf( stderr, "%s\n", cgGetLastListing( context ) );
+        fprintf( stderr, "%s\n", cgGetLastListing( context ) );
 #endif
-		return NULL;
-	}
+        return NULL;
+    }
 }
 
 // virtual
 CgProgramWrapper::~CgProgramWrapper()
 {
-	printf( "deleting cg program 0x%p\n", ( void* )this );
-	cgDestroyProgram( m_cgProgram );
+    printf( "deleting cg program 0x%p\n", ( void* )this );
+    cgDestroyProgram( m_cgProgram );
 }
 
 Reference< CgParameterSet > CgProgramWrapper::createParameterSet()
 {
-	return new CgParameterSet( m_programParameters );
+    return new CgParameterSet( m_programParameters );
 }
 
 bool CgProgramWrapper::isCompiled()
 {
-	return cgIsProgramCompiled( m_cgProgram );
+    return cgIsProgramCompiled( m_cgProgram );
 }
 
 void CgProgramWrapper::bind()
 {
-	assert( isLoaded() );
-	cgGLBindProgram( m_cgProgram );
+    assert( isLoaded() );
+    cgGLBindProgram( m_cgProgram );
 }
 
 void CgProgramWrapper::load()
 {
-	cgGLLoadProgram( m_cgProgram );
+    cgGLLoadProgram( m_cgProgram );
 }
 
 bool CgProgramWrapper::isLoaded()
 {
-	return cgGLIsProgramLoaded( m_cgProgram );
+    return cgGLIsProgramLoaded( m_cgProgram );
 }
 
 CGprogram CgProgramWrapper::getProgram()
 {
-	return m_cgProgram;
+    return m_cgProgram;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -75,22 +75,22 @@ CGprogram CgProgramWrapper::getProgram()
 
 CgProgramWrapper::CgProgramWrapper( CGprogram program ) :
 
-	m_cgProgram( program )
+    m_cgProgram( program )
 
 {
-	load();
+    load();
 
-	CGparameter param = cgGetFirstParameter( m_cgProgram, CG_PROGRAM );
-	while( param != NULL )
-	{
-		if( cgGetParameterVariability( param ) == CG_UNIFORM )
-		{
-			QString name = cgGetParameterName( param );
-			m_programParameters.insert( name, param );
-		}
+    CGparameter param = cgGetFirstParameter( m_cgProgram, CG_PROGRAM );
+    while( param != NULL )
+    {
+        if( cgGetParameterVariability( param ) == CG_UNIFORM )
+        {
+            QString name = cgGetParameterName( param );
+            m_programParameters.insert( name, param );
+        }
 
-		param = cgGetNextParameter( param );
-	}
+        param = cgGetNextParameter( param );
+    }
 }
 
 #endif

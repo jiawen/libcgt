@@ -11,31 +11,31 @@ Q_OBJECT
 
 public:
 
-	SimpleTriangleWidget();
+    SimpleTriangleWidget();
 
-	bool m_bRotating;
+    bool m_bRotating;
 
 protected:
 
-	virtual void initializeD3D();
-	virtual void resizeD3D( int width, int height );
-	virtual void paintD3D();
+    virtual void initializeD3D();
+    virtual void resizeD3D( int width, int height );
+    virtual void paintD3D();
 
 private:
 
-	void loadShaders();
+    void loadShaders();
 
-	DynamicVertexBuffer* m_pVertexBuffer;	
-	ID3D11InputLayout* m_pInputLayout;
-	
-	ID3DX11Effect* m_pEffect;
-	ID3DX11EffectPass* m_pPass;
+    DynamicVertexBuffer* m_pVertexBuffer;
+    ID3D11InputLayout* m_pInputLayout;
 
-	float m_theta;
-	QTimer* m_pAnimationTimer;
+    ID3DX11Effect* m_pEffect;
+    ID3DX11EffectPass* m_pPass;
+
+    float m_theta;
+    QTimer* m_pAnimationTimer;
 
 private slots:
 
-	void handleTimeout();
+    void handleTimeout();
 
 };

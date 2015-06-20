@@ -36,7 +36,7 @@ public:
 
     // TODO: enable global seamless texture filtering:
     // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS).
-	
+
     GLTextureCubeMap( int sideLength, GLImageInternalFormat internalFormat );
 
     int sideLength() const;
@@ -49,41 +49,41 @@ public:
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
     bool set( GLCubeMapFace face, Array2DView< const uint8x4 > data,
-		GLImageFormat format = GLImageFormat::RGBA,
-		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        GLImageFormat format = GLImageFormat::RGBA,
+        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
 #if 0
     // Data must be packed().
     // Only accepts RGB and BGR for now.
-	bool set( Array2DView< const uint8x3 > data,
+    bool set( Array2DView< const uint8x3 > data,
         GLImageFormat format = GLImageFormat::RGB,
-		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
     bool set( Array2DView< const uint8x4 > data,
-		GLImageFormat format = GLImageFormat::RGBA,
-		const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        GLImageFormat format = GLImageFormat::RGBA,
+        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
     // Data must be packed().
     bool set( Array2DView< const float > data,
         GLImageFormat format = GLImageFormat::RED,
         const Vector2i& dstOffset = Vector2i{ 0, 0 } );
 
-	// Retrieves the entire texture.
-	// Returns false if output isNull(), is not packed, or has the wrong size.
+    // Retrieves the entire texture.
+    // Returns false if output isNull(), is not packed, or has the wrong size.
     // Also returns false if format isn't RGBA or BGRA.
     bool get( Array2DView< uint8x4 > output, GLImageFormat format = GLImageFormat::RGBA );
 
     // Retrieves the entire texture.
-	// Returns false if output isNull(), is not packed, or has the wrong size.
+    // Returns false if output isNull(), is not packed, or has the wrong size.
     bool get( Array2DView< float > output );
-	bool get( Array2DView< Vector2f > output );
-	bool get( Array2DView< Vector4f > output );
+    bool get( Array2DView< Vector2f > output );
+    bool get( Array2DView< Vector4f > output );
 #endif
 
     // Retrieves the entire texture.
-	// Returns false if output isNull(), is not packed, or has the wrong size.
+    // Returns false if output isNull(), is not packed, or has the wrong size.
     // Also returns false if format isn't RGBA or BGRA.
     bool get( GLCubeMapFace face, Array2DView< uint8x4 > output,
         GLImageFormat format = GLImageFormat::RGBA );

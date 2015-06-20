@@ -57,7 +57,7 @@ GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView( int nVertices
         m_pVAO->mapAttributeIndexToBindingIndex( i, 0 );
         m_pVAO->setAttributeFormat( i, T::s_numComponents[ i ],
             GLVertexAttributeType::FLOAT, true,
-            T::s_relativeOffsets[ i ] );        
+            T::s_relativeOffsets[ i ] );
     }
 
     m_pVAO->attachBuffer( 0, m_pVBO.get( ), m_offsetBytes, sizeof( T ) );

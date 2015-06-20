@@ -14,28 +14,28 @@
 class SingularValueDecomposition
 {
 public:
-				
-	// Computes the SVD of A:
-	// A = U S V^T
-	// For A: m x n
-	// U will be resized to m x m
-	// S will be resized to min( m, n ) x 1
-	// Vt will be resized to n x n
-	static bool SVD( const FloatMatrix& a, FloatMatrix& u, FloatMatrix& s, FloatMatrix& vt );
-				
-	SingularValueDecomposition( const FloatMatrix& a );
 
-	bool isValid() const;
+    // Computes the SVD of A:
+    // A = U S V^T
+    // For A: m x n
+    // U will be resized to m x m
+    // S will be resized to min( m, n ) x 1
+    // Vt will be resized to n x n
+    static bool SVD( const FloatMatrix& a, FloatMatrix& u, FloatMatrix& s, FloatMatrix& vt );
 
-	const FloatMatrix& u() const;
-	const FloatMatrix& s() const;
-	const FloatMatrix& vt() const;
+    SingularValueDecomposition( const FloatMatrix& a );
+
+    bool isValid() const;
+
+    const FloatMatrix& u() const;
+    const FloatMatrix& s() const;
+    const FloatMatrix& vt() const;
 
 private:
 
-	FloatMatrix m_u;
-	FloatMatrix m_s;
-	FloatMatrix m_vt;
+    FloatMatrix m_u;
+    FloatMatrix m_s;
+    FloatMatrix m_vt;
 
-	bool m_valid;
+    bool m_valid;
 };

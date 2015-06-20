@@ -22,8 +22,8 @@ GLTextureCubeMap::GLTextureCubeMap( int sideLength, GLImageInternalFormat intern
     GLTexture( GL_TEXTURE_CUBE_MAP, internalFormat ),
     m_sideLength( sideLength )
 {
-    assert( sideLength > 0 );    
-    assert( sideLength <= GLTexture::maxSizeCubeMap() );    
+    assert( sideLength > 0 );
+    assert( sideLength <= GLTexture::maxSizeCubeMap() );
 
     glTextureStorage2D( id(), 1, static_cast< GLenum >( internalFormat ), sideLength, sideLength );
 }
@@ -51,22 +51,22 @@ void GLTextureCubeMap::clear( const Vector4f& clearValue )
 
 bool GLTextureCubeMap::set( GLCubeMapFace face,
     Array2DView< const uint8x4 > data,
-	GLImageFormat format,
-	const Vector2i& dstOffset )
+    GLImageFormat format,
+    const Vector2i& dstOffset )
 {
-	if( dstOffset.x + data.width() > sideLength() ||
-		dstOffset.y + data.height() > sideLength() )
-	{
-		return false;
-	}
-	if( format != GLImageFormat::RGBA &&
-		format != GLImageFormat::BGRA )
-	{
-		return false;
-	}
+    if( dstOffset.x + data.width() > sideLength() ||
+        dstOffset.y + data.height() > sideLength() )
+    {
+        return false;
+    }
+    if( format != GLImageFormat::RGBA &&
+        format != GLImageFormat::BGRA )
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed
 
     // DSA treats a cube map as a 2D array texture.
     glTextureSubImage3D
@@ -78,9 +78,9 @@ bool GLTextureCubeMap::set( GLCubeMapFace face,
         data.pointer()
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 #if 0
@@ -88,49 +88,49 @@ bool GLTextureCubeMap::set( Array2DView< const uint8x3 > data,
     GLImageFormat format,
     const Vector2i& dstOffset )
 {
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
     if( format != GLImageFormat::RGB &&
-		format != GLImageFormat::BGR )
-	{
-		return false;
-	}
+        format != GLImageFormat::BGR )
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed: return false if not
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed: return false if not
 
-	glTextureSubImage2DEXT( id(), GL_TEXTURE_2D, 0,
-		dstOffset.x, dstOffset.y, data.width(), data.height(),
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
-		data.pointer()
-	);
+    glTextureSubImage2DEXT( id(), GL_TEXTURE_2D, 0,
+        dstOffset.x, dstOffset.y, data.width(), data.height(),
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
+        data.pointer()
+    );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTextureCubeMap::set( Array2DView< const uint8x4 > data,
-	GLImageFormat format,
-	const Vector2i& dstOffset )
+    GLImageFormat format,
+    const Vector2i& dstOffset )
 {
 
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
-	if( format != GLImageFormat::RGBA &&
-		format != GLImageFormat::BGRA )
-	{
-		return false;
-	}
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
+    if( format != GLImageFormat::RGBA &&
+        format != GLImageFormat::BGRA )
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed
 
     glTextureSubImage2DEXT
     (
@@ -140,31 +140,31 @@ bool GLTextureCubeMap::set( Array2DView< const uint8x4 > data,
         data.pointer()
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTextureCubeMap::set( Array2DView< const float > data,
-	GLImageFormat format,
+    GLImageFormat format,
     const Vector2i& dstOffset )
 {
 
-	if( dstOffset.x + data.width() > width() ||
-		dstOffset.y + data.height() > height() )
-	{
-		return false;
-	}
-	if( format != GLImageFormat::RED &&
-		format != GLImageFormat::GREEN &&
+    if( dstOffset.x + data.width() > width() ||
+        dstOffset.y + data.height() > height() )
+    {
+        return false;
+    }
+    if( format != GLImageFormat::RED &&
+        format != GLImageFormat::GREEN &&
         format != GLImageFormat::BLUE &&
         format != GLImageFormat::ALPHA )
-	{
-		return false;
-	}
+    {
+        return false;
+    }
 
-	glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
-	// TODO: alignment, strides, ..., has to be packed
+    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    // TODO: alignment, strides, ..., has to be packed
 
     glTextureSubImage2DEXT
     (
@@ -174,127 +174,127 @@ bool GLTextureCubeMap::set( Array2DView< const float > data,
         data.pointer()
     );
 
-	glPopClientAttrib();
+    glPopClientAttrib();
 
-	return true;
+    return true;
 }
 
 bool GLTextureCubeMap::get( Array2DView< uint8x4 > output, GLImageFormat format )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
     if( format != GLImageFormat::RGBA &&
         format != GLImageFormat::BGRA )
     {
         return false;
     }
-	
-	// TODO: mipmap level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
-	return true;
+
+    // TODO: mipmap level
+    glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+        static_cast< GLenum >( format ), GL_UNSIGNED_BYTE, output );
+    return true;
 }
 
 
-bool GLTextureCubeMap::get( Array2DView< float > output )					  
+bool GLTextureCubeMap::get( Array2DView< float > output )
 {
-	// TODO: glPixelStorei allows some packing:
+    // TODO: glPixelStorei allows some packing:
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: GL_RG_INTEGER
-	// output can be normalized or not
-	// GL_RG_INTEGER for not normalized
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
-	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RED, GL_FLOAT, output );
-	return true;
+    // TODO: GL_RG_INTEGER
+    // output can be normalized or not
+    // GL_RG_INTEGER for not normalized
+
+    // TODO: level
+    glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+        GL_RED, GL_FLOAT, output );
+    return true;
 }
 
-bool GLTextureCubeMap::get( Array2DView< Vector2f > output )					  
+bool GLTextureCubeMap::get( Array2DView< Vector2f > output )
 {
-	// TODO: glPixelStorei allows some packing:
+    // TODO: glPixelStorei allows some packing:
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: GL_RG_INTEGER
-	// output can be normalized or not
-	// GL_RG_INTEGER for not normalized
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
-	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RG, GL_FLOAT, output );
-	return true;
+    // TODO: GL_RG_INTEGER
+    // output can be normalized or not
+    // GL_RG_INTEGER for not normalized
+
+    // TODO: level
+    glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+        GL_RG, GL_FLOAT, output );
+    return true;
 }
 
-bool GLTextureCubeMap::get( Array2DView< Vector4f > output )					  
+bool GLTextureCubeMap::get( Array2DView< Vector4f > output )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
 
-	if( output.isNull() ||
-		output.width() != width() ||
-		output.height() != height() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
-	
-	// TODO: level
-	glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
-		GL_RGBA, GL_FLOAT, output );
-	return true;
+    if( output.isNull() ||
+        output.width() != width() ||
+        output.height() != height() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
+
+    // TODO: level
+    glGetTextureImageEXT( id(), GL_TEXTURE_2D, 0,
+        GL_RGBA, GL_FLOAT, output );
+    return true;
 }
 #endif
 
 
 bool GLTextureCubeMap::get( GLCubeMapFace face, Array2DView< uint8x4 > output, GLImageFormat format )
 {
-	// TODO: glPixelStorei allows some packing?
+    // TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT
 
-	if( output.isNull() ||
-		output.width() != sideLength() ||
-		output.height() != sideLength() ||
-		!( output.packed() ) )
-	{
-		return false;
-	}
+    if( output.isNull() ||
+        output.width() != sideLength() ||
+        output.height() != sideLength() ||
+        !( output.packed() ) )
+    {
+        return false;
+    }
 
     if( format != GLImageFormat::RGBA &&
         format != GLImageFormat::BGRA )
     {
         return false;
     }
-	
-	// TODO: mipmap level
-	glGetTextureSubImage( id(), 0,
-		0, 0, static_cast< GLenum >( face ),
+
+    // TODO: mipmap level
+    glGetTextureSubImage( id(), 0,
+        0, 0, static_cast< GLenum >( face ),
         sideLength(), sideLength(), 1,
         static_cast< GLenum >( format ), GL_UNSIGNED_BYTE,
         output.width() * output.height() * output.elementStrideBytes(), output );
-	return true;
+    return true;
 }

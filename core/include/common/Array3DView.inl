@@ -2,7 +2,7 @@ template< typename T >
 Array3DView< T >::Array3DView() :
     m_size( Vector3i{ 0, 0, 0 } ),
     m_strides( Vector3i{ 0, 0, 0 } ),
-	m_pPointer( nullptr )
+    m_pPointer( nullptr )
 {
 
 }
@@ -21,7 +21,7 @@ Array3DView< T >::Array3DView( void* pPointer, const Vector3i& size ) :
 
 template< typename T >
 Array3DView< T >::Array3DView( void* pPointer,
-	const Vector3i& size, const Vector3i& strides ) :
+    const Vector3i& size, const Vector3i& strides ) :
     m_size( size ),
     m_strides( strides ),
     m_pPointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pPointer ) )
@@ -32,37 +32,37 @@ Array3DView< T >::Array3DView( void* pPointer,
 template< typename T >
 bool Array3DView< T >::isNull() const
 {
-	return( m_pPointer == nullptr );
+    return( m_pPointer == nullptr );
 }
 
 template< typename T >
 bool Array3DView< T >::notNull() const
 {
-	return( m_pPointer != nullptr );
+    return( m_pPointer != nullptr );
 }
 
 template< typename T >
 Array3DView< T >::operator const T* () const
 {
-	return m_pPointer;
+    return m_pPointer;
 }
 
 template< typename T >
 Array3DView< T >::operator T* ()
 {
-	return m_pPointer;
+    return m_pPointer;
 }
 
 template< typename T >
 const T* Array3DView< T >::pointer() const
 {
-	return m_pPointer;
+    return m_pPointer;
 }
 
 template< typename T >
 T* Array3DView< T >::pointer()
 {
-	return m_pPointer;
+    return m_pPointer;
 }
 
 template< typename T >
@@ -86,87 +86,87 @@ T* Array3DView< T >::slicePointer( int z )
 template< typename T >
 T& Array3DView< T >::operator [] ( int k )
 {
-	int x;
-	int y;
-	int z;
-	Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
+    int x;
+    int y;
+    int z;
+    Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
 template< typename T >
 T& Array3DView< T >::operator [] ( const Vector3i& xyz )
 {
-	return *elementPointer( xyz );
+    return *elementPointer( xyz );
 }
 
 template< typename T >
 int Array3DView< T >::width() const
 {
-	return m_size.x;
+    return m_size.x;
 }
 
 template< typename T >
 int Array3DView< T >::height() const
 {
-	return m_size.y;
+    return m_size.y;
 }
 
 template< typename T >
 int Array3DView< T >::depth() const
 {
-	return m_size.z;
+    return m_size.z;
 }
 
 template< typename T >
 Vector3i Array3DView< T >::size() const
 {
-	return m_size;
+    return m_size;
 }
 
 template< typename T >
 int Array3DView< T >::numElements() const
 {
-	return m_size.x * m_size.y * m_size.z;
+    return m_size.x * m_size.y * m_size.z;
 }
 
 template< typename T >
 int Array3DView< T >::elementStrideBytes() const
 {
-	return m_strides.x;
+    return m_strides.x;
 }
 
 template< typename T >
 int Array3DView< T >::rowStrideBytes() const
 {
-	return m_strides.y;
+    return m_strides.y;
 }
 
 template< typename T >
 int Array3DView< T >::sliceStrideBytes() const
 {
-	return m_strides.z;
+    return m_strides.z;
 }
 
 template< typename T >
 bool Array3DView< T >::elementsArePacked() const
 {
-	return elementStrideBytes() == sizeof( T );
+    return elementStrideBytes() == sizeof( T );
 }
 
 template< typename T >
 bool Array3DView< T >::rowsArePacked() const
 {
-	return rowStrideBytes() == ( width() * elementStrideBytes() );
+    return rowStrideBytes() == ( width() * elementStrideBytes() );
 }
 
 template< typename T >
 bool Array3DView< T >::slicesArePacked() const
 {
-	return sliceStrideBytes() == ( height() * rowStrideBytes() );
+    return sliceStrideBytes() == ( height() * rowStrideBytes() );
 }
 
 template< typename T >
 bool Array3DView< T >::packed() const
 {
-	return elementsArePacked() && rowsArePacked() && slicesArePacked();
+    return elementsArePacked() && rowsArePacked() && slicesArePacked();
 }

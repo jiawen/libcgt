@@ -6,18 +6,18 @@ class BinaryFileOutputStream
 {
 public:
 
-	static BinaryFileOutputStream* open( const char* filename );
-	virtual ~BinaryFileOutputStream();
+    static BinaryFileOutputStream* open( const char* filename );
+    virtual ~BinaryFileOutputStream();
 
-	void close();
+    void close();
 
-	bool writeInt( int i );
-	bool writeFloat( float f );
-	bool writeFloatArray( float f[], int nCount );
+    bool writeInt( int i );
+    bool writeFloat( float f );
+    bool writeFloatArray( float f[], int nCount );
 
 private:
 
-	BinaryFileOutputStream( FILE* pFilePointer );
+    BinaryFileOutputStream( FILE* pFilePointer );
 
-	FILE* m_pFilePointer;
+    FILE* m_pFilePointer;
 };

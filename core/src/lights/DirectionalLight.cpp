@@ -9,7 +9,7 @@
 
 DirectionalLight::DirectionalLight() :
 
-	m_direction( 0, 0, 1 )
+    m_direction( 0, 0, 1 )
 
 {
 
@@ -17,7 +17,7 @@ DirectionalLight::DirectionalLight() :
 
 DirectionalLight::DirectionalLight( const Vector3f& direction ) :
 
-	m_direction( direction )
+    m_direction( direction )
 
 {
 
@@ -25,18 +25,18 @@ DirectionalLight::DirectionalLight( const Vector3f& direction ) :
 
 Vector3f DirectionalLight::direction() const
 {
-	return m_direction;
+    return m_direction;
 }
 
 void DirectionalLight::setDirection( const Vector3f& direction )
 {
-	m_direction = direction;
+    m_direction = direction;
 }
 
 // virtual
 Matrix3f DirectionalLight::lightBasis() const
 {
-	return GeometryUtils::getRightHandedBasisWithPreferredUp( m_direction, Vector3f::UP );
+    return GeometryUtils::getRightHandedBasisWithPreferredUp( m_direction, Vector3f::UP );
 }
 
 // virtual
@@ -44,32 +44,32 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& scene
 {
     const float feather = 1.01f;
 
-	Matrix3f lightLinear = lightBasis();
-	Vector3f eye = camera.eye();
+    Matrix3f lightLinear = lightBasis();
+    Vector3f eye = camera.eye();
 
-	// get the corners of the view frustum in light coordinates
-	// with the z = 0 plane at the eye
-	std::vector< Vector3f > frustumCorners = camera.frustumCorners();
+    // get the corners of the view frustum in light coordinates
+    // with the z = 0 plane at the eye
+    std::vector< Vector3f > frustumCorners = camera.frustumCorners();
 
     Box3f frustumBB;
     for( int i = 0; i < frustumCorners.size(); ++i )
-	{
+    {
         frustumBB.enlargeToContain( frustumCorners[i] );
-	}
+    }
 
     Box3f sceneAndFrustum;
-	bool intersects = Box3f::intersect( frustumBB, sceneBoundingBox, sceneAndFrustum );
+    bool intersects = Box3f::intersect( frustumBB, sceneBoundingBox, sceneAndFrustum );
 
-	// TODO: check for intersection
+    // TODO: check for intersection
 
     std::vector< Vector3f > sceneCorners = libcgt::core::geometry::boxutils::corners( sceneBoundingBox );
-	std::vector< Vector3f > sceneAndFrustumCorners = libcgt::core::geometry::boxutils::corners( sceneAndFrustum );
+    std::vector< Vector3f > sceneAndFrustumCorners = libcgt::core::geometry::boxutils::corners( sceneAndFrustum );
 
-	for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
-	{
+    for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
+    {
         sceneAndFrustumCorners[ i ] = lightLinear * ( sceneAndFrustumCorners[ i ] - eye );
         sceneCorners[ i ] = lightLinear * ( sceneCorners[ i ] - eye );
-	}
+    }
 
     Box3f inLightCoordinates;
     for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
@@ -84,29 +84,29 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& scene
     maxCorner = center + feather * (maxCorner - center);
     minCorner = center + feather * (minCorner - center);
 
-	// add eye point
-	for(int j = 0; j < 3; ++j)
-	{
-		maxCorner[j] = std::max( maxCorner[ j ], 0.0f );
-		minCorner[j] = std::min( minCorner[ j ], 0.0f );
-	}
+    // add eye point
+    for(int j = 0; j < 3; ++j)
+    {
+        maxCorner[j] = std::max( maxCorner[ j ], 0.0f );
+        minCorner[j] = std::min( minCorner[ j ], 0.0f );
+    }
 
-	// bound the near plane to the scene
-	for( int i = 0; i < sceneCorners.size(); ++i )
-	{
-		minCorner[2] = std::min( minCorner[2], sceneCorners[ i ][ 2 ] );
-	}
+    // bound the near plane to the scene
+    for( int i = 0; i < sceneCorners.size(); ++i )
+    {
+        minCorner[2] = std::min( minCorner[2], sceneCorners[ i ][ 2 ] );
+    }
 
-	// finally, compute the full light matrix
-	Matrix4f lightMatrix;
-	lightMatrix.setSubmatrix3x3( 0, 0, lightLinear );
-	Vector3f origin = 0.5 * ( minCorner + maxCorner );
-	origin[2] = minCorner[2];
-	lightMatrix.setCol( 3, Vector4f( -origin, 1.f ) - Vector4f( lightLinear * eye, 0.f ) );
-	for(int i = 0; i < 3; ++i)
-	{
-		lightMatrix.setRow( i, lightMatrix.getRow( i ) * ( ( i == 2 ) ? 1.f : 2.f ) / ( maxCorner[i] - minCorner[i] ) );
-	}
+    // finally, compute the full light matrix
+    Matrix4f lightMatrix;
+    lightMatrix.setSubmatrix3x3( 0, 0, lightLinear );
+    Vector3f origin = 0.5 * ( minCorner + maxCorner );
+    origin[2] = minCorner[2];
+    lightMatrix.setCol( 3, Vector4f( -origin, 1.f ) - Vector4f( lightLinear * eye, 0.f ) );
+    for(int i = 0; i < 3; ++i)
+    {
+        lightMatrix.setRow( i, lightMatrix.getRow( i ) * ( ( i == 2 ) ? 1.f : 2.f ) / ( maxCorner[i] - minCorner[i] ) );
+    }
 
-	return lightMatrix;
+    return lightMatrix;
 }

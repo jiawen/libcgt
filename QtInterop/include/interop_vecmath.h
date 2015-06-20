@@ -27,7 +27,7 @@ namespace vecmath
     Rect2f toRect2f( const QRectF& r );
 
     // Direct copy of x, y, width, height without any flipping up/down.
-    Rect2i toRect2i( const QRect& r );    
+    Rect2i toRect2i( const QRect& r );
 }
 }
 }

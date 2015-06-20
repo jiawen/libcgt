@@ -2,13 +2,13 @@
 
 enum MatrixTriangle
 {
-	LOWER,
-	UPPER
+    LOWER,
+    UPPER
 };
 
 enum MatrixType
 {
-	GENERAL,
-	SYMMETRIC, // one triangle equals other half
-	TRIANGULAR // one triangle is zero
+    GENERAL,
+    SYMMETRIC, // one triangle equals other half
+    TRIANGULAR // one triangle is zero
 };

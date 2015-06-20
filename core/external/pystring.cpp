@@ -73,88 +73,88 @@ typedef int Py_ssize_t;
     }
 
 
-	namespace {
+    namespace {
 
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		/// why doesn't the std::reverse work?
-		///
-		void reverse_strings( std::vector< std::string > & result)
-		{
-			for (std::vector< std::string >::size_type i = 0; i < result.size() / 2; i++ )
-			{
-				std::swap(result[i], result[result.size() - 1 - i]);
-			}
-		}
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        /// why doesn't the std::reverse work?
+        ///
+        void reverse_strings( std::vector< std::string > & result)
+        {
+            for (std::vector< std::string >::size_type i = 0; i < result.size() / 2; i++ )
+            {
+                std::swap(result[i], result[result.size() - 1 - i]);
+            }
+        }
 
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		///
-		///
-		void split_whitespace( const std::string & str, std::vector< std::string > & result, int maxsplit )
-		{
-			std::string::size_type i, j, len = str.size();
-			for (i = j = 0; i < len; )
-			{
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///
+        void split_whitespace( const std::string & str, std::vector< std::string > & result, int maxsplit )
+        {
+            std::string::size_type i, j, len = str.size();
+            for (i = j = 0; i < len; )
+            {
 
-				while ( i < len && ::isspace( str[i] ) ) i++;
-				j = i;
+                while ( i < len && ::isspace( str[i] ) ) i++;
+                j = i;
 
-				while ( i < len && ! ::isspace( str[i]) ) i++;
-
-
-
-				if (j < i)
-				{
-					if ( maxsplit-- <= 0 ) break;
-
-					result.push_back( str.substr( j, i - j ));
-
-					while ( i < len && ::isspace( str[i])) i++;
-					j = i;
-				}
-			}
-			if (j < len)
-			{
-				result.push_back( str.substr( j, len - j ));
-			}
-		}
-
-
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		///
-		///
-		void rsplit_whitespace( const std::string & str, std::vector< std::string > & result, int maxsplit )
-		{
-			std::string::size_type len = str.size();
-			std::string::size_type i, j;
-			for (i = j = len; i > 0; )
-			{
-
-				while ( i > 0 && ::isspace( str[i - 1] ) ) i--;
-				j = i;
-
-				while ( i > 0 && ! ::isspace( str[i - 1]) ) i--;
+                while ( i < len && ! ::isspace( str[i]) ) i++;
 
 
 
-				if (j > i)
-				{
-					if ( maxsplit-- <= 0 ) break;
+                if (j < i)
+                {
+                    if ( maxsplit-- <= 0 ) break;
 
-					result.push_back( str.substr( i, j - i ));
+                    result.push_back( str.substr( j, i - j ));
 
-					while ( i > 0 && ::isspace( str[i - 1])) i--;
-					j = i;
-				}
-			}
-			if (j > 0)
-			{
-				result.push_back( str.substr( 0, j ));
-			}
-			//std::reverse( result, result.begin(), result.end() );
-			reverse_strings( result );
-		}
+                    while ( i < len && ::isspace( str[i])) i++;
+                    j = i;
+                }
+            }
+            if (j < len)
+            {
+                result.push_back( str.substr( j, len - j ));
+            }
+        }
 
-	} //anonymous namespace
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///
+        void rsplit_whitespace( const std::string & str, std::vector< std::string > & result, int maxsplit )
+        {
+            std::string::size_type len = str.size();
+            std::string::size_type i, j;
+            for (i = j = len; i > 0; )
+            {
+
+                while ( i > 0 && ::isspace( str[i - 1] ) ) i--;
+                j = i;
+
+                while ( i > 0 && ! ::isspace( str[i - 1]) ) i--;
+
+
+
+                if (j > i)
+                {
+                    if ( maxsplit-- <= 0 ) break;
+
+                    result.push_back( str.substr( i, j - i ));
+
+                    while ( i > 0 && ::isspace( str[i - 1])) i--;
+                    j = i;
+                }
+            }
+            if (j > 0)
+            {
+                result.push_back( str.substr( 0, j ));
+            }
+            //std::reverse( result, result.begin(), result.end() );
+            reverse_strings( result );
+        }
+
+    } //anonymous namespace
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,26 +406,26 @@ typedef int Py_ssize_t;
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
-    
+
     namespace
     {
         /* Matches the end (direction >= 0) or start (direction < 0) of self
          * against substr, using the start and end arguments. Returns
          * -1 on error, 0 if not found and 1 if found.
          */
-        
+
         int _string_tailmatch(const std::string & self, const std::string & substr,
                               Py_ssize_t start, Py_ssize_t end,
                               int direction)
         {
             Py_ssize_t len = (Py_ssize_t) self.size();
             Py_ssize_t slen = (Py_ssize_t) substr.size();
-            
+
             const char* sub = substr.c_str();
             const char* str = self.c_str();
-            
+
             ADJUST_INDICES(start, end, len);
-            
+
             if (direction < 0) {
                 // startswith
                 if (start+slen > len)
@@ -439,27 +439,27 @@ typedef int Py_ssize_t;
             }
             if (end-start >= slen)
                 return (!std::memcmp(str+start, sub, slen));
-            
+
             return 0;
         }
     }
-    
+
     bool endswith( const std::string & str, const std::string & suffix, int start, int end )
     {
         int result = _string_tailmatch(str, suffix,
                                        (Py_ssize_t) start, (Py_ssize_t) end, +1);
         //if (result == -1) // TODO: Error condition
-        
+
         return static_cast<bool>(result);
     }
-    
-    
+
+
     bool startswith( const std::string & str, const std::string & prefix, int start, int end )
     {
         int result = _string_tailmatch(str, prefix,
                                        (Py_ssize_t) start, (Py_ssize_t) end, -1);
         //if (result == -1) // TODO: Error condition
-        
+
         return static_cast<bool>(result);
     }
 
@@ -841,25 +841,25 @@ typedef int Py_ssize_t;
         if ( start >= end ) return "";
         return str.substr( start, end - start );
     }
-    
-    
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
     int find( const std::string & str, const std::string & sub, int start, int end  )
     {
         ADJUST_INDICES(start, end, (int) str.size());
-        
+
         std::string::size_type result = str.find( sub, start );
-        
+
         // If we cannot find the string, or if the end-point of our found substring is past
         // the allowed end limit, return that it can't be found.
-        if( result == std::string::npos || 
+        if( result == std::string::npos ||
            (result + sub.size() > (std::string::size_type)end) )
         {
             return -1;
         }
-        
+
         return (int) result;
     }
 
@@ -877,14 +877,14 @@ typedef int Py_ssize_t;
     int rfind( const std::string & str, const std::string & sub, int start, int end )
     {
         ADJUST_INDICES(start, end, (int) str.size());
-        
+
         std::string::size_type result = str.rfind( sub, end );
-        
-        if( result == std::string::npos || 
-            result < (std::string::size_type)start  || 
+
+        if( result == std::string::npos ||
+            result < (std::string::size_type)start  ||
            (result + sub.size() > (std::string::size_type)end))
             return -1;
-        
+
         return (int)result;
     }
 
@@ -967,7 +967,7 @@ typedef int Py_ssize_t;
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
-    
+
     std::string replace( const std::string & str, const std::string & oldstr, const std::string & newstr, int count )
     {
         int sofar = 0;
@@ -975,7 +975,7 @@ typedef int Py_ssize_t;
         std::string s( str );
 
         std::string::size_type oldlen = oldstr.size(), newlen = newstr.size();
-        
+
         cursor = find( s, oldstr, cursor );
 
         while ( cursor != -1 && cursor <= (int)s.size() )
@@ -1003,8 +1003,8 @@ typedef int Py_ssize_t;
         return s;
 
     }
-    
-    
+
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
@@ -1053,7 +1053,7 @@ typedef int Py_ssize_t;
         // Early exits
         if (n <= 0) return "";
         if (n == 1) return str;
-        
+
         std::ostringstream os;
         for(int i=0; i<n; ++i)
         {
@@ -1068,7 +1068,7 @@ namespace os
 {
 namespace path
 {
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
@@ -1144,21 +1144,21 @@ namespace path
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
-    
+
     std::string abspath_nt(const std::string & path, const std::string & cwd)
     {
         std::string p = path;
         if(!isabs_nt(p)) p = join_nt(cwd, p);
         return normpath_nt(p);
     }
-    
+
     std::string abspath_posix(const std::string & path, const std::string & cwd)
     {
         std::string p = path;
         if(!isabs_posix(p)) p = join_posix(cwd, p);
         return normpath_posix(p);
     }
-    
+
     std::string abspath(const std::string & path, const std::string & cwd)
     {
 #ifdef WINDOWS
@@ -1167,7 +1167,7 @@ namespace path
         return abspath_posix(path, cwd);
 #endif
     }
-    
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
@@ -1177,13 +1177,13 @@ namespace path
     {
         if(paths.empty()) return "";
         if(paths.size() == 1) return paths[0];
-        
+
         std::string path = paths[0];
-        
+
         for(unsigned int i=1; i<paths.size(); ++i)
         {
             std::string b = paths[i];
-            
+
             bool b_nts = false;
             if(path.empty())
             {
@@ -1199,7 +1199,7 @@ namespace path
                 //     3. join('c:/a', '/b') == '/b'
                 //     4. join('c:', 'd:/') = 'd:/'
                 //     5. join('c:/', 'd:/') = 'd:/'
-                
+
                 if( (pystring::slice(path, 1, 2) != ":") ||
                     (pystring::slice(b, 1, 2) == ":") )
                 {
@@ -1207,13 +1207,13 @@ namespace path
                     b_nts = true;
                 }
                 // Else path has a drive letter, and b doesn't but is absolute.
-                else if((path.size()>3) || 
+                else if((path.size()>3) ||
                         ((path.size()==3) && !pystring::endswith(path, "/") && !pystring::endswith(path, "\\")))
                 {
                     b_nts = true;
                 }
             }
-            
+
             if(b_nts)
             {
                 path = b;
@@ -1258,10 +1258,10 @@ namespace path
                 }
             }
         }
-        
+
         return path;
     }
-    
+
     // Join two or more pathname components, inserting "\\" as needed.
     std::string join_nt(const std::string & a, const std::string & b)
     {
@@ -1281,9 +1281,9 @@ namespace path
     {
         if(paths.empty()) return "";
         if(paths.size() == 1) return paths[0];
-        
+
         std::string path = paths[0];
-        
+
         for(unsigned int i=1; i<paths.size(); ++i)
         {
             std::string b = paths[i];
@@ -1300,7 +1300,7 @@ namespace path
                 path += "/" + b;
             }
         }
-        
+
         return path;
     }
 
@@ -1311,7 +1311,7 @@ namespace path
         paths[1] = b;
         return join_posix(paths);
     }
-    
+
     std::string join(const std::string & path1, const std::string & path2)
     {
 #ifdef WINDOWS
@@ -1330,12 +1330,12 @@ namespace path
         return join_posix(paths);
 #endif
     }
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     ///
     ///
 
-        
+
     // Split a pathname.
     // Return (head, tail) where tail is everything after the final slash.
     // Either part may be empty
@@ -1344,10 +1344,10 @@ namespace path
     {
         std::string d, p;
         splitdrive_nt(d, p, path);
-        
+
         // set i to index beyond p's last slash
         int i = (int)p.size();
-        
+
         while(i>0 && (p[i-1] != '\\') && (p[i-1] != '/'))
         {
             i = i - 1;
@@ -1355,7 +1355,7 @@ namespace path
 
         head = pystring::slice(p,0,i);
         tail = pystring::slice(p,i); // now tail has no slashes
-        
+
         // remove trailing slashes from head, unless it's all slashes
         std::string head2 = head;
         while(!head2.empty() && ((pystring::slice(head2,-1) == "/") ||
@@ -1363,7 +1363,7 @@ namespace path
         {
             head2 = pystring::slice(head,0,-1);
         }
-        
+
         if(!head2.empty()) head = head2;
         head = d + head;
     }
@@ -1377,10 +1377,10 @@ namespace path
     void split_posix(std::string & head, std::string & tail, const std::string & p)
     {
         int i = pystring::rfind(p, "/") + 1;
-        
+
         head = pystring::slice(p,0,i);
         tail = pystring::slice(p,i);
-        
+
         if(!head.empty() && (head != pystring::mul("/", (int) head.size())))
         {
             head = pystring::rstrip(head, "/");
@@ -1430,14 +1430,14 @@ namespace path
         split_nt(head, tail, path);
         return head;
     }
-    
+
     std::string dirname_posix(const std::string & path)
     {
         std::string head, tail;
         split_posix(head, tail, path);
         return head;
     }
-    
+
     std::string dirname(const std::string & path)
     {
 #ifdef WINDOWS
@@ -1457,10 +1457,10 @@ namespace path
     {
         std::string path = p;
         path = pystring::replace(path, "/","\\");
-        
+
         std::string prefix;
         splitdrive_nt(prefix, path, path);
-        
+
         // We need to be careful here. If the prefix is empty, and the path starts
         // with a backslash, it could either be an absolute path on the current
         // drive (\dir1\dir2\file) or a UNC filename (\\server\mount\dir1\file). It
@@ -1470,7 +1470,7 @@ namespace path
         // letter. This means that the invalid filename \\\a\b is preserved
         // unchanged, where a\\\b is normalised to a\b. It's not clear that there
         // is any better behaviour for such edge cases.
-        
+
         if(prefix.empty())
         {
             // No drive letter - preserve initial backslashes
@@ -1489,12 +1489,12 @@ namespace path
                 path = pystring::lstrip(path, "\\");
             }
         }
-        
+
         std::vector<std::string> comps;
         pystring::split(path, comps, "\\");
-        
+
         int i = 0;
-        
+
         while(i<(int)comps.size())
         {
             if(comps[i].empty() || comps[i] == ".")
@@ -1522,13 +1522,13 @@ namespace path
                 i += 1;
             }
         }
-        
+
         // If the path is now empty, substitute '.'
         if(prefix.empty() && comps.empty())
         {
             comps.push_back(".");
         }
-        
+
         return prefix + pystring::join("\\", comps);
     }
 
@@ -1540,27 +1540,27 @@ namespace path
     std::string normpath_posix(const std::string & p)
     {
         if(p.empty()) return ".";
-        
+
         std::string path = p;
-        
+
         int initial_slashes = pystring::startswith(path,"/") ? 1 : 0;
-        
+
         // POSIX allows one or two initial slashes, but treats three or more
         // as single slash.
-        
+
         if (initial_slashes && pystring::startswith(path,"//")
             && !pystring::startswith(path,"///"))
             initial_slashes = 2;
-        
+
         std::vector<std::string> comps, new_comps;
         pystring::split(path, comps, "/");
-        
+
         for(unsigned int i=0; i<comps.size(); ++i)
         {
             std::string comp = comps[i];
             if(comp.empty() || comp == ".")
                 continue;
-            
+
             if( (comp != "..") || ((initial_slashes == 0) && new_comps.empty()) ||
                 (!new_comps.empty() && new_comps[new_comps.size()-1] == ".."))
             {
@@ -1571,16 +1571,16 @@ namespace path
                 new_comps.pop_back();
             }
         }
-        
+
         path = pystring::join("/", new_comps);
-        
+
         if (initial_slashes > 0)
             path = pystring::mul("/",initial_slashes) + path;
-        
+
         if(path.empty()) return ".";
         return path;
     }
-    
+
     std::string normpath(const std::string & path)
     {
 #ifdef WINDOWS

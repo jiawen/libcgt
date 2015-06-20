@@ -5,27 +5,27 @@
 // static
 Plane3f Plane3f::XY()
 {
-	return Plane3f( 0, 0, 1, 0 );
+    return Plane3f( 0, 0, 1, 0 );
 }
 
 // static
 Plane3f Plane3f::YZ()
 {
-	return Plane3f( 1, 0, 0, 0 );
+    return Plane3f( 1, 0, 0, 0 );
 }
 
 // static
 Plane3f Plane3f::ZX()
 {
-	return Plane3f( 0, 1, 0, 0 );
+    return Plane3f( 0, 1, 0, 0 );
 }
 
 Plane3f::Plane3f() :
 
-	a( 0 ),
-	b( 0 ),
-	c( 0 ),
-	d( 0 )
+    a( 0 ),
+    b( 0 ),
+    c( 0 ),
+    d( 0 )
 
 {
 
@@ -33,10 +33,10 @@ Plane3f::Plane3f() :
 
 Plane3f::Plane3f( float _a, float _b, float _c, float _d ) :
 
-	a( _a ),
-	b( _b ),
-	c( _c ),
-	d( _d )
+    a( _a ),
+    b( _b ),
+    c( _c ),
+    d( _d )
 
 {
 
@@ -44,10 +44,10 @@ Plane3f::Plane3f( float _a, float _b, float _c, float _d ) :
 
 Plane3f::Plane3f( const Plane3f& p ) :
 
-	a( p.a ),
-	b( p.b ),
-	c( p.c ),
-	d( p.d )
+    a( p.a ),
+    b( p.b ),
+    c( p.c ),
+    d( p.d )
 
 {
 
@@ -55,14 +55,14 @@ Plane3f::Plane3f( const Plane3f& p ) :
 
 Plane3f& Plane3f::operator = ( const Plane3f& p )
 {
-	if( this != &p )
-	{
-		a = p.a;
-		b = p.b;
-		c = p.c;
-		d = p.d;
-	}
-	return *this;
+    if( this != &p )
+    {
+        a = p.a;
+        b = p.b;
+        c = p.c;
+        d = p.d;
+    }
+    return *this;
 }
 
 Plane3f::Plane3f( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2 )
@@ -70,27 +70,27 @@ Plane3f::Plane3f( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2 )
     auto unitNormal = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
     d = -Vector3f::dot( unitNormal, p0 );
     a = unitNormal.x;
-	b = unitNormal.y;
-	c = unitNormal.z;
+    b = unitNormal.y;
+    c = unitNormal.z;
 }
 
 Plane3f::Plane3f( const Vector3f& p, const Vector3f& normal )
 {
     auto unitNormal = normal.normalized();
     d = -Vector3f::dot( unitNormal, p );
-	a = unitNormal.x;
-	b = unitNormal.y;
-	c = unitNormal.z;
+    a = unitNormal.x;
+    b = unitNormal.y;
+    c = unitNormal.z;
 }
 
 Vector3f Plane3f::normal() const
 {
-	return Vector3f( a, b, c );
+    return Vector3f( a, b, c );
 }
 
 Vector3f Plane3f::unitNormal() const
 {
-	return normal().normalized();
+    return normal().normalized();
 }
 
 Vector3f Plane3f::closestPointOnPlane( const Vector3f& p ) const
@@ -137,7 +137,7 @@ Matrix3f Plane3f::basis( const Vector3f& u ) const
 
 Matrix3f Plane3f::basis() const
 {
-	return GeometryUtils::getRightHandedBasis( normal() );
+    return GeometryUtils::getRightHandedBasis( normal() );
 }
 
 Plane3f Plane3f::flipped() const
@@ -151,11 +151,11 @@ Plane3f Plane3f::offset( float z ) const
 }
 
 bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
-	float& tIntersect, float directionDotProductEpsilon )
+    float& tIntersect, float directionDotProductEpsilon )
 {
     Vector3f u = unitNormal();
     float vd = Vector3f::dot( u, direction );
-            
+
     // ray is parallel to plane
     if( abs( vd ) < directionDotProductEpsilon )
     {
@@ -165,7 +165,7 @@ bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
     float v0 = -( Vector3f::dot( u, origin ) + d );
     tIntersect = v0 / vd;
 
-	return( tIntersect > 0 );
+    return( tIntersect > 0 );
 }
 
 // static

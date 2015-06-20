@@ -11,49 +11,49 @@ class Vector2i
 {
 public:
 
-	// TODO: conversion operators for double <--> int on Vector3f and Vector4f
+    // TODO: conversion operators for double <--> int on Vector3f and Vector4f
 
-	Vector2i() = default;
-	explicit Vector2i( int i ); // fills both elements with i
-	Vector2i( std::initializer_list< int > xy );
+    Vector2i() = default;
+    explicit Vector2i( int i ); // fills both elements with i
+    Vector2i( std::initializer_list< int > xy );
 
-	Vector2i( const Vector2i& v ) = default;
-	Vector2i& operator = ( const Vector2i& rv ) = default;
-	// no destructor necessary
+    Vector2i( const Vector2i& v ) = default;
+    Vector2i& operator = ( const Vector2i& rv ) = default;
+    // no destructor necessary
 
-	// returns the ith element
-	const int& operator [] ( int i ) const;
-	int& operator [] ( int i );
+    // returns the ith element
+    const int& operator [] ( int i ) const;
+    int& operator [] ( int i );
 
-	Vector2i xy() const;
-	Vector2i yx() const;
-	Vector2i xx() const;
-	Vector2i yy() const;
+    Vector2i xy() const;
+    Vector2i yx() const;
+    Vector2i xx() const;
+    Vector2i yy() const;
 
-	float norm() const;
-	int normSquared() const;
-	Vector2f normalized() const;
+    float norm() const;
+    int normSquared() const;
+    Vector2f normalized() const;
 
-	void negate();
+    void negate();
 
-	Vector2i flippedUD( int height ) const;
+    Vector2i flippedUD( int height ) const;
 
-	// implicit cast
-	operator const int* () const;
-	operator int* ();
-	QString toString() const;
+    // implicit cast
+    operator const int* () const;
+    operator int* ();
+    QString toString() const;
 
-	static int dot( const Vector2i& v0, const Vector2i& v1 );	
+    static int dot( const Vector2i& v0, const Vector2i& v1 );
 
-	static Vector3i cross( const Vector2i& v0, const Vector2i& v1 );
+    static Vector3i cross( const Vector2i& v0, const Vector2i& v1 );
 
-	inline Vector2i& operator += ( const Vector2i& v );
-	inline Vector2i& operator -= ( const Vector2i& v );
+    inline Vector2i& operator += ( const Vector2i& v );
+    inline Vector2i& operator -= ( const Vector2i& v );
     inline Vector2i& operator *= ( int s );
-	inline Vector2i& operator /= ( int s );
+    inline Vector2i& operator /= ( int s );
 
-	int x = 0;
-	int y = 0;
+    int x = 0;
+    int y = 0;
 };
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 );
@@ -79,10 +79,10 @@ bool operator != ( const Vector2i& v0, const Vector2i& v1 );
 
 inline Vector2i& Vector2i::operator += ( const Vector2i& v )
 {
-	x += v.x;
-	y += v.y;
+    x += v.x;
+    y += v.y;
 
-	return *this;
+    return *this;
 }
 
 inline Vector2i& Vector2i::operator -= ( const Vector2i& v )
@@ -90,7 +90,7 @@ inline Vector2i& Vector2i::operator -= ( const Vector2i& v )
     x -= v.x;
     y -= v.y;
 
-	return *this;
+    return *this;
 }
 
 inline Vector2i& Vector2i::operator *= ( int s )
@@ -98,7 +98,7 @@ inline Vector2i& Vector2i::operator *= ( int s )
     x *= s;
     y *= s;
 
-	return *this;
+    return *this;
 }
 
 inline Vector2i& Vector2i::operator /= ( int s )
@@ -106,5 +106,5 @@ inline Vector2i& Vector2i::operator /= ( int s )
     x /= s;
     y /= s;
 
-	return *this;
+    return *this;
 }

@@ -7,6 +7,6 @@ class Primitive2f
 {
 public:
 
-	virtual Rect2f boundingBox() = 0;
+    virtual Rect2f boundingBox() = 0;
 
 };

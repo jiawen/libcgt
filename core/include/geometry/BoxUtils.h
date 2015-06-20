@@ -32,8 +32,8 @@ namespace boxutils
 
     // Writes a line list of a 3D grid subdividing the box divided into
     // resolution.xyz bins along each direction.
-    // 
-    // Writes nVertices = 
+    //
+    // Writes nVertices =
     // 2 * (
     //         ( resolution.x + 1 ) * ( resolution.y + 1 )
     //       + ( resolution.y + 1 ) * ( resolution.z + 1 )

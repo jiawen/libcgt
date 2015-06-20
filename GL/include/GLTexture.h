@@ -39,57 +39,57 @@ public:
         TEXTURE_BUFFER = GL_TEXTURE_BUFFER
     };
 
-	// Returns the current active texture unit.
-	static GLenum activeTextureUnit();
+    // Returns the current active texture unit.
+    static GLenum activeTextureUnit();
 
-	// Returns the maximum number of texture image units
-	// that can be bound per pipeline stage.
-	static int maxTextureImageUnits();
+    // Returns the maximum number of texture image units
+    // that can be bound per pipeline stage.
+    static int maxTextureImageUnits();
 
-	// Returns the maximum number of texture image units
-	// across the entire pipeline.
-	static int maxCombinedTextureImageUnits();
+    // Returns the maximum number of texture image units
+    // across the entire pipeline.
+    static int maxCombinedTextureImageUnits();
 
     // Max width.
-	static int maxSize1D();
+    static int maxSize1D();
 
-	// Max width and height.
-	static int maxSize2D();
+    // Max width and height.
+    static int maxSize2D();
 
-	// Max width, height, and depth.
-	static int maxSize3D();
+    // Max width, height, and depth.
+    static int maxSize3D();
 
-	// Max width/height for any individual face (must be square).
+    // Max width/height for any individual face (must be square).
     // This corresponds to GL_MAX_ARRAY_TEXTURE_LAYERS.
-	static int maxSizeCubeMap();
+    static int maxSizeCubeMap();
 
     // The maximum number of "layers" in an array texture (array length).
     static int maxArrayLayers();
 
-	virtual ~GLTexture();
+    virtual ~GLTexture();
 
-	// Binds this texture object to the texture unit;
-	void bind( GLuint textureUnitIndex = 0 ) const;
+    // Binds this texture object to the texture unit;
+    void bind( GLuint textureUnitIndex = 0 ) const;
 
-	// Unbinds this texture from the texture unit.
-	void unbind( GLuint textureUnitIndex = 0 ) const;
+    // Unbinds this texture from the texture unit.
+    void unbind( GLuint textureUnitIndex = 0 ) const;
 
     // TODO(multi_bind):
     // glBindTextures( GLuint firstTextureUnitIndex, int count, GLuint* textureIds )
     // glBindSamplers()
     // glBindTexturesSamplers()
 
-	GLuint id() const;
-	GLenum target() const; // TODO: make target also enum class
-	GLImageInternalFormat internalFormat() const;
+    GLuint id() const;
+    GLenum target() const; // TODO: make target also enum class
+    GLImageInternalFormat internalFormat() const;
 
 protected:
-	
-	GLTexture( GLenum target, GLImageInternalFormat internalFormat );
+
+    GLTexture( GLenum target, GLImageInternalFormat internalFormat );
 
 private:
 
-	GLenum m_target;
-	GLuint m_id;	
-	GLImageInternalFormat m_internalFormat;
+    GLenum m_target;
+    GLuint m_id;
+    GLImageInternalFormat m_internalFormat;
 };

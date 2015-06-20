@@ -24,115 +24,115 @@ inline Vector4f::Vector4f( float _x, float _y, float _z, float _w )
 
 inline const float& Vector4f::operator [] ( int i ) const
 {
-	return ( &x )[ i ];
+    return ( &x )[ i ];
 }
 
 inline float& Vector4f::operator [] ( int i )
 {
-	return ( &x )[ i ];
+    return ( &x )[ i ];
 }
 
 inline Vector4f::operator const float* () const
 {
-	return &x;
+    return &x;
 }
 
 inline Vector4f::operator float* ()
 {
-	return &x;
+    return &x;
 }
 
 inline Vector4f& Vector4f::operator += ( const Vector4f& v )
 {
-	x += v.x;
-	y += v.y;
-	z += v.z;
-	w += v.w;
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    w += v.w;
 
-	return *this;
+    return *this;
 }
 
 inline Vector4f& Vector4f::operator -= ( const Vector4f& v )
 {
-	x -= v.x;
-	y -= v.y;
-	z -= v.z;
-	w -= v.w;
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+    w -= v.w;
 
-	return *this;
+    return *this;
 }
 
 inline Vector4f& Vector4f::operator *= ( float f )
 {
-	x *= f;
-	y *= f;
-	z *= f;
-	w *= f;
+    x *= f;
+    y *= f;
+    z *= f;
+    w *= f;
 
-	return *this;
+    return *this;
 }
 
 inline Vector4f& Vector4f::operator /= ( float f )
 {
-	x /= f;
-	y /= f;
-	z /= f;
-	w /= f;
+    x /= f;
+    y /= f;
+    z /= f;
+    w /= f;
 
-	return *this;
+    return *this;
 }
 
 inline Vector4f operator + ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
+    return Vector4f( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );
 }
 
 inline Vector4f operator - ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
+    return Vector4f( v0.x - v1.x, v0.y - v1.y, v0.z - v1.z, v0.w - v1.w );
 }
 
 inline Vector4f operator - ( const Vector4f& v )
 {
-	return Vector4f( -v.x, -v.y, -v.z , -v.w );
+    return Vector4f( -v.x, -v.y, -v.z , -v.w );
 }
 
 inline Vector4f operator * ( float f, const Vector4f& v )
 {
-	return Vector4f( v.x * f, v.y * f, v.z * f, v.w * f );
+    return Vector4f( v.x * f, v.y * f, v.z * f, v.w * f );
 }
 
 inline Vector4f operator * ( const Vector4f& v, float f )
 {
-	return Vector4f( v.x * f, v.y * f, v.z * f, v.w * f );
+    return Vector4f( v.x * f, v.y * f, v.z * f, v.w * f );
 }
 
 inline Vector4f operator * ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
+    return Vector4f( v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w );
 }
 
 inline Vector4f operator / ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return Vector4f( v0.x / v1.x, v0.y / v1.y, v0.z / v1.z, v0.w / v1.w );
+    return Vector4f( v0.x / v1.x, v0.y / v1.y, v0.z / v1.z, v0.w / v1.w );
 }
 
 inline Vector4f operator / ( const Vector4f& v, float f )
 {
-	return Vector4f( v.x / f, v.y / f, v.z / f, v.w / f );
+    return Vector4f( v.x / f, v.y / f, v.z / f, v.w / f );
 }
 
 inline Vector4f operator / ( float f, const Vector4f& v )
 {
-	return Vector4f( f / v.x, f / v.y, f / v.z, f / v.w );
+    return Vector4f( f / v.x, f / v.y, f / v.z, f / v.w );
 }
 
 inline bool operator == ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return( v0.x == v1.x && v0.y == v1.y && v0.z == v1.z && v0.w == v1.w );
+    return( v0.x == v1.x && v0.y == v1.y && v0.z == v1.z && v0.w == v1.w );
 }
 
 inline bool operator != ( const Vector4f& v0, const Vector4f& v1 )
 {
-	return !( v0 == v1 );
+    return !( v0 == v1 );
 }

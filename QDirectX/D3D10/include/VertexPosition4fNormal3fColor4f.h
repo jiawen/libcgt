@@ -8,16 +8,16 @@
 
 struct VertexPosition4fNormal3fColor4f
 {
-	VertexPosition4fNormal3fColor4f();
-	VertexPosition4fNormal3fColor4f( Vector4f position, Vector3f normal, Vector4f color );
+    VertexPosition4fNormal3fColor4f();
+    VertexPosition4fNormal3fColor4f( Vector4f position, Vector3f normal, Vector4f color );
 
-	Vector4f m_position;
-	Vector3f m_normal;
-	Vector4f m_color;
+    Vector4f m_position;
+    Vector3f m_normal;
+    Vector4f m_color;
 
-	static int numElements();
-	static int sizeInBytes();
-	static D3D10_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static D3D10_INPUT_ELEMENT_DESC s_layout[];
 };
 
 #endif // VERTEX_POSITION4F_NORMAL3F_COLOR4F_H

@@ -16,24 +16,24 @@ class CgShared
 {
 public:
 
-	static CgShared* getInstance();
-	virtual ~CgShared();
+    static CgShared* getInstance();
+    virtual ~CgShared();
 
-	static void cgSharedErrorHandler( CGcontext ctx, CGerror err, void* appdata );
+    static void cgSharedErrorHandler( CGcontext ctx, CGerror err, void* appdata );
 
-	CGcontext getSharedCgContext() const;
-	CGprofile getLatestVertexProfile() const;
-	CGprofile getLatestFragmentProfile() const;
+    CGcontext getSharedCgContext() const;
+    CGprofile getLatestVertexProfile() const;
+    CGprofile getLatestFragmentProfile() const;
 
 private:
 
-	CgShared();	
+    CgShared();
 
-	static CgShared* s_singleton;
+    static CgShared* s_singleton;
 
-	CGcontext m_cgContext;
-	CGprofile m_cgVertexProfile;
-	CGprofile m_cgFragmentProfile;
+    CGcontext m_cgContext;
+    CGprofile m_cgVertexProfile;
+    CGprofile m_cgFragmentProfile;
 };
 
 #endif

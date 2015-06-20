@@ -8,28 +8,28 @@
 
 class QKinectSpeechThread : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
-	QKinectSpeechThread( std::shared_ptr< QKinect > pKinect, int pollingIntervalMS = 30 );
+    QKinectSpeechThread( std::shared_ptr< QKinect > pKinect, int pollingIntervalMS = 30 );
 
-	int pollingIntervalMS() const;
-	void setPollingIntervalMS( int pollingIntervalMS );
+    int pollingIntervalMS() const;
+    void setPollingIntervalMS( int pollingIntervalMS );
 
-	void stop();
+    void stop();
 
 signals:
 
-	void speechRecognized( QString phrase, float confidence );
+    void speechRecognized( QString phrase, float confidence );
 
 protected:
 
-	virtual void run();
+    virtual void run();
 
 private:
 
-	bool m_running;
-	int m_pollingIntervalMS;
-	std::shared_ptr< QKinect > m_pKinect;
+    bool m_running;
+    int m_pollingIntervalMS;
+    std::shared_ptr< QKinect > m_pKinect;
 };

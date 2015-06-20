@@ -6,14 +6,14 @@
 
 struct VertexPosition4fTexture2f
 {
-	VertexPosition4fTexture2f();
-	VertexPosition4fTexture2f( float x, float y, float z, float w, float u, float v );
-	VertexPosition4fTexture2f( const Vector4f& position, const Vector2f& texture );
+    VertexPosition4fTexture2f();
+    VertexPosition4fTexture2f( float x, float y, float z, float w, float u, float v );
+    VertexPosition4fTexture2f( const Vector4f& position, const Vector2f& texture );
 
-	Vector4f position;
-	Vector2f texture;
+    Vector4f position;
+    Vector2f texture;
 
-	static int numElements();
-	static int sizeInBytes();
-	static D3D11_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static D3D11_INPUT_ELEMENT_DESC s_layout[];
 };

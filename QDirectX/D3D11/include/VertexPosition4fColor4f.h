@@ -6,16 +6,16 @@
 
 struct VertexPosition4fColor4f
 {
-	VertexPosition4fColor4f();
-	VertexPosition4fColor4f( float x, float y, float z, float r, float g, float b );
-	VertexPosition4fColor4f( float x, float y, float z, float w, float r, float g, float b, float a );
-	VertexPosition4fColor4f( const Vector3f& _position, const Vector4f& _color );
-	VertexPosition4fColor4f( const Vector4f& _position, const Vector4f& _color );
+    VertexPosition4fColor4f();
+    VertexPosition4fColor4f( float x, float y, float z, float r, float g, float b );
+    VertexPosition4fColor4f( float x, float y, float z, float w, float r, float g, float b, float a );
+    VertexPosition4fColor4f( const Vector3f& _position, const Vector4f& _color );
+    VertexPosition4fColor4f( const Vector4f& _position, const Vector4f& _color );
 
-	Vector4f position;
-	Vector4f color;
+    Vector4f position;
+    Vector4f color;
 
-	static int numElements();
-	static int sizeInBytes();
-	static const D3D11_INPUT_ELEMENT_DESC s_layout[];
+    static int numElements();
+    static int sizeInBytes();
+    static const D3D11_INPUT_ELEMENT_DESC s_layout[];
 };

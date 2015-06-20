@@ -26,29 +26,29 @@ void GLFramebufferObject::bindExternalFBO( int id )
 // static
 void GLFramebufferObject::unbindAll()
 {
-	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 
 // static
 GLint GLFramebufferObject::maxColorAttachments()
 {
-	GLint maxColorAttachments;
-	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments );
-	return maxColorAttachments;
+    GLint maxColorAttachments;
+    glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments );
+    return maxColorAttachments;
 }
 
 // static
 GLint GLFramebufferObject::maxNumDrawBuffers()
 {
     GLint maxDrawBuffers;
-	glGetIntegerv( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
-	return maxDrawBuffers;
+    glGetIntegerv( GL_MAX_DRAW_BUFFERS, &maxDrawBuffers );
+    return maxDrawBuffers;
 }
 
 GLFramebufferObject::GLFramebufferObject() :
     m_isExternal( false )
 {
-	glCreateFramebuffers( 1, &m_id );
+    glCreateFramebuffers( 1, &m_id );
 }
 
 GLFramebufferObject::GLFramebufferObject( int externalId ) :
@@ -74,14 +74,14 @@ GLFramebufferObject::~GLFramebufferObject()
     // Don't delete the default FBO if it was wrapped.
     if( !m_isExternal )
     {
-	    glDeleteFramebuffers( 1, &m_id );
+        glDeleteFramebuffers( 1, &m_id );
         m_id = 0;
     }
 }
 
 void GLFramebufferObject::bind()
 {
-	glBindFramebuffer( GL_FRAMEBUFFER, m_id );
+    glBindFramebuffer( GL_FRAMEBUFFER, m_id );
 }
 
 void GLFramebufferObject::attachTexture( GLenum attachment, GLTexture2D* pTexture, int mipmapLevel )
@@ -108,31 +108,31 @@ void GLFramebufferObject::attachTexture( GLenum attachment,
 
 void GLFramebufferObject::detach( GLenum attachment )
 {
-	GLenum type = getAttachedType( attachment );
-	switch( type )
-	{
-	case GL_NONE:
-		break;
+    GLenum type = getAttachedType( attachment );
+    switch( type )
+    {
+    case GL_NONE:
+        break;
 
     case GL_FRAMEBUFFER_DEFAULT:
         break;
 
-	case GL_RENDERBUFFER:
+    case GL_RENDERBUFFER:
         // 0 ==> detach
-		glNamedFramebufferRenderbuffer( m_id, attachment, GL_RENDERBUFFER, 0 );
-		break;
+        glNamedFramebufferRenderbuffer( m_id, attachment, GL_RENDERBUFFER, 0 );
+        break;
 
-	case GL_TEXTURE:
-		glNamedFramebufferTexture( m_id, attachment,
+    case GL_TEXTURE:
+        glNamedFramebufferTexture( m_id, attachment,
             0, // texture id, 0 ==> detach
             0 ); // mipmap level
-		break;
+        break;
 
-	default:
-		fprintf( stderr, "GLFramebufferObject::detach() ERROR: Unknown attached resource type\n" );
-		assert( false );
-		break;
-	}
+    default:
+        fprintf( stderr, "GLFramebufferObject::detach() ERROR: Unknown attached resource type\n" );
+        assert( false );
+        break;
+    }
 }
 
 void GLFramebufferObject::attachRenderbuffer( GLenum attachment, GLRenderbufferObject* pRenderbuffer )
@@ -142,18 +142,18 @@ void GLFramebufferObject::attachRenderbuffer( GLenum attachment, GLRenderbufferO
 
 GLuint GLFramebufferObject::getAttachedId( GLenum attachment )
 {
-	GLint id;
-	glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
-		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &id );
-	return id;
+    GLint id;
+    glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
+        GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &id );
+    return id;
 }
 
 GLuint GLFramebufferObject::getAttachedType( GLenum attachment )
 {
-	GLint type = 0;
-	glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
-		GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type );
-	return type;
+    GLint type = 0;
+    glGetNamedFramebufferAttachmentParameteriv( m_id, attachment,
+        GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type );
+    return type;
 }
 
 void GLFramebufferObject::setDrawBuffer( GLenum attachment )
@@ -175,45 +175,45 @@ void GLFramebufferObject::setReadBuffer( GLenum attachment )
 #include "GLUtilities.h"
 bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 {
-	bool isComplete = false;	
+    bool isComplete = false;
 
-	GLenum status = glCheckNamedFramebufferStatus( m_id, GL_FRAMEBUFFER );
-	switch( status )
-	{
-	case GL_FRAMEBUFFER_COMPLETE:
-		isComplete = true;
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-		fprintf( stderr, "Framebuffer incomplete: incomplete attachment.\n" );
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-		fprintf( stderr, "Framebuffer incomplete: no attachments.\n" );
-		break;
+    GLenum status = glCheckNamedFramebufferStatus( m_id, GL_FRAMEBUFFER );
+    switch( status )
+    {
+    case GL_FRAMEBUFFER_COMPLETE:
+        isComplete = true;
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+        fprintf( stderr, "Framebuffer incomplete: incomplete attachment.\n" );
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+        fprintf( stderr, "Framebuffer incomplete: no attachments.\n" );
+        break;
     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
         fprintf( stderr, "Framebuffer incomplete: drawbuffer set to GL_NONE.\n" );
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-		fprintf( stderr, "framebuffer incpmplete: readbuffer set to GL_NONE.\n" );
-		break;
+        fprintf( stderr, "framebuffer incpmplete: readbuffer set to GL_NONE.\n" );
+        break;
     case GL_FRAMEBUFFER_UNSUPPORTED:
-		fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
-		break;
+        fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
+        break;
     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
         fprintf( stderr, "Framebuffer incomplete: inconsistent numbers of multisamples.\n" );
-		break;
+        break;
     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS :
         fprintf(stderr, "Framebuffer incomplete: inconsistent layering.\n" );
-	default:
-		fprintf( stderr, "Can't get here!\n" );
+    default:
+        fprintf( stderr, "Can't get here!\n" );
         GLUtilities::printLastError();
-		assert( false );
-	}
+        assert( false );
+    }
 
-	if( pStatus != nullptr )
-	{
-		*pStatus = status;
-	}
-	return isComplete;
+    if( pStatus != nullptr )
+    {
+        *pStatus = status;
+    }
+    return isComplete;
 }
 
 void GLFramebufferObject::clearColor( int drawBufferIndex, const int8x4& color )

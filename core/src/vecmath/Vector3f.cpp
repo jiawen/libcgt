@@ -39,34 +39,34 @@ Vector3f::Vector3f( float _x, const Vector2f& _yz )
 
 Vector3f::Vector3f( const Vector3d& v )
 {
-	x = static_cast< float >( v.x );
-	y = static_cast< float >( v.y );
-	z = static_cast< float >( v.z );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
 }
 
 Vector3f::Vector3f( const Vector3i& v )
 {
-	x = static_cast< float >( v.x );
-	y = static_cast< float >( v.y );
-	z = static_cast< float >( v.z );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
 }
 
 Vector3f& Vector3f::operator = ( const Vector3d& v )
 {
-	x = static_cast< float >( v.x );
-	y = static_cast< float >( v.y );
-	z = static_cast< float >( v.z );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
 
-	return *this;
+    return *this;
 }
 
 Vector3f& Vector3f::operator = ( const Vector3i& v )
 {
-	x = static_cast< float >( v.x );
-	y = static_cast< float >( v.y );
-	z = static_cast< float >( v.z );
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
 
-	return *this;
+    return *this;
 }
 
 Vector2f Vector3f::xz() const
@@ -76,88 +76,88 @@ Vector2f Vector3f::xz() const
 
 Vector3f Vector3f::xyz() const
 {
-	return Vector3f( x, y, z );
+    return Vector3f( x, y, z );
 }
 
 Vector3f Vector3f::yzx() const
 {
-	return Vector3f( y, z, x );
+    return Vector3f( y, z, x );
 }
 
 Vector3f Vector3f::zxy() const
 {
-	return Vector3f( z, x, y );
+    return Vector3f( z, x, y );
 }
 
 float Vector3f::norm() const
 {
-	return sqrt( normSquared() );
+    return sqrt( normSquared() );
 }
 
 float Vector3f::normSquared() const
 {
-	return( x * x + y * y + z * z );
+    return( x * x + y * y + z * z );
 }
 
 void Vector3f::normalize()
 {
-	float rcpNorm = 1.0f / norm();
-	x *= rcpNorm;
-	y *= rcpNorm;
-	z *= rcpNorm;
+    float rcpNorm = 1.0f / norm();
+    x *= rcpNorm;
+    y *= rcpNorm;
+    z *= rcpNorm;
 }
 
 Vector3f Vector3f::normalized() const
 {
-	float rcpNorm = 1.0f / norm();
-	return Vector3f
-	(
-		x * rcpNorm,
-		y * rcpNorm,
-		z * rcpNorm
-	);
+    float rcpNorm = 1.0f / norm();
+    return Vector3f
+    (
+        x * rcpNorm,
+        y * rcpNorm,
+        z * rcpNorm
+    );
 }
 
 void Vector3f::homogenize()
 {
-	if( z != 0 )
-	{
-		float rcpZ = 1.0f / z;
-		x *= rcpZ;
-		y *= rcpZ;
-		z = 1;
-	}
+    if( z != 0 )
+    {
+        float rcpZ = 1.0f / z;
+        x *= rcpZ;
+        y *= rcpZ;
+        z = 1;
+    }
 }
 
 Vector3f Vector3f::homogenized() const
 {
-	if( z != 0 )
-	{
-		float rcpZ = 1.0f / z;
-		return Vector3f( rcpZ * x, rcpZ * y, 1 );
-	}
-	else
-	{
-		return Vector3f( x, y, z );
-	}
+    if( z != 0 )
+    {
+        float rcpZ = 1.0f / z;
+        return Vector3f( rcpZ * x, rcpZ * y, 1 );
+    }
+    else
+    {
+        return Vector3f( x, y, z );
+    }
 }
 
 void Vector3f::negate()
 {
-	x = -x;
-	y = -y;
-	z = -z;
+    x = -x;
+    y = -y;
+    z = -z;
 }
 
 QString Vector3f::toString() const
 {
-	QString out;
+    QString out;
 
-	out.append( "( " );
-	out.append( QString( "%1, " ).arg( x, 10, 'g', 4 ) );
-	out.append( QString( "%1, " ).arg( y, 10, 'g', 4 ) );
-	out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
-	out.append( " )" );
+    out.append( "( " );
+    out.append( QString( "%1, " ).arg( x, 10, 'g', 4 ) );
+    out.append( QString( "%1, " ).arg( y, 10, 'g', 4 ) );
+    out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
+    out.append( " )" );
 
-	return out;
+    return out;
 }

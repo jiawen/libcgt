@@ -11,60 +11,60 @@
 class QD3D10Widget : public QWidget
 {
 public:
-	
-	QD3D10Widget( QWidget* parent = NULL );
-	virtual ~QD3D10Widget();
 
-	HRESULT initialize( int width, int height );
+    QD3D10Widget( QWidget* parent = NULL );
+    virtual ~QD3D10Widget();
 
-	ID3D10Device* device() const;
+    HRESULT initialize( int width, int height );
 
-	void clearBackBuffer( float* rgba, float depth = 1 );
+    ID3D10Device* device() const;
 
-	void clearBackBufferColor( float* rgba );
-	void clearBackBufferDepth( float depth = 1 );
-	void clearBackBufferDepthStencil( float depth, UINT8 stencil );
+    void clearBackBuffer( float* rgba, float depth = 1 );
 
-	// set output buffers to the internal back buffer (color and depth-stencil)
-	void restoreBackBuffer();
+    void clearBackBufferColor( float* rgba );
+    void clearBackBufferDepth( float depth = 1 );
+    void clearBackBufferDepthStencil( float depth, UINT8 stencil );
 
-	ID3D10Texture2D* backBufferColor();
-	ID3D10RenderTargetView* backBufferRenderTargetView();
+    // set output buffers to the internal back buffer (color and depth-stencil)
+    void restoreBackBuffer();
 
-	ID3D10Texture2D* backBufferDepthStencil();
-	ID3D10DepthStencilView* backBufferDepthStencilView();
+    ID3D10Texture2D* backBufferColor();
+    ID3D10RenderTargetView* backBufferRenderTargetView();
+
+    ID3D10Texture2D* backBufferDepthStencil();
+    ID3D10DepthStencilView* backBufferDepthStencilView();
 
 protected:
-	
-	virtual void initializeD3D();
-	virtual void resizeD3D( int width, int height );
-	virtual void paintD3D();
 
-	IDXGISwapChain* m_pSwapChain;
-	ID3D10Device* m_pDevice;
+    virtual void initializeD3D();
+    virtual void resizeD3D( int width, int height );
+    virtual void paintD3D();
 
-	ID3D10Texture2D* m_pBackBuffer;
-	ID3D10RenderTargetView* m_pBackBufferRenderTargetView;
+    IDXGISwapChain* m_pSwapChain;
+    ID3D10Device* m_pDevice;
 
-	ID3D10Texture2D* m_pDepthStencilBuffer;
-	ID3D10DepthStencilView* m_pDepthStencilView;	
+    ID3D10Texture2D* m_pBackBuffer;
+    ID3D10RenderTargetView* m_pBackBufferRenderTargetView;
+
+    ID3D10Texture2D* m_pDepthStencilBuffer;
+    ID3D10DepthStencilView* m_pDepthStencilView;
 
 private:
 
-	virtual QPaintEngine* paintEngine() const;
-	virtual void paintEvent( QPaintEvent* e );
-	virtual void resizeEvent( QResizeEvent* e );
+    virtual QPaintEngine* paintEngine() const;
+    virtual void paintEvent( QPaintEvent* e );
+    virtual void resizeEvent( QResizeEvent* e );
 
-	bool m_bD3DInitialized;
+    bool m_bD3DInitialized;
 
-	// initialization
-	HRESULT createSwapChainAndDevice( int width, int height );
-	HRESULT createBackBufferRenderTargetView();
-	HRESULT createDepthStencilBuffers( int width, int height );
+    // initialization
+    HRESULT createSwapChainAndDevice( int width, int height );
+    HRESULT createBackBufferRenderTargetView();
+    HRESULT createDepthStencilBuffers( int width, int height );
 
-	// resizing
-	HRESULT resizeSwapChain( int width, int height );
-	HRESULT resizeDepthStencilBuffer( int width, int height );
+    // resizing
+    HRESULT resizeSwapChain( int width, int height );
+    HRESULT resizeDepthStencilBuffer( int width, int height );
 
 };
 

@@ -12,103 +12,103 @@
 
 // static
 int MediaFoundationOutputVideoStream::recommendedBitsPerSecond( int width, int height, int framesPerSecondNumerator,
-	int framesPerSecondDenominator )
+    int framesPerSecondDenominator )
 {
-	// preserve this ratio
-	// 6 megabits per second for 1080p24
-	const float fullHDSamplesPerSecond = 1920 * 1080 * 24;
-	const float fullHDBitsPerSecond = 6 * 1024 * 1024;
+    // preserve this ratio
+    // 6 megabits per second for 1080p24
+    const float fullHDSamplesPerSecond = 1920 * 1080 * 24;
+    const float fullHDBitsPerSecond = 6 * 1024 * 1024;
 
-	float inputSamplesPerSecond = width * height * framesPerSecondNumerator / framesPerSecondDenominator;
-	return Arithmetic::roundToInt( inputSamplesPerSecond * fullHDBitsPerSecond / fullHDSamplesPerSecond );
+    float inputSamplesPerSecond = width * height * framesPerSecondNumerator / framesPerSecondDenominator;
+    return Arithmetic::roundToInt( inputSamplesPerSecond * fullHDBitsPerSecond / fullHDSamplesPerSecond );
 }
 
 // static
 MediaFoundationOutputVideoStream* MediaFoundationOutputVideoStream::open( QString filename,
-	Codec codec,
-	int width, int height,
-	int framesPerSecondNumerator, int framesPerSecondDenominator,
-	int bitsPerSecond )
+    Codec codec,
+    int width, int height,
+    int framesPerSecondNumerator, int framesPerSecondDenominator,
+    int bitsPerSecond )
 {
-	MediaFoundationOutputVideoStream* pStream = nullptr;
+    MediaFoundationOutputVideoStream* pStream = nullptr;
 
-	HRESULT hr = CoInitializeEx( nullptr, COINIT_APARTMENTTHREADED );
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFStartup( MF_VERSION );
+    HRESULT hr = CoInitializeEx( nullptr, COINIT_APARTMENTTHREADED );
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFStartup( MF_VERSION );
 
-		if( SUCCEEDED( hr ) )
-		{
-			pStream = new MediaFoundationOutputVideoStream
-			(
-				filename,
-				codec,
-				width, height,
-				framesPerSecondNumerator, framesPerSecondDenominator,
-				bitsPerSecond
-			);
+        if( SUCCEEDED( hr ) )
+        {
+            pStream = new MediaFoundationOutputVideoStream
+            (
+                filename,
+                codec,
+                width, height,
+                framesPerSecondNumerator, framesPerSecondDenominator,
+                bitsPerSecond
+            );
 
-			if( !( pStream->m_valid ) )
-			{
-				delete pStream;
-				pStream = nullptr;
-			}
-		}
-	}
-	
-	return pStream;
+            if( !( pStream->m_valid ) )
+            {
+                delete pStream;
+                pStream = nullptr;
+            }
+        }
+    }
+
+    return pStream;
 }
 
 // virtual
 MediaFoundationOutputVideoStream::~MediaFoundationOutputVideoStream()
 {
-	if( m_pBuffer != nullptr )
-	{
-		m_pBuffer->Release();
-		m_pBuffer = nullptr;
-	}
+    if( m_pBuffer != nullptr )
+    {
+        m_pBuffer->Release();
+        m_pBuffer = nullptr;
+    }
 
-	if( m_pSample != nullptr )
-	{
-		m_pSample->Release();
-		m_pSample = nullptr;
-	}
+    if( m_pSample != nullptr )
+    {
+        m_pSample->Release();
+        m_pSample = nullptr;
+    }
 
-	if( m_pMediaTypeIn != nullptr )
-	{
-		m_pMediaTypeIn->Release();
-		m_pMediaTypeIn = nullptr;
-	}
+    if( m_pMediaTypeIn != nullptr )
+    {
+        m_pMediaTypeIn->Release();
+        m_pMediaTypeIn = nullptr;
+    }
 
-	if( m_pMediaTypeOut != nullptr )
-	{
-		m_pMediaTypeOut->Release();
-		m_pMediaTypeOut = nullptr;
-	}
+    if( m_pMediaTypeOut != nullptr )
+    {
+        m_pMediaTypeOut->Release();
+        m_pMediaTypeOut = nullptr;
+    }
 
-	if( m_pSinkWriter != nullptr )
-	{
-		m_pSinkWriter->Release();
-		m_pSinkWriter = nullptr;
-	}
+    if( m_pSinkWriter != nullptr )
+    {
+        m_pSinkWriter->Release();
+        m_pSinkWriter = nullptr;
+    }
 
-	MFShutdown();
-	CoUninitialize();
+    MFShutdown();
+    CoUninitialize();
 }
 
 MediaFoundationOutputVideoStream::Codec MediaFoundationOutputVideoStream::codec() const
 {
-	return m_codec;
+    return m_codec;
 }
 
 int MediaFoundationOutputVideoStream::width() const
 {
-	return m_width;
+    return m_width;
 }
 
 int MediaFoundationOutputVideoStream::height() const
 {
-	return m_height;
+    return m_height;
 }
 
 Vector2i MediaFoundationOutputVideoStream::size() const
@@ -118,7 +118,7 @@ Vector2i MediaFoundationOutputVideoStream::size() const
 
 float MediaFoundationOutputVideoStream::framesPerSecond() const
 {
-	return Arithmetic::divideIntsToFloat( m_framesPerSecondNumerator, m_framesPerSecondDenominator );
+    return Arithmetic::divideIntsToFloat( m_framesPerSecondNumerator, m_framesPerSecondDenominator );
 }
 
 Vector2i MediaFoundationOutputVideoStream::framesPerSecondRational() const
@@ -128,323 +128,323 @@ Vector2i MediaFoundationOutputVideoStream::framesPerSecondRational() const
 
 int64_t MediaFoundationOutputVideoStream::frameDuration() const
 {
-	return static_cast< int64_t >( m_sampleDuration );
+    return static_cast< int64_t >( m_sampleDuration );
 }
 
 float MediaFoundationOutputVideoStream::frameDurationMilliseconds() const
 {
-	return 1000.f * Arithmetic::divideIntsToFloat( m_framesPerSecondDenominator, m_framesPerSecondNumerator );
+    return 1000.f * Arithmetic::divideIntsToFloat( m_framesPerSecondDenominator, m_framesPerSecondNumerator );
 }
 
 int MediaFoundationOutputVideoStream::bitsPerSecond() const
 {
-	return m_bitsPerSecond;
+    return m_bitsPerSecond;
 }
 
 int MediaFoundationOutputVideoStream::currentFrameCount() const
 {
-	return m_frameIndex;
+    return m_frameIndex;
 }
 
 int64_t MediaFoundationOutputVideoStream::currentTime() const
 {
-	return m_currentTime;
+    return m_currentTime;
 }
 
 float MediaFoundationOutputVideoStream::currentTimeMilliseconds() const
-{	
-	return m_frameIndex * frameDurationMilliseconds();
+{
+    return m_frameIndex * frameDurationMilliseconds();
 }
 
 bool MediaFoundationOutputVideoStream::appendFrameRGBA( Array2DView< uint8x4 > rgba )
 {
-	if( !m_valid )
-	{
-		return false;
-	}
+    if( !m_valid )
+    {
+        return false;
+    }
 
-	if( size() != rgba.size() )
-	{
-		return false;
-	}
+    if( size() != rgba.size() )
+    {
+        return false;
+    }
 
     libcgt::core::imageproc::swizzle::RGBAToBGRA( rgba, m_bgraData );
-	return appendFrameBGRA( m_bgraData );
+    return appendFrameBGRA( m_bgraData );
 }
 
 bool MediaFoundationOutputVideoStream::appendFrameBGRA( Array2DView< uint8x4 > bgra )
 {
-	if( !m_valid )
-	{
-		return false;
-	}
+    if( !m_valid )
+    {
+        return false;
+    }
 
-	if( size() != bgra.size() )
-	{
-		return false;
-	}
+    if( size() != bgra.size() )
+    {
+        return false;
+    }
 
     if( m_codec == MediaFoundationOutputVideoStream::Codec::H264 )
-	{
+    {
         bgra = ArrayUtils::flippedUpDownView< uint8x4 >( bgra );
-	}
+    }
 
-	// copy data to buffer
-	BYTE* pBufferData = nullptr;
-	HRESULT hr = m_pBuffer->Lock( &pBufferData, nullptr, nullptr );
+    // copy data to buffer
+    BYTE* pBufferData = nullptr;
+    HRESULT hr = m_pBuffer->Lock( &pBufferData, nullptr, nullptr );
 
     Array2DView< uint8x4 > srcView;
-	if( bgra.elementsArePacked() )
-	{
-		srcView = bgra;
-	}
-	else
-	{
+    if( bgra.elementsArePacked() )
+    {
+        srcView = bgra;
+    }
+    else
+    {
         ArrayUtils::copy< uint8x4 >( bgra, m_bgraData );
-		srcView = m_bgraData;
-	}
+        srcView = m_bgraData;
+    }
 
-	if( SUCCEEDED( hr ) )
-	{
-		DWORD dstRowPitch = 4 * m_width;
+    if( SUCCEEDED( hr ) )
+    {
+        DWORD dstRowPitch = 4 * m_width;
 
-		hr = MFCopyImage
-		(
-			pBufferData, // destination pointer
-			dstRowPitch, // destination row pitch
-			reinterpret_cast< BYTE* >( srcView.rowPointer( 0 ) ), // first row in source image.
-            srcView.rowStrideBytes(), // source row pitch			
+        hr = MFCopyImage
+        (
+            pBufferData, // destination pointer
+            dstRowPitch, // destination row pitch
+            reinterpret_cast< BYTE* >( srcView.rowPointer( 0 ) ), // first row in source image.
+            srcView.rowStrideBytes(), // source row pitch
 
             srcView.width() * sizeof( uint8x4 ), // source width in bytes
-			srcView.height() // source height
-		);
-	}
+            srcView.height() // source height
+        );
+    }
 
-	if( pBufferData != nullptr )
-	{
-		m_pBuffer->Unlock();
-	}
+    if( pBufferData != nullptr )
+    {
+        m_pBuffer->Unlock();
+    }
 
-	// set the time stamp and the duration.
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSample->SetSampleTime( m_currentTime );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSample->SetSampleDuration( m_sampleDuration );
-	}
+    // set the time stamp and the duration.
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSample->SetSampleTime( m_currentTime );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSample->SetSampleDuration( m_sampleDuration );
+    }
 
-	// send the sample to the sink writer
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSinkWriter->WriteSample( m_streamIndex, m_pSample );
-	}
+    // send the sample to the sink writer
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSinkWriter->WriteSample( m_streamIndex, m_pSample );
+    }
 
-	++m_frameIndex;
-	m_currentTime += m_sampleDuration;
+    ++m_frameIndex;
+    m_currentTime += m_sampleDuration;
 
-	return SUCCEEDED( hr );
+    return SUCCEEDED( hr );
 }
 
 bool MediaFoundationOutputVideoStream::close()
 {
-	m_valid = false;
+    m_valid = false;
 
-	HRESULT hr = m_pSinkWriter->Finalize();
-	return SUCCEEDED( hr );
+    HRESULT hr = m_pSinkWriter->Finalize();
+    return SUCCEEDED( hr );
 }
 
 MediaFoundationOutputVideoStream::MediaFoundationOutputVideoStream(
-	QString filename,
-	Codec codec,
-	int width, int height,
-	int framesPerSecondNumerator, int framesPerSecondDenominator,
-	int bitsPerSecond ) :
+    QString filename,
+    Codec codec,
+    int width, int height,
+    int framesPerSecondNumerator, int framesPerSecondDenominator,
+    int bitsPerSecond ) :
 
-	m_valid( false ),
+    m_valid( false ),
 
-	m_codec( codec ),
+    m_codec( codec ),
 
-	m_width( width ),
-	m_height( height ),
+    m_width( width ),
+    m_height( height ),
 
-	m_framesPerSecondNumerator( framesPerSecondNumerator ),
-	m_framesPerSecondDenominator( framesPerSecondDenominator ),
-	m_bitsPerSecond( bitsPerSecond ),
+    m_framesPerSecondNumerator( framesPerSecondNumerator ),
+    m_framesPerSecondDenominator( framesPerSecondDenominator ),
+    m_bitsPerSecond( bitsPerSecond ),
 
-	m_frameIndex( 0 ),
-	m_currentTime( 0 ),
+    m_frameIndex( 0 ),
+    m_currentTime( 0 ),
 
-	m_pSinkWriter( nullptr ),
-	m_pMediaTypeOut( nullptr ),
-	m_pMediaTypeIn( nullptr ),
-	m_pSample( nullptr ),
-	m_pBuffer( nullptr ),
+    m_pSinkWriter( nullptr ),
+    m_pMediaTypeOut( nullptr ),
+    m_pMediaTypeIn( nullptr ),
+    m_pSample( nullptr ),
+    m_pBuffer( nullptr ),
 
     m_bgraData( { width, height } )
 
 {
-	MFFrameRateToAverageTimePerFrame( framesPerSecondNumerator, framesPerSecondDenominator, &m_sampleDuration );
+    MFFrameRateToAverageTimePerFrame( framesPerSecondNumerator, framesPerSecondDenominator, &m_sampleDuration );
 
-	HRESULT hr = MFCreateSinkWriterFromURL
-	(
-		reinterpret_cast< LPCWSTR >( filename.utf16() ),
-		nullptr, nullptr, &m_pSinkWriter
-	);
+    HRESULT hr = MFCreateSinkWriterFromURL
+    (
+        reinterpret_cast< LPCWSTR >( filename.utf16() ),
+        nullptr, nullptr, &m_pSinkWriter
+    );
 
-	if( SUCCEEDED( hr ) )
-	{
-		hr = initializeOutputType();
-	}
+    if( SUCCEEDED( hr ) )
+    {
+        hr = initializeOutputType();
+    }
 
-	if( SUCCEEDED( hr ) )
-	{
-		hr = initializeInputType();
-	}
+    if( SUCCEEDED( hr ) )
+    {
+        hr = initializeInputType();
+    }
 
-	if( SUCCEEDED( hr ) )
-	{
-		hr = initializeBuffer();
-	}
+    if( SUCCEEDED( hr ) )
+    {
+        hr = initializeBuffer();
+    }
 
-	// tell the sink writer to start accepting data
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSinkWriter->BeginWriting();
-	}
+    // tell the sink writer to start accepting data
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSinkWriter->BeginWriting();
+    }
 
-	if( SUCCEEDED( hr ) )
-	{
-		m_valid = true;
-	}
+    if( SUCCEEDED( hr ) )
+    {
+        m_valid = true;
+    }
 }
 
 
 HRESULT MediaFoundationOutputVideoStream::initializeOutputType()
 {
-	GUID format;
-	switch( m_codec )
-	{
+    GUID format;
+    switch( m_codec )
+    {
     case MediaFoundationOutputVideoStream::Codec::H264:
-		format = MFVideoFormat_H264;
-		break;
+        format = MFVideoFormat_H264;
+        break;
 
     case MediaFoundationOutputVideoStream::Codec::VC1:
-		format = MFVideoFormat_WVC1;
-		break;
+        format = MFVideoFormat_WVC1;
+        break;
 
     case MediaFoundationOutputVideoStream::Codec::WMV9:
-		format = MFVideoFormat_WMV3;
-		break;
+        format = MFVideoFormat_WMV3;
+        break;
 
     case MediaFoundationOutputVideoStream::Codec::MOTION_MPEG:
         format = MFVideoFormat_MJPG;
 
-	default:
-		format = MFVideoFormat_H264;
-		break;
-	}
-	
-	// create the output video type
-	// and set its attributes
-	HRESULT hr = MFCreateMediaType( &m_pMediaTypeOut );
+    default:
+        format = MFVideoFormat_H264;
+        break;
+    }
 
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeOut->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Video );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeOut->SetGUID( MF_MT_SUBTYPE, format );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeOut->SetUINT32( MF_MT_AVG_BITRATE, m_bitsPerSecond );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeOut->SetUINT32( MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeSize( m_pMediaTypeOut, MF_MT_FRAME_SIZE, m_width, m_height );   
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeRatio( m_pMediaTypeOut, MF_MT_FRAME_RATE, m_framesPerSecondNumerator, m_framesPerSecondDenominator );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeRatio( m_pMediaTypeOut, MF_MT_PIXEL_ASPECT_RATIO, 1, 1 );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSinkWriter->AddStream( m_pMediaTypeOut, &m_streamIndex );
-	}
+    // create the output video type
+    // and set its attributes
+    HRESULT hr = MFCreateMediaType( &m_pMediaTypeOut );
 
-	return hr;
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeOut->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Video );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeOut->SetGUID( MF_MT_SUBTYPE, format );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeOut->SetUINT32( MF_MT_AVG_BITRATE, m_bitsPerSecond );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeOut->SetUINT32( MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeSize( m_pMediaTypeOut, MF_MT_FRAME_SIZE, m_width, m_height );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeRatio( m_pMediaTypeOut, MF_MT_FRAME_RATE, m_framesPerSecondNumerator, m_framesPerSecondDenominator );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeRatio( m_pMediaTypeOut, MF_MT_PIXEL_ASPECT_RATIO, 1, 1 );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSinkWriter->AddStream( m_pMediaTypeOut, &m_streamIndex );
+    }
+
+    return hr;
 }
 
 HRESULT MediaFoundationOutputVideoStream::initializeInputType()
 {
-	// create the input video type
-	// and set its attributes
-	HRESULT hr = MFCreateMediaType( &m_pMediaTypeIn );   
+    // create the input video type
+    // and set its attributes
+    HRESULT hr = MFCreateMediaType( &m_pMediaTypeIn );
 
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeIn->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Video );   
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeIn->SetGUID( MF_MT_SUBTYPE, MFVideoFormat_RGB32 );     
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pMediaTypeIn->SetUINT32( MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive );   
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeSize( m_pMediaTypeIn, MF_MT_FRAME_SIZE, m_width, m_height );   
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeRatio( m_pMediaTypeIn, MF_MT_FRAME_RATE, m_framesPerSecondNumerator, m_framesPerSecondDenominator );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFSetAttributeRatio( m_pMediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1 );   
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSinkWriter->SetInputMediaType( m_streamIndex, m_pMediaTypeIn, nullptr );
-	}
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeIn->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Video );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeIn->SetGUID( MF_MT_SUBTYPE, MFVideoFormat_RGB32 );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pMediaTypeIn->SetUINT32( MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeSize( m_pMediaTypeIn, MF_MT_FRAME_SIZE, m_width, m_height );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeRatio( m_pMediaTypeIn, MF_MT_FRAME_RATE, m_framesPerSecondNumerator, m_framesPerSecondDenominator );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFSetAttributeRatio( m_pMediaTypeIn, MF_MT_PIXEL_ASPECT_RATIO, 1, 1 );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSinkWriter->SetInputMediaType( m_streamIndex, m_pMediaTypeIn, nullptr );
+    }
 
-	return hr;
+    return hr;
 }
 
 HRESULT MediaFoundationOutputVideoStream::initializeBuffer()
 {
-	// Create a new memory buffer
-	int nBytes = 4 * m_width * m_height;
-	HRESULT hr = MFCreateMemoryBuffer( nBytes, &m_pBuffer );
+    // Create a new memory buffer
+    int nBytes = 4 * m_width * m_height;
+    HRESULT hr = MFCreateMemoryBuffer( nBytes, &m_pBuffer );
 
-	// Set the data length of the buffer.
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pBuffer->SetCurrentLength( nBytes );
-	}
+    // Set the data length of the buffer.
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pBuffer->SetCurrentLength( nBytes );
+    }
 
-	// Create a media sample and add the buffer to the sample.
-	if( SUCCEEDED( hr ) )
-	{
-		hr = MFCreateSample( &( m_pSample ) );
-	}
-	if( SUCCEEDED( hr ) )
-	{
-		hr = m_pSample->AddBuffer( m_pBuffer );
-	}
+    // Create a media sample and add the buffer to the sample.
+    if( SUCCEEDED( hr ) )
+    {
+        hr = MFCreateSample( &( m_pSample ) );
+    }
+    if( SUCCEEDED( hr ) )
+    {
+        hr = m_pSample->AddBuffer( m_pBuffer );
+    }
 
-	return hr;
+    return hr;
 }

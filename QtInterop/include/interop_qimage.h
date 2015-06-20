@@ -32,7 +32,7 @@ namespace qimage
     // view's rows do *not* have to be packed.
     QImage wrapAsQImage( Array2DView< uint8x4 > view );
 
-    // 
+    //
     QImage wrapAsQImage( Array2DView< uint8_t > view );
 }
 }

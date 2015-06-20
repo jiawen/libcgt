@@ -17,45 +17,45 @@ class GLProgram
 {
 public:
 
-	static GLProgram* fromShaders( std::vector< GLShader* > shaders );
-	static void disableAll();
-	
-	virtual ~GLProgram();
+    static GLProgram* fromShaders( std::vector< GLShader* > shaders );
+    static void disableAll();
 
-	GLuint id() const;
+    virtual ~GLProgram();
 
-	GLint numActiveUniforms() const;
-	GLint uniformLocation( const GLchar* name ) const;
-  	
-	Matrix4f getUniformMatrix4f( GLint uniformLocation );
-		
-	void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix );
+    GLuint id() const;
 
-	void setUniformInt( GLint uniformLocation, int x );
-	void setUniformFloat( GLint uniformLocation, float x );
+    GLint numActiveUniforms() const;
+    GLint uniformLocation( const GLchar* name ) const;
 
-	void setUniformFloat( const GLchar* name, float x );
-	void setUniformVector2f( const GLchar* name, float x, float y );
-	void setUniformVector2f( const GLchar* name, const Vector2f& v );
-	void setUniformVector3f( const GLchar* name, float x, float y, float z );
-	void setUniformVector3f( const GLchar* name, const Vector3f& v );
-	void setUniformVector4f( const GLchar* name, float x, float y, float z, float w );
-	void setUniformVector4f( const GLchar* name, const Vector4f& v );
+    Matrix4f getUniformMatrix4f( GLint uniformLocation );
 
-	void setUniformInt( const GLchar* name, int x );
+    void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix );
+
+    void setUniformInt( GLint uniformLocation, int x );
+    void setUniformFloat( GLint uniformLocation, float x );
+
+    void setUniformFloat( const GLchar* name, float x );
+    void setUniformVector2f( const GLchar* name, float x, float y );
+    void setUniformVector2f( const GLchar* name, const Vector2f& v );
+    void setUniformVector3f( const GLchar* name, float x, float y, float z );
+    void setUniformVector3f( const GLchar* name, const Vector3f& v );
+    void setUniformVector4f( const GLchar* name, float x, float y, float z, float w );
+    void setUniformVector4f( const GLchar* name, const Vector4f& v );
+
+    void setUniformInt( const GLchar* name, int x );
     void setUniformMatrix4f( const GLchar* name, const Matrix4f& matrix );
-	void setUniformVector2i( const GLchar* name, int x, int y );
-	void setUniformVector2i( const GLchar* name, const Vector2i& v );
-	void setUniformVector3i( const GLchar* name, int x, int y, int z );
-	void setUniformVector3i( const GLchar* name, const Vector3i& v );
-	void setUniformVector4i( const GLchar* name, int x, int y, int z, int w );
-	void setUniformVector4i( const GLchar* name, const Vector4i& v );
+    void setUniformVector2i( const GLchar* name, int x, int y );
+    void setUniformVector2i( const GLchar* name, const Vector2i& v );
+    void setUniformVector3i( const GLchar* name, int x, int y, int z );
+    void setUniformVector3i( const GLchar* name, const Vector3i& v );
+    void setUniformVector4i( const GLchar* name, int x, int y, int z, int w );
+    void setUniformVector4i( const GLchar* name, const Vector4i& v );
 
-	void use();
+    void use();
 
 private:
 
-	GLProgram( GLuint id );
-	
-	GLuint m_id;	
+    GLProgram( GLuint id );
+
+    GLuint m_id;
 };

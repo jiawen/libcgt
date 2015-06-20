@@ -10,22 +10,22 @@ class EffectManager
 {
 public:
 
-	EffectManager( ID3D11Device* pDevice );
-	virtual ~EffectManager();
+    EffectManager( ID3D11Device* pDevice );
+    virtual ~EffectManager();
 
-	// Load the effect from a source file in "filename"
-	// and assign it the name "name"
-	bool loadFromFile( QString name, QString filename );
+    // Load the effect from a source file in "filename"
+    // and assign it the name "name"
+    bool loadFromFile( QString name, QString filename );
 
-	// Load the binary effect from a pre-compiled file in "filename"
-	// and assign it the name "name"
-	bool loadFromBinaryFile( QString name, QString filename );
-	
-	ID3DX11Effect* getEffect( QString name );
+    // Load the binary effect from a pre-compiled file in "filename"
+    // and assign it the name "name"
+    bool loadFromBinaryFile( QString name, QString filename );
+
+    ID3DX11Effect* getEffect( QString name );
 
 private:
 
-	ID3D11Device* m_pDevice;
-	QHash< QString, ID3DX11Effect* > m_effects;
+    ID3D11Device* m_pDevice;
+    QHash< QString, ID3DX11Effect* > m_effects;
 
 };

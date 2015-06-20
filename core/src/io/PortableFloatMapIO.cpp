@@ -33,7 +33,7 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
     else if( strncmp( buffer, "PF", 2 ) == 0 )
     {
         nComponents = 3;
-    }    
+    }
     else
     {
         fclose( fp );
@@ -59,7 +59,7 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
         fclose( fp );
         return output;
     }
-    
+
     if( nComponents == 1 )
     {
         output.grayscale = Array2D< float >( floatData, { width, height } );
@@ -83,18 +83,18 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
 // static
 bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const float > image )
 {
-	int w = image.width();
-	int h = image.height();
+    int w = image.width();
+    int h = image.height();
 
-	// use "wb" binary mode to ensure that on Windows,
-	// newlines in the header are written out as '\n'	
+    // use "wb" binary mode to ensure that on Windows,
+    // newlines in the header are written out as '\n'
     FILE* pFile = fopen( filename.c_str(), "wb" );
-	if( pFile == nullptr )
-	{
-		return false;
-	}
+    if( pFile == nullptr )
+    {
+        return false;
+    }
 
-	// write header
+    // write header
     int nCharsWritten = fprintf( pFile, "Pf\n%d %d\n-1\n", w, h );
     if( nCharsWritten < 0 )
     {
@@ -102,47 +102,47 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
         return false;
     }
 
-	if( image.packed() )
-	{
-		fwrite( image.rowPointer( 0 ), sizeof( float ), image.numElements(), pFile );
-	}
-	else if( image.elementsArePacked() )
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			fwrite( image.rowPointer( y ), sizeof( float ), image.width(), pFile );
-		}
-	}
-	else
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			for( int x = 0; x < w; ++x )
-			{				
+    if( image.packed() )
+    {
+        fwrite( image.rowPointer( 0 ), sizeof( float ), image.numElements(), pFile );
+    }
+    else if( image.elementsArePacked() )
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            fwrite( image.rowPointer( y ), sizeof( float ), image.width(), pFile );
+        }
+    }
+    else
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            for( int x = 0; x < w; ++x )
+            {
                 fwrite( image.elementPointer( { x, y } ), sizeof( float ), 1, pFile );
-			}
-		}
-	}
+            }
+        }
+    }
 
-	fclose( pFile );
-	return true;
+    fclose( pFile );
+    return true;
 }
 
 // static
 bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector3f > image )
 {
-	int w = image.width();
-	int h = image.height();
+    int w = image.width();
+    int h = image.height();
 
-	// use "wb" binary mode to ensure that on Windows,
-	// newlines in the header are written out as '\n'
-	FILE* pFile = fopen( filename.c_str(), "wb" );
-	if( pFile == nullptr )
-	{
-		return false;
-	}
+    // use "wb" binary mode to ensure that on Windows,
+    // newlines in the header are written out as '\n'
+    FILE* pFile = fopen( filename.c_str(), "wb" );
+    if( pFile == nullptr )
+    {
+        return false;
+    }
 
-	// write header
+    // write header
     int nCharsWritten = fprintf( pFile, "PF\n%d %d\n-1\n", w, h );
     if( nCharsWritten < 0 )
     {
@@ -150,47 +150,47 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
         return false;
     }
 
-	if( image.packed() )
-	{
-		fwrite( image.rowPointer( 0 ), sizeof( Vector3f ), image.numElements(), pFile );
-	}
-	else if( image.elementsArePacked() )
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			fwrite( image.rowPointer( y ), sizeof( Vector3f ), image.width(), pFile );
-		}
-	}
-	else
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			for( int x = 0; x < w; ++x )
-			{				
+    if( image.packed() )
+    {
+        fwrite( image.rowPointer( 0 ), sizeof( Vector3f ), image.numElements(), pFile );
+    }
+    else if( image.elementsArePacked() )
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            fwrite( image.rowPointer( y ), sizeof( Vector3f ), image.width(), pFile );
+        }
+    }
+    else
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            for( int x = 0; x < w; ++x )
+            {
                 fwrite( image.elementPointer( { x, y } ), sizeof( Vector3f ), 1, pFile );
-			}
-		}
-	}
+            }
+        }
+    }
 
-	fclose( pFile );
-	return true;
+    fclose( pFile );
+    return true;
 }
 
 // static
 bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector4f > image )
 {
-	int w = image.width();
-	int h = image.height();
+    int w = image.width();
+    int h = image.height();
 
-	// use "wb" binary mode to ensure that on Windows,
-	// newlines in the header are written out as '\n'
+    // use "wb" binary mode to ensure that on Windows,
+    // newlines in the header are written out as '\n'
     FILE* pFile = fopen( filename.c_str(), "wb" );
-	if( pFile == nullptr )
-	{
-		return false;
-	}
+    if( pFile == nullptr )
+    {
+        return false;
+    }
 
-	// write header
+    // write header
     int nCharsWritten = fprintf( pFile, "PF4\n%d %d\n-1\n", w, h );
     if( nCharsWritten < 0 )
     {
@@ -199,30 +199,30 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
     }
 
     // All at once.
-	if( image.packed() )
-	{
-		fwrite( image.rowPointer( 0 ), sizeof( Vector4f ), image.numElements(), pFile );
-	}
+    if( image.packed() )
+    {
+        fwrite( image.rowPointer( 0 ), sizeof( Vector4f ), image.numElements(), pFile );
+    }
     // Row by Row.
-	else if( image.elementsArePacked() )
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			fwrite( image.rowPointer( y ), sizeof( Vector4f ), image.width(), pFile );
-		}
-	}
+    else if( image.elementsArePacked() )
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            fwrite( image.rowPointer( y ), sizeof( Vector4f ), image.width(), pFile );
+        }
+    }
     // Element by element.
-	else
-	{
-		for( int y = 0; y < h; ++y )
-		{
-			for( int x = 0; x < w; ++x )
-			{				
+    else
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            for( int x = 0; x < w; ++x )
+            {
                 fwrite( image.elementPointer( { x, y } ), sizeof( Vector4f ), 1, pFile );
-			}
-		}
-	}
+            }
+        }
+    }
 
-	fclose( pFile );
-	return true;
+    fclose( pFile );
+    return true;
 }

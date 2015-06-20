@@ -8,47 +8,47 @@ class DynamicTexture2D
 {
 public:
 
-	// TODO: test for failure in texture/view creation, return NULL
+    // TODO: test for failure in texture/view creation, return NULL
 
-	static DynamicTexture2D* createFloat1( ID3D11Device* pDevice, int width, int height );
-	static DynamicTexture2D* createFloat2( ID3D11Device* pDevice, int width, int height );
-	static DynamicTexture2D* createFloat4( ID3D11Device* pDevice, int width, int height );
-	static DynamicTexture2D* createUnsignedShort1( ID3D11Device* pDevice, int width, int height );
-	static DynamicTexture2D* createUnsignedShort1UNorm( ID3D11Device* pDevice, int width, int height );
-	static DynamicTexture2D* createUnsignedByte4( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createFloat1( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createFloat2( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createFloat4( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createUnsignedShort1( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createUnsignedShort1UNorm( ID3D11Device* pDevice, int width, int height );
+    static DynamicTexture2D* createUnsignedByte4( ID3D11Device* pDevice, int width, int height );
 
-	virtual ~DynamicTexture2D();
-	
-	int width();
-	int height();
-	Vector2i size();
+    virtual ~DynamicTexture2D();
 
-	void resize( int width, int height );
+    int width();
+    int height();
+    Vector2i size();
 
-	// implicit cast to ID3D11Texture2D*
-	operator ID3D11Texture2D* ();
+    void resize( int width, int height );
 
-	ID3D11Texture2D* texture();	
-	ID3D11ShaderResourceView* shaderResourceView();	
+    // implicit cast to ID3D11Texture2D*
+    operator ID3D11Texture2D* ();
 
-	D3D11_MAPPED_SUBRESOURCE mapForWriteDiscard();
-	void unmap();
+    ID3D11Texture2D* texture();
+    ID3D11ShaderResourceView* shaderResourceView();
 
-	D3D11_TEXTURE2D_DESC description();
+    D3D11_MAPPED_SUBRESOURCE mapForWriteDiscard();
+    void unmap();
+
+    D3D11_TEXTURE2D_DESC description();
 
 private:
 
-	static D3D11_TEXTURE2D_DESC makeTextureDescription( int width, int height, DXGI_FORMAT format );
+    static D3D11_TEXTURE2D_DESC makeTextureDescription( int width, int height, DXGI_FORMAT format );
 
-	DynamicTexture2D( ID3D11Device* pDevice, int width, int height, ID3D11Texture2D* pTexture );
+    DynamicTexture2D( ID3D11Device* pDevice, int width, int height, ID3D11Texture2D* pTexture );
 
-	int m_width;
-	int m_height;
+    int m_width;
+    int m_height;
 
-	ID3D11Device* m_pDevice;
-	ID3D11Texture2D* m_pTexture;
-	ID3D11ShaderResourceView* m_pShaderResourceView;	
+    ID3D11Device* m_pDevice;
+    ID3D11Texture2D* m_pTexture;
+    ID3D11ShaderResourceView* m_pShaderResourceView;
 
-	ID3D11DeviceContext* m_pContext;
+    ID3D11DeviceContext* m_pContext;
 
 };

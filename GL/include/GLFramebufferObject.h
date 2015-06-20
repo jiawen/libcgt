@@ -30,16 +30,16 @@ public:
 
     // Unbind the one and only FBO
     // (and binds the default FBO, which has id 0).
-	static void unbindAll();
+    static void unbindAll();
 
     // The maximum number of color attachments.
-	static GLint maxColorAttachments();
+    static GLint maxColorAttachments();
 
     // The maximum number of draw buffers (multiple render targets).
     static GLint maxNumDrawBuffers();
 
     // Create a new blank framebuffer object.
-	GLFramebufferObject();
+    GLFramebufferObject();
 
     // Wraps a framebuffer object around an existing FBO id.
     // This is useful to make an object oriented interface around an externally
@@ -47,22 +47,22 @@ public:
     // QOpenGLWidget.
     GLFramebufferObject( int externalId );
 
-	virtual ~GLFramebufferObject();
+    virtual ~GLFramebufferObject();
 
     GLuint id() const;
 
     bool isExternal() const;
 
-	void bind();
+    void bind();
 
-	// TODO: GLTexture2D extends GLTexture
-	// GLTexture->getType()
-	// TODO: mipmaps
+    // TODO: GLTexture2D extends GLTexture
+    // GLTexture->getType()
+    // TODO: mipmaps
 
     // TODO: ARB_DSA: invalidate, blit
 
     // Attachment can be GL_COLOR_ATTACHMENT0, ... GL_COLOR_ATTACHMENTn,
-	//   GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT.    
+    //   GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT.
     void attachTexture( GLenum attachment, GLTexture2D* pTexture,
         int mipmapLevel = 0 );
 
@@ -92,7 +92,7 @@ public:
     // But that's a little crazy.
 
     void attachRenderbuffer( GLenum attachment, GLRenderbufferObject* pRenderbuffer );
-	void detach( GLenum attachment );
+    void detach( GLenum attachment );
 
     // Set the framebuffer's 0th draw buffer to attachment.
     // By default, drawbuffer 0 is assigned to GL_COLOR_ATTACHMENT0.
@@ -108,12 +108,12 @@ public:
     // Returns the id of the object attached to attachment.
     // If the type is GL_RENDERBUFFER, then it's the renderbuffer object id.
     // If the type is GL_TEXTURE, then it's the texture id.
-	GLuint getAttachedId( GLenum attachment );
+    GLuint getAttachedId( GLenum attachment );
 
     // Returns the type of the object attached to attachment.
     // It is one of:
     // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER.
-	GLuint getAttachedType( GLenum attachment );
+    GLuint getAttachedType( GLenum attachment );
 
     // Assuming the attached object is a texture, returns the mipmap level that
     // was attached.
@@ -121,13 +121,13 @@ public:
 
     // Assuming the attached object is a texture, returns the face index that
     // was attached. // TODO: check if it's GL_TEXTURE_CUBE_MAP_POSITIVE_X, etc, or 0, 1, 2...
-    GLint getAttachedTextureCubeMapFace( GLenum attachment );    
+    GLint getAttachedTextureCubeMapFace( GLenum attachment );
 
     // TODO: query for red_size, ..., depth_size, stencil_size, etc
     // TODO: query for component_type, color_encoding
 
     // This checks only the status of the draw buffer.
-	bool checkStatus( GLenum* pStatus = nullptr );
+    bool checkStatus( GLenum* pStatus = nullptr );
 
     void clearColor( int drawBufferIndex, const int8x4& color );
     void clearColor( int drawBufferIndex, const uint8x4& color );
@@ -150,6 +150,6 @@ public:
 
 private:
 
-	GLuint m_id;
+    GLuint m_id;
     bool m_isExternal;
 };

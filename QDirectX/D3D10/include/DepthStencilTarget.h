@@ -8,30 +8,30 @@ class DepthStencilTarget
 {
 public:
 
-	// TODO: test for failure in texture/view creation, return NULL
+    // TODO: test for failure in texture/view creation, return NULL
 
-	static DepthStencilTarget* createDepthFloat24StencilUnsignedByte8( ID3D10Device* pDevice, int width, int height );	
+    static DepthStencilTarget* createDepthFloat24StencilUnsignedByte8( ID3D10Device* pDevice, int width, int height );
 
-	// untested!
-	static DepthStencilTarget* createDepthFloat32( ID3D10Device* pDevice, int width, int height );	
+    // untested!
+    static DepthStencilTarget* createDepthFloat32( ID3D10Device* pDevice, int width, int height );
 
-	virtual ~DepthStencilTarget();
-	
-	int width();
-	int height();
+    virtual ~DepthStencilTarget();
 
-	ID3D10Texture2D* texture();
-	ID3D10DepthStencilView* depthStencilView();
+    int width();
+    int height();
+
+    ID3D10Texture2D* texture();
+    ID3D10DepthStencilView* depthStencilView();
 
 private:
 
-	DepthStencilTarget( ID3D10Device* pDevice, int width, int height, ID3D10Texture2D* pTexture );
+    DepthStencilTarget( ID3D10Device* pDevice, int width, int height, ID3D10Texture2D* pTexture );
 
-	int m_width;
-	int m_height;
+    int m_width;
+    int m_height;
 
-	ID3D10Texture2D* m_pTexture;
-	ID3D10DepthStencilView* m_pDepthStencilView;	
+    ID3D10Texture2D* m_pTexture;
+    ID3D10DepthStencilView* m_pDepthStencilView;
 
 };
 

@@ -9,31 +9,31 @@ class DeviceVariable
 {
 public:
 
-	DeviceVariable( const T& initialValue = T() );
-	DeviceVariable( const DeviceVariable< T >& copy );
-	DeviceVariable( DeviceVariable< T >&& move );
-	DeviceVariable< T >& operator = ( const DeviceVariable< T >& copy );
-	DeviceVariable< T >& operator = ( DeviceVariable< T >&& move );
-	DeviceVariable< T >& operator = ( const T& copy ); // copy from host, same as set()
-	~DeviceVariable();
+    DeviceVariable( const T& initialValue = T() );
+    DeviceVariable( const DeviceVariable< T >& copy );
+    DeviceVariable( DeviceVariable< T >&& move );
+    DeviceVariable< T >& operator = ( const DeviceVariable< T >& copy );
+    DeviceVariable< T >& operator = ( DeviceVariable< T >&& move );
+    DeviceVariable< T >& operator = ( const T& copy ); // copy from host, same as set()
+    ~DeviceVariable();
 
-	// copy device --> host
-	T get() const;
-	
-	// copy host --> device
-	void set( const T& value );
+    // copy device --> host
+    T get() const;
 
-	// copy device --> device
-	void set( const DeviceVariable< T >& value );
+    // copy host --> device
+    void set( const T& value );
 
-	const T* devicePointer() const;
-	T* devicePointer();
+    // copy device --> device
+    void set( const DeviceVariable< T >& value );
+
+    const T* devicePointer() const;
+    T* devicePointer();
 
 private:
 
-	void destroy();
+    void destroy();
 
-	T* md_pDevicePointer;
+    T* md_pDevicePointer;
 
 };
 

@@ -10,60 +10,60 @@ class OBJMaterial
 {
 public:
 
-	enum ILLUMINATION_MODEL
-	{
-		ILLUMINATION_MODEL_NONE = 0,
-		ILLUMINATION_MODEL_DIFFUSE = 1,
-		ILLUMINATION_MODEL_DIFFUSE_AND_SPECULAR = 2
-	};
+    enum ILLUMINATION_MODEL
+    {
+        ILLUMINATION_MODEL_NONE = 0,
+        ILLUMINATION_MODEL_DIFFUSE = 1,
+        ILLUMINATION_MODEL_DIFFUSE_AND_SPECULAR = 2
+    };
 
-	OBJMaterial();
-	OBJMaterial( QString name );
+    OBJMaterial();
+    OBJMaterial( QString name );
 
-	QString name() const;
-	void setName( QString name );
-	
-	Vector3f ambientColor() const;
-	void setAmbientColor( const Vector3f& color );
+    QString name() const;
+    void setName( QString name );
 
-	Vector3f diffuseColor() const;
-	void setDiffuseColor( const Vector3f& color );
+    Vector3f ambientColor() const;
+    void setAmbientColor( const Vector3f& color );
 
-	Vector3f specularColor() const;
-	void setSpecularColor( const Vector3f& color );
+    Vector3f diffuseColor() const;
+    void setDiffuseColor( const Vector3f& color );
 
-	float alpha() const;
-	void setAlpha( float a );
+    Vector3f specularColor() const;
+    void setSpecularColor( const Vector3f& color );
 
-	float shininess() const;
-	void setShininess( float s );
-	
-	QString ambientTexture() const;
-	void setAmbientTexture( QString filename );
+    float alpha() const;
+    void setAlpha( float a );
 
-	QString diffuseTexture() const;
-	void setDiffuseTexture( QString filename );
+    float shininess() const;
+    void setShininess( float s );
 
-	ILLUMINATION_MODEL illuminationModel() const;
-	void setIlluminationModel( ILLUMINATION_MODEL im );
+    QString ambientTexture() const;
+    void setAmbientTexture( QString filename );
+
+    QString diffuseTexture() const;
+    void setDiffuseTexture( QString filename );
+
+    ILLUMINATION_MODEL illuminationModel() const;
+    void setIlluminationModel( ILLUMINATION_MODEL im );
 
 private:
 
-	// required
-	QString m_name;
-	ILLUMINATION_MODEL m_illuminationModel;
+    // required
+    QString m_name;
+    ILLUMINATION_MODEL m_illuminationModel;
 
-	Vector3f m_ka;
-	Vector3f m_kd;
-	Vector3f m_ks;
-	
-	float m_d; // alpha
-	// float m_tr; // 1 - alpha
-	float m_ns; // shininess
-	
-	QString m_mapKa; // ambient texture
-	QString m_mapKd; // diffuse texture
+    Vector3f m_ka;
+    Vector3f m_kd;
+    Vector3f m_ks;
 
-	// TODO: parse others
-	// http://www.fileformat.info/format/material/
+    float m_d; // alpha
+    // float m_tr; // 1 - alpha
+    float m_ns; // shininess
+
+    QString m_mapKa; // ambient texture
+    QString m_mapKd; // diffuse texture
+
+    // TODO: parse others
+    // http://www.fileformat.info/format/material/
 };

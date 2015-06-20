@@ -37,7 +37,7 @@ Array2DView< T > viewOfCvMatAsImage( const cv::Mat_< T >& a )
 {
     // strides is (step[1], step[0]) because cv::Mat is indexed
     // as (row, col) but stored row major.
-    Vector2i size{ a.cols, a.rows };    
+    Vector2i size{ a.cols, a.rows };
     Vector2i strides{ static_cast< int >( a.step[ 1 ] ), static_cast< int >( a.step[ 0 ] ) };
-    return Array2DView< T >( a.data, size, strides );        
+    return Array2DView< T >( a.data, size, strides );
 }

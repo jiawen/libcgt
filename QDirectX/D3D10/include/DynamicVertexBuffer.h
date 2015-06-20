@@ -8,23 +8,23 @@ class DynamicVertexBuffer
 {
 public:
 
-	DynamicVertexBuffer( ID3D10Device* pDevice, int capacity, int vertexSizeBytes );
-	virtual ~DynamicVertexBuffer();
+    DynamicVertexBuffer( ID3D10Device* pDevice, int capacity, int vertexSizeBytes );
+    virtual ~DynamicVertexBuffer();
 
-	int capacity();
+    int capacity();
 
-	ID3D10Buffer* buffer();
-	UINT defaultStride();
-	UINT defaultOffset();
+    ID3D10Buffer* buffer();
+    UINT defaultStride();
+    UINT defaultOffset();
 
-	void* mapForWriteDiscard();
-	void unmap();	
+    void* mapForWriteDiscard();
+    void unmap();
 
 private:
 
-	int m_capacity;
-	int m_vertexSizeBytes;
-	ID3D10Buffer* m_pBuffer;
+    int m_capacity;
+    int m_vertexSizeBytes;
+    ID3D10Buffer* m_pBuffer;
 
 };
 

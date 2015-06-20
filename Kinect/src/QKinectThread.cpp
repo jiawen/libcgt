@@ -13,28 +13,28 @@
 
 QKinectThread::QKinectThread( std::shared_ptr< QKinect > pKinect, int pollingIntervalMS ) :
 
-	m_pKinect( pKinect ),
-	m_pollingIntervalMS( pollingIntervalMS )
+    m_pKinect( pKinect ),
+    m_pollingIntervalMS( pollingIntervalMS )
 
 {
-	qRegisterMetaType< NUI_SKELETON_FRAME >( "NUI_SKELETON_FRAME" );
-	qRegisterMetaType< Image4ub >( "Image4ub" );
-	qRegisterMetaType< Array2D< ushort > >( "Array2D< ushort >" );
+    qRegisterMetaType< NUI_SKELETON_FRAME >( "NUI_SKELETON_FRAME" );
+    qRegisterMetaType< Image4ub >( "Image4ub" );
+    qRegisterMetaType< Array2D< ushort > >( "Array2D< ushort >" );
 }
 
 int QKinectThread::pollingIntervalMS() const
 {
-	return m_pollingIntervalMS;
+    return m_pollingIntervalMS;
 }
 
 void QKinectThread::setPollingIntervalMS( int pollingIntervalMS )
 {
-	m_pollingIntervalMS = pollingIntervalMS;
+    m_pollingIntervalMS = pollingIntervalMS;
 }
 
 void QKinectThread::stop()
 {
-	m_running = false;
+    m_running = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,60 +44,60 @@ void QKinectThread::stop()
 // virtual
 void QKinectThread::run()
 {
-	m_running = true;
-	QEventLoop eventLoop;
-	Clock clock;
-	int64 tStart = clock.getCounterValue();
-	int64 t0 = tStart;
+    m_running = true;
+    QEventLoop eventLoop;
+    Clock clock;
+    int64 tStart = clock.getCounterValue();
+    int64 t0 = tStart;
 
-	NUI_SKELETON_FRAME skeletonFrame;
-	// TODO: pass in resolutions to QKinect on initialization
-	// query it to get the sizes
-	Image4ub rgba( 640, 480 );
-	Array2D< ushort > depth( 640, 480 );
-	Array2D< ushort > playerIndex( 640, 480 );
+    NUI_SKELETON_FRAME skeletonFrame;
+    // TODO: pass in resolutions to QKinect on initialization
+    // query it to get the sizes
+    Image4ub rgba( 640, 480 );
+    Array2D< ushort > depth( 640, 480 );
+    Array2D< ushort > playerIndex( 640, 480 );
 
-	while( m_running )
-	{
-		QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, playerIndex, m_pollingIntervalMS );
-		int64 t1 = clock.getCounterValue();		
+    while( m_running )
+    {
+        QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, playerIndex, m_pollingIntervalMS );
+        int64 t1 = clock.getCounterValue();
 
-		switch( e )
-		{
-		case QKinect::QKinect_Event_Skeleton:
-			{
-				emit skeletonFrameReady( skeletonFrame ); 
-				break;
-			}
-		case QKinect::QKinect_Event_RGB:
-			{
-				emit colorFrameReady( rgba );
-				break;
-			}
-		case QKinect::QKinect_Event_Depth:
-			{
-				emit depthFrameReady( depth );
-				break;
-			}
-		}
+        switch( e )
+        {
+        case QKinect::QKinect_Event_Skeleton:
+            {
+                emit skeletonFrameReady( skeletonFrame );
+                break;
+            }
+        case QKinect::QKinect_Event_RGB:
+            {
+                emit colorFrameReady( rgba );
+                break;
+            }
+        case QKinect::QKinect_Event_Depth:
+            {
+                emit depthFrameReady( depth );
+                break;
+            }
+        }
 
-		float dt = clock.convertIntervalToMillis( t1 - t0 );
-		t0 = t1;
-		
-		// printf( "dt = %f ms\n", dt );
+        float dt = clock.convertIntervalToMillis( t1 - t0 );
+        t0 = t1;
 
-		if( dt < m_pollingIntervalMS )
-		{
-			int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );			
-			//printf( "sleeping for %d milliseconds\n", sleepInterval );
-			msleep( sleepInterval );
-		}
+        // printf( "dt = %f ms\n", dt );
 
-		//int64 t2 = clock.getCounterValue();
-		//float loopTime = clock.convertIntervalToMillis( t2 - t1 );
-		//printf( "loopTime = %f ms\n", loopTime );
-		// msleep( m_pollingIntervalMS );
+        if( dt < m_pollingIntervalMS )
+        {
+            int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );
+            //printf( "sleeping for %d milliseconds\n", sleepInterval );
+            msleep( sleepInterval );
+        }
 
-		eventLoop.processEvents();
-	}
+        //int64 t2 = clock.getCounterValue();
+        //float loopTime = clock.convertIntervalToMillis( t2 - t1 );
+        //printf( "loopTime = %f ms\n", loopTime );
+        // msleep( m_pollingIntervalMS );
+
+        eventLoop.processEvents();
+    }
 }

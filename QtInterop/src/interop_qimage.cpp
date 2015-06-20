@@ -22,7 +22,7 @@ QImage libcgt::qtinterop::qimage::wrapAsQImage( Array2DView< uint8x4 > view )
     }
 
     return QImage( reinterpret_cast< uchar* >( view.pointer() ),
-        view.width(), view.height(), view.rowStrideBytes(), 
+        view.width(), view.height(), view.rowStrideBytes(),
         QImage::Format_ARGB32 );
 }
 
@@ -34,7 +34,7 @@ QImage libcgt::qtinterop::qimage::wrapAsQImage( Array2DView< uint8_t > view )
     }
 
     QImage q( reinterpret_cast< uchar* >( view.pointer() ),
-        view.width(), view.height(), view.rowStrideBytes(), 
+        view.width(), view.height(), view.rowStrideBytes(),
         QImage::Format_Indexed8 );
     q.setColorCount( 256 );
     for( int i = 0; i < 256; ++i )

@@ -17,106 +17,106 @@ using namespace std;
 // static
 shared_ptr< GLShared > GLShared::getInstance()
 {
-	if( s_singleton.get() == NULL )
-	{
-		s_singleton.reset( new GLShared );
-	}
+    if( s_singleton.get() == NULL )
+    {
+        s_singleton.reset( new GLShared );
+    }
 
-	return s_singleton;
+    return s_singleton;
 }
 
 // virtual
 GLShared::~GLShared()
 {
-	QList< QVector< GLTextureRectangle* > > sharedTextureVectors = m_qhSharedTextures.values();
-	foreach( QVector< GLTextureRectangle* > qvTextureVector, sharedTextureVectors )
-	{
-		foreach( GLTextureRectangle* pTexture, qvTextureVector )
-		{
-			delete pTexture;
-		}
-		qvTextureVector.clear();
-	}
-	m_qhSharedTextures.clear();
+    QList< QVector< GLTextureRectangle* > > sharedTextureVectors = m_qhSharedTextures.values();
+    foreach( QVector< GLTextureRectangle* > qvTextureVector, sharedTextureVectors )
+    {
+        foreach( GLTextureRectangle* pTexture, qvTextureVector )
+        {
+            delete pTexture;
+        }
+        qvTextureVector.clear();
+    }
+    m_qhSharedTextures.clear();
 }
 
 shared_ptr< GLFramebufferObject > GLShared::getSharedFramebufferObject()
 {
-	return m_fbo;
+    return m_fbo;
 }
 
 QVector< GLTextureRectangle* > GLShared::getSharedTexture( int width, int height, int count )
 {
-	QPair< int, int > key = qMakePair( width, height );
+    QPair< int, int > key = qMakePair( width, height );
 
-	// stick one in the cache if it's empty
-	if( !( m_qhSharedTextures.contains( key ) ) )
-	{
-		m_qhSharedTextures.insert( key, QVector< GLTextureRectangle* >() );
-	}
+    // stick one in the cache if it's empty
+    if( !( m_qhSharedTextures.contains( key ) ) )
+    {
+        m_qhSharedTextures.insert( key, QVector< GLTextureRectangle* >() );
+    }
 
-	// now grab it back
-	QVector< GLTextureRectangle* > textureVector = m_qhSharedTextures.value( key );
-	int nAllocatedTextures = textureVector.size();
+    // now grab it back
+    QVector< GLTextureRectangle* > textureVector = m_qhSharedTextures.value( key );
+    int nAllocatedTextures = textureVector.size();
 
-	// check if we have already allocated count textures
-	// if not, allocate some more
-	if( nAllocatedTextures < count )
-	{
-		for( int i = nAllocatedTextures; i < count; ++i )
-		{
-			textureVector.append( GLTextureRectangle::createFloat4Texture( width, height ) );
-		}
+    // check if we have already allocated count textures
+    // if not, allocate some more
+    if( nAllocatedTextures < count )
+    {
+        for( int i = nAllocatedTextures; i < count; ++i )
+        {
+            textureVector.append( GLTextureRectangle::createFloat4Texture( width, height ) );
+        }
 
-		// now stick it back in the hash map
-		// TODO: can probably do this by storing QHash of QVector*'s
-		// so don't have to reinsert
-		m_qhSharedTextures.insert( key, textureVector );
-	}
+        // now stick it back in the hash map
+        // TODO: can probably do this by storing QHash of QVector*'s
+        // so don't have to reinsert
+        m_qhSharedTextures.insert( key, textureVector );
+    }
 
-	QVector< GLTextureRectangle* > returnTextureVector;
-	for( int i = 0; i < count; ++i )
-	{
-		returnTextureVector.append( textureVector.at( i ) );
-	}
+    QVector< GLTextureRectangle* > returnTextureVector;
+    for( int i = 0; i < count; ++i )
+    {
+        returnTextureVector.append( textureVector.at( i ) );
+    }
 
-	return returnTextureVector;
+    return returnTextureVector;
 }
 
 GLBufferObject* GLShared::getSharedXYCoordinateVBO( int width, int height )
 {
-	QPair< int, int > key = qMakePair( width, height );
+    QPair< int, int > key = qMakePair( width, height );
 
-	// stick it in the cache if it's empty
-	if( !( m_qhSharedXYVBOs.contains( key ) ) )
-	{
-		GLshort* xyCoords = new GLshort[ 2 * width * height ];
-		int index = 0;
+    // stick it in the cache if it's empty
+    if( !( m_qhSharedXYVBOs.contains( key ) ) )
+    {
+        GLshort* xyCoords = new GLshort[ 2 * width * height ];
+        int index = 0;
 
-		for( int y = 0; y < height; ++y )
-		{
-			for( int x = 0; x < width; ++x )
-			{
-				xyCoords[ index ] = x;
-				xyCoords[ index + 1 ] = y;
+        for( int y = 0; y < height; ++y )
+        {
+            for( int x = 0; x < width; ++x )
+            {
+                xyCoords[ index ] = x;
+                xyCoords[ index + 1 ] = y;
 
-				index += 2;
-			}
-		}
+                index += 2;
+            }
+        }
 
-		GLBufferObject* pVBO = GLVertexBufferObject::fromShortArray
-		(
-			xyCoords,
-			2 * width * height,
-			width * height
-		);
+        GLBufferObject* pVBO = GLVertexBufferObject::fromShortArray
+        (
+            xyCoords,
+            2 * width * height,
+            width * height
+        );
 
-		delete[] xyCoords;
+        delete[] xyCoords;
 
-		m_qhSharedXYVBOs.insert( key, pVBO );
-	}
+        m_qhSharedXYVBOs.insert( key, pVBO );
+    }
 
-	return m_qhSharedXYVBOs.value( key );
+    return m_qhSharedXYVBOs.value( key );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ GLBufferObject* GLShared::getSharedXYCoordinateVBO( int width, int height )
 //////////////////////////////////////////////////////////////////////////
 
 GLShared::GLShared() :
-	m_fbo( new GLFramebufferObject )
+    m_fbo( new GLFramebufferObject )
 {
 }
 

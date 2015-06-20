@@ -10,43 +10,43 @@ class OBJGroup
 {
 public:
 
-	OBJGroup( QString name );
+    OBJGroup( QString name );
 
-	QString name() const;
+    QString name() const;
 
-	bool hasTextureCoordinates() const;
-	void setHasTextureCoordinates( bool b );
+    bool hasTextureCoordinates() const;
+    void setHasTextureCoordinates( bool b );
 
-	bool hasNormals() const;
-	void setHasNormals( bool b );
+    bool hasNormals() const;
+    void setHasNormals( bool b );
 
-	int numFaces() const;
-	const std::vector< OBJFace >& faces() const;
-	std::vector< OBJFace >& faces();
+    int numFaces() const;
+    const std::vector< OBJFace >& faces() const;
+    std::vector< OBJFace >& faces();
 
-	// adds a new face to the current material
-	void addFace( const OBJFace& face );
+    // adds a new face to the current material
+    void addFace( const OBJFace& face );
 
-	int numMaterials() const;
-	const std::vector< QString >& materialNames() const;
-	std::vector< QString >& materialNames();
+    int numMaterials() const;
+    const std::vector< QString >& materialNames() const;
+    std::vector< QString >& materialNames();
 
-	// add a new material and sets it as current
-	void addMaterial( QString materialName );	
+    // add a new material and sets it as current
+    void addMaterial( QString materialName );
 
-	std::vector< int >& facesForMaterial( QString materialName );
+    std::vector< int >& facesForMaterial( QString materialName );
 
-	std::vector< int >& facesForMaterial( int materialIndex );
+    std::vector< int >& facesForMaterial( int materialIndex );
 
 private:
 
-	QString m_name;
-	bool m_hasTextureCoordinates;
-	bool m_hasNormals;
+    QString m_name;
+    bool m_hasTextureCoordinates;
+    bool m_hasNormals;
 
-	std::vector< QString > m_materialNames;
-	QHash< QString, std::vector< int > > m_facesByMaterial;
+    std::vector< QString > m_materialNames;
+    QHash< QString, std::vector< int > > m_facesByMaterial;
 
-	std::vector< OBJFace > m_faces;
+    std::vector< OBJFace > m_faces;
 
 };

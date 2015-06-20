@@ -27,36 +27,36 @@ class GLSamplerObject
 {
 public:
 
-	static GLfloat getLargestSupportedAnisotropy();
+    static GLfloat getLargestSupportedAnisotropy();
     // textureUnitIndex is an unsigned integer index (0, 1, ...)
     // and *not* a GLenum (GL_TEXTURE0, GL_TEXTURE1, ...)
-	static void unbind( GLuint textureUnitIndex );
+    static void unbind( GLuint textureUnitIndex );
 
-	GLSamplerObject();
-	virtual ~GLSamplerObject();
+    GLSamplerObject();
+    virtual ~GLSamplerObject();
 
-	GLuint id() const;
+    GLuint id() const;
 
     // textureUnitIndex is an unsigned integer index (0, 1, ...)
     // and *not* a GLenum (GL_TEXTURE0, GL_TEXTURE1, ...)
-	void bind( GLuint textureUnitIndex );
+    void bind( GLuint textureUnitIndex );
 
-	// Filter modes.
-	GLTextureFilterMode minFilterMode() const;
-	GLTextureFilterMode magFilterMode() const;
+    // Filter modes.
+    GLTextureFilterMode minFilterMode() const;
+    GLTextureFilterMode magFilterMode() const;
     GLfloat anisotropy() const;
 
-	void setMinFilterMode( GLTextureFilterMode mode );
-	void setMagFilterMode( GLTextureFilterMode mode );
+    void setMinFilterMode( GLTextureFilterMode mode );
+    void setMagFilterMode( GLTextureFilterMode mode );
     void setMinMagFilterMode( GLTextureFilterMode minMode, GLTextureFilterMode magMode );
-	
+
     // Enable anisotropic filtering.
     // anisotropy is a value \in [1, getLargestSupportedAnisotropy()].
     // Setting it to 1 turns off anisotropic filtering.
     // Turning it on lets GL take more samples.
-	void setAnisotropy( GLfloat anisotropy );
+    void setAnisotropy( GLfloat anisotropy );
 
-	// Wrap modes.
+    // Wrap modes.
     // Note: OpenGL's texture coordinates are named (s, t, r). And rarely q.
     // GLSL, to avoid the overloaded r, calls them (s, t, p, q).
     GLWrapMode wrapModeS() const;
@@ -76,5 +76,5 @@ public:
 
 private:
 
-	GLuint m_id;
+    GLuint m_id;
 };

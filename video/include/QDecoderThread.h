@@ -12,50 +12,50 @@
 
 class QDecoderThread : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
     QDecoderThread( Reference< IVideo > rVideo,
-		uint bufferSize,
-		QObject* parent = NULL );
+        uint bufferSize,
+        QObject* parent = NULL );
 
     virtual ~QDecoderThread();
 
-	// returns the next frame and dequeues it
-	// and optionally, the index of the frame
-	// Pass in NULL to ignore the frame index
-	UnsignedByteArray getNextFrame( int64* pFrameIndex = NULL );
+    // returns the next frame and dequeues it
+    // and optionally, the index of the frame
+    // Pass in NULL to ignore the frame index
+    UnsignedByteArray getNextFrame( int64* pFrameIndex = NULL );
 
 public slots:
 
-	void setNextFrameIndex( int64 iFrameIndex );
-	void stop();
+    void setNextFrameIndex( int64 iFrameIndex );
+    void stop();
 
 protected:
 
-	virtual void run();
+    virtual void run();
 
 private:
 
-	void decodeNextFrameIntoBuffer();
+    void decodeNextFrameIntoBuffer();
 
-	Reference< IVideo > m_rVideo;
+    Reference< IVideo > m_rVideo;
 
-	uint m_uiBufferSize;
+    uint m_uiBufferSize;
 
-	QVector< UnsignedByteArray > m_qvBufferedFrames;
-	QVector< int > m_qvBufferedFrameIndices;
+    QVector< UnsignedByteArray > m_qvBufferedFrames;
+    QVector< int > m_qvBufferedFrameIndices;
 
-	QSemaphore m_nSlotsFree; // # slots available for the producer to write to
-	QSemaphore m_nSlotsFilled; // # slots written to by producer and not yet read by consumer
+    QSemaphore m_nSlotsFree; // # slots available for the producer to write to
+    QSemaphore m_nSlotsFilled; // # slots written to by producer and not yet read by consumer
 
-	uint m_uiHeadIndex; // where to read from
-	uint m_uiTailIndex; // where to write to
+    uint m_uiHeadIndex; // where to read from
+    uint m_uiTailIndex; // where to write to
 
-	Reference< QMutex > m_rSeekMutex;
+    Reference< QMutex > m_rSeekMutex;
 
-	volatile bool m_bRunning;
+    volatile bool m_bRunning;
 };
 
 #endif // Q_DECODERTHREAD_H
