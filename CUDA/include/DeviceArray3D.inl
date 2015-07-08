@@ -244,10 +244,10 @@ T DeviceArray3D< T >::get( int x, int y, int z ) const
 {
     T output;
 
-    const ubyte* sourcePointer = reinterpret_cast< const ubyte* >( m_pitchedPointer.ptr );
-    const ubyte* slicePointer = sourcePointer + z * slicePitch();
-    const ubyte* rowPointer = slicePointer + y * rowPitch();
-    const ubyte* elementPointer = rowPointer + x * sizeof( T );
+    const uint8_t* sourcePointer = reinterpret_cast< const uint8_t* >( m_pitchedPointer.ptr );
+    const uint8_t* slicePointer = sourcePointer + z * slicePitch();
+    const uint8_t* rowPointer = slicePointer + y * rowPitch();
+    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
 
@@ -275,10 +275,10 @@ T DeviceArray3D< T >::operator [] ( const int3& subscript ) const
 template< typename T >
 void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
 {
-    const ubyte* destinationPointer = reinterpret_cast< const ubyte* >( m_pitchedPointer.ptr );
-    const ubyte* slicePointer = destinationPointer + z * slicePitch();
-    const ubyte* rowPointer = slicePointer + y * rowPitch();
-    const ubyte* elementPointer = rowPointer + x * sizeof( T );
+    const uint8_t* destinationPointer = reinterpret_cast< const uint8_t* >( m_pitchedPointer.ptr );
+    const uint8_t* slicePointer = destinationPointer + z * slicePitch();
+    const uint8_t* rowPointer = slicePointer + y * rowPitch();
+    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
@@ -345,7 +345,7 @@ void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
         return;
     }
 
-    dst.resize( width(), height(), depth() );
+    dst.resize( { width(), height(), depth() } );
 
     cudaMemcpy3DParms params;
 

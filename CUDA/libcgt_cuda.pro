@@ -3,7 +3,7 @@ CONFIG += qt thread debug_and_release staticlib
 
 DESTDIR = "../lib"
 
-INCLUDEPATH += $(CUDA_INC_PATH)
+INCLUDEPATH += $(CUDA_PATH)/include
 INCLUDEPATH += $(NVCUDASAMPLES_ROOT)/common/inc
 INCLUDEPATH += "./include"
 INCLUDEPATH += "../core/include"

@@ -21,7 +21,7 @@ struct KernelPool
         int elementSizeBytes,
 
         KernelQueue< int > freeList,
-        KernelVector< ubyte > backingStore
+        KernelVector< uint8_t > backingStore
     );
 
     // allocates an element and gives you back an index
@@ -45,7 +45,7 @@ struct KernelPool
     int m_elementSizeBytes;
 
     KernelQueue< int > m_freeList;
-    KernelVector< ubyte > m_backingStore;
+    KernelVector< uint8_t > m_backingStore;
 };
 
 __inline__ __host__ __device__
@@ -61,7 +61,7 @@ KernelPool::KernelPool
     int elementSizeBytes,
 
     KernelQueue< int > freeList,
-    KernelVector< ubyte > backingStore
+    KernelVector< uint8_t > backingStore
 ) :
 
     m_capacity( capacity ),
@@ -98,7 +98,7 @@ template< typename T >
 __inline__ __device__
 T* KernelPool::getElement( int index )
 {
-    ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
+    uint8_t* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
     return reinterpret_cast< T* >( pElementStart );
 }
 
@@ -141,7 +141,7 @@ public:
 
     // get an element from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    std::vector< ubyte > getElement( int index ) const;
+    std::vector< uint8_t > getElement( int index ) const;
 
     KernelPool kernelPool();
 
@@ -157,5 +157,5 @@ public:
     DeviceQueue< int > md_freeList;
 
     // backing store of capacity * elementSizeBytes bytes
-    DeviceVector< ubyte > md_backingStore;
+    DeviceVector< uint8_t > md_backingStore;
 };

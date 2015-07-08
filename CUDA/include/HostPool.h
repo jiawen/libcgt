@@ -64,13 +64,13 @@ public:
     std::vector< int > m_freeList;
 
     // backing store of capacity * elementSizeBytes bytes
-    std::vector< ubyte > m_backingStore;
+    std::vector< uint8_t > m_backingStore;
 };
 
 template< typename T >
 __inline__ __host__
 T* HostPool::getElement( int index )
 {
-    ubyte* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
+    uint8_t* pElementStart = &( m_backingStore[ index * m_elementSizeBytes ] );
     return reinterpret_cast< T* >( pElementStart );
 }

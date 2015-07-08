@@ -260,18 +260,18 @@ namespace libcgt
         // a byte in [0,255]
         // the behavior for f outside [0,1] is undefined
         __inline__ __host__ __device__
-        ubyte floatToUByteNormalized( float f );
+        uint8_t floatToUByteNormalized( float f );
 
         // converts a byte in [0,255] to
         // a float in [0,1]
         __inline__ __host__ __device__
-        float unsignedByteToFloatNormalized( ubyte b );
+        float unsignedByteToFloatNormalized( uint8_t b );
 
         // converts a float in [-1,1] to
         // a byte in [-127,127]
         // the behavior for f outside [-1,1] is undefined
         __inline__ __host__ __device__
-        sbyte floatToByteSignedNormalized( float f );
+        int8_t floatToByteSignedNormalized( float f );
 
         // ----- float3 <--> byte3 -----
 
@@ -298,7 +298,7 @@ namespace libcgt
         // ----- float3 --> byte4 -----
 
         __inline__ __host__ __device__
-        uchar4 float3ToUnsignedByte4Normalized( float3 rgb, ubyte a = 255 );
+        uchar4 float3ToUnsignedByte4Normalized( float3 rgb, uint8_t a = 255 );
 
         // ----- byte4 --> float3 -----
 
@@ -367,7 +367,7 @@ namespace libcgt
         // bits [15:B] (0-based indexing) are set to 0
         template< unsigned B >
         __inline__ __host__ __device__
-        ushort signExtend( sbyte x );
+        ushort signExtend( int8_t x );
 
         // converts a B bit quantity, stored in a short
         // to a fully sign extended int

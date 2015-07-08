@@ -7,11 +7,13 @@
 
 #include <QThread>
 
-#include <imageproc/Image4ub.h>
+#include <common/BasicTypes.h>
 #include <common/Array2D.h>
 
 #include "QKinect.h"
 
+// TODO: Get rid of QThread, use std::thread.
+// TODO: Get rid of std::shared_ptr: use std::unique_ptr.
 class QKinectThread : public QThread
 {
     Q_OBJECT
@@ -30,8 +32,8 @@ public:
 signals:
 
     void skeletonFrameReady( const NUI_SKELETON_FRAME& skeletonFrame );
-    void colorFrameReady( const Image4ub& rgba );
-    void depthFrameReady( const Array2D< ushort >& depth );
+    void colorFrameReady( const Array2D< uint8x4 >& bgra );
+    void depthFrameReady( const Array2D< uint16_t >& depth );
 
 protected:
 

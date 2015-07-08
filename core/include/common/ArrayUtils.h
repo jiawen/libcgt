@@ -99,12 +99,22 @@ public:
     template< typename S, typename T >
     static Array1DView< S > componentView( Array1DView< T > view, int componentOffsetBytes );
 
+    // Given an existing Array2DView< T >, returns a Array2DView< S > with the
+    // same stride, but with elements of type S where S is a component of T,
+    // and is at offset "componentOffsetBytes" within T.
+    template< typename S, typename T >
+    static Array2DView< S > componentView( Array2DView< T > view, int componentOffsetBytes );
+
     // Copy between two Array1DViews, with potentially varying stride.
     // If both are packed(), uses memcpy to do a single fast copy.
     // Otherwise, iterates the copy one element at a time.
     // Returns false if the dimensions don't match, or if either is null.
     template< typename T >
     static bool copy( Array1DView< const T > src, Array1DView< T > dst );
+
+    // TODO: HACK how to do cast from Array2DView< T > to Array2DView< const T >
+    template< typename T >
+    static bool copy2( Array2DView< T > src, Array2DView< T > dst );
 
     // Copy between two Array2DViews, with potentially varying strides.
     // If both are packed(), uses memcpy to do a single fast copy.

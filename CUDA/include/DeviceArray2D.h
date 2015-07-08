@@ -1,14 +1,15 @@
 #pragma once
 
 #include <cuda_runtime.h>
+#include <helper_functions.h>
 #include <helper_cuda.h>
 
 #include <common/Array2D.h>
 
 #include "KernelArray2D.h"
 
-// Basic 2D array interface around CUDA global memory
-// Wraps around cudaMallocPitch() (linear allocation with pitch)
+// Basic 2D array interface around CUDA global memory.
+// Wraps around cudaMallocPitch() (linear allocation with pitch).
 template< typename T >
 class DeviceArray2D
 {
@@ -68,9 +69,9 @@ public:
     // this is automatically resized
     void copyFromDevice( const DeviceArray2D< T >& src );
 
-    // copy from host array src to this
-    // this is automatically resized
-    void copyFromHost( const Array2D< T >& src );
+    // Copy from host array src to this.
+    // This is automatically resized.
+    bool copyFromHost( Array2DView< const T > src );
 
     // copy from this to host array dst
     // dst is automatically resized

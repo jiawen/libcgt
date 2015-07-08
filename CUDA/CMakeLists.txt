@@ -1,40 +1,30 @@
-cmake_minimum_required( VERSION 2.8 )
-project( libcgt_cuda )
-
-# Debug mode
-set( CMAKE_DEBUG_POSTFIX d )
-
-# Release mode
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_SECURE_SCL=0" )
+cmake_minimum_required( VERSION 3.1 )
+project( cgt_cuda )
 
 # CUDA
 find_package( CUDA REQUIRED )
+# Apparently, leaving this on interferes with parallel builds.
+set( CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF )
 
 # Add include to the set of compiler include paths
 include_directories( ../core/include )
 include_directories( include )
-include_directories( $ENV{NVCUDASAMPLES_ROOT}/common/inc )
+
+if( DEFINED ENV{NVCUDASAMPLES_ROOT} )
+    include_directories( $ENV{NVCUDASAMPLES_ROOT}/common/inc )
+else()
+    message( "Environment variable NVCUDASAMPLES_ROOT must be set." )
+    return()
+endif()
 
 file( GLOB_RECURSE HEADERS include/*.h include/*.inl include/*.cuh )
 file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
 file( GLOB_RECURSE SOURCES_CU src/*.cu )
 
-set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30 )
-
-#if( MSVC11 )
-#    set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--cl-version 2010 )
-#endif()
+set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_52,code=sm_52 )
 
 set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
-add_definitions( -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DUNICODE -D_UNICODE )
-
-# if( WIN32 )
-#     option( WIN32_USE_MP "Set to ON to use multithreaded builds." ON )
-#     if( WIN32_USE_MP )
-#         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
-#     endif( WIN32_USE_MP )
-# endif( WIN32 )
-
-cuda_add_library( libcgt_cuda ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
+cuda_add_library( cgt_cuda ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
+#file( COPY ${HEADERS} DESTINATION ${OUTPUT_INCLUDE_DIRECTORY} )

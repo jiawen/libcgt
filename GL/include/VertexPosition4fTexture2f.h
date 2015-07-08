@@ -15,8 +15,8 @@ struct VertexPosition4fTexture2f
     // The first is usually 0 but doesn't have to be!
     static const int s_relativeOffsets[ 2 ];
 
-    // TODO: type for each attribute: UNSIGNED_BYTE, INT, FLOAT, etc
-    // TODO: bool normalized for each attribute
+    // TODO: add a "enum type" for each attribute: UNSIGNED_BYTE, INT, FLOAT, etc
+    // TODO: add a "bool normalized" for each attribute
     //   GL uses numComponents and a separate format: i.e. 4, float
     //   DX uses a single DXGI_FORMAT
 

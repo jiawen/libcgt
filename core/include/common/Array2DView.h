@@ -56,7 +56,7 @@ public:
     int rowStrideBytes() const;
 
     // { elementStride, rowStride } in bytes.
-    Vector2i strides() const;
+    Vector2i stride() const;
 
     // Returns true if there is no space between adjacent elements *within* a row.
     bool elementsArePacked() const;
@@ -72,6 +72,8 @@ public:
     // Conversion operator to Array2DView< const T >
     operator Array2DView< const T >() const;
 
+    Array2DView< const T > constView() const;
+
     // Extract row y from this Array2DView as a Array1DView.
     Array1DView< T > row( int y );
 
@@ -81,7 +83,7 @@ public:
 private:
 
     Vector2i m_size;
-    Vector2i m_strides;
+    Vector2i m_stride;
     typename WrapConstPointerT< T, uint8_t >::pointer m_pPointer;
 };
 

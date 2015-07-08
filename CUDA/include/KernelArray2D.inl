@@ -41,7 +41,7 @@ template< typename T >
 __inline__  __device__
 const T* KernelArray2D< T >::rowPointer( int y ) const
 {
-    const ubyte* p = reinterpret_cast< const ubyte* >( md_pPitchedPointer );
+    const uint8_t* p = reinterpret_cast< const uint8_t* >( md_pPitchedPointer );
 
     // TODO: switch pointer arithmetic to array indexing?
     return reinterpret_cast< const T* >( p + y * m_pitch );
@@ -51,7 +51,7 @@ template< typename T >
 __inline__  __device__
 T* KernelArray2D< T >::rowPointer( int y )
 {
-    ubyte* p = reinterpret_cast< ubyte* >( md_pPitchedPointer );
+    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
 
     // TODO: switch pointer arithmetic to array indexing?
     return reinterpret_cast< T* >( p + y * m_pitch );

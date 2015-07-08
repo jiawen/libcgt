@@ -64,7 +64,7 @@ public:
     int sliceStrideBytes() const;
 
     // { elementStride, rowStride, sliceStride } in bytes.
-    Vector3i strides() const;
+    Vector3i stride() const;
 
     // Returns true if there is no space between adjacent elements *within* a row
     bool elementsArePacked() const;

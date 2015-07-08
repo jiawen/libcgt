@@ -501,20 +501,20 @@ uint libcgt::cuda::modPowerOfTwoWithPower( uint x, uint p )
     return modPowerOfTwo( x, 1 << p );
 }
 
-ubyte libcgt::cuda::floatToUByteNormalized( float f )
+uint8_t libcgt::cuda::floatToUByteNormalized( float f )
 {
-    return static_cast< ubyte >( 255 * f );
+    return static_cast< uint8_t >( 255 * f );
 }
 
-float libcgt::cuda::unsignedByteToFloatNormalized( ubyte b )
+float libcgt::cuda::unsignedByteToFloatNormalized( uint8_t b )
 {
     const float rcp = 1.f / 255.f;
     return rcp * b;
 }
 
-sbyte libcgt::cuda::floatToByteSignedNormalized( float f )
+int8_t libcgt::cuda::floatToByteSignedNormalized( float f )
 {
-    return static_cast< sbyte >( floor( f * 127 + 0.5f ) );
+    return static_cast< int8_t >( floor( f * 127 + 0.5f ) );
 }
 
 float3 libcgt::cuda::signedByte3ToFloat3( char3 sb )
@@ -542,13 +542,13 @@ float4 libcgt::cuda::signedByte4ToFloat4( char4 sb )
     );
 }
 
-uchar4 libcgt::cuda::float3ToUnsignedByte4Normalized( float3 rgb, ubyte a )
+uchar4 libcgt::cuda::float3ToUnsignedByte4Normalized( float3 rgb, uint8_t a )
 {
     return make_uchar4
     (
-        static_cast< ubyte >( 255 * rgb.x ),
-        static_cast< ubyte >( 255 * rgb.y ),
-        static_cast< ubyte >( 255 * rgb.z ),
+        static_cast< uint8_t >( 255 * rgb.x ),
+        static_cast< uint8_t >( 255 * rgb.y ),
+        static_cast< uint8_t >( 255 * rgb.z ),
         a
     );
 }
@@ -559,10 +559,10 @@ uchar4 libcgt::cuda::float4ToUnignedByte4( float4 f )
 
     return make_uchar4
     (
-        static_cast< ubyte >( s * f.x ),
-        static_cast< ubyte >( s * f.y ),
-        static_cast< ubyte >( s * f.z ),
-        static_cast< ubyte >( s * f.w )
+        static_cast< uint8_t >( s * f.x ),
+        static_cast< uint8_t >( s * f.y ),
+        static_cast< uint8_t >( s * f.z ),
+        static_cast< uint8_t >( s * f.w )
     );
 }
 
@@ -572,10 +572,10 @@ char4 libcgt::cuda::float4ToSignedByte4( float4 f )
 
     return make_char4
     (
-        static_cast< sbyte >( s * f.x ),
-        static_cast< sbyte >( s * f.y ),
-        static_cast< sbyte >( s * f.z ),
-        static_cast< sbyte >( s * f.w )
+        static_cast< int8_t >( s * f.x ),
+        static_cast< int8_t >( s * f.y ),
+        static_cast< int8_t >( s * f.z ),
+        static_cast< int8_t >( s * f.w )
     );
 }
 
@@ -751,7 +751,7 @@ int libcgt::cuda::roundUpToNearestMultipleOf256( int x )
 }
 
 template< unsigned B >
-ushort libcgt::cuda::signExtend( sbyte x )
+ushort libcgt::cuda::signExtend( int8_t x )
 {
     short y = x;
     y = y & ( ( 1u << B ) - 1 ); // clear bits above B

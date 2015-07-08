@@ -8,8 +8,8 @@
 
 #include "KernelArray3D.h"
 
-// Basic 3D array interface around CUDA global memory
-// Wraps around cudaMalloc3D() (linear allocation with pitch)
+// Basic 3D array interface around CUDA global memory.
+// Wraps around cudaMalloc3D() (linear allocation with pitch).
 template< typename T >
 class DeviceArray3D
 {

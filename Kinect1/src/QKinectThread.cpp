@@ -1,9 +1,10 @@
 #include "QKinectThread.h"
 
+#include <chrono>
+
 #include <QMetaType>
 #include <QEventLoop>
 
-#include <time/Clock.h>
 #include <math/Arithmetic.h>
 #include <vector>
 
@@ -18,8 +19,8 @@ QKinectThread::QKinectThread( std::shared_ptr< QKinect > pKinect, int pollingInt
 
 {
     qRegisterMetaType< NUI_SKELETON_FRAME >( "NUI_SKELETON_FRAME" );
-    qRegisterMetaType< Image4ub >( "Image4ub" );
-    qRegisterMetaType< Array2D< ushort > >( "Array2D< ushort >" );
+    qRegisterMetaType< Array2D< uint8x3 > >( "Array2D< uint8x3 >" );
+    qRegisterMetaType< Array2D< uint16_t > >( "Array2D< uint16_t >" );
 }
 
 int QKinectThread::pollingIntervalMS() const
@@ -46,49 +47,48 @@ void QKinectThread::run()
 {
     m_running = true;
     QEventLoop eventLoop;
-    Clock clock;
-    int64 tStart = clock.getCounterValue();
-    int64 t0 = tStart;
+    auto tStart = std::chrono::high_resolution_clock::now();
+    auto t0 = tStart;
 
     NUI_SKELETON_FRAME skeletonFrame;
     // TODO: pass in resolutions to QKinect on initialization
     // query it to get the sizes
-    Image4ub rgba( 640, 480 );
-    Array2D< ushort > depth( 640, 480 );
-    Array2D< ushort > playerIndex( 640, 480 );
+    Array2D< uint8x4 > bgra( { 640, 480 } );
+    Array2D< ushort > depth( { 640, 480 } );
+    Array2D< ushort > playerIndex( { 640, 480 } );
 
     while( m_running )
     {
-        QKinect::QKinectEvent e = m_pKinect->poll( skeletonFrame, rgba, depth, playerIndex, m_pollingIntervalMS );
-        int64 t1 = clock.getCounterValue();
+        QKinect::Event e = m_pKinect->poll( skeletonFrame, bgra, depth, playerIndex, m_pollingIntervalMS );
+        auto t1 = std::chrono::high_resolution_clock::now();
 
         switch( e )
         {
-        case QKinect::QKinect_Event_Skeleton:
+        case QKinect::Event::SKELETON:
             {
                 emit skeletonFrameReady( skeletonFrame );
                 break;
             }
-        case QKinect::QKinect_Event_RGB:
+        case QKinect::Event::COLOR:
             {
-                emit colorFrameReady( rgba );
+                emit colorFrameReady( bgra );
                 break;
             }
-        case QKinect::QKinect_Event_Depth:
+        case QKinect::Event::DEPTH:
             {
                 emit depthFrameReady( depth );
                 break;
             }
         }
 
-        float dt = clock.convertIntervalToMillis( t1 - t0 );
+        int dtMS = std::chrono::duration_cast< std::chrono::milliseconds >( t1 - t0 ).count();
         t0 = t1;
 
         // printf( "dt = %f ms\n", dt );
 
-        if( dt < m_pollingIntervalMS )
+        if( dtMS < m_pollingIntervalMS )
         {
-            int sleepInterval = Arithmetic::roundToInt( m_pollingIntervalMS - dt );
+            int sleepInterval = m_pollingIntervalMS - dtMS;
             //printf( "sleeping for %d milliseconds\n", sleepInterval );
             msleep( sleepInterval );
         }

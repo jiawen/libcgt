@@ -27,16 +27,19 @@
 #include <sapi.h>
 #include <sphelper.h>
 
+#include <cstdint>
 #include <map>
 #include <vector>
 
 #include <common/Array2D.h>
-#include <imageproc/Image4ub.h>
+#include <common/BasicTypes.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
 #include "KinectStream.h"
 
+// TODO: Switch enums into enum classes.
+// TODO: Consider getting rid of a copy.
 class QKinect : public QObject
 {
     Q_OBJECT
@@ -62,7 +65,7 @@ public:
     (
         int deviceIndex = 0,
         DWORD nuiFlags = NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,
-        NUI_IMAGE_RESOLUTION rgbResolution = NUI_IMAGE_RESOLUTION_640x480,
+        NUI_IMAGE_RESOLUTION colorResolution = NUI_IMAGE_RESOLUTION_640x480,
         NUI_IMAGE_RESOLUTION depthResolution = NUI_IMAGE_RESOLUTION_640x480,
         bool useExtendedDepth = true,
         QVector< QString > recognizedPhrases = QVector< QString >()
@@ -76,37 +79,37 @@ public:
     // returns the inverse of jointIndicesForBones
     static const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& boneIndicesForJoints();
 
-    enum QKinectEvent
+    enum class Event
     {
-        QKinect_Event_Failed,
-        QKinect_Event_Timeout,
-        QKinect_Event_Skeleton,
-        QKinect_Event_RGB,
-        QKinect_Event_Depth
+        FAILED,
+        TIMEOUT,
+        SKELETON,
+        COLOR,
+        DEPTH
     };
 
-    enum QKinectBone
+    enum class Bone
     {
-        QKINECT_LOWER_SPINE = 0,
-        QKINECT_UPPER_SPINE,
-        QKINECT_NECK,
-        QKINECT_LEFT_CLAVICLE,
-        QKINECT_LEFT_UPPER_ARM,
-        QKINECT_LEFT_LOWER_ARM,
-        QKINECT_LEFT_METACARPAL,
-        QKINECT_RIGHT_CLAVICLE,
-        QKINECT_RIGHT_UPPER_ARM,
-        QKINECT_RIGHT_LOWER_ARM,
-        QKINECT_RIGHT_METACARPAL,
-        QKINECT_LEFT_HIP,
-        QKINECT_LEFT_FEMUR,
-        QKINECT_LEFT_LOWER_LEG,
-        QKINECT_LEFT_METATARSUS,
-        QKINECT_RIGHT_HIP,
-        QKINECT_RIGHT_FEMUR,
-        QKINECT_RIGHT_LOWER_LEG,
-        QKINECT_RIGHT_METATARSUS,
-        QKINECT_NUM_BONES
+        LOWER_SPINE = 0,
+        UPPER_SPINE,
+        NECK,
+        LEFT_CLAVICLE,
+        LEFT_UPPER_ARM,
+        LEFT_LOWER_ARM,
+        LEFT_METACARPAL,
+        RIGHT_CLAVICLE,
+        RIGHT_UPPER_ARM,
+        RIGHT_LOWER_ARM,
+        RIGHT_METACARPAL,
+        LEFT_HIP,
+        LEFT_FEMUR,
+        LEFT_LOWER_LEG,
+        LEFT_METATARSUS,
+        RIGHT_HIP,
+        RIGHT_FEMUR,
+        RIGHT_LOWER_LEG,
+        RIGHT_METATARSUS,
+        NUM_BONES
     };
 
     virtual ~QKinect();
@@ -136,19 +139,28 @@ public:
 
 public slots:
 
-    // poll the Kinect for data and return the results in the output variables
-    // may wait up until waitIntervalMilliseconds before returning
-    // setting waitIntervalMilliseconds to 0 means check and if data is ready, return immediately
-    // otherwise return nothing
-    //
-    // returns an enumerated event indicating the result
-    QKinectEvent poll( NUI_SKELETON_FRAME& skeleton, Image4ub& rgba, Array2D< ushort >& depth, Array2D< ushort >& playerIndex,
+    // Poll the Kinect for data and writes the results into one of the output
+    // variables, returning which output variable (if any) was written.
+    // It waits up to waitIntervalMilliseconds for data to be
+    // available. If waitIntervalMilliseconds is 0, it will return immediately,
+    // with the data if it's available. Else, timeout.
+    QKinect::Event poll( NUI_SKELETON_FRAME& skeleton,
+        Array2DView< uint8x4 > bgra,
+        Array2DView< uint16_t > depth,
+        Array2DView< uint16_t > playerIndex,
         int waitIntervalMilliseconds = 0 );
 
-    // poll the Kinect for depth data only and return the result in the depth output variable
-    // may wait up until waitIntervalMilliseconds before returning
-    // setting waitIntervalMilliseconds to 0 means check and if data is ready, return immediately
-    // otherwise return nothing
+    // Poll the Kinect for color data and if data is available, write it to
+    // rgba. It waits up to waitIntervalMilliseconds for data to be
+    // available. If waitIntervalMilliseconds is 0, it will return immediately,
+    // with the data if it's available. Else, timeout.
+    QKinect::Event QKinect::pollColor( Array2DView< uint8x4 > bgra,
+        int waitIntervalMilliseconds = 0 );
+
+    // Poll the Kinect for depth data and if data is available, write it to
+    // rgba. It waits up to waitIntervalMilliseconds for data to be
+    // available. If waitIntervalMilliseconds is 0, it will return immediately,
+    // with the data if it's available. Else, timeout.
     //
     // on output:
     //
@@ -167,7 +179,7 @@ public slots:
     //   else
     //     each pixel of depth's bits 2:0 is set to 0
     //
-    QKinectEvent pollDepth( Array2D< ushort >& depth, Array2D< ushort >& playerIndex, int waitIntervalMilliseconds = 0 );
+    QKinect::Event pollDepth( Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex, int waitIntervalMilliseconds = 0 );
 
     // poll the Kinect for a voice recognition command and return the results in the output variables
     // returns false is nothing was recognized
@@ -185,44 +197,51 @@ private:
     HRESULT initialize
     (
         DWORD nuiFlags,
-        NUI_IMAGE_RESOLUTION rgbResolution,
+        NUI_IMAGE_RESOLUTION colorResolution,
         NUI_IMAGE_RESOLUTION depthResolution,
         bool usingExtendedDepth,
         QVector< QString > recognizedPhrases
     );
-        HRESULT initializeDepthStream( bool trackPlayerIndex, NUI_IMAGE_RESOLUTION depthResolution, bool usingExtendedDepth );
-
-        HRESULT initializeRGBStream();
+        HRESULT initializeColorStream( NUI_IMAGE_RESOLUTION resolution );
+        HRESULT initializeDepthStream( bool trackPlayerIndex,
+            NUI_IMAGE_RESOLUTION resolution, bool usingExtendedDepth );
         HRESULT initializeSkeletonTracking();
 
     HRESULT initializeSpeechRecognition( QVector< QString > recognizedPhrases );
         HRESULT initializeAudio();
         HRESULT initializePhrases( QVector< QString > recognizedPhrases );
 
-    // convert data into recognizable formats
+    // Convert data into recognizable formats.
     bool handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton );
-    bool handleGetColorFrame( Image4ub& rgba ); // returns false on an invalid frame from USB
-    bool handleGetDepthFrame( Array2D< ushort >& depth, Array2D< ushort >& playerIndex ); // returns false on an invalid frame from USB
+
+    // Returns false on an invalid frame from USB.
+    bool handleGetColorFrame( Array2DView< uint8x4 > bgra );
+
+    // Returns false on an invalid frame from USB.
+    bool handleGetDepthFrame( Array2DView< uint16_t > depth,
+        Array2DView< uint16_t > playerIndex );
 
     int m_deviceIndex;
     INuiSensor* m_pSensor;
     bool m_usingColor;
     bool m_usingDepth;
     bool m_usingPlayerIndex;
-    NUI_IMAGE_RESOLUTION m_rgbResolution;
+    NUI_IMAGE_RESOLUTION m_colorResolution;
+    Vector2i m_colorResolutionPixels;
     NUI_IMAGE_RESOLUTION m_depthResolution;
+    Vector2i m_depthResolutionPixels;
     bool m_usingExtendedDepth;
     bool m_usingSkeleton;
     bool m_usingAudio;
 
     std::vector< HANDLE > m_eventHandles;
     HANDLE m_hNextSkeletonEvent;
-    HANDLE m_hNextRGBFrameEvent;
+    HANDLE m_hNextColorFrameEvent;
     HANDLE m_hNextDepthFrameEvent;
 
-    std::vector< QKinectEvent > m_eventEnums;
+    std::vector< QKinect::Event > m_eventEnums;
 
-    HANDLE m_hRGBStreamHandle;
+    HANDLE m_hColorStreamHandle;
     HANDLE m_hDepthStreamHandle;
 
     // properties

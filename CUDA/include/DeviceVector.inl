@@ -227,14 +227,14 @@ bool DeviceVector< T >::copyToHost( Array1DView< T >& dst, int srcOffset ) const
     }
     if( dst.pointer() == nullptr ||
         !( dst.packed() ) ||
-        length() - srcOffset < dst.length() )
+        length() - srcOffset < dst.size() )
     {
         return false;
     }
 
     T* dstPointer = dst.pointer();
     T* srcPointer = m_devicePointer + srcOffset;
-    size_t countInBytes = dst.length() * sizeof( T );
+    size_t countInBytes = dst.size() * sizeof(T);
 
     cudaError_t err = cudaMemcpy( dstPointer, srcPointer, countInBytes, cudaMemcpyDeviceToHost );
     return( err == cudaSuccess );

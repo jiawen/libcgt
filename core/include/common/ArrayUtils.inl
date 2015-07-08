@@ -53,6 +53,7 @@ bool ArrayUtils::clear( Array2DView< T > view )
     if( view.packed() )
     {
         memset( view, 0, view.rowStrideBytes() * view.height() );
+        return true;
     }
     else if( view.elementsArePacked() )
     {
@@ -60,7 +61,9 @@ bool ArrayUtils::clear( Array2DView< T > view )
         {
             memset( view.rowPointer( y ), 0, view.elementStrideBytes() * view.width() );
         }
+        return true;
     }
+    return false;
 }
 
 // static
@@ -115,7 +118,7 @@ Array2DView< T > ArrayUtils::flippedLeftRightView( Array2DView< T > view )
 {
     return Array2DView< T >
     (
-        view.elementPointer( view.length() - 1, 0 ),
+        view.elementPointer( { view.width() - 1, 0 } ),
         view.size(),
         { -view.elementStrideBytes(), view.rowStrideBytes() }
     );
@@ -167,7 +170,17 @@ Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Box3i& bo
 template< typename S, typename T >
 Array1DView< S > ArrayUtils::componentView( Array1DView< T > view, int componentOffsetBytes )
 {
+    // TODO: wrap const pointer correctly
     return Array1DView< S >( reinterpret_cast< uint8_t* >( view.pointer() ) + componentOffsetBytes,
+        view.size(), view.stride() );
+}
+
+// static
+template< typename S, typename T >
+Array2DView< S > ArrayUtils::componentView( Array2DView< T > view, int componentOffsetBytes )
+{
+    // TODO: wrap const pointer correctly
+    return Array2DView< S >( reinterpret_cast< uint8_t* >( view.pointer() ) + componentOffsetBytes,
         view.size(), view.stride() );
 }
 
@@ -202,6 +215,47 @@ bool ArrayUtils::copy( Array1DView< const T > src, Array1DView< T > dst )
     return true;
 }
 
+// static
+template< typename T >
+bool ArrayUtils::copy2( Array2DView< T > src, Array2DView< T > dst )
+{
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
+
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
+
+    // Both views are packed, do a single memcpy.
+    if( src.packed() && dst.packed() )
+    {
+        memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
+    }
+    // Elements are packed within each row, do a memcpy per row.
+    else if( src.elementsArePacked() && dst.elementsArePacked() )
+    {
+        for( int y = 0; y < src.height(); ++y )
+        {
+            memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.elementStrideBytes() );
+        }
+    }
+    // Otherwise, iterate.
+    else
+    {
+        for( int y = 0; y < src.height(); ++y )
+        {
+            for( int x = 0; x < src.width(); ++x )
+            {
+                dst[ { x, y } ] = src[ { x, y } ];
+            }
+        }
+    }
+
+    return true;
+}
 
 // static
 template< typename T >

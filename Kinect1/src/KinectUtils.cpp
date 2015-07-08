@@ -1,6 +1,5 @@
 #include "KinectUtils.h"
 
-#include <imageproc/Image1f.h>
 #include <geometry/Plane3f.h>
 
 // static
@@ -35,8 +34,8 @@ Matrix4f KinectUtils::worldToKinect( const NUI_SKELETON_FRAME& frame )
 }
 
 // static
-void KinectUtils::rawDepthMapToMeters( const Array2D< ushort >& rawDepth,
-    Image1f& outputMeters, bool flipLeftRight, int rightShft )
+void KinectUtils::rawDepthMapToMeters( const Array2D< uint16_t >& rawDepth,
+    Array2DView< float > outputMeters, bool flipLeftRight, int rightShft )
 {
     int w = rawDepth.width();
     int h = rawDepth.height();
@@ -51,11 +50,34 @@ void KinectUtils::rawDepthMapToMeters( const Array2D< ushort >& rawDepth,
                 xx = w - x - 1;
             }
 
-            ushort d = rawDepth( x, y );
+            uint16_t d = rawDepth[ { x, y } ];
             d >>= rightShft;
 
             float z = 0.001f * d;
-            outputMeters.setPixel( xx, y, z );
+            outputMeters[ { xx, y } ] = z;
         }
+    }
+}
+
+// static
+Vector2i KinectUtils::toVector2i( NUI_IMAGE_RESOLUTION resolution )
+{
+    switch( resolution )
+    {
+    case NUI_IMAGE_RESOLUTION_80x60:
+        return{ 80, 60 };
+        break;
+    case NUI_IMAGE_RESOLUTION_320x240:
+        return{ 320, 240 };
+        break;
+    case NUI_IMAGE_RESOLUTION_640x480:
+        return{ 640, 480 };
+        break;
+    case NUI_IMAGE_RESOLUTION_1280x960:
+        return{ 1280, 960 };
+        break;
+    default:
+        // Invalid resolution.
+        return{ 0, 0 };
     }
 }

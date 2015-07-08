@@ -2,9 +2,10 @@
 
 #include <common/BasicTypes.h>
 #include <cmath>
+#include <cstdint>
 
 __inline__ __host__ __device__
-uchar4 make_uchar4( ubyte s )
+uchar4 make_uchar4( uint8_t s )
 {
     return make_uchar4( s, s, s, s );
 }
@@ -54,15 +55,15 @@ float3 xyz( const float4& v )
 }
 
 __inline__ __host__ __device__
-sbyte getComponent( const char3& v, int component )
+int8_t getComponent( const char3& v, int component )
 {
-    return reinterpret_cast< const sbyte* >( &v )[ component ];
+    return reinterpret_cast< const int8_t* >(&v)[component];
 }
 
 __inline__ __host__ __device__
-void setComponent( char3& v, int component, sbyte value )
+void setComponent( char3& v, int component, int8_t value )
 {
-    reinterpret_cast< sbyte* >( &v )[ component ] = value;
+    reinterpret_cast< int8_t* >( &v )[ component ] = value;
 }
 
 __inline__ __host__ __device__

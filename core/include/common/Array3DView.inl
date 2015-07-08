@@ -148,6 +148,12 @@ int Array3DView< T >::sliceStrideBytes() const
 }
 
 template< typename T >
+Vector3i Array3DView< T >::stride() const
+{
+    return m_strides;
+}
+
+template< typename T >
 bool Array3DView< T >::elementsArePacked() const
 {
     return elementStrideBytes() == sizeof( T );

@@ -1,11 +1,25 @@
 This is "libcgt", my library of computer graphics tools, which I hope you will find useful.
 
-It has been tested fairly extensively on Windows 7 x64 only.  I now target x64 exclusively.
+It has been tested fairly extensively on Windows 8.1 x64 only. I now target x64 exclusively.
+
+Build system:
+libcgt uses CMake 3.1.
+qmake is now in legacy mode and not really tested. It will be removed soon.
+
+On Windows, be sure to set the CMAKE_PREFIX_PATH environment variable to
+set "base paths" for external libraries. Some tips:
+
+- GLEW:
+set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;c:\work\libraries\glew-1.12.0;c:\work\libraries\glew-1.12.0\lib\Release\x64
 
 Dependencies:
 
 core:
-Qt 4.x, tested with Qt 4.7.2
+Qt >= 5.4, tested with Qt 5.4.
+
+GL:
+GPU drivers with OpenGL >= 4.5.
+GLEW >= 1.12.0.
 
 CUDA:
 NVIDIA CUDA Toolkit 4.0

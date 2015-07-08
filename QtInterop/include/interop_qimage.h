@@ -11,12 +11,28 @@ namespace qtinterop
 {
 namespace qimage
 {
+    // View the raw bytes of a QImage as an Array2DView< uint8x3 >.
+    // QImage::Format_RGB32 corresponds to a uint8x3 as BGRX,
+    // where X is ignored, because Qt considers pixels as integers:
+    // 0xFFRRGGBB.
+    //
+    // Returns a null Array2DView if the format is not Format_RGB32.
+    Array2DView< uint8x3 > viewRGB32AsBGR( QImage& q );
+
+    // View the raw bytes of a QImage as an Array2DView< uint8x4 >.
+    // QImage::Format_RGB32 corresponds to a uint8x3 as BGRX,
+    // where X is ignored, because Qt considers pixels as integers:
+    // 0xFFRRGGBB.
+    //
+    // Returns a null Array2DView if the format is not Format_RGB32.
+    Array2DView< uint8x4 > viewRGB32AsBGRX( QImage& q );
+
     // View the raw bytes of a QImage as an Array2DView< uint8x4 >.
     // QImage::Format_ARGB32 corresponds to a uint8x4 as BGRA
     // because Qt considers pixels as integers: 0xAARRGGBB.
     //
     // Returns a null Array2DView if the format is not Format_ARGB32.
-    Array2DView< uint8x4 > viewOfQImageARGB32( QImage& q );
+    Array2DView< uint8x4 > viewARGB32AsBGRA( QImage& q );
 
     // TODO: const view using const bits. Array2DView needs a wrapped const constructor.
 
@@ -32,8 +48,8 @@ namespace qimage
     // view's rows do *not* have to be packed.
     QImage wrapAsQImage( Array2DView< uint8x4 > view );
 
-    //
-    QImage wrapAsQImage( Array2DView< uint8_t > view );
+    // TODO: Implement this for Qt 5.5 which has gray8.
+    // QImage wrapAsQImage( Array2DView< uint8_t > view );
 }
 }
 }

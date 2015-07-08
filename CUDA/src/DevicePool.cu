@@ -81,13 +81,13 @@ void DevicePool::clear()
     md_freeList.setHeadAndTailAbsoluteIndices( 0, m_capacity );
 }
 
-std::vector< ubyte > DevicePool::getElement( int index ) const
+std::vector< uint8_t > DevicePool::getElement( int index ) const
 {
     // allocate memory for the output
-    std::vector< ubyte > output( elementSizeBytes() );
+    std::vector< uint8_t > output( elementSizeBytes() );
 
     // view it as a byte array
-    Array1DView< ubyte > view( output.data(), elementSizeBytes() );
+    Array1DView< uint8_t > view( output.data(), elementSizeBytes() );
 
     // copy it to the host
     md_backingStore.copyToHost( view, index * elementSizeBytes() );

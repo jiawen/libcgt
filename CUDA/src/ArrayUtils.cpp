@@ -2,6 +2,9 @@
 
 #include <common/ArrayUtils.h>
 
+// TODO: std::vector<int3> --> Array1DView<int3>
+// TODO: Array2D<float2> --> Array2DView<Vector2f>
+
 // static
 bool libcgt::cuda::ArrayUtils::saveTXT( const std::vector< int3 >& array, const char* filename )
 {
@@ -46,7 +49,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float2 >& array, const ch
         for( int x = 0; x < w; ++x )
         {
             int index = y * w + x;
-            float2 v = array( x, y );
+            float2 v = array[ { x, y } ];
             fprintf( fp, "[%d] (%d %d): %f, %f\n", index, x, y, v.x, v.y );
         }
     }
@@ -75,7 +78,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< float4 >& array, const ch
         for( int x = 0; x < w; ++x )
         {
             int index = y * array.width() + x;
-            float4 v = array( x, y );
+            float4 v = array[ { x, y } ];
             fprintf( fp, "[%d] (%d %d): %f, %f, %f, %f\n", index, x, y, v.x, v.y, v.z, v.w );
         }
     }
@@ -104,7 +107,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array2D< uchar4 >& array, const ch
         for( int x = 0; x < w; ++x )
         {
             int index = y * array.width() + x;
-            uchar4 v = array( x, y );
+            uchar4 v = array[ { x, y } ];
             fprintf( fp, "[%d] (%d %d): %d, %d, %d, %d\n", index, x, y, v.x, v.y, v.z, v.w );
         }
     }
@@ -147,7 +150,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array3D< int2 >& array, const char
             for( int x = 0; x < w; ++x )
             {
                 int index = z * w * h + y * w + x;
-                int2 v = array( x, y, z );
+                int2 v = array[ { x, y, z } ];
                 fprintf( fp, "[%d] (%d %d %d): %d %d\n", index, x, y, z, v.x, v.y );
             }
         }
@@ -191,7 +194,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array3D< int3 >& array, const char
             for( int x = 0; x < w; ++x )
             {
                 int index = z * w * h + y * w + x;
-                int3 v = array( x, y, z );
+                int3 v = array[ { x, y, z } ];
                 fprintf( fp, "[%d] (%d %d %d): %d %d %d\n", index, x, y, z, v.x, v.y, v.z );
             }
         }
@@ -235,7 +238,7 @@ bool libcgt::cuda::ArrayUtils::saveTXT( const Array3D< int4 >& array, const char
             for( int x = 0; x < w; ++x )
             {
                 int index = z * w * h + y * w + x;
-                int4 v = array( x, y, z );
+                int4 v = array[ { x, y, z } ];
                 fprintf( fp, "[%d] (%d %d %d %d): %d %d\n", index, x, y, z, v.x, v.y, v.z, v.w );
             }
         }

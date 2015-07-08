@@ -11,7 +11,7 @@ class Array1DView
 public:
 
     // The null Array1DView:
-    // pointer = nullptr, length = 0.
+    // pointer = nullptr, width = 0.
     Array1DView();
 
     // Create an Array1DView with the default element stride of sizeof( T ).

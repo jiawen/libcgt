@@ -13,19 +13,19 @@
 __host__
 Vector2f from_float2( const float2& v )
 {
-    return Vector2f( v.x, v.y );
+    return{ v.x, v.y };
 }
 
 __host__
 Vector3f from_float3( const float3& v )
 {
-    return Vector3f( v.x, v.y, v.z );
+    return{ v.x, v.y, v.z };
 }
 
 __host__
 Vector4f from_float4( const float4& v )
 {
-    return Vector4f( v.x, v.y, v.z, v.w );
+    return{ v.x, v.y, v.z, v.w };
 }
 
 __host__
@@ -65,19 +65,19 @@ float4x4 make_float4x4( const Matrix4f& m )
 __host__
 Vector2i from_int2( const int2& v )
 {
-    return Vector2i( v.x, v.y );
+    return{ v.x, v.y };
 }
 
 __host__
 Vector3i from_int3( const int3& v )
 {
-    return Vector3i( v.x, v.y, v.z );
+    return{ v.x, v.y, v.z };
 }
 
 __host__
 Vector4i from_int4( const int4& v )
 {
-    return Vector4i( v.x, v.y, v.z, v.w );
+    return{ v.x, v.y, v.z, v.w };
 }
 
 __host__

@@ -230,9 +230,9 @@ T DeviceArray2D< T >::get( int x, int y ) const
 {
     T output;
 
-    const ubyte* sourcePointer = reinterpret_cast< const ubyte* >( devicePointer() );
-    const ubyte* rowPointer = sourcePointer + y * pitch();
-    const ubyte* elementPointer = rowPointer + x * sizeof( T );
+    const uint8_t* sourcePointer = reinterpret_cast< const uint8_t* >( devicePointer() );
+    const uint8_t* rowPointer = sourcePointer + y * pitch();
+    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
 
@@ -260,9 +260,9 @@ T DeviceArray2D< T >::operator [] ( const int2& subscript ) const
 template< typename T >
 void DeviceArray2D< T >::set( int x, int y, const T& value )
 {
-    const ubyte* destinationPointer = reinterpret_cast< const ubyte* >( devicePointer() );
-    const ubyte* rowPointer = destinationPointer + y * pitch();
-    const ubyte* elementPointer = rowPointer + x * sizeof( T );
+    const uint8_t* destinationPointer = reinterpret_cast< const uint8_t* >( devicePointer() );
+    const uint8_t* rowPointer = destinationPointer + y * pitch();
+    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
@@ -282,9 +282,17 @@ void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 }
 
 template< typename T >
-void DeviceArray2D< T >::copyFromHost( const Array2D< T >& src )
+bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
 {
-    // TODO: check if src.isNull(): how well does memcpy handle zero size?
+    if( src.isNull() )
+    {
+        return false;
+    }
+    if( !( src.elementsArePacked() ) )
+    {
+        return false;
+    }
+
 
     resize( src.width(), src.height() );
     checkCudaErrors
@@ -292,11 +300,13 @@ void DeviceArray2D< T >::copyFromHost( const Array2D< T >& src )
         cudaMemcpy2D
         (
             devicePointer(), pitch(),
-            src, src.width() * sizeof( T ),
+            src, src.rowStrideBytes(),
             src.width() * sizeof( T ), src.height(),
             cudaMemcpyHostToDevice
         )
     );
+
+    return true;
 }
 
 template< typename T >
@@ -307,7 +317,7 @@ void DeviceArray2D< T >::copyToHost( Array2D< T >& dst ) const
         return;
     }
 
-    dst.resize( width(), height() );
+    dst.resize( { width(), height() } );
     checkCudaErrors
     (
         cudaMemcpy2D

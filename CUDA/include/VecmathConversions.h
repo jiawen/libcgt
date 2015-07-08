@@ -1,5 +1,8 @@
 #pragma once
 
+// TODO: add CUDA and Eigen support directly into libcgt.
+// TODO: get rid of float4x4.
+
 #include <vector_types.h>
 #include "float4x4.h"
 

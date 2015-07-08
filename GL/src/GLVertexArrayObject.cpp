@@ -143,7 +143,7 @@ void GLVertexArrayObject::detachBuffer( GLuint bindingIndex )
 void GLVertexArrayObject::detachBuffers( GLuint firstBindingIndex, int count )
 {
     Array1D< GLuint > ids( count, 0 );
-    Array1D< GLintptr > offsets( count, 0 );
+    Array1D< GLintptr > offsets( count, sizeof( GLintptr ), 0 ); // To resolve ambiguous constructor.
     Array1D< GLsizei > strides( count, sizeof( int ), 0 ); // To resolve ambiguous constructor.
     glVertexArrayVertexBuffers( m_id, firstBindingIndex, count, ids, offsets.pointer(), strides );
 }

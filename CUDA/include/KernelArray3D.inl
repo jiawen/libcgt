@@ -56,8 +56,8 @@ template< typename T >
 __inline__ __device__
 T* KernelArray3D< T >::rowPointer( int y, int z )
 {
-    ubyte* p = reinterpret_cast< ubyte* >( md_pPitchedPointer );
-    ubyte* pSlice = p + z * slicePitch();
+    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
+    uint8_t* pSlice = p + z * slicePitch();
     return reinterpret_cast< T* >( pSlice + y * m_rowPitch );
 }
 
@@ -65,8 +65,8 @@ template< typename T >
 __inline__ __device__
 const T* KernelArray3D< T >::rowPointer( int y, int z ) const
 {
-    ubyte* p = reinterpret_cast< ubyte* >( md_pPitchedPointer );
-    ubyte* pSlice = p + z * slicePitch();
+    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
+    uint8_t* pSlice = p + z * slicePitch();
     return reinterpret_cast< T* >( pSlice + y * m_rowPitch );
 }
 
@@ -74,7 +74,7 @@ template< typename T >
 __inline__ __device__
 T* KernelArray3D< T >::slicePointer( int z )
 {
-    ubyte* p = reinterpret_cast< ubyte* >( md_pPitchedPointer );
+    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
     return reinterpret_cast< T* >( p + z * slicePitch() );
 }
 
@@ -124,7 +124,7 @@ template< typename T >
 __inline__ __device__
 const T* KernelArray3D< T >::slicePointer( int z ) const
 {
-    ubyte* p = reinterpret_cast< ubyte* >( md_pPitchedPointer );
+    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
     return reinterpret_cast< T* >( p + z * slicePitch() );
 }
 

@@ -5,6 +5,7 @@
 
 // CUDA
 #include <cuda_runtime.h>
+#include <helper_functions.h>
 #include <helper_cuda.h>
 
 // libcgt
@@ -14,8 +15,9 @@
 #include "KernelVector.h"
 #include "ErrorChecking.h"
 
-// Basic vector interface around CUDA global memory
-// Wraps around cudaMalloc() (linear allocation)
+// TODO: rename to DeviceArray1D.
+// Basic vector interface around CUDA global memory.
+// Wraps around cudaMalloc() (linear allocation).
 template< typename T >
 class DeviceVector
 {

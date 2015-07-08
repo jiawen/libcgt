@@ -2,12 +2,12 @@
 
 #include <windows.h>
 #include <NuiApi.h>
+#include <cstdint>
 
 #include <common/BasicTypes.h>
 #include <common/Array2D.h>
+#include <common/Array2DView.h>
 #include <vecmath/Matrix4f.h>
-
-class Image1f;
 
 class KinectUtils
 {
@@ -42,7 +42,11 @@ public:
     //     and the player index on the bottom 3 bits d[2:0]
     //
     //
-    static void rawDepthMapToMeters( const Array2D< ushort >& rawDepth,
-        Image1f& outputMeters, bool flipLeftRight = true, int rightShft = 0 );
+    static void rawDepthMapToMeters( const Array2D< uint16_t >& rawDepth,
+        Array2DView< float > outputMeters, bool flipLeftRight = true, int rightShft = 0 );
+
+    // Convert a NUI_IMAGE_RESOLUTION to a numerical resolution in pixels.
+    // Returns (0, 0) on NUI_IMAGE_RESOLUTION_INVALID.
+    static Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution );
 
 };
