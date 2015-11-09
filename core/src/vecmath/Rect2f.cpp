@@ -24,17 +24,9 @@ Rect2f::Rect2f( const Vector2f& origin, const Vector2f& size ) :
 
 }
 
-Rect2f::Rect2f( std::initializer_list< float > os )
-{
-    m_origin.x = *( os.begin() );
-    m_origin.y = *( os.begin() + 1 );
-    m_size.x = *( os.begin() + 2 );
-    m_size.y = *( os.begin() + 3 );
-}
-
-Rect2f::Rect2f( const Rect2i& r ) :
-    m_origin( r.origin() ),
-    m_size( r.size() )
+Rect2f::Rect2f( float originX, float originY, float sizeX, float sizeY ) :
+    m_origin( originX, originY ),
+    m_size( sizeX, sizeY )
 {
 
 }

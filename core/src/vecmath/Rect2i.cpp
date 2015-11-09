@@ -3,6 +3,7 @@
 #include <QString>
 
 #include "math/MathUtils.h"
+#include "vecmath/Rect2f.h"
 #include "vecmath/Vector2f.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -23,12 +24,11 @@ Rect2i::Rect2i( const Vector2i& origin, const Vector2i& size ) :
 
 }
 
-Rect2i::Rect2i( std::initializer_list< int > os )
+Rect2i::Rect2i( int originX, int originY, int sizeX, int sizeY ) :
+    m_origin( originX, originY ),
+    m_size( sizeX, sizeY )
 {
-    m_origin.x = *( os.begin() );
-    m_origin.y = *( os.begin() + 1 );
-    m_size.x = *( os.begin() + 2 );
-    m_size.y = *( os.begin() + 3 );
+
 }
 
 Vector2i Rect2i::origin() const
@@ -158,6 +158,11 @@ bool Rect2i::contains( const Vector2i& p )
         ( p.y >= m_origin.y ) &&
         ( p.y < ( m_origin.y + m_size.y ) )
     );
+}
+
+Rect2f Rect2i::castToFloat() const
+{
+    return Rect2f( m_origin, m_size );
 }
 
 // static

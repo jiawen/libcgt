@@ -1,10 +1,10 @@
-#include "cameras/Camera.h"
+#include "Camera.h"
 
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 
-#include "cameras/CameraUtils.h"
+#include "CameraUtils.h"
 #include "math/MathUtils.h"
 #include "vecmath/Vector4f.h"
 #include "vecmath/Quat4f.h"

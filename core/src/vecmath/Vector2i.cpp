@@ -13,16 +13,16 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-Vector2i::Vector2i( int i )
+Vector2i::Vector2i( int i ) :
+    x( i ),
+    y( i )
 {
-    x = i;
-    y = i;
 }
 
-Vector2i::Vector2i( std::initializer_list< int > xy )
+Vector2i::Vector2i( int _x, int _y ) :
+    x( _x ),
+    y( _y )
 {
-    x = *( xy.begin() );
-    y = *( xy.begin() + 1 );
 }
 
 const int& Vector2i::operator [] ( int i ) const

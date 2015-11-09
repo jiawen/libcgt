@@ -225,6 +225,35 @@ void GLUtilities::dumpFrameBufferRGBAText( int x, int y, int width, int height, 
     delete[] pixels;
 }
 
+#include "GLTexture2D.h"
+#include "common/ArrayUtils.h"
+#include "io/PNGIO.h"
+#include "io/PortableFloatMapIO.h"
+
+// static
+void GLUtilities::saveTextureToFile( GLTexture2D* pTexture, const std::string& filename )
+{
+    if( pTexture->internalFormat() == GLImageInternalFormat::RGBA8 )
+    {
+        Array2D< uint8x4 > rgba8( pTexture->size() );
+        pTexture->get( rgba8 );
+        PNGIO::write( filename, rgba8 );
+    }
+    else if( pTexture->internalFormat() == GLImageInternalFormat::R32F )
+    {
+        Array2D< float > r32f( pTexture->size() );
+        pTexture->get( r32f );
+        PortableFloatMapIO::write( filename, r32f );
+    }
+    else if( pTexture->internalFormat() == GLImageInternalFormat::RGBA32F )
+    {
+        Array2D< Vector4f > rgba32f( pTexture->size() );
+        pTexture->get( rgba32f );
+        Array2DView< Vector3f > rgb32f = ArrayUtils::componentView< Vector3f, Vector4f >( rgba32f, 0 );
+        PortableFloatMapIO::write( filename, rgb32f );
+    }
+}
+
 // static
 void GLUtilities::printGLRenderer()
 {

@@ -1,37 +1,27 @@
 cmake_minimum_required( VERSION 3.1 )
 project( libcgt )
 
-# On Windows, ensure that the appropriate dependencies are listed in
-# CMAKE_PREFIX_PATH.
+# Dependencies
+#
+# We use FindGLEW.cmake. It's amazingly good at finding glew headers/libs/dlls!
+# It uses find_path and find_library. On Windows, I had:
+# C:\Users\jiawen\work\libs\{bin/include/lib}, with the .dll, .h, and .lib files
+# in those directories, respectively.
+# I had *only* PATH=C:\Users\jiawen\work\libs\bin (as a literal). That was all
+# it took to find it.
 
-# TODO: figure out how to make a CMake library project that also creates an
-# include directory and copies files appropriately. file(COPY include/foo.h
-# DESTINATION "dst") seems fine.
+# On Windows, ensure that the appropriate dependencies are listed in
+# CMAKE_PREFIX_PATH:
 #
-# TODO: once .h files are copied out, change all includes to full pathnames.
-# http://stackoverflow.com/questions/697560/how-to-copy-directory-from-source-tree-to-binary-tree
+# For OpenCV, this means adding the "build" directory that comes from the OpenCV
+# installer to CMAKE_PREFIX_PATH. This will set a a variable called "OpenCV_DIR"
+# to said "build" directory, along with a bunch of other variables.
 #
-# How does this interact with INSTALL?
-#
+# For Kinect SDK 1.x, this means having the environment variable
+# "KINECTSDK10_DIR" set. This should be set automatically by the SDK installer.
 
 # TODO: on Windows, figure how to make an omnibus static library that includes
 # other static libraries. I.e., Librarian / General / Additional Dependencies.
-
-# Make sure that all subproject put all their libraries into the "lib" and
-# "bin". "bin" is superfluous as libcgt is a static library.
-set( OUTPUT_INCLUDE_DIRECTORY {$CMAKE_BINARY_DIR}/include )
-
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
-
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin )
-
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib )
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin )
 
 # Compiler options by platform.
 if( APPLE )
@@ -39,9 +29,9 @@ if( APPLE )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7 -std=c++11 -stdlib=libc++" )
 elseif( UNIX )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
-		# Clang
+		# Use libc++ with Clang.
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
-	else( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+	else()
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 	endif()
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
@@ -62,8 +52,20 @@ elseif( WIN32 )
     endif()
 endif()
 
+# Set INSTALL directory by platform.
+if( WIN32 )
+    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        # CACHE means set cache variable instead of internal.
+        # PATH means use a directory chooser widget.
+        # The next argument is a docstring.
+        # FORCE means set it even if it's already set.
+        set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory" FORCE)
+    endif()
+endif()
+
 # TODO: can get fancy with the options: default to whether dependencies exist.
 add_subdirectory( core )
+
 option( BUILD_GL "Build GL module." ON )
 if( BUILD_GL )
     add_subdirectory( GL )
@@ -85,16 +87,18 @@ if( BUILD_OPENCV_INTEROP )
 endif()
 
 if( WIN32 )
-    option( BUILD_KINECT1 "Build Kinect v1 module." ON )
-    if( BUILD_KINECT1 )
-        add_subdirectory( Kinect1 )
+    option( BUILD_KINECT1X "Build Kinect v1.x module." ON )
+    if( BUILD_KINECT1X )
+        add_subdirectory( Kinect1x )
     endif()
 
+# TODO: restore D3D11 support
 #    add_subdirectory( QDirectX/D3D11 )
 endif()
 
 
+# TODO: restore MKL support or replace with Eigen
 #add_subdirectory( math )
-#add_subdirectory( video )
 
-#install( TARGETS cgt_core cgt_gl )
+# TODO: restore video support
+#add_subdirectory( video )
