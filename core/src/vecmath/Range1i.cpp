@@ -76,7 +76,7 @@ int Range1i::right() const
 
 int Range1i::width() const
 {
-    return std::abs( m_size );
+    return abs( m_size );
 }
 
 float Range1i::center() const

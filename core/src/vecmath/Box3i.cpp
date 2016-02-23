@@ -144,22 +144,22 @@ Vector3i Box3i::maximum() const
 
 int Box3i::width() const
 {
-    return std::abs( m_size.x );
+    return abs( m_size.x );
 }
 
 int Box3i::height() const
 {
-    return std::abs( m_size.y );
+    return abs( m_size.y );
 }
 
 int Box3i::depth() const
 {
-    return std::abs( m_size.z );
+    return abs( m_size.z );
 }
 
 int Box3i::volume() const
 {
-    return std::abs( m_size.x * m_size.y * m_size.z );
+    return abs( m_size.x * m_size.y * m_size.z );
 }
 
 Vector3f Box3i::center() const

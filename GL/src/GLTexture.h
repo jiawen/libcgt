@@ -91,7 +91,7 @@ protected:
 
 private:
 
-    GLenum m_target;
     GLuint m_id;
+    GLenum m_target;
     GLImageInternalFormat m_internalFormat;
 };

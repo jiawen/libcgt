@@ -100,7 +100,7 @@ bool ArrayUtils::saveTXT( Array1DView< const float >& view, const char* filename
     for( int i = 0; i < n; ++i )
     {
         float v = view[i];
-        fprintf( fp, "[%d]: %f %f\n", i, v );
+        fprintf( fp, "[%d]: %f\n", i, v );
     }
 
     retVal = fclose( fp );

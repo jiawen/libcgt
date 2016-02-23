@@ -157,7 +157,7 @@ bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
     float vd = Vector3f::dot( u, direction );
 
     // ray is parallel to plane
-    if( abs( vd ) < directionDotProductEpsilon )
+    if( std::abs( vd ) < directionDotProductEpsilon )
     {
         return false;
     }

@@ -21,3 +21,8 @@ GLuint GLRenderbufferObject::id() const
 {
     return m_id;
 }
+
+GLImageInternalFormat GLRenderbufferObject::internalFormat() const
+{
+    return m_internalFormat;
+}

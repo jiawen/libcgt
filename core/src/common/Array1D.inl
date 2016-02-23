@@ -30,12 +30,12 @@ Array1D< T >::Array1D( std::unique_ptr< void > pointer, size_t size, size_t stri
 }
 
 template< typename T >
-Array1D< T >::Array1D( const Array1D< T >& copy ) :
+Array1D< T >::Array1D( const Array1D< T >& copy )
 {
     resize( copy.m_size, copy.m_stride );
     if( copy.notNull() )
     {
-        memcpy( m_array, copy.m_array, m_stride.y * m_size.y );
+        memcpy( m_array, copy.m_array, m_stride * m_size );
     }
 }
 
@@ -43,7 +43,7 @@ template< typename T >
 Array1D< T >::Array1D( Array1D< T >&& move )
 {
     m_size = std::move( move.m_size );
-    m_strides = std::move( move.m_strides );
+    m_stride = std::move( move.m_strides );
     m_array = std::move( move.m_array );
 }
 
@@ -55,7 +55,7 @@ Array1D< T >& Array1D< T >::operator = ( const Array1D< T >& copy )
         resize( copy.m_size, copy.m_stride );
         if( copy.notNull() )
         {
-            memcpy( m_array, copy.m_array, m_stride.y * m_size.y );
+            memcpy( m_array, copy.m_array, m_stride * m_size );
         }
     }
     return *this;
@@ -67,7 +67,7 @@ Array1D< T >& Array1D< T >::operator = ( Array1D< T >&& move )
     if( this != &move )
     {
         m_size = std::move( move.m_size );
-        m_strides = std::move( move.m_strides );
+        m_stride = std::move( move.m_stride );
         m_array = std::move( move.m_array );
     }
     return *this;
@@ -148,7 +148,7 @@ void Array1D< T >::resize( size_t size, size_t stride )
         // If it is, can reuse memory.
         if( size * stride != m_size * m_stride )
         {
-            m_array = std::make_unique< uint8_t[] >( size * stride );
+            m_array = std::unique_ptr< uint8_t[] >( new uint8_t[ size * stride ] );
         }
 
         // if the number of elements is the same, the dimensions may be different
@@ -258,8 +258,7 @@ bool Array1D< T >::load( FILE* fp )
     }
 
     size_t nBytes = stride * width;
-    std::unique_ptr< uint8_t[] > pBuffer =
-        std::make_unique< uint8_t[] >( nBytes );
+    std::unique_ptr< uint8_t[] > pBuffer( new uint8_t[ nBytes ] );
 
     // read elements
     elementsRead = fread( pBuffer.get(), 1, nBytes, fp );
@@ -297,7 +296,7 @@ bool Array1D< T >::save( FILE* fp ) const
 
     fwrite( &m_size, sizeof( size_t ), 1, fp );
     fwrite( &m_stride, sizeof( size_t ), 1, fp );
-    fwrite( m_array.get(), 1, m_size.x * m_stride.x, fp );
+    fwrite( m_array.get(), 1, m_size * m_stride, fp );
     fclose( fp );
 
     return true;

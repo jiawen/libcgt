@@ -200,19 +200,19 @@ Vector3f MathUtils::clampToBox( const Vector3f& v, const Box3f& box )
 // static
 Vector2f MathUtils::abs( const Vector2f& v )
 {
-    return{ ::abs( v.x ), ::abs( v.y ) };
+    return{ std::abs( v.x ), std::abs( v.y ) };
 }
 
 // static
 Vector3f MathUtils::abs( const Vector3f& v )
 {
-    return Vector3f( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) );
+    return Vector3f( std::abs( v.x ), std::abs( v.y ), std::abs( v.z ) );
 }
 
 // static
 Vector4f MathUtils::abs( const Vector4f& v )
 {
-    return Vector4f( ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) );
+    return Vector4f( std::abs( v.x ), std::abs( v.y ), std::abs( v.z ), std::abs( v.w ) );
 }
 
 // static

@@ -1,6 +1,7 @@
 #include "common/Parameters.h"
 
 #include <QFile>
+#include <QDataStream>
 #include <QTextStream>
 #include <QStringList>
 

@@ -44,7 +44,7 @@ Vector2f Sampling::areaSampleDisc( float u0, float u1 )
 {
     float r = sqrt( u0 );
     float theta = MathUtils::TWO_PI * u1;
-    return{ r * cos( theta ), r * sin( theta ) };
+    return{ r * std::cos( theta ), r * std::sin( theta ) };
 }
 
 // static
@@ -103,14 +103,14 @@ Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
     }
 
     theta *= MathUtils::QUARTER_PI;
-    return{ r * cos( theta ), r * sin( theta ) };
+    return{ r * std::cos( theta ), r * std::sin( theta ) };
 }
 
 // static
 Vector2f Sampling::perimeterSampleCircle( float u0 )
 {
     float theta = MathUtils::TWO_PI * u0; // [0,2*pi]
-    return{ cos( theta ), sin( theta ) };
+    return{ std::cos( theta ), std::sin( theta ) };
 }
 
 // static

@@ -99,21 +99,21 @@ inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, cons
 template< typename Function >
 inline void Iterators::for3D( const Vector3i& count, const Function& func )
 {
-    Iterators::for3D( Vector3i( 0, 0, 0 ), count, Vector3i( 1, 1, 1 ), func );
+    Iterators::for3D( { 0, 0, 0 }, count, { 1, 1, 1 }, func );
 }
 
 // static
 template< typename Function >
 inline void Iterators::for3D( const Vector3i& count, QString progressPrefix, const Function& func )
 {
-    Iterators::for3D( Vector3i( 0, 0, 0 ), count, Vector3i( 1, 1, 1 ), progressPrefix, func );
+    Iterators::for3D( { 0, 0, 0 }, count, { 1, 1, 1 }, progressPrefix, func );
 }
 
 // static
 template< typename Function >
 inline void Iterators::for3D( const Vector3i& first, const Vector3i& count, const Function& func )
 {
-    Iterators::for3D( first, count, Vector3i( 1, 1, 1 ), func );
+    Iterators::for3D( first, count, { 1, 1, 1 }, func );
 }
 
 // static

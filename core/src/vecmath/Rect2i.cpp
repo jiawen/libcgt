@@ -78,17 +78,17 @@ Vector2i Rect2i::dy() const
 
 int Rect2i::width() const
 {
-    return std::abs( m_size.x );
+    return abs( m_size.x );
 }
 
 int Rect2i::height() const
 {
-    return std::abs( m_size.y );
+    return abs( m_size.y );
 }
 
 int Rect2i::area() const
 {
-    return std::abs( m_size.x * m_size.y );
+    return abs( m_size.x * m_size.y );
 }
 
 Vector2i Rect2i::center() const

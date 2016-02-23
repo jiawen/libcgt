@@ -148,7 +148,7 @@ template< typename T >
 Array2DView< T > ArrayUtils::croppedView( Array2DView< T > view, const Rect2i& rect )
 {
     T* cornerPointer = view.elementPointer( rect.origin() );
-    return Array2DView< T >( cornerPointer, size, view.strides() );
+    return Array2DView< T >( cornerPointer, rect.size(), view.strides() );
 }
 
 // static
@@ -163,7 +163,7 @@ template< typename T >
 Array3DView< T > ArrayUtils::croppedView( Array3DView< T > view, const Box3i& box )
 {
     T* cornerPointer = view.elementPointer( box.origin() );
-    return Array3DView< T >( cornerPointer, size, view.strides() );
+    return Array3DView< T >( cornerPointer, box.size(), view.strides() );
 }
 
 // static

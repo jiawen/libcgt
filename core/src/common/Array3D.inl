@@ -342,7 +342,7 @@ const T& Array3D< T >::operator [] ( int k ) const
     int x;
     int y;
     int z;
-    Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
+    Indexing::indexToSubscript3D( k, m_size.x, m_size.y, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
@@ -352,7 +352,7 @@ T& Array3D< T >::operator [] ( int k )
     int x;
     int y;
     int z;
-    Indexing::indexToSubscript3D( k, m_width, m_height, x, y, z );
+    Indexing::indexToSubscript3D( k, m_size.x, m_size.y, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 

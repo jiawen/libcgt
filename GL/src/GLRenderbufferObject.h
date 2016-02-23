@@ -15,6 +15,7 @@ public:
     virtual ~GLRenderbufferObject();
 
     GLuint id() const;
+    GLImageInternalFormat internalFormat() const;
 
 private:
 
