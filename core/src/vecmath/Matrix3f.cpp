@@ -11,7 +11,7 @@
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector2f.h"
 
-using namespace std;
+using std::abs;
 
 Matrix3f::Matrix3f( float fill )
 {

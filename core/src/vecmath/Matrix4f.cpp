@@ -13,7 +13,7 @@
 #include "vecmath/Vector3f.h"
 #include "vecmath/Rect2f.h"
 
-using namespace std;
+using std::abs;
 
 // static
 Matrix4f Matrix4f::ROTATE_X_180 = Matrix4f

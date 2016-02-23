@@ -12,7 +12,7 @@
 #include "vecmath/Quat4f.h"
 #include "vecmath/Vector3d.h"
 
-using namespace std;
+using std::abs;
 
 Matrix3d::Matrix3d()
 {

@@ -43,8 +43,8 @@ public:
 
     // TODO: swizzle all the vec4s
 
-    double abs() const;
-    double absSquared() const;
+    double norm() const;
+    double normSquared() const;
     void normalize();
     Vector4d normalized() const;
 

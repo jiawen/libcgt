@@ -3,6 +3,8 @@
 #include <cmath>
 #include <math/MathUtils.h>
 
+using std::abs;
+
 OpenNaturalCubicSpline::OpenNaturalCubicSpline()
 {
 
@@ -127,7 +129,7 @@ float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon, int
     float result = tGuess;
     float xResult = evaluateAt( result );
     float error = x - xResult;
-    float absError = fabs( error );
+    float absError = abs( error );
 
     int n = 0;
     while( ( absError > epsilon ) && ( n < maxIterations ) )
@@ -136,7 +138,7 @@ float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon, int
         result += error / dxdt;
         xResult = evaluateAt( result );
         error = x - xResult;
-        absError = fabs( error );
+        absError = abs( error );
 
         ++n;
     }

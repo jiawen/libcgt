@@ -1,6 +1,7 @@
 #include "cameras/FPSControls.h"
 
 #include <cassert>
+#include <cmath>
 #include <cameras/PerspectiveCamera.h>
 #include <geometry/GeometryUtils.h>
 
@@ -213,13 +214,13 @@ void FPSControls::computeXboxTranslation( XINPUT_GAMEPAD* pGamepad, PerspectiveC
     float moveZ = 0;
 
     // left stick: move
-    if( abs( lx ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  )
+    if( std::abs( lx ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE  )
     {
         // stick right --> move right
         moveX = lx * m_xboxGamepadParameters.translationPerTick;
         move = true;
     }
-    if( abs( ly ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+    if( std::abs( ly ) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
     {
         // stick up --> move forward
         moveZ = -ly * m_xboxGamepadParameters.translationPerTick;
@@ -253,12 +254,12 @@ void FPSControls::computeXboxRotation( XINPUT_GAMEPAD* pGamepad, PerspectiveCame
     int ry = pGamepad->sThumbRY;
 
     // right stick: rotate
-    if( abs( rx ) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+    if( std::abs( rx ) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
     {
         yaw = rx * m_xboxGamepadParameters.yawRadiansPerTick;
         doRotate = true;
     }
-    if( abs( ry ) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+    if( std::abs( ry ) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
     {
         pitch = ry * m_xboxGamepadParameters.pitchRadiansPerTick;
         doRotate = true;

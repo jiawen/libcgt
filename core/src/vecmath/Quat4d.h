@@ -31,8 +31,8 @@ public:
     Vector3d xyz() const;
     Vector4d wxyz() const;
 
-    double abs() const;
-    double absSquared() const;
+    double norm() const;
+    double normSquared() const;
     void normalize();
     Quat4d normalized() const;
 

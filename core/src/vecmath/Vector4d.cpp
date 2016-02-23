@@ -160,12 +160,12 @@ Vector3d Vector4d::wxz() const
     return Vector3d( m_elements[3], m_elements[0], m_elements[2] );
 }
 
-double Vector4d::abs() const
+double Vector4d::norm() const
 {
-    return sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
+    return sqrt( normSquared() );
 }
 
-double Vector4d::absSquared() const
+double Vector4d::normSquared() const
 {
     return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] + m_elements[3] * m_elements[3] );
 }
@@ -181,7 +181,7 @@ void Vector4d::normalize()
 
 Vector4d Vector4d::normalized() const
 {
-    double length = abs();
+    double length = norm();
     return Vector4d
         (
             m_elements[0] / length,

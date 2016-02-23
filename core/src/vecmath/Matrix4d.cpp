@@ -14,7 +14,7 @@
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector4d.h"
 
-using namespace std;
+using std::abs;
 
 Matrix4d::Matrix4d()
 {

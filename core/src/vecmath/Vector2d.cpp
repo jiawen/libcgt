@@ -8,10 +8,6 @@
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3d.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 Vector2d::Vector2d()
 {
     m_elements[0] = 0;
@@ -70,12 +66,12 @@ Vector2d Vector2d::yy() const
     return Vector2d( m_elements[1], m_elements[1] );
 }
 
-double Vector2d::abs() const
+double Vector2d::norm() const
 {
-    return sqrt( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] );
+    return sqrt( normSquared() );
 }
 
-double Vector2d::absSquared() const
+double Vector2d::normSquared() const
 {
     return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] );
 }
@@ -89,7 +85,7 @@ void Vector2d::normalize()
 
 Vector2d Vector2d::normalized() const
 {
-    double length = abs();
+    double length = norm();
     return Vector2d( m_elements[0] / length, m_elements[1] / length );
 }
 

@@ -1,6 +1,7 @@
 #if 0
 #include "SparseGaussNewton.h"
 
+#include <cmath>
 #include <limits>
 #include <QtGlobal>
 
@@ -362,7 +363,7 @@ const FloatMatrix& SparseGaussNewton::minimize( float* pEnergyFound, int* pNumIt
 #endif
 
         currEnergy = FloatMatrix::dot( m_r, m_r );
-        deltaEnergy = fabs( currEnergy - prevEnergy );
+        deltaEnergy = std::abs( currEnergy - prevEnergy );
 
         deltaEnergyConverged = ( deltaEnergy < m_epsilon * ( 1 + currEnergy ) );
 
@@ -562,7 +563,7 @@ const FloatMatrix& SparseGaussNewton::minimize2( float* pEnergyFound, int* pNumI
         save_dense( m_r2, qPrintable( rFilename ) );
 #endif
         currEnergy = FloatMatrix::dot( m_r, m_r );
-        deltaEnergy = fabs( currEnergy - prevEnergy );
+        deltaEnergy = std::abs( currEnergy - prevEnergy );
 
         deltaEnergyConverged = ( deltaEnergy < m_epsilon * ( 1 + currEnergy ) );
 
@@ -711,7 +712,7 @@ const FloatMatrix& SparseGaussNewton::minimize3( float* pEnergyFound, int* pNumI
         m_cscJt.gather( m_coordJ, m_jtIndexMap );
 
         currEnergy = FloatMatrix::dot( m_r, m_r );
-        deltaEnergy = fabs( currEnergy - prevEnergy );
+        deltaEnergy = std::abs( currEnergy - prevEnergy );
 
         deltaEnergyConverged = ( deltaEnergy < m_epsilon * ( 1 + currEnergy ) );
 

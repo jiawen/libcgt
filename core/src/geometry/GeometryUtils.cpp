@@ -13,7 +13,10 @@
 #include "vecmath/Box3f.h"
 #include "vecmath/Vector3f.h"
 
-using namespace std;
+using std::abs;
+using std::max;
+using std::min;
+using std::swap;
 
 // static
 float GeometryUtils::EPSILON = 0.0001f;
@@ -393,22 +396,25 @@ Vector2f GeometryUtils::closestPointOnTriangle( const Vector2f& p, const Vector2
     }
 }
 
-//static
-//dir1 and dir2 should be normalized
+// static
+// dir1 and dir2 should be normalized
 bool GeometryUtils::rayRayIntersection( const Vector2f& p1, const Vector2f& dir1,
-                                        const Vector2f& p2, const Vector2f& dir2, Vector2f &outIntersection)
+                                        const Vector2f& p2, const Vector2f& dir2, Vector2f& outIntersection )
 {
-    Vector2f dir90 = { -dir1[1], dir1[0] };
-    float dirCross = Vector2f::dot(dir2, dir90);
-    if(fabs(dirCross) < EPSILON)
+    Vector2f dir90 { -dir1[1], dir1[0] };
+    float dirCross = Vector2f::dot( dir2, dir90 );
+    if( abs( dirCross ) < EPSILON )
+    {
         return false;
-    float param = Vector2f::dot(p1 - p2, dir90) / dirCross;
-    if(param < 0.f)
+    }
+    float param = Vector2f::dot( p1 - p2, dir90 ) / dirCross;
+    if( param < 0.f )
+    {
         return false;
+    }
 
     outIntersection = p2 + param * dir2;
-
-    return Vector2f::dot(outIntersection - p1, dir1) >= 0.f;
+    return Vector2f::dot( outIntersection - p1, dir1 ) >= 0.f;
 }
 
 //static
@@ -424,7 +430,7 @@ bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector
 
     Vector2f dir90 = { -dir[1], dir[0] };
     float dirCross = Vector2f::dot(segDir, dir90);
-    if(fabs(dirCross) < EPSILON)
+    if(abs(dirCross) < EPSILON)
         return false;
     float param = Vector2f::dot(p - p1, dir90) / dirCross;
     if(param < 0.f || param > segDirLen)
@@ -436,9 +442,10 @@ bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector
 }
 
 // static
-bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vector3f& crRayDirection,
-                          const Vector4f& crPlane,
-                          Vector3f& rIntersectionPoint )
+bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin,
+                                         const Vector3f& crRayDirection,
+                                         const Vector4f& crPlane,
+                                         Vector3f& rIntersectionPoint )
 {
     Vector3f planeNormal = crPlane.xyz;
     float planeD = crPlane.w;
@@ -462,9 +469,12 @@ bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin, const Vec
 }
 
 // static
-bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
-        const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
-        float& t, Vector3f& barycentrics )
+bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
+                                            const Vector3f& rayDirection,
+                                            const Vector3f& v0,
+                                            const Vector3f& v1,
+                                            const Vector3f& v2,
+                                            float& t, Vector3f& barycentrics )
 {
     Vector3f edge1;
     Vector3f edge2;
@@ -600,9 +610,9 @@ bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f*
     // Bullet 3:
     // test the 9 tests first (this was faster)
 
-    fex = fabs( e0[0] );
-    fey = fabs( e0[1] );
-    fez = fabs( e0[2] );
+    fex = abs( e0[0] );
+    fey = abs( e0[1] );
+    fez = abs( e0[2] );
 
     AXISTEST_X01(e0[Z], e0[Y], fez, fey);
 
@@ -612,11 +622,11 @@ bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f*
 
 
 
-    fex = fabsf(e1[X]);
+    fex = absf(e1[X]);
 
-    fey = fabsf(e1[Y]);
+    fey = absf(e1[Y]);
 
-    fez = fabsf(e1[Z]);
+    fez = absf(e1[Z]);
 
     AXISTEST_X01(e1[Z], e1[Y], fez, fey);
 
@@ -626,11 +636,11 @@ bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f*
 
 
 
-    fex = fabsf(e2[X]);
+    fex = absf(e2[X]);
 
-    fey = fabsf(e2[Y]);
+    fey = absf(e2[Y]);
 
-    fez = fabsf(e2[Z]);
+    fez = absf(e2[Z]);
 
     AXISTEST_X2(e2[Z], e2[Y], fez, fey);
 
@@ -803,7 +813,7 @@ float GeometryUtils::lineToLineDistance( const Vector3f& linePoint1, const Vecto
     float crossLength = dirCross.norm();
     if(crossLength < EPSILON) //lines are approximately parallel
         return sqrt( pointToLineDistanceSquared( linePoint1, linePoint2, lineDir2.normalized() ) );
-    return fabs(Vector3f::dot(linePoint2 - linePoint1, dirCross) / crossLength);
+    return abs(Vector3f::dot(linePoint2 - linePoint1, dirCross) / crossLength);
 }
 
 // static

@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstring>
 
-using namespace std;
+using std::abs;
 
 Matrix2f::Matrix2f( float fill )
 {

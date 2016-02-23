@@ -9,7 +9,7 @@
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2d.h"
 
-using namespace std;
+using std::abs;
 
 Matrix2d::Matrix2d()
 {

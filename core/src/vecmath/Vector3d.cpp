@@ -7,10 +7,6 @@
 #include "vecmath/Vector2d.h"
 #include "vecmath/Vector3f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 Vector3d::Vector3d()
 {
     m_elements[0] = 0;
@@ -104,12 +100,12 @@ Vector3d Vector3d::zxy() const
     return Vector3d( m_elements[2], m_elements[0], m_elements[1] );
 }
 
-double Vector3d::abs() const
+double Vector3d:: norm() const
 {
-    return sqrt( absSquared() );
+    return sqrt(  normSquared() );
 }
 
-double Vector3d::absSquared() const
+double Vector3d:: normSquared() const
 {
     return( m_elements[0] * m_elements[0] + m_elements[1] * m_elements[1] + m_elements[2] * m_elements[2] );
 }
@@ -124,7 +120,7 @@ void Vector3d::normalize()
 
 Vector3d Vector3d::normalized() const
 {
-    double length = abs();
+    double length =  norm();
     return Vector3d
         (
             m_elements[0] / length,

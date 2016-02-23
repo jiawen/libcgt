@@ -218,19 +218,19 @@ Vector4f MathUtils::abs( const Vector4f& v )
 // static
 Vector2i MathUtils::abs( const Vector2i& v )
 {
-    return{ ::abs( v.x ), ::abs( v.y ) };
+    return{ std::abs( v.x ), std::abs( v.y ) };
 }
 
 // static
 Vector3i MathUtils::abs( const Vector3i& v )
 {
-    return{ ::abs( v.x ), ::abs( v.y ), ::abs( v.z ) };
+    return{ std::abs( v.x ), std::abs( v.y ), std::abs( v.z ) };
 }
 
 // static
 Vector4i MathUtils::abs( const Vector4i& v )
 {
-    return{ ::abs( v.x ), ::abs( v.y ), ::abs( v.z ), ::abs( v.w ) };
+    return{ std::abs( v.x ), std::abs( v.y ), std::abs( v.z ), std::abs( v.w ) };
 }
 
 // static

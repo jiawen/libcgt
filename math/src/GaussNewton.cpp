@@ -1,5 +1,6 @@
 #include "GaussNewton.h"
 
+#include <cmath>
 #include <limits>
 #include <QtGlobal>
 
@@ -53,7 +54,7 @@ FloatMatrix GaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
 
     float prevEnergy = FLT_MAX;
     float currEnergy = FloatMatrix::dot( m_r, m_r );
-    float deltaEnergy = fabs( currEnergy - prevEnergy );
+    float deltaEnergy = std::abs( currEnergy - prevEnergy );
 
     // check for convergence
     int nIterations = 0;
@@ -76,7 +77,7 @@ FloatMatrix GaussNewton::minimize( float* pEnergyFound, int* pNumIterations )
         // update energy
         m_pEnergy->evaluateResidual( m_currBeta, m_r );
         currEnergy = FloatMatrix::dot( m_r, m_r );
-        deltaEnergy = fabs( currEnergy - prevEnergy );
+        deltaEnergy = std::abs( currEnergy - prevEnergy );
         ++nIterations;
     }
 

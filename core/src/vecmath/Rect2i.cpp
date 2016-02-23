@@ -1,14 +1,13 @@
 #include "vecmath/Rect2i.h"
 
+#include <cmath>
 #include <QString>
 
 #include "math/MathUtils.h"
 #include "vecmath/Rect2f.h"
 #include "vecmath/Vector2f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+using std::abs;
 
 Rect2i::Rect2i( const Vector2i& size ) :
     m_origin( 0 ),

@@ -238,7 +238,7 @@ void QD3D11MultiViewportViewer::mouseMoveEvent( QMouseEvent* event )
     {
         float rotSpeed = 0.005f; //radians per pixel
         Quat4f rotation;
-        rotation.setAxisAngle(rotSpeed * delta.abs(), Vector3f(-delta[1], -delta[0], 0));
+        rotation.setAxisAngle(rotSpeed * delta.norm(), Vector3f(-delta[1], -delta[0], 0));
         Matrix3f rotMatrix = Matrix3f::rotation(rotation);
         Matrix3f viewMatrix = m_camera.getViewMatrix().getSubmatrix3x3(0, 0);
         rotMatrix = viewMatrix.transposed() * rotMatrix * viewMatrix;

@@ -31,8 +31,8 @@ public:
     Vector3d zxy() const;
     // TODO: all the other combinations
 
-    double abs() const;
-    double absSquared() const;
+    double norm() const;
+    double normSquared() const;
     void normalize();
     Vector3d normalized() const;
 

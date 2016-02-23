@@ -9,7 +9,7 @@
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector4d.h"
 
-using namespace std;
+using std::abs;
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -106,12 +106,12 @@ Vector4d Quat4d::wxyz() const
     );
 }
 
-double Quat4d::abs() const
+double Quat4d::norm() const
 {
-    return sqrt( absSquared() );
+    return sqrt( normSquared() );
 }
 
-double Quat4d::absSquared() const
+double Quat4d::normSquared() const
 {
     return
         (
@@ -124,12 +124,12 @@ double Quat4d::absSquared() const
 
 void Quat4d::normalize()
 {
-    double reciprocalAbs = 1.0 / abs();
+    double reciprocalLength = 1.0 / norm();
 
-    m_elements[ 0 ] *= reciprocalAbs;
-    m_elements[ 1 ] *= reciprocalAbs;
-    m_elements[ 2 ] *= reciprocalAbs;
-    m_elements[ 3 ] *= reciprocalAbs;
+    m_elements[ 0 ] *= reciprocalLength;
+    m_elements[ 1 ] *= reciprocalLength;
+    m_elements[ 2 ] *= reciprocalLength;
+    m_elements[ 3 ] *= reciprocalLength;
 }
 
 Quat4d Quat4d::normalized() const
@@ -159,7 +159,7 @@ Quat4d Quat4d::conjugated() const
 
 void Quat4d::invert()
 {
-    Quat4d inverse = conjugated() * ( 1.0 / absSquared() );
+    Quat4d inverse = conjugated() * ( 1.0 / normSquared() );
 
     m_elements[ 0 ] = inverse.m_elements[ 0 ];
     m_elements[ 1 ] = inverse.m_elements[ 1 ];
@@ -169,7 +169,7 @@ void Quat4d::invert()
 
 Quat4d Quat4d::inverse() const
 {
-    return conjugated() * ( 1.0 / absSquared() );
+    return conjugated() * ( 1.0 / normSquared() );
 }
 
 Vector3d Quat4d::getAxisAngle( double* radiansOut )
@@ -192,7 +192,7 @@ void Quat4d::setAxisAngle( double radians, const Vector3d& axis )
     m_elements[ 0 ] = cos( radians / 2 );
 
     double sinHalfTheta = sin( radians / 2 );
-    double vectorNorm = axis.abs();
+    double vectorNorm = axis.norm();
     double reciprocalVectorNorm = 1.0 / vectorNorm;
 
     m_elements[ 1 ] = axis.x * sinHalfTheta * reciprocalVectorNorm;

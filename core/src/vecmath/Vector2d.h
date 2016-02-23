@@ -22,8 +22,8 @@ public:
     Vector2d xx() const;
     Vector2d yy() const;
 
-    double abs() const;
-    double absSquared() const;
+    double norm() const;
+    double normSquared() const;
     void normalize();
     Vector2d normalized() const;
 
