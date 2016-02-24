@@ -1,85 +1,82 @@
 template< typename T >
-Array3D< T >::Array3D() :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array3D< T >::Array3D( void* pointer, const Vector3i& size,
+    Allocator* allocator ) :
+    Array3D
+    (
+        pointer,
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) ),
+            static_cast< int >( size.x * size.y * * sizeof( T ) )
+        },
+        allocator
+    )
 {
 
 }
 
 template< typename T >
-Array3D< T >::Array3D( void* pointer, const Vector3i& size ) :
+Array3D< T >::Array3D( void* pointer, const Vector3i& size,
+    const Vector3i& stride, Allocator* allocator ) :
     m_size( size ),
-    m_strides( {
-        static_cast< int >( sizeof( T ) ),
-        static_cast< int >( size.x * sizeof( T ) ),
-        static_cast< int >( size.x * size.y * sizeof( T ) ) }),
-    m_array( reinterpret_cast< uint8_t* >( pointer ) )
+    m_stride( stride ),
+    m_data( reinterpret_cast< uint8_t* >( pointer ) ),
+    m_allocator( allocator )
 {
 
 }
 
 template< typename T >
-Array3D< T >::Array3D( void* pointer, const Vector3i& size, const Vector3i& strides ) :
-    m_size( size ),
-    m_strides( strides ),
-    m_array( reinterpret_cast< uint8_t* >( pointer ) )
+Array3D< T >::Array3D( const Vector3i& size, const T& fillValue,
+    Allocator* allocator ) :
+    Array3D
+    (
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) ),
+            static_cast< int >( size.x * size.y * sizeof( T ) )
+        },
+        fillValue,
+        allocator
+    )
 {
-
 }
 
 template< typename T >
-Array3D< T >::Array3D( const char* filename ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array3D< T >::Array3D( const Vector3i& size, const Vector3i& stride,
+    const T& fillValue, Allocator* allocator ) :
+    m_allocator( allocator )
 {
-    load( filename );
-}
-
-template< typename T >
-Array3D< T >::Array3D( const Vector3i& size, const T& fillValue ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
-{
-    resize( size );
+    assert( size.x >= 0 );
+    assert( size.y >= 0 );
+    assert( size.z >= 0 );
+    assert( stride.x >= sizeof( T ) );
+    assert( stride.y >= size.x * sizeof( T ) );
+    assert( stride.z >= size.x * size.y * sizeof( T ) );
+    resize( size, stride );
     fill( fillValue );
 }
 
 template< typename T >
-Array3D< T >::Array3D( const Vector3i& size, const Vector3i& strides, const T& fillValue ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array3D< T >::Array3D( const Array3D< T >& copy )
 {
-    resize( size, strides );
-    fill( fillValue );
-}
-
-template< typename T >
-Array3D< T >::Array3D( const Array3D< T >& copy ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
-{
-    resize( copy.m_size, copy.m_strides );
+    resize( copy.m_size, copy.m_stride );
     if( copy.notNull( ) )
     {
-        memcpy( m_array, copy.m_array, m_strides.z * m_size.z );
+        memcpy( m_data, copy.m_data, m_stride.z * m_size.z );
     }
 }
 
 template< typename T >
 Array3D< T >::Array3D( Array3D< T >&& move )
 {
-    m_size = move.m_size;
-    m_strides = move.m_strides;
-    m_array = move.m_array;
-
-    move.m_size = { 0, 0, 0 };
-    move.m_strides = { 0, 0, 0 };
-    move.m_array = nullptr;
+    invalidate();
+    m_size = std::move( move.m_size );
+    m_stride = std::move( move.m_stride );
+    m_data = std::move( move.m_data );
+    m_allocator = std::move( move.m_allocator );
 }
 
 template< typename T >
@@ -87,10 +84,10 @@ Array3D< T >& Array3D< T >::operator = ( const Array3D< T >& copy )
 {
     if( this != &copy )
     {
-        resize( copy.m_width, copy.m_height, copy.m_depth );
+        resize( copy.m_size, copy.m_stride );
         if( copy.notNull() )
         {
-            memcpy( m_array, copy.m_array, m_strides.z * m_size.z );
+            memcpy( m_data, copy.m_data, m_stride.z * m_size.z );
         }
     }
     return *this;
@@ -101,18 +98,11 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
 {
     if( this != &move )
     {
-        if( m_array != nullptr )
-        {
-            delete[ ] m_array;
-        }
-
-        m_size = move.m_size;
-        m_strides = move.m_strides;
-        m_array = move.m_array;
-
-        move.m_size = { 0, 0, 0 };
-        move.m_strides = { 0, 0, 0 };
-        move.m_array = nullptr;
+        invalidate();
+        m_size = std::move( move.m_size );
+        m_stride = std::move( move.m_stride );
+        m_data = std::move( move.m_data );
+        m_allocator = std::move( move.m_allocator );
     }
     return *this;
 }
@@ -127,36 +117,36 @@ Array3D< T >::~Array3D()
 template< typename T >
 bool Array3D< T >::isNull() const
 {
-    return( m_array == nullptr );
+    return( m_data == nullptr );
 }
 
 template< typename T >
 bool Array3D< T >::notNull() const
 {
-    return( m_array != nullptr );
+    return( m_data != nullptr );
 }
 
 template< typename T >
-Array3DView< T > Array3D< T >::relinquish()
+std::pair< Array3DView< T >, Allocator* > Array3D< T >::relinquish()
 {
-    Array3DView< T > output = *this;
+    Array3DView< T > view = readWriteView();
 
+    m_data = nullptr;
     m_size = { 0, 0, 0 };
-    m_strides = { 0, 0, 0 };
+    m_stride = { 0, 0, 0 };
 
-    return output;
+    return std::make_pair( view, m_allocator );
 }
 
 template< typename T >
 void Array3D< T >::invalidate()
 {
-    m_size = { 0, 0, 0 };
-    m_strides = { 0, 0, 0 };
-
-    if( m_array != nullptr )
+    if( m_data != nullptr )
     {
-        delete[] m_array;
-        m_array = nullptr;
+        m_allocator->deallocate( m_data, m_size.z * m_stride.z );
+        m_data = nullptr;
+        m_size = { 0, 0 };
+        m_stride = { 0, 0 };
     }
 }
 
@@ -193,25 +183,25 @@ int Array3D< T >::numElements() const
 template< typename T >
 int Array3D< T >::elementStrideBytes() const
 {
-    return m_strides.x;
+    return m_stride.x;
 }
 
 template< typename T >
 int Array3D< T >::rowStrideBytes() const
 {
-    return m_strides.y;
+    return m_stride.y;
 }
 
 template< typename T >
 int Array3D< T >::sliceStrideBytes() const
 {
-    return m_strides.z;
+    return m_stride.z;
 }
 
 template< typename T >
-Vector3i Array3D< T >::strides() const
+Vector3i Array3D< T >::stride() const
 {
-    return m_strides;
+    return m_stride;
 }
 
 template< typename T >
@@ -227,65 +217,69 @@ void Array3D< T >::fill( const T& fillValue )
 template< typename T >
 void Array3D< T >::resize( const Vector3i& size )
 {
-    resize( size, {
-        static_cast< int >( sizeof( T ) ),
-        static_cast< int >( size.x * sizeof( T ) ),
-        static_cast< int >( size.x * size.y * sizeof( T ) )
-    } );
+    resize
+    (
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) ),
+            static_cast< int >( size.x * size.y * sizeof( T ) )
+        }
+    );
 }
 
 template< typename T >
-void Array3D< T >::resize( const Vector3i& size, const Vector3i& strides )
+void Array3D< T >::resize( const Vector3i& size, const Vector3i& stride )
 {
-    // Of we request an invalid size then invalidate this.
-    if( size.x <= 0 || size.y <= 0 || size.z <= 0 ||
-        strides.x <= 0 || strides.y <= 0 || strides.z <= 0 )
+    // If we request an invalid size then invalidate this.
+    if( size.x == 0 || size.y == 0 || size.z == 0 ||
+        stride.x < sizeof( T ) ||
+        stride.y < size.x * sizeof( T ) ||
+        stride.z < size.x * size.y * sizeof( T ) )
     {
         invalidate();
     }
     // Otherwise, it's a valid size.
     else
     {
-        // Check if the total number of memory is the same.
-        // If it is, can reuse memory.
-        if( size.z * strides.z != m_size.z * m_strides.z )
+        // Check if the total amount of memory is different.
+        // If so, reallocate. Otherwise, can reuse it and just change the shape.
+        if( size.z * stride.z != m_size.z * m_stride.z )
         {
-            if( m_array != nullptr )
-            {
-                delete[] m_array;
-            }
-
-            m_array = new uint8_t[ size.z * strides.z ];
+            invalidate();
+            m_data = reinterpret_cast< uint8_t* >
+            (
+                m_allocator->allocate( size.z * stride.z )
+            );
         }
 
-        // if the number of elements is the same, the dimensions may be different
         m_size = size;
-        m_strides = strides;
+        m_stride = stride;
     }
 }
 
 template< typename T >
 const T* Array3D< T >::pointer( ) const
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 T* Array3D< T >::pointer( )
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 const T* Array3D< T >::elementPointer( const Vector3i& xyz ) const
 {
-    return reinterpret_cast< const T* >( &( m_array[ Vector3i::dot( xyz, m_strides ) ] ) );
+    return reinterpret_cast< const T* >( &( m_data[ Vector3i::dot( xyz, m_stride ) ] ) );
 }
 
 template< typename T >
 T* Array3D< T >::elementPointer( const Vector3i& xyz )
 {
-    return reinterpret_cast< T* >( &( m_array[ Vector3i::dot( xyz, m_strides ) ] ) );
+    return reinterpret_cast< T* >( &( m_data[ Vector3i::dot( xyz, m_stride ) ] ) );
 }
 
 template< typename T >
@@ -313,27 +307,39 @@ T* Array3D< T >::slicePointer( int z )
 }
 
 template< typename T >
+Array3DView< const T > Array3D< T >::readOnlyView() const
+{
+    return Array3DView< const T >( m_data, m_size, m_stride );
+}
+
+template< typename T >
+Array3DView< T > Array3D< T >::readWriteView() const
+{
+    return Array3DView< T >( m_data, m_size, m_stride );
+}
+
+template< typename T >
 Array3D< T >::operator const Array3DView< const T >() const
 {
-    return Array3DView< const T >( m_array, m_size, m_strides );
+    return readOnlyView();
 }
 
 template< typename T >
 Array3D< T >::operator Array3DView< T >()
 {
-    return Array3DView< T >( m_array, m_size, m_strides );
+    return readWriteView();
 }
 
 template< typename T >
 Array3D< T >::operator const T* () const
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 Array3D< T >::operator T* ()
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
@@ -342,7 +348,8 @@ const T& Array3D< T >::operator [] ( int k ) const
     int x;
     int y;
     int z;
-    Indexing::indexToSubscript3D( k, m_size.x, m_size.y, x, y, z );
+    Indexing::indexToSubscript3D(
+        static_cast< int >( k ), m_size.x, m_size.y, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
@@ -352,7 +359,8 @@ T& Array3D< T >::operator [] ( int k )
     int x;
     int y;
     int z;
-    Indexing::indexToSubscript3D( k, m_size.x, m_size.y, x, y, z );
+    Indexing::indexToSubscript3D(
+        static_cast< int >( k ), m_size.x, m_size.y, x, y, z );
     return ( *this )[ { x, y, z } ];
 }
 
@@ -366,94 +374,4 @@ template< typename T >
 T& Array3D< T >::operator [] ( const Vector3i& xyz )
 {
     return *( elementPointer( xyz ) );
-}
-
-template< typename T >
-bool Array3D< T >::load( const char* filename )
-{
-    FILE* fp = fopen( filename, "rb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = load( fp );
-
-    // close file
-    int fcloseRetVal = fclose( fp );
-    if( fcloseRetVal != 0 )
-    {
-        return false;
-    }
-
-    return succeeded;
-}
-
-template< typename T >
-bool Array3D< T >::load( FILE* fp )
-{
-    int dims[6];
-    size_t elementsRead;
-
-    elementsRead = fread( dims, sizeof( int ), 6, fp );
-    if( elementsRead != 6 )
-    {
-        return false;
-    }
-
-    int width = dims[ 0 ];
-    int height = dims[ 1 ];
-    int depth = dims[ 2 ];
-    int elementStrideBytes = dims[ 3 ];
-    int rowStrideBytes = dims[ 4 ];
-    int sliceStrideBytes = dims[ 5 ];
-
-    size_t nBytes = sliceStrideBytes * depth;
-    uint8_t* pBuffer = new uint8_t[ nBytes ];
-
-    // read elements
-    elementsRead = fread( pBuffer, 1, nBytes, fp );
-    if( elementsRead != nBytes )
-    {
-        delete[] pBuffer;
-        return false;
-    }
-
-    // read succeeded, swap contents
-    m_size = { width, height, depth };
-    m_strides = { elementStrideBytes, rowStrideBytes, sliceStrideBytes };
-
-    if( m_array != nullptr )
-    {
-        delete[] m_array;
-    }
-    m_array = pBuffer;
-
-    return true;
-}
-
-template< typename T >
-bool Array3D< T >::save( const char* filename )
-{
-    FILE* fp = fopen( filename, "wb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = save( fp );
-    fclose( fp );
-    return succeeded;
-}
-
-template< typename T >
-bool Array3D< T >::save( FILE* fp )
-{
-    // TODO: error checking
-
-    fwrite( &m_size, sizeof( int ), 3, fp );
-    fwrite( &m_strides, sizeof( int ), 3, fp );
-    fwrite( m_array, 1, m_size.z * m_strides.z, fp );
-
-    return true;
 }

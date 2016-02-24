@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "common/Array1DView.h"
+#include "common/NewDeleteAllocator.h"
 
 // A simple 1D array class.
 template< typename T >
@@ -13,26 +14,42 @@ class Array1D
 {
 public:
 
+    // Construct a null Array1D.
     Array1D() = default;
-    Array1D( std::initializer_list< T > values );    
 
-    // Read file from disk.
-    Array1D( const char* filename );
+    // Construct an Array1D from initialized values.
+    Array1D( std::initializer_list< T > values,
+        Allocator* allocator = NewDeleteAllocator::instance() );
 
-    // All sizes and strides must be positive.
-    Array1D( size_t size, size_t stride = sizeof( T ), const T& fillValue = T() );
+    // Allocate a new array with a given size, element stride, and fill value.
+    // Preconditions:
+    //   stride >= sizeof( T )
+    Array1D( size_t size, size_t stride = sizeof( T ), const T& fillValue = T(),
+        Allocator* allocator = NewDeleteAllocator::instance() );
 
-    // Take ownership of an array allocated externally.
-    // It will be deleted using delete[] on a uint8_t*.
-    Array1D( std::unique_ptr< void > pointer, size_t size, size_t stride = sizeof( T ) );
+    // Take ownership of an externally allocated array with the given size,
+    // stride, and optional allocator.
+    Array1D( void* pointer, size_t size, size_t stride = sizeof( T ),
+        Allocator* allocator = NewDeleteAllocator::instance() );
 
     Array1D( const Array1D< T >& copy );
-    Array1D( Array1D< T >&& move ); // TODO(VS2015): = default
+    Array1D( Array1D< T >&& move );
     Array1D& operator = ( const Array1D< T >& copy );
-    Array1D& operator = ( Array1D< T >&& move ); // TODO(VS2015): = default
+    Array1D& operator = ( Array1D< T >&& move );
+
+    virtual ~Array1D();
 
     bool isNull() const;
     bool notNull() const;
+
+    // Relinquish the underlying pointer by invalidating this Array2D and
+    // returning the pointer and allocator. This object continues to point
+    // to the existing allocator.
+    std::pair< Array1DView< T >, Allocator* > relinquish();
+
+    // Makes this array null and frees the underlying memory.
+    // Dimensions are set to 0.
+    void invalidate();
 
     // The logical number of elements in this array.
     size_t width() const;
@@ -45,17 +62,26 @@ public:
 
     void fill( const T& fillValue );
 
-    // Resizes the array, freeing the original data.
-    // If width or height <= 0, the array is invalidated
+    // Resizes the array while keeping the old stride.
+    // This destroys the original data if the new size * stride does not equal
+    // the original.
+    // If any size or stride is 0, the array is set to null.
     void resize( size_t size );
+
+    // Resizes the array, destroying the original data if the new size * stride
+    // does not equal the original.
+    // If any size or stride is 0, the array is set to null.
     void resize( size_t size, size_t elementStrideBytes );
 
     // Get a pointer to the first element.
     const T* pointer() const;
     T* pointer();
 
-    const T* elementPointer( int x ) const;
-    T* elementPointer( int x );
+    const T* elementPointer( size_t x ) const;
+    T* elementPointer( size_t x );
+
+    Array1DView< const T > readOnlyView() const;
+    Array1DView< T > readWriteView() const;
 
     operator Array1DView< const T >() const;
     operator Array1DView< T >();
@@ -63,22 +89,15 @@ public:
     operator const T* () const;
     operator T* ();
 
-    const T& operator [] ( int k ) const; // read
-    T& operator [] ( int k ); // write
-
-    // only works if T doesn't have pointers, with sizeof() well defined
-    bool load( const char* filename );
-    bool load( FILE* fp );
-
-    // only works if T doesn't have pointers, with sizeof() well defined
-    bool save( const char* filename ) const;
-    bool save( FILE* fp ) const;
+    const T& operator [] ( size_t k ) const; // read
+    T& operator [] ( size_t k ); // write
 
 private:
 
     size_t m_size = 0;
     size_t m_stride = 0;
-    std::unique_ptr< uint8_t[] > m_array;
+    uint8_t* m_data = nullptr;
+    Allocator* m_allocator = NewDeleteAllocator::instance();
 };
 
 #include "Array1D.inl"

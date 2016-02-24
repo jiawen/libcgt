@@ -111,16 +111,18 @@ void GLVertexArrayObject::attachBuffer( GLuint bindingIndex, GLBufferObject* pBu
         pBuffer->id(), offset, stride );
 }
 
-void GLVertexArrayObject::attachBuffers( GLuint firstBindingIndex, Array1DView< GLBufferObject* > buffers,
+void GLVertexArrayObject::attachBuffers( GLuint firstBindingIndex,
+    Array1DView< GLBufferObject* > buffers,
     Array1DView< GLintptr > offsets, Array1DView< GLsizei > strides )
 {
-    int count = buffers.size();
+    size_t count = buffers.size();
     Array1D< GLuint > ids( count );
-    for( int i = 0; i < count; ++i )
+    for( size_t i = 0; i < count; ++i )
     {
-        ids[i] = buffers[i]->id();
+        ids[ i ] = buffers[ i ]->id();
     }
-    glVertexArrayVertexBuffers( m_id, firstBindingIndex, count, ids, offsets.pointer(), strides.pointer() );
+    glVertexArrayVertexBuffers( m_id, firstBindingIndex,
+        static_cast< GLsizei >( count ), ids, offsets.pointer(), strides.pointer() );
 }
 
 void GLVertexArrayObject::attachIndexBuffer( GLBufferObject* pBuffer )

@@ -164,7 +164,8 @@ void GLFramebufferObject::setDrawBuffer( GLenum attachment )
 void GLFramebufferObject::setDrawBuffers( Array1DView< const GLenum > attachments )
 {
     assert( attachments.packed() );
-    glNamedFramebufferDrawBuffers( m_id, attachments.size(), attachments.pointer() );
+    glNamedFramebufferDrawBuffers( m_id,
+        static_cast< GLsizei >( attachments.size() ), attachments.pointer() );
 }
 
 void GLFramebufferObject::setReadBuffer( GLenum attachment )

@@ -1,27 +1,17 @@
 template< typename T >
-Array2DView< T >::Array2DView() :
-    m_size( Vector2i{ 0, 0, } ),
-    m_stride( Vector2i{ 0, 0 } ),
-    m_pPointer( nullptr )
-
-{
-
-}
-
-template< typename T >
-Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size ) :
+Array2DView< T >::Array2DView( void* pointer, const Vector2i& size ) :
     m_size( size ),
     m_stride( Vector2i{ static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } ),
-    m_pPointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pPointer ) )
+    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
 {
 
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size, const Vector2i& strides ) :
+Array2DView< T >::Array2DView( void* pointer, const Vector2i& size, const Vector2i& strides ) :
     m_size( size ),
     m_stride( strides ),
-    m_pPointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pPointer ) )
+    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
 {
 
 }
@@ -29,49 +19,49 @@ Array2DView< T >::Array2DView( void* pPointer, const Vector2i& size, const Vecto
 template< typename T >
 bool Array2DView< T >::isNull( ) const
 {
-    return( m_pPointer == nullptr );
+    return( m_pointer == nullptr );
 }
 
 template< typename T >
 bool Array2DView< T >::notNull( ) const
 {
-    return( m_pPointer != nullptr );
+    return( m_pointer != nullptr );
 }
 
 template< typename T >
 Array2DView< T >::operator const T* () const
 {
-    return reinterpret_cast< T* >( m_pPointer );
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
 Array2DView< T >::operator T* ()
 {
-    return reinterpret_cast< T* >( m_pPointer );
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
 const T* Array2DView< T >::pointer() const
 {
-    return reinterpret_cast< T* >( m_pPointer );
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
 T* Array2DView< T >::pointer()
 {
-    return reinterpret_cast< T* >( m_pPointer );
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
 T* Array2DView< T >::elementPointer( const Vector2i& xy )
 {
-    return reinterpret_cast< T* >( &( m_pPointer[ Vector2i::dot( xy, m_stride ) ] ) );
+    return reinterpret_cast< T* >( &( m_pointer[ Vector2i::dot( xy, m_stride ) ] ) );
 }
 
 template< typename T >
 T* Array2DView< T >::rowPointer( int y )
 {
-    return reinterpret_cast< T* >( &( m_pPointer[ y * m_stride.y ] ) );
+    return reinterpret_cast< T* >( &( m_pointer[ y * m_stride.y ] ) );
 }
 
 template< typename T >
@@ -153,7 +143,7 @@ template< typename T >
 template< typename U, typename >
 Array2DView< T >::operator Array2DView< const T >() const
 {
-    return Array2DView< const T >( m_pPointer, m_size, m_stride );
+    return Array2DView< const T >( m_pointer, m_size, m_stride );
 }
 
 template< typename T >

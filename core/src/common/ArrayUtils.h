@@ -7,6 +7,7 @@
 #include "Array1DView.h"
 #include "Array2D.h"
 #include "Array3D.h"
+#include "BasicTypes.h" // TODO: uint8x4 --> Vector4ub
 
 #include <vecmath/Box3i.h>
 #include <vecmath/Rect2i.h>

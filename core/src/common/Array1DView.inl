@@ -1,26 +1,17 @@
 template< typename T >
-Array1DView< T >::Array1DView() :
-    m_size( 0 ),
-    m_stride( 0 ),
-    m_pPointer( nullptr )
-{
-
-}
-
-template< typename T >
-Array1DView< T >::Array1DView( void* pPointer, int size ) :
+Array1DView< T >::Array1DView( void* pointer, size_t size ) :
     m_size( size ),
     m_stride( sizeof( T ) ),
-    m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
+    m_pointer( reinterpret_cast< uint8_t* >( pointer) )
 {
 
 }
 
 template< typename T >
-Array1DView< T >::Array1DView( void* pPointer, int size, int stride ) :
+Array1DView< T >::Array1DView( void* pointer, size_t size, ptrdiff_t stride ) :
     m_size( size ),
     m_stride( stride ),
-    m_pPointer( reinterpret_cast< uint8_t* >( pPointer ) )
+    m_pointer( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
 }
@@ -28,78 +19,78 @@ Array1DView< T >::Array1DView( void* pPointer, int size, int stride ) :
 template< typename T >
 bool Array1DView< T >::isNull() const
 {
-    return( m_pPointer == nullptr );
+    return( m_pointer == nullptr );
 }
 
 template< typename T >
 bool Array1DView< T >::notNull() const
 {
-    return( m_pPointer != nullptr );
+    return( m_pointer != nullptr );
 }
 
 template< typename T >
 Array1DView< T >::operator const T* () const
 {
-    return m_pPointer;
+    return m_pointer;
 }
 
 template< typename T >
 Array1DView< T >::operator T* ()
 {
-    return m_pPointer;
+    return m_pointer;
 }
 
 template< typename T >
 const T* Array1DView< T >::pointer() const
 {
-    return reinterpret_cast< const T* >( m_pPointer );
+    return reinterpret_cast< const T* >( m_pointer );
 }
 
 template< typename T >
 T* Array1DView< T >::pointer()
 {
-    return reinterpret_cast< T* >( m_pPointer );
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
-T* Array1DView< T >::elementPointer( int x )
+T* Array1DView< T >::elementPointer( size_t x )
 {
-    return reinterpret_cast< T* >( m_pPointer + x * elementStrideBytes() );
+    return reinterpret_cast< T* >( m_pointer + x * elementStrideBytes() );
 }
 
 template< typename T >
-T& Array1DView< T >::operator [] ( int k )
+T& Array1DView< T >::operator [] ( size_t k )
 {
-    T* q = reinterpret_cast< T* >( m_pPointer + k * m_stride );
+    T* q = reinterpret_cast< T* >( m_pointer + k * m_stride );
     return *q;
 }
 
 template< typename T >
-int Array1DView< T >::width() const
+size_t Array1DView< T >::width() const
 {
     return m_size;
 }
 
 template< typename T >
-int Array1DView< T >::size() const
+size_t Array1DView< T >::size() const
 {
     return m_size;
 }
 
 template< typename T >
-int Array1DView< T >::numElements() const
+size_t Array1DView< T >::numElements() const
 {
     return m_size;
 }
 
 template< typename T >
-int Array1DView< T >::elementStrideBytes() const
+ptrdiff_t Array1DView< T >::elementStrideBytes() const
 {
     return m_stride;
 }
 
 template< typename T >
-int Array1DView< T >::stride() const
+ptrdiff_t Array1DView< T >::stride() const
 {
     return m_stride;
 }
@@ -117,7 +108,8 @@ bool Array1DView< T >::packed() const
 }
 
 template< typename T >
+template< typename U, typename >
 Array1DView< T >::operator Array1DView< const T >() const
 {
-    return Array1DView< const T >( m_pPointer, m_size, m_stride );
+    return Array1DView< const T >( m_pointer, m_size, m_stride );
 }

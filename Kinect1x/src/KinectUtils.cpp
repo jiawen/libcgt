@@ -37,8 +37,8 @@ Matrix4f KinectUtils::worldToKinect( const NUI_SKELETON_FRAME& frame )
 void KinectUtils::rawDepthMapToMeters( const Array2D< uint16_t >& rawDepth,
     Array2DView< float > outputMeters, bool flipLeftRight, int rightShft )
 {
-    int w = rawDepth.width();
-    int h = rawDepth.height();
+    int w = static_cast< int >( rawDepth.width() );
+    int h = static_cast< int >( rawDepth.height() );
 
     for( int y = 0; y < h; ++y )
     {

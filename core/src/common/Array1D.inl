@@ -1,30 +1,30 @@
 #include <algorithm>
+#include <cassert>
 
 template< typename T >
-Array1D< T >::Array1D( std::initializer_list< T > values )
+Array1D< T >::Array1D( std::initializer_list< T > values, Allocator* allocator ) :
+    m_allocator( allocator )
 {
     resize( values.size() );
-    std::copy( values.begin(), values.end(), reinterpret_cast< T* >( m_array.get() ) );
+    std::copy( values.begin(), values.end(), reinterpret_cast< T* >( m_data ) );
 }
 
 template< typename T >
-Array1D< T >::Array1D( const char* filename )
+Array1D< T >::Array1D( size_t size, size_t stride, const T& fillValue,
+    Allocator* allocator ) :
+    m_allocator( allocator )
 {
-    load( filename );
-}
-
-template< typename T >
-Array1D< T >::Array1D( size_t size, size_t stride, const T& fillValue )
-{
+    assert( stride >= sizeof( T ) );
     resize( size, stride );
     fill( fillValue );
 }
 
 template< typename T >
-Array1D< T >::Array1D( std::unique_ptr< void > pointer, size_t size, size_t stride ) :
+Array1D< T >::Array1D( void* pointer, size_t size, size_t stride, Allocator* allocator ) :
+    m_data( pointer ),
     m_size( size ),
     m_stride( stride ),
-    m_array( reinterpret_cast< uint8_t* >( std::move( pointer ).release() ) )
+    m_allocator( allocator )
 {
 
 }
@@ -35,16 +35,18 @@ Array1D< T >::Array1D( const Array1D< T >& copy )
     resize( copy.m_size, copy.m_stride );
     if( copy.notNull() )
     {
-        memcpy( m_array, copy.m_array, m_stride * m_size );
+        memcpy( m_data, copy.m_data, m_stride * m_size );
     }
 }
 
 template< typename T >
 Array1D< T >::Array1D( Array1D< T >&& move )
 {
+    invalidate();
     m_size = std::move( move.m_size );
-    m_stride = std::move( move.m_strides );
-    m_array = std::move( move.m_array );
+    m_stride = std::move( move.m_stride );
+    m_data = std::move( move.m_data );
+    m_allocator = std::move( move.m_allocator );
 }
 
 template< typename T >
@@ -55,7 +57,7 @@ Array1D< T >& Array1D< T >::operator = ( const Array1D< T >& copy )
         resize( copy.m_size, copy.m_stride );
         if( copy.notNull() )
         {
-            memcpy( m_array, copy.m_array, m_stride * m_size );
+            memcpy( m_data, copy.m_data, m_stride * m_size );
         }
     }
     return *this;
@@ -66,23 +68,56 @@ Array1D< T >& Array1D< T >::operator = ( Array1D< T >&& move )
 {
     if( this != &move )
     {
+        invalidate();
         m_size = std::move( move.m_size );
         m_stride = std::move( move.m_stride );
-        m_array = std::move( move.m_array );
+        m_data = std::move( move.m_data );
+        m_allocator = std::move( move.m_allocator );
     }
     return *this;
+}
+
+// virtual
+template< typename T >
+Array1D< T >::~Array1D()
+{
+    invalidate();
 }
 
 template< typename T >
 bool Array1D< T >::isNull() const
 {
-    return( m_array == nullptr );
+    return( m_data == nullptr );
 }
 
 template< typename T >
 bool Array1D< T >::notNull() const
 {
-    return( m_array != nullptr );
+    return( m_data != nullptr );
+}
+
+template< typename T >
+std::pair< Array1DView< T >, Allocator* > Array1D< T >::relinquish()
+{
+    Array1DView< T > view = readWriteView();
+
+    m_data = nullptr;
+    m_size = 0;
+    m_stride = 0;
+
+    return std::make_pair( view, m_allocator );
+}
+
+template< typename T >
+void Array1D< T >::invalidate()
+{
+    if( m_data != nullptr )
+    {
+        m_allocator->deallocate( m_data, m_size * m_stride );
+        m_data = nullptr;
+        m_size = 0;
+        m_stride = 0;
+    }
 }
 
 template< typename T >
@@ -135,23 +170,21 @@ template< typename T >
 void Array1D< T >::resize( size_t size, size_t stride )
 {
     // If we request an invalid size then invalidate this.
-    if( size <= 0 || stride <= 0 )
+    if( size == 0 || stride == 0 || stride < sizeof( T ) )
     {
-        m_size = 0;
-        m_stride = 0;
-        m_array = nullptr;
+        invalidate();
     }
     // Otherwise, it's a valid size.
     else
     {
-        // Check if the total number of memory is the same.
-        // If it is, can reuse memory.
+        // Check if the total amount of memory is different.
+        // If so, reallocate. Otherwise, can reuse it and just change the shape.
         if( size * stride != m_size * m_stride )
         {
-            m_array = std::unique_ptr< uint8_t[] >( new uint8_t[ size * stride ] );
+            invalidate();
+            m_data = reinterpret_cast< uint8_t* >( m_allocator->allocate( size * stride ) );
         }
 
-        // if the number of elements is the same, the dimensions may be different
         m_size = size;
         m_stride = stride;
     }
@@ -160,144 +193,71 @@ void Array1D< T >::resize( size_t size, size_t stride )
 template< typename T >
 const T* Array1D< T >::pointer() const
 {
-    return reinterpret_cast< T* >( m_array.get() );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 T* Array1D< T >::pointer()
 {
-    return reinterpret_cast< T* >( m_array.get() );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
-const T* Array1D< T >::elementPointer( int x ) const
+const T* Array1D< T >::elementPointer( size_t x ) const
 {
-    return reinterpret_cast< const T* >( &( m_array[ x * m_stride ] ) );
+    return reinterpret_cast< const T* >( &( m_data[ x * m_stride ] ) );
 }
 
 template< typename T >
-T* Array1D< T >::elementPointer( int x )
+T* Array1D< T >::elementPointer( size_t x )
 {
-    return reinterpret_cast< T* >( &( m_array[ x * m_stride ] ) );
+    return reinterpret_cast< T* >( &( m_data[ x * m_stride ] ) );
+}
+
+template< typename T >
+Array1DView< const T > Array1D< T >::readOnlyView() const
+{
+    return Array1DView< const T >( m_data, m_size, m_stride );
+}
+
+template< typename T >
+Array1DView< T > Array1D< T >::readWriteView() const
+{
+    return Array1DView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
 Array1D< T >::operator Array1DView< const T >() const
 {
-    return Array1DView< const T >( m_array.get(), m_size, m_stride );
+    return readOnlyView();
 }
 
 template< typename T >
 Array1D< T >::operator Array1DView< T >()
 {
-    return Array1DView< T >( m_array.get(), m_size, m_stride );
+    return readWriteView();
 }
 
 template< typename T >
 Array1D< T >::operator const T* () const
 {
-    return reinterpret_cast< const T* >( m_array.get() );
+    return reinterpret_cast< const T* >( m_data );
 }
 
 template< typename T >
 Array1D< T >::operator T* ()
 {
-    return reinterpret_cast< T* >( m_array.get() );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
-const T& Array1D< T >::operator [] ( int k ) const
+const T& Array1D< T >::operator [] ( size_t k ) const
 {
     return *( elementPointer( k ) );
 }
 
 template< typename T >
-T& Array1D< T >::operator [] ( int k )
+T& Array1D< T >::operator [] ( size_t k )
 {
     return *( elementPointer( k ) );
-}
-
-template< typename T >
-bool Array1D< T >::load( const char* filename )
-{
-    FILE* fp = fopen( filename, "rb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = load( fp );
-
-    // close file
-    int fcloseRetVal = fclose( fp );
-    if( fcloseRetVal != 0 )
-    {
-        return false;
-    }
-
-    return succeeded;
-}
-
-template< typename T >
-bool Array1D< T >::load( FILE* fp )
-{
-    size_t width;
-    size_t stride;
-    size_t elementsRead;
-
-    elementsRead = fread( &width, sizeof( size_t ), 1, fp );
-    if( elementsRead != 1 )
-    {
-        return false;
-    }
-
-    elementsRead = fread( &stride, sizeof( size_t ), 1, fp );
-    if( elementsRead != 1 )
-    {
-        return false;
-    }
-
-    size_t nBytes = stride * width;
-    std::unique_ptr< uint8_t[] > pBuffer( new uint8_t[ nBytes ] );
-
-    // read elements
-    elementsRead = fread( pBuffer.get(), 1, nBytes, fp );
-    if( elementsRead != nBytes )
-    {
-        return false;
-    }
-
-    // read succeeded, swap contents
-    m_size = width;
-    m_stride = stride;
-    m_array = pBuffer;
-
-    return true;
-}
-
-template< typename T >
-bool Array1D< T >::save( const char* filename ) const
-{
-    FILE* fp = fopen( filename, "wb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = save( fp );
-    fclose( fp );
-    return succeeded;
-}
-
-template< typename T >
-bool Array1D< T >::save( FILE* fp ) const
-{
-    // TODO: error checking
-
-    fwrite( &m_size, sizeof( size_t ), 1, fp );
-    fwrite( &m_stride, sizeof( size_t ), 1, fp );
-    fwrite( m_array.get(), 1, m_size * m_stride, fp );
-    fclose( fp );
-
-    return true;
 }

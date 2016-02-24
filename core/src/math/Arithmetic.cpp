@@ -3,6 +3,8 @@
 
 #include "math/Arithmetic.h"
 
+#include "common/Array1D.h"
+
 // static
 int Arithmetic::mod( int x, int n )
 {

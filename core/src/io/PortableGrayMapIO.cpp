@@ -73,7 +73,7 @@ PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
     if( maxVal < 256 )
     {
         output.gray8.resize( { width, height } );
-        int nElementsRead = fread( output.gray8, 1, width * height, pFile );
+        size_t nElementsRead = fread( output.gray8, 1, width * height, pFile );
         if( nElementsRead == width * height )
         {
             output.valid = true;
@@ -82,7 +82,7 @@ PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
     else // maxVal < 65536
     {
         output.gray16.resize( { width, height } );
-        int nElementsRead = fread( output.gray16, 2, width * height, pFile );
+        size_t nElementsRead = fread( output.gray16, 2, width * height, pFile );
         if( nElementsRead == width * height )
         {
             output.valid = true;

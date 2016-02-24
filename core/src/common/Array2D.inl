@@ -1,82 +1,80 @@
+#include <cassert>
+
 template< typename T >
-Array2D< T >::Array2D() :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array2D< T >::Array2D( void* pointer, const Vector2i& size,
+    Allocator* allocator ) :
+    Array2D
+    (
+        pointer,
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) )
+        },
+        allocator
+    )
 {
 
 }
 
 template< typename T >
-Array2D< T >::Array2D( void* pointer, const Vector2i& size ) :
+Array2D< T >::Array2D( void* pointer, const Vector2i& size,
+    const Vector2i& stride, Allocator* allocator ) :
     m_size( size ),
-    m_strides( { static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } ),
-    m_array( reinterpret_cast< uint8_t* >( pointer ) )
+    m_stride( stride ),
+    m_data( reinterpret_cast< uint8_t* >( pointer ) ),
+    m_allocator( allocator )
 {
 
 }
 
 template< typename T >
-Array2D< T >::Array2D( void* pointer, const Vector2i& size, const Vector2i& strides ) :
-    m_size( size ),
-    m_strides( strides ),
-    m_array( reinterpret_cast< uint8_t* >( pointer ) )
+Array2D< T >::Array2D( const Vector2i& size, const T& fillValue,
+    Allocator* allocator ) :
+    Array2D
+    (
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) )
+        },
+        fillValue,
+        allocator
+    )
 {
-
 }
 
 template< typename T >
-Array2D< T >::Array2D( const char* filename ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array2D< T >::Array2D( const Vector2i& size, const Vector2i& stride,
+    const T& fillValue, Allocator* allocator ) :
+    m_allocator( allocator )
 {
-    load( filename );
-}
-
-template< typename T >
-Array2D< T >::Array2D( const Vector2i& size, const T& fillValue ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
-{
-    resize( size );
+    assert( size.x >= 0 );
+    assert( size.y >= 0 );
+    assert( stride.x >= sizeof( T ) );
+    assert( stride.y >= size.x * sizeof( T ) );
+    resize( size, stride );
     fill( fillValue );
 }
 
 template< typename T >
-Array2D< T >::Array2D( const Vector2i& size, const Vector2i& strides, const T& fillValue ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
+Array2D< T >::Array2D( const Array2D< T >& copy )
 {
-    resize( size, strides );
-    fill( fillValue );
-}
-
-template< typename T >
-Array2D< T >::Array2D( const Array2D< T >& copy ) :
-    m_size( 0 ),
-    m_strides( 0 ),
-    m_array( nullptr )
-{
-    resize( copy.m_size, copy.m_strides );
+    resize( copy.m_size, copy.m_stride );
     if( copy.notNull() )
     {
-        memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
+        memcpy( m_data, copy.m_data, m_stride.y * m_size.y );
     }
 }
 
 template< typename T >
 Array2D< T >::Array2D( Array2D< T >&& move )
 {
-    m_size = move.m_size;
-    m_strides = move.m_strides;
-    m_array = move.m_array;
-
-    move.m_size = { 0, 0 };
-    move.m_strides = { 0, 0 };
-    move.m_array = nullptr;
+    invalidate();
+    m_size = std::move( move.m_size );
+    m_stride = std::move( move.m_stride );
+    m_data = std::move( move.m_data );
+    m_allocator = std::move( move.m_allocator );
 }
 
 template< typename T >
@@ -84,10 +82,10 @@ Array2D< T >& Array2D< T >::operator = ( const Array2D< T >& copy )
 {
     if( this != &copy )
     {
-        resize( copy.m_size, copy.m_strides );
+        resize( copy.m_size, copy.m_stride );
         if( copy.notNull() )
         {
-            memcpy( m_array, copy.m_array, m_strides.y * m_size.y );
+            memcpy( m_data, copy.m_data, m_stride.y * m_size.y );
         }
     }
     return *this;
@@ -98,24 +96,17 @@ Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
 {
     if( this != &move )
     {
-        if( m_array != nullptr )
-        {
-            delete[] m_array;
-        }
-
-        m_size = move.m_size;
-        m_strides = move.m_strides;
-        m_array = move.m_array;
-
-        move.m_size = { 0, 0 };
-        move.m_strides = { 0, 0 };
-        move.m_array = nullptr;
+        invalidate();
+        m_size = std::move( move.m_size );
+        m_stride = std::move( move.m_stride );
+        m_data = std::move( move.m_data );
+        m_allocator = std::move( move.m_allocator );
     }
     return *this;
 }
 
-template< typename T >
 // virtual
+template< typename T >
 Array2D< T >::~Array2D()
 {
     invalidate();
@@ -124,47 +115,47 @@ Array2D< T >::~Array2D()
 template< typename T >
 bool Array2D< T >::isNull() const
 {
-    return( m_array == nullptr );
+    return( m_data == nullptr );
 }
 
 template< typename T >
 bool Array2D< T >::notNull() const
 {
-    return( m_array != nullptr );
+    return( m_data != nullptr );
 }
 
 template< typename T >
-Array2DView< T > Array2D< T >::relinquish()
+std::pair< Array2DView< T >, Allocator* > Array2D< T >::relinquish()
 {
-    Array2DView< T > output = *this;
+    Array2DView< T > view = readWriteView();
 
+    m_data = nullptr;
     m_size = { 0, 0 };
-    m_strides = { 0, 0 };
+    m_stride = { 0, 0 };
 
-    return output;
+    return std::make_pair( view, m_allocator );
 }
 
 template< typename T >
 void Array2D< T >::invalidate()
 {
-    m_size = { 0, 0 };
-    m_strides = { 0, 0 };
-
-    if( m_array != nullptr )
+    if( m_data != nullptr )
     {
-        delete[] m_array;
-        m_array = nullptr;
+        m_allocator->deallocate( m_data, m_size.y * m_stride.y );
+        m_data = nullptr;
+        m_size = { 0, 0 };
+        m_stride = { 0, 0 };
     }
 }
 
 template< typename T >
-int Array2D< T >::width() const
+size_t Array2D< T >::width() const
 {
     return m_size.x;
 }
 
 template< typename T >
-int Array2D< T >::height() const
+size_t Array2D< T >::height() const
 {
     return m_size.y;
 }
@@ -176,34 +167,34 @@ Vector2i Array2D< T >::size() const
 }
 
 template< typename T >
-int Array2D< T >::numElements() const
+size_t Array2D< T >::numElements() const
 {
     return m_size.x * m_size.y;
 }
 
 template< typename T >
-int Array2D< T >::elementStrideBytes() const
+size_t Array2D< T >::elementStrideBytes() const
 {
-    return m_strides.x;
+    return m_stride.x;
 }
 
 template< typename T >
-int Array2D< T >::rowStrideBytes() const
+size_t Array2D< T >::rowStrideBytes() const
 {
-    return m_strides.y;
+    return m_stride.y;
 }
 
 template< typename T >
-Vector2i Array2D< T >::strides() const
+Vector2i Array2D< T >::stride() const
 {
-    return m_strides;
+    return m_stride;
 }
 
 template< typename T >
 void Array2D< T >::fill( const T& fillValue )
 {
-    int ne = numElements();
-    for( int k = 0; k < ne; ++k )
+    size_t ne = numElements();
+    for( size_t k = 0; k < ne; ++k )
     {
         ( *this )[ k ] = fillValue;
     }
@@ -212,84 +203,90 @@ void Array2D< T >::fill( const T& fillValue )
 template< typename T >
 void Array2D< T >::resize( const Vector2i& size )
 {
-    resize( size, { static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } );
+    resize
+    (
+        size,
+        {
+            static_cast< int >( sizeof( T ) ),
+            static_cast< int >( size.x * sizeof( T ) )
+        }
+    );
 }
 
 template< typename T >
-void Array2D< T >::resize( const Vector2i& size, const Vector2i& strides )
+void Array2D< T >::resize( const Vector2i& size, const Vector2i& stride )
 {
-    // Of we request an invalid size then invalidate this.
-    if( size.x <= 0 || size.y <= 0 || strides.x <= 0 || strides.y <= 0 )
+    // If we request an invalid size then invalidate this.
+    if( size.x == 0 || size.y == 0 ||
+        stride.x < sizeof( T ) || stride.y < size.x * sizeof( T ) )
     {
         invalidate();
     }
     // Otherwise, it's a valid size.
     else
     {
-        // Check if the total number of memory is the same.
-        // If it is, can reuse memory.
-        if( size.y * strides.y != m_size.y * m_strides.y )
+        // Check if the total amount of memory is different.
+        // If so, reallocate. Otherwise, can reuse it and just change the shape.
+        if( size.y * stride.y != m_size.y * m_stride.y )
         {
-            if( m_array != nullptr )
-            {
-                delete[] m_array;
-            }
-
-            m_array = new uint8_t[ size.y * strides.y ];
+            invalidate();
+            m_data = reinterpret_cast< uint8_t* >
+            (
+                m_allocator->allocate( size.y * stride.y )
+            );
         }
 
-        // if the number of elements is the same, the dimensions may be different
         m_size = size;
-        m_strides = strides;
+        m_stride = stride;
     }
 }
 
 template< typename T >
 const T* Array2D< T >::pointer() const
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 T* Array2D< T >::pointer()
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
 const T* Array2D< T >::elementPointer( const Vector2i& xy ) const
 {
-    return reinterpret_cast< const T* >( &( m_array[ Vector2i::dot( xy, m_strides ) ] ) );
+    return reinterpret_cast< const T* >( &( m_data[ Vector2i::dot( xy, m_stride ) ] ) );
 }
 
 template< typename T >
 T* Array2D< T >::elementPointer( const Vector2i& xy )
 {
-    return reinterpret_cast< T* >( &( m_array[ Vector2i::dot( xy, m_strides ) ] ) );
+    return reinterpret_cast< T* >( &( m_data[ Vector2i::dot( xy, m_stride ) ] ) );
 }
 
 template< typename T >
-const T* Array2D< T >::rowPointer( int y ) const
+const T* Array2D< T >::rowPointer( size_t y ) const
 {
     return elementPointer( { 0, y } );
 }
 
 template< typename T >
-T* Array2D< T >::rowPointer( int y )
+T* Array2D< T >::rowPointer( size_t y )
 {
-    return elementPointer( { 0, y } );
+    return elementPointer( { 0, static_cast< int >( y ) } );
 }
 
 template< typename T >
 Array2DView< const T > Array2D< T >::readOnlyView() const
 {
-    return Array2DView< const T >( m_array, m_size, m_strides );
+    return Array2DView< const T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
 Array2DView< T > Array2D< T >::readWriteView() const
 {
-    return Array2DView< T >( m_array, m_size, m_strides );
+    return Array2DView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
@@ -307,30 +304,32 @@ Array2D< T >::operator Array2DView< T >()
 template< typename T >
 Array2D< T >::operator const T* () const
 {
-    return reinterpret_cast< const T* >( m_array );
+    return reinterpret_cast< const T* >( m_data );
 }
 
 template< typename T >
 Array2D< T >::operator T* ()
 {
-    return reinterpret_cast< T* >( m_array );
+    return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
-const T& Array2D< T >::operator [] ( int k ) const
+const T& Array2D< T >::operator [] ( size_t k ) const
 {
-    int x;
-    int y;
-    Indexing::indexToSubscript2D( k, m_size.x, x, y );
+    size_t x;
+    size_t y;
+    Indexing::indexToSubscript2D(
+        static_cast< int >( k ), m_size.x, x, y );
     return ( *this )[ { x, y } ];
 }
 
 template< typename T >
-T& Array2D< T >::operator [] ( int k )
+T& Array2D< T >::operator [] ( size_t k )
 {
     int x;
     int y;
-    Indexing::indexToSubscript2D( k, m_size.x, x, y );
+    Indexing::indexToSubscript2D(
+        static_cast< int >( k ), m_size.x, x, y );
     return ( *this )[ { x, y } ];
 }
 
@@ -344,94 +343,4 @@ template< typename T >
 T& Array2D< T >::operator [] ( const Vector2i& xy )
 {
     return *( elementPointer( xy ) );
-}
-
-
-template< typename T >
-bool Array2D< T >::load( const char* filename )
-{
-    FILE* fp = fopen( filename, "rb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = load( fp );
-
-    // close file
-    int fcloseRetVal = fclose( fp );
-    if( fcloseRetVal != 0 )
-    {
-        return false;
-    }
-
-    return succeeded;
-}
-
-template< typename T >
-bool Array2D< T >::load( FILE* fp )
-{
-    int dims[ 4 ];
-    size_t elementsRead;
-
-    elementsRead = fread( dims, sizeof( int ), 4, fp );
-    if( elementsRead != 4 )
-    {
-        return false;
-    }
-
-    int width = dims[ 0 ];
-    int height = dims[ 1 ];
-    int elementStrideBytes = dims[ 2 ];
-    int rowStrideBytes = dims[ 3 ];
-
-    size_t nBytes = rowStrideBytes * height;
-    uint8_t* pBuffer = new uint8_t[ nBytes ];
-
-    // read elements
-    elementsRead = fread( pBuffer, 1, nBytes, fp );
-    if( elementsRead != nBytes )
-    {
-        delete[] pBuffer;
-        return false;
-    }
-
-    // read succeeded, swap contents
-    m_size = { width, height };
-    m_strides = { elementStrideBytes, rowStrideBytes };
-
-    if( m_array != nullptr )
-    {
-        delete[] m_array;
-    }
-    m_array = pBuffer;
-
-    return true;
-}
-
-template< typename T >
-bool Array2D< T >::save( const char* filename ) const
-{
-    FILE* fp = fopen( filename, "wb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = save( fp );
-    fclose( fp );
-    return succeeded;
-}
-
-template< typename T >
-bool Array2D< T >::save( FILE* fp ) const
-{
-    // TODO: error checking
-
-    fwrite( &m_size, sizeof( int ), 2, fp );
-    fwrite( &m_strides, sizeof( int ), 2, fp );
-    fwrite( m_array, 1, m_size.y * m_strides.y, fp );
-    fclose( fp );
-
-    return true;
 }
