@@ -8,7 +8,7 @@ Array3D< T >::Array3D( void* pointer, const Vector3i& size,
         {
             static_cast< int >( sizeof( T ) ),
             static_cast< int >( size.x * sizeof( T ) ),
-            static_cast< int >( size.x * size.y * * sizeof( T ) )
+            static_cast< int >( size.x * size.y * sizeof( T ) )
         },
         allocator
     )

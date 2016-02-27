@@ -21,9 +21,9 @@ Array1D< T >::Array1D( size_t size, size_t stride, const T& fillValue,
 
 template< typename T >
 Array1D< T >::Array1D( void* pointer, size_t size, size_t stride, Allocator* allocator ) :
-    m_data( pointer ),
     m_size( size ),
     m_stride( stride ),
+    m_data( reinterpret_cast< uint8_t* >( pointer ) ),
     m_allocator( allocator )
 {
 

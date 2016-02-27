@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 // An interface for a memory allocator.
 class Allocator
 {

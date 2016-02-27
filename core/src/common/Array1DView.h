@@ -54,7 +54,8 @@ public:
     // Implicit conversion operator from Array2DView< T > to Array2DView< const T >.
     // Enabled only if T is not const.
     template< typename U = T,
-        typename = typename std::enable_if< not_const< U >::value >::type >
+        typename = typename std::enable_if
+            < libcgt::core::common::not_const< U >::value >::type >
     operator Array1DView< const T >() const;
 
 private:

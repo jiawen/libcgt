@@ -8,8 +8,6 @@
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
 
-using libcgt::core::common::not_const;
-
 // A 2D array view that wraps around a raw pointer and does not take ownership.
 template< typename T >
 class Array2DView
@@ -74,8 +72,11 @@ public:
 
     // Implicit conversion operator from Array2DView< T > to Array2DView< const T >.
     // Enabled only if T is not const.
+    // TODO: can remove fully qualified namespace after this class is moved into
+    // the libcgt namespace.
     template< typename U = T,
-        typename = typename std::enable_if< not_const< U >::value >::type >
+        typename = typename std::enable_if
+            < libcgt::core::common::not_const< U >::value >::type >
     operator Array2DView< const T >() const;
 
     // Extract row y from this Array2DView as an Array1DView.
