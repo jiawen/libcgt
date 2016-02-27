@@ -251,6 +251,18 @@ Array1D< T >::operator T* ()
 }
 
 template< typename T >
+const T& Array1D< T >::operator [] ( int k ) const
+{
+    return *( elementPointer( k ) );
+}
+
+template< typename T >
+T& Array1D< T >::operator [] ( int k )
+{
+    return *( elementPointer( k ) );
+}
+
+template< typename T >
 const T& Array1D< T >::operator [] ( size_t k ) const
 {
     return *( elementPointer( k ) );

@@ -52,5 +52,5 @@ private:
 
     std::vector< OBJFace > m_faces;
 
-    const static std::vector< int > s_invalidSentinel;
+    static const std::vector< int > s_invalidSentinel;
 };

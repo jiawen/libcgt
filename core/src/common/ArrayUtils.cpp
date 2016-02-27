@@ -31,9 +31,10 @@ bool ArrayUtils::saveTXT( Array1DView< const int16_t > view, const char* filenam
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
-        fprintf( fp, "[%d]: %d\n", i, view[ i ] );
+        int val = view[ i ];
+        fprintf( fp, "[%zd]: %d\n", i, val );
     }
 
     retVal = fclose( fp );
@@ -64,9 +65,10 @@ bool ArrayUtils::saveTXT( Array1DView< const int32_t > view, const char* filenam
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
-        fprintf( fp, "[%d]: %d\n", i, view[ i ] );
+        int v = view[ i ];
+        fprintf( fp, "[%zd]: %d\n", i, v );
     }
 
     retVal = fclose( fp );
@@ -97,10 +99,10 @@ bool ArrayUtils::saveTXT( Array1DView< const float >& view, const char* filename
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
-        float v = view[i];
-        fprintf( fp, "[%d]: %f\n", i, v );
+        float v = view[ i ];
+        fprintf( fp, "[%zd]: %f\n", i, v );
     }
 
     retVal = fclose( fp );
@@ -131,10 +133,10 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector2f >& view, const char* filen
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
-        Vector2f v = view[i];
-        fprintf( fp, "[%d]: %f %f\n", i, v.x, v.y );
+        Vector2f v = view[ i ];
+        fprintf( fp, "[%zd]: %f %f\n", i, v.x, v.y );
     }
 
     retVal = fclose( fp );
@@ -165,10 +167,10 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector3f >& view, const char* filen
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
         Vector3f v = view[i];
-        fprintf( fp, "[%d]: %f %f %f\n", i, v.x, v.y, v.z );
+        fprintf( fp, "[%zd]: %f %f %f\n", i, v.x, v.y, v.z );
     }
 
     retVal = fclose( fp );
@@ -199,10 +201,10 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector4f >& view, const char* filen
         return false;
     }
 
-    for( int i = 0; i < n; ++i )
+    for( size_t i = 0; i < n; ++i )
     {
         Vector4f v = view[i];
-        fprintf( fp, "[%d]: %f %f %f %f\n", i, v.x, v.y, v.z, v.w );
+        fprintf( fp, "[%zd]: %f %f %f %f\n", i, v.x, v.y, v.z, v.w );
     }
 
     retVal = fclose( fp );

@@ -89,6 +89,9 @@ public:
     operator const T* () const;
     operator T* ();
 
+    const T& operator [] ( int k ) const; // read
+    T& operator [] ( int k ); // write
+
     const T& operator [] ( size_t k ) const; // read
     T& operator [] ( size_t k ); // write
 

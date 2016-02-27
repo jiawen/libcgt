@@ -137,11 +137,10 @@ void OBJData::removeEmptyGroups()
     {
         int groupIndex = removeList[i];
         int offsetGroupIndex = groupIndex - nRemoved;
-
-        const std::string& groupName = m_groups[i].name();
         m_groups.erase( m_groups.begin() + offsetGroupIndex );
     }
 
+    m_groupIndicesByName.clear();
     for( int i = 0; i < static_cast< int >( m_groups.size()); ++i )
     {
         m_groupIndicesByName[ m_groups[ i ].name() ] = i;

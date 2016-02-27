@@ -1,8 +1,12 @@
 This is "libcgt", my library of computer graphics tools, which I hope you will find useful.
 
-It has been tested fairly extensively on Windows 8.1 x64 only. I now target x64 exclusively.
+It targets Windows 8.1+ and 10, OS X Yosemite, and Android (armeabi-v7a and
+arm64-v8a). It has only been extensively tested on Windows x64.
 
 Build system:
+
+Desktop:
+
 libcgt uses CMake 3.1.
 qmake is now in legacy mode and not really tested. It will be removed soon.
 
@@ -11,6 +15,13 @@ set "base paths" for external libraries. Some tips:
 
 - GLEW:
 set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;c:\work\libraries\glew-1.12.0;c:\work\libraries\glew-1.12.0\lib\Release\x64
+
+$ mkdir build
+$ cmake-gui ..
+
+Android:
+
+Run build_android/build.sh
 
 Dependencies:
 

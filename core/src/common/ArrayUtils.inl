@@ -1,5 +1,5 @@
-template< typename T >
 // static
+template< typename T >
 bool ArrayUtils::loadBinary( FILE* fp, std::vector< T >& output )
 {
     int length;
@@ -13,8 +13,8 @@ bool ArrayUtils::loadBinary( FILE* fp, std::vector< T >& output )
     return true;
 }
 
-template< typename T >
 // static
+template< typename T >
 bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename )
 {
     FILE* fp = fopen( filename, "wb" );
@@ -28,8 +28,8 @@ bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename
     return succeeded;
 }
 
-template< typename T >
 // static
+template< typename T >
 bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
 {
     // TODO: error check

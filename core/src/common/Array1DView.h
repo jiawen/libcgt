@@ -32,6 +32,7 @@ public:
 
     T* elementPointer( size_t x );
 
+    T& operator [] ( int k );
     T& operator [] ( size_t k );
 
     // The logical size of the array view

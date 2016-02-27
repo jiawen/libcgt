@@ -6,6 +6,9 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
+// static
+const std::vector< int > OBJGroup::s_invalidSentinel;
+
 OBJGroup::OBJGroup( const std::string& name ) :
 
     m_name( name ),
