@@ -1,9 +1,7 @@
 #include "lights/SpotLight.h"
 
 #include <cmath>
-#include <QFile>
-#include <QTextStream>
-#include <QString>
+#include <sstream>
 
 #include <vecmath/Vector4f.h>
 
@@ -206,27 +204,19 @@ std::vector< Vector3f > SpotLight::getFrustumCorners() const
     return out;
 }
 
-bool SpotLight::saveTXT( QString filename )
+std::string SpotLight::toString() const
 {
-    QFile outputFile( filename );
+    std::stringstream sstream;
+    sstream << "position " << m_position[ 0 ] << " " << m_position.y << " "
+        << m_position.z << "\n";
+    sstream << "center " << m_center[ 0 ] << " " << m_center.y << " "
+        << m_center.z << "\n";
+    sstream << "up " << m_up[ 0 ] << " " << m_up.y << " "
+        << m_up.z << "\n";
+    sstream << "zNear " << m_zNear << "\n";
+    sstream << "zFar " << m_zFar << "\n";
+    sstream << "fovRadians " << m_fovYRadians << "\n";
+    sstream << "aspect " << m_aspect << "\n";
 
-    // try to open the file in write only mode
-    if( !( outputFile.open( QIODevice::WriteOnly ) ) )
-    {
-        return false;
-    }
-
-    QTextStream outputTextStream( &outputFile );
-    outputTextStream.setCodec( "UTF-8" );
-
-    outputTextStream << "position " << m_position[ 0 ] << " " << m_position[ 1 ] << " " << m_position[ 2 ] << "\n";
-    outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
-    outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
-    outputTextStream << "zNear " << m_zNear << "\n";
-    outputTextStream << "zFar " << m_zFar << "\n";
-    outputTextStream << "fovYDegrees " << MathUtils::radiansToDegrees( m_fovYRadians ) << "\n";
-    outputTextStream << "aspect " << m_aspect << "\n";
-
-    outputFile.close();
-    return true;
+    return sstream.str();
 }

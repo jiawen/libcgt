@@ -1,8 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-
-#include <QString>
+#include <sstream>
 
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector3d.h"
@@ -149,15 +148,9 @@ void Vector3f::negate()
     z = -z;
 }
 
-QString Vector3f::toString() const
+std::string Vector3f::toString() const
 {
-    QString out;
-
-    out.append( "( " );
-    out.append( QString( "%1, " ).arg( x, 10, 'g', 4 ) );
-    out.append( QString( "%1, " ).arg( y, 10, 'g', 4 ) );
-    out.append( QString( "%1" ).arg( z, 10, 'g', 4 ) );
-    out.append( " )" );
-
-    return out;
+    std::ostringstream sstream;
+    sstream << "( " << x << ", " << y << ", " << z << ")";
+    return sstream.str();
 }

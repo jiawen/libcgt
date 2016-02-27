@@ -1,7 +1,7 @@
 #include "vecmath/Range1i.h"
 
 #include <cmath>
-#include <QString>
+#include <cstdlib>
 
 using std::abs;
 
@@ -107,15 +107,15 @@ Range1i Range1i::standardized() const
     return{ origin, size };
 }
 
-QString Range1i::toString() const
+std::string Range1i::toString() const
 {
-    QString out;
+    std::string out;
 
     out.append( "Range1i:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin );
+    out.append( std::to_string(m_origin) );
     out.append( "\n\tsize: " );
-    out.append( m_size );
+    out.append( std::to_string(m_size) );
 
     return out;
 }

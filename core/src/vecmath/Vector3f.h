@@ -1,6 +1,6 @@
 #pragma once
 
-class QString;
+#include <string>
 
 #include "Vector2f.h"
 
@@ -62,7 +62,7 @@ public:
     // automatic type conversion to float pointer
     operator const float* () const;
     operator float* ();
-    QString toString() const;
+    std::string toString() const;
 
     // dot product
     static float dot( const Vector3f& v0, const Vector3f& v1 );

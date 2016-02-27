@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "GLFrustum.h"
@@ -90,7 +91,7 @@ public:
     float zFar() const;
     virtual void setZFar( float zFar );
 
-    // TODO: virtual QString toString() const;
+    virtual std::string toString() const = 0;
 
     // Returns the OpenGL / Direct3D style projection matrix,
     // mapping eye space to clip space.

@@ -1,7 +1,5 @@
 #include "vecmath/Box3f.h"
 
-#include <QString>
-
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
 #include "vecmath/Box3i.h"
@@ -223,9 +221,9 @@ Box3f Box3f::standardized() const
     return Box3f( origin, size );
 }
 
-QString Box3f::toString() const
+std::string Box3f::toString() const
 {
-    QString out;
+    std::string out;
 
     out.append( "Box3f:\n" );
     out.append( "\torigin: " );

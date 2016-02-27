@@ -1,8 +1,7 @@
 #pragma once
 
 #include <initializer_list>
-
-class QString;
+#include <string>
 
 class Vector2i;
 class Vector3i;
@@ -62,13 +61,12 @@ public:
     // implicit cast
     operator const int* () const;
     operator int* ();
-    QString toString() const;
+    std::string toString() const;
 
     Vector4i& operator += ( const Vector4i& v );
     Vector4i& operator -= ( const Vector4i& v );
     Vector4i& operator *= ( int i );
     Vector4i& operator /= ( int i );
-
 
     static int dot( const Vector4i& v0, const Vector4i& v1 );
     static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );

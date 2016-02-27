@@ -1,9 +1,9 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include "vecmath/Vector3f.h"
 
-class QString;
 class Box3i;
 class Vector3f;
 
@@ -78,7 +78,7 @@ public:
     // Standardizing a null box is still a null box.
     Box3f standardized() const;
 
-    QString toString() const;
+    std::string toString() const;
 
     // flips this box up/down
     // (usually used to handle boxes on 3D images where y points down)

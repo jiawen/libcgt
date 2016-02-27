@@ -1,8 +1,7 @@
 #pragma once
 
 #include <initializer_list>
-
-class QString;
+#include <string>
 
 class Vector2i;
 class Vector3f;
@@ -49,7 +48,7 @@ public:
     // implicit cast
     operator const int* () const;
     operator int* ();
-    QString toString() const;
+    std::string toString() const;
 
     static int dot( const Vector3i& v0, const Vector3i& v1 );
 

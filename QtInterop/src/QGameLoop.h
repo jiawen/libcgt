@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QElapsedTimer>
-//#include <time/Clock.h>
 
 class QGameLoop : public QObject
 {

@@ -3,9 +3,9 @@
 // TODO: non-singleton
 // TODO: move to IO
 
-#include <QHash>
-#include <QString>
-#include <QVector>
+#include <string>
+#include <vector>
+#include <unordered_map>
 
 class Parameters
 {
@@ -15,36 +15,42 @@ public:
     static Parameters* instance();
 
     // parses parameters in filename and overwrites it in the singleton
-    static bool parse( QString filename );
+    static bool parse( const std::string& filename );
 
-    bool hasBool( QString name );
-    bool getBool( QString name );
-    void setBool( QString name, bool value );
-    void toggleBool( QString name );
+    bool hasBool( const std::string& name );
+    bool getBool( const std::string& name );
+    void setBool( const std::string& name, bool value );
+    void toggleBool( const std::string& name );
 
-    bool hasInt( QString name );
-    int getInt( QString name );
-    void setInt( QString name, int value );
+    bool hasInt( const std::string& name );
+    int getInt( const std::string& name );
+    void setInt( const std::string& name, int value );
 
-    bool hasIntArray( QString name );
-    QVector< int > getIntArray( QString name );
-    void setIntArray( QString name, QVector< int > values );
+    bool hasIntArray( const std::string& name );
+    const std::vector< int >& getIntArray( const std::string& name );
+    void setIntArray( const std::string& name,
+                     const std::vector< int >& values );
 
-    bool hasFloat( QString name );
-    float getFloat( QString name );
-    void setFloat( QString name, float value );
+    bool hasFloat( const std::string& name );
+    float getFloat( const std::string& name );
+    void setFloat( const std::string& name, float value );
 
-    bool hasFloatArray( QString name );
-    QVector< float > getFloatArray( QString name );
-    void setFloatArray( QString name, QVector< float > values );
+    bool hasFloatArray( const std::string& name );
+    const std::vector< float >& getFloatArray( const std::string& name );
+    void setFloatArray( const std::string& name,
+                       const std::vector< float >& values );
 
-    bool hasString( QString name );
-    QString getString( QString name );
-    void setString( QString name, QString value );
+    bool hasString( const std::string& name );
+    const std::string& getString( const std::string& name );
+    void setString( const std::string& name, const std::string& value );
 
-    bool hasStringArray( QString name );
-    QVector< QString > getStringArray( QString name );
-    void setStringArray( QString name, QVector< QString > values );
+    bool hasStringArray( const std::string& name );
+    const std::vector< std::string >& getStringArray(
+        const std::string& name );
+    void setStringArray( const std::string& name,
+        const std::vector< std::string >& values );
+
+    // TODO: implement toString(). Or ostream& operator <<.
 
 private:
 
@@ -52,20 +58,16 @@ private:
 
     static Parameters* s_singleton;
 
-    QHash< QString, bool > m_boolParameters;
+    std::unordered_map< std::string, bool > m_boolParameters;
 
-    QHash< QString, int > m_intParameters;
-    QHash< QString, QVector< int > > m_intArrayParameters;
+    std::unordered_map< std::string, int > m_intParameters;
+    std::unordered_map< std::string, std::vector< int > > m_intArrayParameters;
 
-    QHash< QString, float > m_floatParameters;
-    QHash< QString, QVector< float > > m_floatArrayParameters;
+    std::unordered_map< std::string, float > m_floatParameters;
+    std::unordered_map<
+        std::string, std::vector< float > > m_floatArrayParameters;
 
-    QHash< QString, QString > m_stringParameters;
-    QHash< QString, QVector< QString > > m_stringArrayParameters;
-
-    friend QDataStream& operator << ( QDataStream& s, const Parameters& p );
-    friend QDataStream& operator >> ( QDataStream& s, Parameters& p );
+    std::unordered_map< std::string, std::string > m_stringParameters;
+    std::unordered_map<
+        std::string, std::vector< std::string > > m_stringArrayParameters;
 };
-
-QDataStream& operator << ( QDataStream& s, const Parameters& p );
-QDataStream& operator >> ( QDataStream& s, Parameters& p );

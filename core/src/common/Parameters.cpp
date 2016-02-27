@@ -1,9 +1,7 @@
 #include "common/Parameters.h"
 
-#include <QFile>
-#include <QDataStream>
-#include <QTextStream>
-#include <QStringList>
+#include <fstream>
+#include <pystring.h>
 
 // static
 Parameters* Parameters::instance()
@@ -17,215 +15,219 @@ Parameters* Parameters::instance()
 }
 
 // static
-bool Parameters::parse( QString filename )
+bool Parameters::parse( const std::string& filename )
 {
     Parameters* p = Parameters::instance();
 
-    // attempt to read the file
-    QFile inputFile( filename );
-    if( !( inputFile.open( QIODevice::ReadOnly ) ) )
+    // Attempt to read the file.
+    std::ifstream inputFile( filename );
+    if (inputFile.fail())
     {
         return false;
     }
 
     int lineNumber = 0;
-    QString line = "";
-    QString delim( " " );
+    std::string line;
+    const std::string delim( " " );
 
-    QTextStream inputTextStream( &inputFile );
-    line = inputTextStream.readLine();
-    while( !( line.isNull() ) )
+    while( std::getline( inputFile, line ) )
     {
         if( line == "" ||
-            line.startsWith( "#" ) ||
-            line.startsWith( "//" ) )
+            pystring::startswith( line, "#" ) ||
+            pystring::startswith( line, "//" ) )
         {
             ++lineNumber;
-            line = inputTextStream.readLine();
             continue;
         }
 
-        QStringList tokens = line.split( delim, QString::SkipEmptyParts );
+        std::vector< std::string > tokens;
+        pystring::split( line, tokens, delim );
 
-        QString type = tokens[0];
-
+        const std::string& type = tokens[0];
         if( type == "bool" )
         {
-            QString name = tokens[1];
-            QString value = tokens[2];
+            const std::string& name = tokens[1];
+            const std::string& value = tokens[2];
             bool v = ( value == "true" );
             p->setBool( name, v );
         }
         else if( type == "int" )
         {
-            QString name = tokens[1];
-            QString value = tokens[2];
-            int v = value.toInt();
+            const std::string& name = tokens[1];
+            const std::string& value = tokens[2];
+            int v = std::stoi( value );
             p->setInt( name, v );
         }
         else if( type == "int[]" )
         {
-            QString name = tokens[1];
-            QVector< int > values;
+            const std::string& name = tokens[1];
+            std::vector< int > values;
             for( int i = 2; i < tokens.size(); ++i )
             {
-                values.append( tokens[i].toInt() );
+                values.push_back( std::stoi( tokens[i] ) );
             }
             p->setIntArray( name, values );
         }
         else if( type == "float" )
         {
-            QString name = tokens[1];
-            QString value = tokens[2];
-            float v = value.toFloat();
+            const std::string& name = tokens[1];
+            const std::string& value = tokens[2];
+            float v = std::stof( value );
             p->setFloat( name, v );
         }
         else if( type == "float[]" )
         {
-            QString name = tokens[1];
-            QVector< float > values;
+            const std::string& name = tokens[1];
+            std::vector< float > values;
             for( int i = 2; i < tokens.size(); ++i )
             {
-                values.append( tokens[i].toFloat() );
+                values.push_back( std::stof( tokens[i] ) );
             }
             p->setFloatArray( name, values );
         }
         else if( type == "string" )
         {
-            QString name = tokens[1];
-            QString value = tokens[2];
+            const std::string& name = tokens[1];
+            const std::string& value = tokens[2];
             p->setString( name, value );
         }
         else if( type == "string[]" )
         {
-            QString name = tokens[1];
-            QVector< QString > values;
+            const std::string& name = tokens[1];
+            std::vector< std::string > values;
             for( int i = 2; i < tokens.size(); ++i )
             {
-                values.append( tokens[i] );
+                values.push_back( tokens[i] );
             }
             p->setStringArray( name, values );
         }
         else
         {
-            printf( "Ignoring unknown type: %s\n", qPrintable( type ) );
+            fprintf( stderr, "Ignoring unknown type: %s\n", type.c_str() );
         }
 
         ++lineNumber;
-        line = inputTextStream.readLine();
     }
-    return true;
+
+    bool succeeded = !( inputFile.fail() );
+    inputFile.close();
+    return succeeded;
 }
 
-bool Parameters::hasBool( QString name )
+bool Parameters::hasBool( const std::string& name )
 {
-    return m_boolParameters.contains( name );
+    return m_boolParameters.find( name ) != m_boolParameters.end();
 }
 
-bool Parameters::getBool( QString name )
+bool Parameters::getBool( const std::string& name )
 {
     return m_boolParameters[ name ];
 }
 
-void Parameters::setBool( QString name, bool value )
+void Parameters::setBool( const std::string& name, bool value )
 {
     m_boolParameters[ name ] = value;
 }
 
-void Parameters::toggleBool( QString name )
+void Parameters::toggleBool( const std::string& name )
 {
-    if( m_boolParameters.contains( name ) )
+    if( m_boolParameters.find( name ) != m_boolParameters.end() )
     {
         setBool( name, !getBool( name ) );
     }
 }
 
-bool Parameters::hasInt( QString name )
+bool Parameters::hasInt( const std::string& name )
 {
-    return m_intParameters.contains( name );
+    return m_intParameters.find( name ) != m_intParameters.end();
 }
 
-int Parameters::getInt( QString name )
+int Parameters::getInt( const std::string& name )
 {
     return m_intParameters[ name ];
 }
 
-void Parameters::setInt( QString name, int value )
+void Parameters::setInt( const std::string& name, int value )
 {
     m_intParameters[ name ] = value;
 }
 
-bool Parameters::hasIntArray( QString name )
+bool Parameters::hasIntArray( const std::string& name )
 {
-    return m_intArrayParameters.contains( name );
+    return m_intArrayParameters.find( name ) != m_intArrayParameters.end();
 }
 
-QVector< int > Parameters::getIntArray( QString name )
+const std::vector< int >& Parameters::getIntArray( const std::string& name )
 {
     return m_intArrayParameters[ name ];
 }
 
-void Parameters::setIntArray( QString name, QVector< int > values )
+void Parameters::setIntArray( const std::string& name,
+                             const std::vector< int >& values )
 {
     m_intArrayParameters[ name ] = values;
 }
 
-bool Parameters::hasFloat( QString name )
+bool Parameters::hasFloat( const std::string& name )
 {
-    return m_floatParameters.contains( name );
+    return m_floatParameters.find( name ) != m_floatParameters.end();
 }
 
-float Parameters::getFloat( QString name )
+float Parameters::getFloat( const std::string& name )
 {
     return m_floatParameters[ name ];
 }
 
-void Parameters::setFloat( QString name, float value )
+void Parameters::setFloat( const std::string& name, float value )
 {
     m_floatParameters[ name ] = value;
 }
 
-bool Parameters::hasFloatArray( QString name )
+bool Parameters::hasFloatArray( const std::string& name )
 {
-    return m_floatArrayParameters.contains( name );
+    return m_floatArrayParameters.find( name ) != m_floatArrayParameters.end();
 }
 
-QVector< float > Parameters::getFloatArray( QString name )
+const std::vector< float >& Parameters::getFloatArray( const std::string& name )
 {
     return m_floatArrayParameters[ name ];
 }
 
-void Parameters::setFloatArray( QString name, QVector< float > values )
+void Parameters::setFloatArray( const std::string& name,
+                               const std::vector< float >& values )
 {
     m_floatArrayParameters[ name ] = values;
 }
 
-bool Parameters::hasString( QString name )
+bool Parameters::hasString( const std::string& name )
 {
-    return m_stringParameters.contains( name );
+    return m_stringParameters.find( name ) != m_stringParameters.end();
 }
 
-QString Parameters::getString( QString name )
+const std::string& Parameters::getString( const std::string& name )
 {
     return m_stringParameters[ name ];
 }
 
-void Parameters::setString( QString name, QString value )
+void Parameters::setString( const std::string& name, const std::string& value )
 {
     m_stringParameters[ name ] = value;
 }
 
-bool Parameters::hasStringArray( QString name )
+bool Parameters::hasStringArray( const std::string& name )
 {
-    return m_stringArrayParameters.contains( name );
+    return m_stringArrayParameters.find( name ) !=
+        m_stringArrayParameters.end();
 }
 
-QVector< QString > Parameters::getStringArray( QString name )
+const std::vector< std::string >& Parameters::getStringArray(
+    const std::string& name )
 {
     return m_stringArrayParameters[ name ];
 }
 
-void Parameters::setStringArray( QString name, QVector< QString > values )
+void Parameters::setStringArray( const std::string& name,
+    const std::vector< std::string >& values )
 {
     m_stringArrayParameters[ name ] = values;
 }
@@ -233,30 +235,6 @@ void Parameters::setStringArray( QString name, QVector< QString > values )
 Parameters::Parameters()
 {
 
-}
-
-QDataStream& operator << ( QDataStream& s, const Parameters& p )
-{
-    s << p.m_boolParameters;
-    s << p.m_intParameters;
-    s << p.m_intArrayParameters;
-    s << p.m_floatParameters;
-    s << p.m_floatArrayParameters;
-    s << p.m_stringParameters;
-    s << p.m_stringArrayParameters;
-    return s;
-}
-
-QDataStream& operator >> ( QDataStream& s, Parameters& p )
-{
-    s >> p.m_boolParameters;
-    s >> p.m_intParameters;
-    s >> p.m_intArrayParameters;
-    s >> p.m_floatParameters;
-    s >> p.m_floatArrayParameters;
-    s >> p.m_stringParameters;
-    s >> p.m_stringArrayParameters;
-    return s;
 }
 
 // static

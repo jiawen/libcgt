@@ -5,17 +5,18 @@ ProgressReporter::ProgressReporter( int nTasks )
     initialize( "Working:", nTasks, 1 );
 }
 
-ProgressReporter::ProgressReporter( QString prefix, int nTasks )
+ProgressReporter::ProgressReporter( const std::string& prefix, int nTasks )
 {
     initialize( prefix, nTasks, 1 );
 }
 
-ProgressReporter::ProgressReporter( QString prefix, int nTasks, float reportRatePercent )
+ProgressReporter::ProgressReporter( const std::string& prefix, int nTasks,
+                                   float reportRatePercent )
 {
     initialize( prefix, nTasks, reportRatePercent );
 }
 
-QString ProgressReporter::notifyAndGetProgressString()
+std::string ProgressReporter::notifyAndGetProgressString()
 {
     notifyTaskCompleted();
     return getProgressString();
@@ -26,19 +27,21 @@ void ProgressReporter::notifyAndPrintProgressString()
     notifyTaskCompleted();
     if( m_reportRatePercent < 0 )
     {
-        printf( "%s\n", qPrintable( getProgressString() ) );
+        printf( "%s\n", getProgressString().c_str() );
     }
     else if( isComplete() || percentComplete() > m_nextReportedPercent )
     {
-        printf( "%s\n", qPrintable( getProgressString() ) );
+        printf( "%s\n", getProgressString().c_str() );
         m_nextReportedPercent += m_reportRatePercent;
     }
 }
 
 void ProgressReporter::notifyTaskCompleted()
 {
-    qint64 now = m_stopwatch.elapsed();
-    qint64 millisecondsForTask = now - m_previousTaskCompletedTime;
+    auto now = ProgressReporter::Clock::now();
+    int64_t millisecondsForTask =
+        std::chrono::duration_cast< std::chrono::milliseconds >(
+            now - m_previousTaskCompletedTime ).count();
     m_previousTaskCompletedTime = now;
 
     m_totalMillisecondsElapsed += millisecondsForTask;
@@ -49,46 +52,51 @@ void ProgressReporter::notifyTaskCompleted()
     }
 }
 
-QString ProgressReporter::getProgressString()
+std::string ProgressReporter::getProgressString()
 {
     if( numTasksRemaining() <= 0 )
     {
-        return QString( "%1 100% [done!]" ).arg( m_prefix );
+        return m_prefix + " 100% [done!]";
     }
     else
     {
-        QString timeRemainingString;
+        std::string timeRemainingString;
         if( approximateMillisecondsRemaining() < 1000 )
         {
-            timeRemainingString = QString( "%1 ms" ).arg( Arithmetic::roundToInt( approximateMillisecondsRemaining() ) );
+            int ms = Arithmetic::roundToInt
+                ( approximateMillisecondsRemaining() );
+            timeRemainingString = std::to_string( ms ) + " ms";
         }
         else
         {
-            timeRemainingString = QString( "%1 s" ).arg( approximateMillisecondsRemaining() / 1000, 0, 'g', 2 );
+            float sec = approximateMillisecondsRemaining() / 1000.0f;
+            timeRemainingString = std::to_string( sec ) + " s";
         }
 
-        QString timeElapsedString;
+        std::string timeElapsedString;
         if( m_totalMillisecondsElapsed < 1000 )
         {
-            timeElapsedString = QString( "%1 ms" ).arg( m_totalMillisecondsElapsed );
+            timeElapsedString = std::to_string( m_totalMillisecondsElapsed )
+                + " ms";
         }
         else
         {
-            timeElapsedString = QString( "%1 s" ).arg( m_totalMillisecondsElapsed / 1000.0f, 0, 'g', 2 );
+            timeElapsedString =
+                std::to_string( m_totalMillisecondsElapsed / 1000.0f ) + " s";
         }
 
-        return QString( "%1 %2% [%3 tasks left (%4), elapsed: %5]" )
-            .arg( m_prefix )
-            .arg( percentComplete(), 0, 'g', 3 )
-            .arg( numTasksRemaining() )
-            .arg( timeRemainingString )
-            .arg( timeElapsedString );
+        return m_prefix
+            + std::to_string( percentComplete() ) + "% "
+            + std::to_string( numTasksRemaining() ) + " tasks left "
+            + "(" + timeRemainingString + "), elapsed: "
+            + timeElapsedString;
     }
 }
 
 float ProgressReporter::percentComplete()
 {
-    return 100.0f * Arithmetic::divideIntsToFloat( m_nTasksCompleted, m_nTasks );
+    return 100.0f *
+        Arithmetic::divideIntsToFloat( m_nTasksCompleted, m_nTasks );
 }
 
 bool ProgressReporter::isComplete()
@@ -111,9 +119,10 @@ float ProgressReporter::averageMillisecondsPerTask()
     return m_totalMillisecondsElapsed / m_nTasksCompleted;
 }
 
-void ProgressReporter::initialize( QString prefix, int nTasks, float reportRatePercent )
+void ProgressReporter::initialize( const std::string& prefix, int nTasks,
+                                  float reportRatePercent )
 {
-    if( prefix.endsWith( ":" ) )
+    if( prefix.back() == ':' )
     {
         m_prefix = prefix;
     }
@@ -125,10 +134,6 @@ void ProgressReporter::initialize( QString prefix, int nTasks, float reportRateP
     m_nTasks = nTasks;
     m_reportRatePercent = reportRatePercent;
 
-    m_totalMillisecondsElapsed = 0;
-  m_stopwatch.start();
-    m_previousTaskCompletedTime = m_stopwatch.elapsed();
-
-    m_nextReportedPercent = 0;
-    m_nTasksCompleted = 0;
+    m_startTime = ProgressReporter::Clock::now();
+    m_previousTaskCompletedTime = m_startTime;
 }

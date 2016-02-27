@@ -1,12 +1,9 @@
 #include "cameras/PerspectiveCamera.h"
 
 #include <cmath>
+#include <fstream>
 #include <limits>
-
-// TODO: remove Qt
-#include <QFile>
-#include <QString>
-#include <QTextStream>
+#include <sstream>
 
 #include "cameras/CameraUtils.h"
 #include "math/Arithmetic.h"
@@ -247,12 +244,15 @@ Vector4f PerspectiveCamera::screenToEye( const Vector2f& xy, float depth, const 
     return Vector4f( xEye, yEye, zEye, 1 );
 }
 
-QString PerspectiveCamera::toString() const
+// virtual
+std::string PerspectiveCamera::toString() const
 {
-    return QString( "Perspective camera:\neye: %1\ncenter: %2\nup:%3" )
-        .arg( eye().toString() )
-        .arg( center().toString() )
-        .arg( up().toString() );
+    std::ostringstream sstream;
+    sstream << "Perspective camera:" << "\n";
+    sstream << "\teye: " << eye().toString() << "\n";
+    sstream << "\tcenter: " << center().toString() << "\n";
+    sstream << "\tup: " << up().toString() << "\n";
+    return sstream.str();
 }
 
 std::vector< Vector4f > PerspectiveCamera::frustumLines() const
@@ -306,20 +306,12 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
     return output;
 }
 
-bool PerspectiveCamera::loadTXT( QString filename )
+bool PerspectiveCamera::loadTXT( const std::string& filename )
 {
-    QFile inputFile( filename );
+    std::ifstream inputFile;
+    inputFile.open( filename, std::ios::in );
 
-    // try to open the file in write only mode
-    if( !( inputFile.open( QIODevice::ReadOnly ) ) )
-    {
-        return false;
-    }
-
-    QTextStream inputTextStream( &inputFile );
-    inputTextStream.setCodec( "UTF-8" );
-
-    QString str;
+    std::string str;
     int i;
 
     Vector3f eye;
@@ -332,18 +324,18 @@ bool PerspectiveCamera::loadTXT( QString filename )
 
     bool isDirectX;
 
-    inputTextStream >> str >> eye[ 0 ] >> eye[ 1 ] >> eye[ 2 ];
-    inputTextStream >> str >> center[ 0 ] >> center[ 1 ] >> center[ 2 ];
-    inputTextStream >> str >> up[ 0 ] >> up[ 1 ] >> up[ 2 ];
-    inputTextStream >> str >> zNear;
-    inputTextStream >> str >> zFar;
+    inputFile >> str >> eye[ 0 ] >> eye[ 1 ] >> eye[ 2 ];
+    inputFile >> str >> center[ 0 ] >> center[ 1 ] >> center[ 2 ];
+    inputFile >> str >> up[ 0 ] >> up[ 1 ] >> up[ 2 ];
+    inputFile >> str >> zNear;
+    inputFile >> str >> zFar;
     if( zFar < 0 )
     {
         zFar = std::numeric_limits< float >::infinity();
     }
-    inputTextStream >> str >> fovYRadians;
-    inputTextStream >> str >> aspect;
-    inputTextStream >> str >> i;
+    inputFile >> str >> fovYRadians;
+    inputFile >> str >> aspect;
+    inputFile >> str >> i;
     isDirectX = ( i != 0 );
 
     inputFile.close();
@@ -352,40 +344,40 @@ bool PerspectiveCamera::loadTXT( QString filename )
     setPerspective( fovYRadians, aspect, zNear, zFar );
     setDirectX( isDirectX );
 
-    return true;
+    bool succeeded = !(inputFile.fail());
+    return succeeded;
 }
 
-bool PerspectiveCamera::saveTXT( QString filename )
+bool PerspectiveCamera::saveTXT( const std::string& filename )
 {
-    QFile outputFile( filename );
+    std::ofstream outFile;
+    outFile.open( filename, std::ios::out );
 
-    // try to open the file in write only mode
-    if( !( outputFile.open( QIODevice::WriteOnly ) ) )
-    {
-        return false;
-    }
-
-    QTextStream outputTextStream( &outputFile );
-    outputTextStream.setCodec( "UTF-8" );
-
-    outputTextStream << "eye " << m_eye[ 0 ] << " " << m_eye[ 1 ] << " " << m_eye[ 2 ] << "\n";
-    outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
-    outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
-    outputTextStream << "zNear " << m_frustum.zNear << "\n";
+    outFile << "eye " << m_eye.x << " " << m_eye.y << " " << m_eye.z
+        << "\n";
+    outFile << "center " << m_center.x << " " << m_center.y << " " << m_center.z
+        << "\n";
+    outFile << "up " << m_up.x << " " << m_up.y << " " << m_up.z
+        << "\n";
+    outFile << "zNear " << m_frustum.zNear << "\n";
     if( isinf( m_frustum.zFar ) )
     {
-        outputTextStream << "zFar " << -1 << "\n";
+        outFile << "zFar " << -1 << "\n";
     }
     else
     {
-        outputTextStream << "zFar " << m_frustum.zFar << "\n";
+        outFile << "zFar " << m_frustum.zFar << "\n";
     }
-    outputTextStream << "fovYRadians " << m_fovYRadians << "\n";
-    outputTextStream << "aspect " << m_aspect << "\n";
-    outputTextStream << "isDirectX " << static_cast< int >( m_directX ) << "\n";
 
-    outputFile.close();
-    return true;
+    outFile << "fovYRadians " << m_fovYRadians << "\n";
+    outFile << "aspect " << m_aspect << "\n";
+    outFile << "isDirectX " << static_cast< int >( m_directX ) <<
+        "\n";
+
+    bool succeeded = !(outFile.fail());
+    outFile.close();
+
+    return succeeded;
 }
 
 // static
@@ -422,6 +414,7 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
     return camera;
 }
 
+// TODO: make this a standalone function.
 
 // static
 PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t )

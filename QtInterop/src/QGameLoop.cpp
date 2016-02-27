@@ -1,10 +1,10 @@
-#include "time/QGameLoop.h"
+#include "QGameLoop.h"
 
 #include <cassert>
 #include <QApplication>
+#include <QThread>
 
 #include "math/Arithmetic.h"
-#include "time/CrossPlatformSleep.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Public
@@ -64,7 +64,7 @@ void QGameLoop::start()
 
         if( sleepTime > 0 ) // sleeptime > 0: some time left in this frame (hopefully the usual case)
         {
-            CrossPlatformSleep::msleep( sleepTime );
+            QThread::currentThread()->msleep( sleepTime );
             overSleepTime = ( m_timer.elapsed() - afterTime ) - sleepTime;
         }
         else // sleeptime <= 0: the frame took longer than the period allowed
@@ -80,7 +80,7 @@ void QGameLoop::start()
             ++nDelays;
             if( nDelays >= m_nDelaysPerYield )
             {
-                CrossPlatformSleep::yieldThread();
+                QThread::yieldCurrentThread();
                 nDelays = 0;
             }
         }

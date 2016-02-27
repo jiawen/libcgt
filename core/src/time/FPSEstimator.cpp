@@ -1,40 +1,34 @@
 #include "time/FPSEstimator.h"
 
-#include <QString>
-
 #include <math/MathUtils.h>
 
 FPSEstimator::FPSEstimator( int nSamples ) :
-
-    m_isFirstUpdate( true ),
-    m_nextSampleIndex( 0 ),
-    m_nActualSamples( 0 ),
-    m_frameTimeSamples( nSamples, 0 )
-
+    m_frameTimeSamples( nSamples )
 {
-  m_clock.start();
+
 }
 
 void FPSEstimator::update()
 {
     if( m_isFirstUpdate )
     {
-        m_lastUpdateTime = m_clock.elapsed();
+        m_lastUpdateTime = Clock::now();
         m_isFirstUpdate = false;
     }
     else
     {
-        qint64 now = m_clock.elapsed();
-        qint64 dt = now - m_lastUpdateTime;
+        auto now = Clock::now();
+        auto dt = now - m_lastUpdateTime;
 
         int n = static_cast< int >( m_frameTimeSamples.size() );
-        m_nActualSamples = MathUtils::clampToRangeExclusive( m_nActualSamples + 1, 0, n + 1 );
+        m_nActualSamples = MathUtils::clampToRangeExclusive(
+            m_nActualSamples + 1, 0, n + 1 );
 
         m_frameTimeSamples[ m_nextSampleIndex ] = dt;
 
         m_nextSampleIndex = ( m_nextSampleIndex + 1 ) % n;
 
-        m_lastUpdateTime = m_clock.elapsed();
+        m_lastUpdateTime = now;
     }
 }
 
@@ -42,12 +36,14 @@ float FPSEstimator::framePeriodMilliseconds() const
 {
     if( m_nActualSamples > 0 )
     {
-        qint64 sum = 0;
+        auto sum = Clock::duration::zero();
         for( int i = 0; i < m_nActualSamples; ++i )
         {
             sum += m_frameTimeSamples[ i ];
         }
-        return( static_cast< float >( sum ) / m_nActualSamples );
+        float sumMS = std::chrono::duration_cast<
+            FPSEstimator::FloatDurationMS >( sum ).count();
+        return( sumMS / m_nActualSamples );
     }
     else
     {
@@ -67,14 +63,12 @@ float FPSEstimator::framesPerSecond() const
     }
 }
 
-QString FPSEstimator::framePeriodMillisecondsString() const
+std::string FPSEstimator::framePeriodMillisecondsString() const
 {
-    float dt = framePeriodMilliseconds();
-    return QString( "%1" ).arg( dt, 0, 'f', 1 );
+    return std::to_string( framePeriodMilliseconds() );
 }
 
-QString FPSEstimator::framesPerSecondString() const
+std::string FPSEstimator::framesPerSecondString() const
 {
-    float fps = framesPerSecond();
-    return QString( "%1" ).arg( fps, 0, 'f', 1 );
+    return std::to_string( framesPerSecond() );
 }

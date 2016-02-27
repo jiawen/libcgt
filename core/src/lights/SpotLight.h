@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include <math/MathUtils.h>
@@ -8,8 +9,7 @@
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Matrix4f.h>
 
-class QString;
-
+// TODO: consider just extending PerspectiveCamera.
 class SpotLight
 {
 public:
@@ -91,7 +91,7 @@ public:
 
     std::vector< Vector3f > getFrustumCorners() const;
 
-    bool saveTXT( QString filename );
+    std::string toString() const;
 
 private:
 

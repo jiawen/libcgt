@@ -5,7 +5,6 @@
 
 #include "Vector2f.h"
 
-class QString;
 class Rect2i;
 
 // A 2D rectangle in floating point coordinates.

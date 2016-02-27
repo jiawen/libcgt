@@ -25,7 +25,8 @@ float OpenNaturalCubicSpline::getControlPoint( int i )
     return m_vControlPoints[ i ];
 }
 
-void OpenNaturalCubicSpline::setControlPoints( QVector< float > controlPoints )
+void OpenNaturalCubicSpline::setControlPoints(
+    const std::vector< float >& controlPoints )
 {
     m_vControlPoints = controlPoints;
 
@@ -37,7 +38,7 @@ void OpenNaturalCubicSpline::setControlPoints( QVector< float > controlPoints )
 
 void OpenNaturalCubicSpline::appendControlPoint( float controlPoint )
 {
-    m_vControlPoints.append( controlPoint );
+    m_vControlPoints.push_back( controlPoint );
 
     if( isValid() )
     {
@@ -57,7 +58,7 @@ void OpenNaturalCubicSpline::setControlPoint( int i, float p )
 
 void OpenNaturalCubicSpline::insertControlPoint( int i, float p )
 {
-    m_vControlPoints.insert( i, p );
+    m_vControlPoints.insert( m_vControlPoints.begin() + i, p );
 
     if( isValid() )
     {
@@ -92,7 +93,8 @@ float OpenNaturalCubicSpline::evaluateAt( float t )
     float u2 = u * u;
     float u3 = u2 * u;
 
-    return( m_vCoefficients[n][0] + u * m_vCoefficients[n][1] + u2 * m_vCoefficients[n][2] + u3 * m_vCoefficients[n][3] );
+    return( m_vCoefficients[n][0] + u * m_vCoefficients[n][1] +
+           u2 * m_vCoefficients[n][2] + u3 * m_vCoefficients[n][3] );
 }
 
 float OpenNaturalCubicSpline::derivativeAt( float t )
@@ -121,10 +123,12 @@ float OpenNaturalCubicSpline::derivativeAt( float t )
     float u = ( ct - n * delta ) / delta;
     float u2 = u * u;
 
-    return( ( m_vCoefficients[n][1] + 2 * u * m_vCoefficients[n][2] + 3 * u2 * m_vCoefficients[n][3] ) / delta );
+    return( ( m_vCoefficients[n][1] + 2 * u * m_vCoefficients[n][2] +
+             3 * u2 * m_vCoefficients[n][3] ) / delta );
 }
 
-float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon, int maxIterations )
+float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon,
+                                      int maxIterations )
 {
     float result = tGuess;
     float xResult = evaluateAt( result );
@@ -162,9 +166,9 @@ void OpenNaturalCubicSpline::computeCoefficients()
 {
     int nPoints = m_vControlPoints.size();
 
-    QVector< float > gamma( nPoints );
-    QVector< float > delta( nPoints );
-    QVector< float > D( nPoints );
+    std::vector< float > gamma( nPoints );
+    std::vector< float > delta( nPoints );
+    std::vector< float > D( nPoints );
 
     gamma[0] = 0.5f;
     for( int i = 1; i < nPoints - 1; ++i )
@@ -177,9 +181,13 @@ void OpenNaturalCubicSpline::computeCoefficients()
     delta[0] = 3.0f * ( m_vControlPoints[1] - m_vControlPoints[0] ) * gamma[0];
     for( int i = 1; i < nPoints - 1; ++i )
     {
-        delta[i] = ( 3.0f * ( m_vControlPoints[i+1] - m_vControlPoints[i-1] ) - delta[i-1] ) * gamma[i];
+        delta[i] = ( 3.0f * ( m_vControlPoints[i+1] - m_vControlPoints[i-1] ) -
+                    delta[i-1] ) * gamma[i];
     }
-    delta[ nPoints - 1 ] = ( 3.0f * ( m_vControlPoints[ nPoints - 1 ] - m_vControlPoints[ nPoints - 2 ] ) - delta[ nPoints - 2 ] ) * gamma[ nPoints - 1 ];
+    delta[ nPoints - 1 ] =
+        ( 3.0f * ( m_vControlPoints[ nPoints - 1 ] -
+                  m_vControlPoints[ nPoints - 2 ] ) -
+                  delta[ nPoints - 2 ] ) * gamma[ nPoints - 1 ];
 
     D[ nPoints - 1 ] = delta[ nPoints - 1 ];
     for( int i = nPoints - 2; i >= 0; --i )
@@ -193,7 +201,11 @@ void OpenNaturalCubicSpline::computeCoefficients()
     {
         m_vCoefficients[i][0] = m_vControlPoints[i];
         m_vCoefficients[i][1] = D[i];
-        m_vCoefficients[i][2] = 3.0f * ( m_vControlPoints[ i + 1 ] - m_vControlPoints[i] ) - 2.0f * D[i] - D[ i + 1 ];
-        m_vCoefficients[i][3] = 2.0f * ( m_vControlPoints[i] - m_vControlPoints[ i + 1 ] ) + D[i] + D[ i + 1 ];
+        m_vCoefficients[i][2] = 3.0f * ( m_vControlPoints[ i + 1 ] -
+                                        m_vControlPoints[i] ) -
+                                        2.0f * D[i] - D[ i + 1 ];
+        m_vCoefficients[i][3] = 2.0f * ( m_vControlPoints[i] -
+                                        m_vControlPoints[ i + 1 ] ) +
+                                        D[i] + D[ i + 1 ];
     }
 }

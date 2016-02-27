@@ -1,10 +1,10 @@
 #include "geometry/TriangleMesh.h"
 
 #include <algorithm>
+#include <cassert>
+#include <cstdio>
 #include <numeric>
 #include <stack>
-#include <cstdio>
-#include <cassert>
 
 #include "common/ProgressReporter.h"
 #include "geometry/GeometryUtils.h"
@@ -19,7 +19,7 @@ TriangleMesh::TriangleMesh() :
 
 TriangleMesh::TriangleMesh( const std::vector< Vector3f >& positions,
     const std::vector< Vector3f >& normals,
-    const std::vector< Vector3i > faces ) :
+    const std::vector< Vector3i >& faces ) :
 
     m_positions( positions ),
     m_normals( normals ),
@@ -31,20 +31,20 @@ TriangleMesh::TriangleMesh( const std::vector< Vector3f >& positions,
 
 }
 
-TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
+TriangleMesh::TriangleMesh( const OBJData& data ) :
 
     m_adjacencyIsDirty( true )
 
 {
-    m_positions = pData->positions();
+    m_positions = data.positions();
 
     // check if the incoming data has normals
     // if it does, then copy
     // otherwise, reserve as many normals as we have positions
-    const auto& dataNormals = pData->normals();
+    const auto& dataNormals = data.normals();
     if( dataNormals.size() > 0 )
     {
-        m_normals = pData->normals();
+        m_normals = data.normals();
     }
     else
     {
@@ -53,8 +53,8 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
 
     std::vector< Vector3i > normalIndices;
 
-    int nGroups = pData->numGroups();
-    const auto& groups = pData->groups();
+    int nGroups = data.numGroups();
+    const auto& groups = data.groups();
     for( int g = 0; g < nGroups; ++g )
     {
         const OBJGroup& group = groups[ g ];
@@ -100,17 +100,18 @@ TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData ) :
     }
 }
 
-TriangleMesh::TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent ) :
+TriangleMesh::TriangleMesh( const OBJData& data, int groupIndex,
+    bool generatePerFaceNormalsIfNonExistent ) :
 
     m_adjacencyIsDirty( true )
 
 {
-    m_positions = pData->positions();
+    m_positions = data.positions();
 
-    const OBJGroup& group = pData->groups()[ groupIndex ];
+    const OBJGroup& group = data.groups()[ groupIndex ];
     if( group.hasNormals() )
     {
-        m_normals = pData->normals();
+        m_normals = data.normals();
     }
 
     std::vector< Vector3i > normalIndices;
@@ -206,7 +207,7 @@ int TriangleMesh::vertexOppositeEdge( const Vector2i& ij ) const
     return -1;
 }
 
-float TriangleMesh::meanEdgeLength()
+float TriangleMesh::meanEdgeLength() const
 {
     float sum = 0;
     for( auto itr = m_edgeLengths.begin(); itr != m_edgeLengths.end(); ++itr )
@@ -739,9 +740,13 @@ void TriangleMesh::consolidateNormalsWithPositions( const std::vector< Vector3i 
     m_normals = outputNormalIndices;
 }
 
-void TriangleMesh::saveOBJ( QString filename )
+bool TriangleMesh::saveOBJ( const std::string& filename )
 {
-    FILE* fp = fopen( qPrintable( filename ), "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
     for( int i = 0; i < m_positions.size(); ++i )
     {
@@ -763,4 +768,6 @@ void TriangleMesh::saveOBJ( QString filename )
     }
 
     fclose( fp );
+
+    return true;
 }

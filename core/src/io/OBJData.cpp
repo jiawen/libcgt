@@ -1,18 +1,14 @@
 #include "io/OBJData.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+// static
+OBJGroup OBJData::s_invalidGroup( "invalid" );
 
-OBJData::OBJData()
+// static
+OBJMaterial OBJData::s_invalidMaterial( "invalid" );
+
+const std::vector< Vector3f >& OBJData::positions() const
 {
-
-}
-
-// virtual
-OBJData::~OBJData()
-{
-
+    return m_positions;
 }
 
 std::vector< Vector3f >& OBJData::positions()
@@ -20,9 +16,19 @@ std::vector< Vector3f >& OBJData::positions()
     return m_positions;
 }
 
+const std::vector< Vector2f >& OBJData::textureCoordinates() const
+{
+    return m_textureCoordinates;
+}
+
 std::vector< Vector2f >& OBJData::textureCoordinates()
 {
     return m_textureCoordinates;
+}
+
+const std::vector< Vector3f >& OBJData::normals() const
+{
+    return m_normals;
 }
 
 std::vector< Vector3f >& OBJData::normals()
@@ -30,9 +36,14 @@ std::vector< Vector3f >& OBJData::normals()
     return m_normals;
 }
 
-int OBJData::numGroups()
+int OBJData::numGroups() const
 {
     return static_cast< int >( m_groups.size() );
+}
+
+const std::vector< OBJGroup >& OBJData::groups() const
+{
+    return m_groups;
 }
 
 std::vector< OBJGroup >& OBJData::groups()
@@ -40,35 +51,35 @@ std::vector< OBJGroup >& OBJData::groups()
     return m_groups;
 }
 
-OBJGroup& OBJData::addGroup( QString name )
+OBJGroup& OBJData::addGroup( const std::string& name )
 {
-    if( !( m_groupsByName.contains( name ) ) )
+    if( m_groupIndicesByName.find( name ) == m_groupIndicesByName.end() )
     {
-        m_groups.push_back( OBJGroup( name ) );
-        m_groupsByName.insert( name, &( m_groups.back() ) );
+        m_groupIndicesByName[ name ] = static_cast< int >( m_groups.size() );
+        m_groups.emplace_back( name );
     }
 
     return m_groups.back();
 }
 
-bool OBJData::containsGroup( QString name )
+bool OBJData::containsGroup( const std::string& name ) const
 {
-    return m_groupsByName.contains( name );
+    return m_groupIndicesByName.find( name ) != m_groupIndicesByName.end();
 }
 
-OBJGroup* OBJData::getGroupByName( QString name )
+OBJGroup& OBJData::getGroupByName( const std::string& name )
 {
     if( containsGroup( name ) )
     {
-        return m_groupsByName[ name ];
+        return m_groups[ m_groupIndicesByName[ name ] ];
     }
     else
     {
-        return nullptr;
+        return s_invalidGroup;
     }
 }
 
-int OBJData::numMaterials()
+int OBJData::numMaterials() const
 {
     return static_cast< int >( m_materials.size() );
 }
@@ -78,31 +89,33 @@ std::vector< OBJMaterial >& OBJData::materials()
     return m_materials;
 }
 
-OBJMaterial& OBJData::addMaterial( QString name )
+OBJMaterial& OBJData::addMaterial( const std::string& name )
 {
     if( !containsMaterial( name ) )
     {
-        m_materials.push_back( OBJMaterial( name ) );
-        m_materialsByName.insert( name, &( m_materials.back() ) );
+        m_materialIndicesByName[ name ] =
+            static_cast< int >( m_materials.size() );
+        m_materials.emplace_back( name );
     }
 
     return m_materials.back();
 }
 
-bool OBJData::containsMaterial( QString name )
+bool OBJData::containsMaterial( const std::string& name ) const
 {
-    return m_materialsByName.contains( name );
+    return m_materialIndicesByName.find( name ) !=
+        m_materialIndicesByName.end();
 }
 
-OBJMaterial* OBJData::getMaterialByName( QString name )
+OBJMaterial& OBJData::getMaterialByName( const std::string& name )
 {
     if( containsMaterial( name ) )
     {
-        return m_materialsByName[ name ];
+        return m_materials[ m_materialIndicesByName[ name ] ];
     }
     else
     {
-        return nullptr;
+        return s_invalidMaterial;
     }
 }
 
@@ -118,33 +131,30 @@ void OBJData::removeEmptyGroups()
         }
     }
 
-    // count how many were shifted over
+    // Count how many were shifted over.
     int nRemoved = 0;
     for( int i = 0; i < static_cast< int >( removeList.size() ); ++i )
     {
         int groupIndex = removeList[i];
         int offsetGroupIndex = groupIndex - nRemoved;
 
-        QString groupName = m_groups[i].name();
+        const std::string& groupName = m_groups[i].name();
         m_groups.erase( m_groups.begin() + offsetGroupIndex );
-        m_groupsByName.remove( groupName );
     }
 
-    // stuff moved in memory, re-index
-    if( removeList.size() > 0 )
+    for( int i = 0; i < static_cast< int >( m_groups.size()); ++i )
     {
-        for( int i = 0; i < numGroups(); ++i )
-        {
-            QString groupName = m_groups[i].name();
-            m_groupsByName[ groupName ] = &( m_groups[i] );
-        }
+        m_groupIndicesByName[ m_groups[ i ].name() ] = i;
     }
 }
 
-bool OBJData::save( QString filename )
+bool OBJData::save( const std::string& filename )
 {
-    QByteArray ba = filename.toUtf8();
-    FILE* fp = fopen( ba.data(), "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
+    if( fp == nullptr )
+    {
+        return false;
+    }
 
     for( size_t i = 0; i < m_positions.size(); ++i )
     {

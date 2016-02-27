@@ -2,8 +2,7 @@
 
 #include <cmath>
 #include <initializer_list>
-
-class QString;
+#include <string>
 
 class Vector2d;
 class Vector2i;
@@ -56,8 +55,7 @@ public:
     // ---- Utility ----
     operator const float* () const;
     operator float* ();
-    void print() const;
-    QString toString() const;
+    std::string toString() const;
 
     static float dot( const Vector2f& v0, const Vector2f& v1 );
 

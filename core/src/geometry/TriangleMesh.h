@@ -27,7 +27,7 @@ public:
     // positions and normals must have the same size
     TriangleMesh( const std::vector< Vector3f >& positions,
         const std::vector< Vector3f >& normals,
-        const std::vector< Vector3i > faces );
+        const std::vector< Vector3i >& faces );
 
     // make a triangle mesh out of data from an OBJ file
     // all groups are merged such that:
@@ -36,12 +36,13 @@ public:
     //      (extra normals are discarded)
     //   all faces are triangulated and re-indexed to point to the same array
     // TODO: generate normals per face (need a separate array to keep track of additional normals)
-    TriangleMesh( std::shared_ptr< OBJData > pData );
+    TriangleMesh( const OBJData& data );
 
     // make a triangle mesh out of data from an OBJ file
     // (one particular group)
     // TODO: also triangulate face
-    TriangleMesh( std::shared_ptr< OBJData > pData, int groupIndex, bool generatePerFaceNormalsIfNonExistent = true );
+    TriangleMesh( const OBJData& data, int groupIndex,
+                 bool generatePerFaceNormalsIfNonExistent = true );
 
     int numVertices() const;
     int numFaces() const;
@@ -61,7 +62,7 @@ public:
     // returns -1 if edge i --> j is not on a face
     int vertexOppositeEdge( const Vector2i& ij ) const;
 
-    float meanEdgeLength();
+    float meanEdgeLength() const;
 
     float area( int faceIndex ) const;
     float totalArea() const;
@@ -90,7 +91,6 @@ public:
     // returns the number of pruned faces
     // if it's 0, then edgeToFace is valid
     // replaces m_faces with a set of valid faces
-    //int pruneInvalidFaces( QHash< Vector2i, int >& edgeToFace );
     int pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace );
 
     void buildAdjacency();
@@ -122,7 +122,7 @@ public:
 
     std::map< Vector2i, float > m_edgeLengths;
 
-    void saveOBJ( QString filename );
+    bool saveOBJ( const std::string& filename );
 
     // TODO: mark if one-ring is closed?
     // or use an actual linked list

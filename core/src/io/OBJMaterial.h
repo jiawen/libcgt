@@ -1,8 +1,7 @@
 #pragma once
 
-// TODO: get rid of Qt
-#include <QString>
-#include <QVector>
+#include <string>
+#include <vector>
 
 #include "vecmath/Vector3f.h"
 
@@ -10,18 +9,17 @@ class OBJMaterial
 {
 public:
 
-    enum ILLUMINATION_MODEL
+    enum class IlluminationModel
     {
-        ILLUMINATION_MODEL_NONE = 0,
-        ILLUMINATION_MODEL_DIFFUSE = 1,
-        ILLUMINATION_MODEL_DIFFUSE_AND_SPECULAR = 2
+        NONE = 0,
+        DIFFUSE = 1,
+        DIFFUSE_AND_SPECULAR = 2
     };
 
-    OBJMaterial();
-    OBJMaterial( QString name );
+    OBJMaterial( const std::string& name = "" );
 
-    QString name() const;
-    void setName( QString name );
+    const std::string& name() const;
+    void setName( const std::string& name );
 
     Vector3f ambientColor() const;
     void setAmbientColor( const Vector3f& color );
@@ -38,20 +36,20 @@ public:
     float shininess() const;
     void setShininess( float s );
 
-    QString ambientTexture() const;
-    void setAmbientTexture( QString filename );
+    const std::string& ambientTexture() const;
+    void setAmbientTexture( const std::string& filename );
 
-    QString diffuseTexture() const;
-    void setDiffuseTexture( QString filename );
+    const std::string& diffuseTexture() const;
+    void setDiffuseTexture( const std::string& filename );
 
-    ILLUMINATION_MODEL illuminationModel() const;
-    void setIlluminationModel( ILLUMINATION_MODEL im );
+    IlluminationModel illuminationModel() const;
+    void setIlluminationModel( IlluminationModel im );
 
 private:
 
     // required
-    QString m_name;
-    ILLUMINATION_MODEL m_illuminationModel;
+    std::string m_name;
+    IlluminationModel m_illuminationModel;
 
     Vector3f m_ka;
     Vector3f m_kd;
@@ -61,8 +59,8 @@ private:
     // float m_tr; // 1 - alpha
     float m_ns; // shininess
 
-    QString m_mapKa; // ambient texture
-    QString m_mapKd; // diffuse texture
+    std::string m_mapKa; // ambient texture
+    std::string m_mapKd; // diffuse texture
 
     // TODO: parse others
     // http://www.fileformat.info/format/material/

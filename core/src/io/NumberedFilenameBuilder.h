@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+#include <string>
 
 class NumberedFilenameBuilder
 {
@@ -15,13 +15,16 @@ public:
     //
     // prefix cannot contain the string "%1" as a substring
     // (a bad idea for filenames anyway...)
-    NumberedFilenameBuilder( QString prefix, QString suffix, int nDigits = 5 );
+    NumberedFilenameBuilder( const std::string& prefix,
+                            const std::string& suffix,
+                            int nDigits = 5 );
 
-    QString filenameForNumber( int number );
+    std::string filenameForNumber( int number );
 
 private:
 
+    std::string m_prefix;
+    std::string m_suffix;
     int m_nDigits;
-    QString m_baseString;
 
 };

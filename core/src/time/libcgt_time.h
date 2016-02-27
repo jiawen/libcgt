@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Clock.h"
-#include "CrossPlatformSleep.h"
 #include "FPSEstimator.h"
 #include "PerformanceCollector.h"
-#include "QGameLoop.h"
+
+// TODO: make a TimeUtils class with durations cast to float, double, etc.

@@ -1,8 +1,6 @@
 #pragma once
 
-// TODO: remove Qt
-
-#include <QVector>
+#include <vector>
 #include <vecmath/Vector4f.h>
 
 class OpenNaturalCubicSpline
@@ -13,7 +11,7 @@ public:
 
     bool isValid();
 
-    void setControlPoints( QVector< float > controlPoints );
+    void setControlPoints( const std::vector< float >& controlPoints );
 
     int numControlPoints();
     float getControlPoint( int i );
@@ -32,13 +30,14 @@ public:
 
     // get the inverse spline
     // given a value of x, find t such that x(t) = x
-    float inverse( float x, float tGuess, float epsilon = 0.001f, int maxIterations = 50 );
+    float inverse( float x, float tGuess, float epsilon = 0.001f,
+                  int maxIterations = 50 );
 
 private:
 
     void computeCoefficients();
 
-    QVector< float > m_vControlPoints;
-    QVector< Vector4f > m_vCoefficients;
+    std::vector< float > m_vControlPoints;
+    std::vector< Vector4f > m_vCoefficients;
 
 };

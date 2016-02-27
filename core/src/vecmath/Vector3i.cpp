@@ -1,8 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-
-#include <QString>
+#include <sstream>
 
 #include "vecmath/Vector3i.h"
 
@@ -160,17 +159,11 @@ Vector3i::operator int* ()
     return m_elements;
 }
 
-QString Vector3i::toString() const
+std::string Vector3i::toString() const
 {
-    QString out;
-
-    out.append( "( " );
-    out.append( QString( "%1" ).arg( x, 10 ) );
-    out.append( QString( "%1" ).arg( y, 10 ) );
-    out.append( QString( "%1" ).arg( z, 10 ) );
-    out.append( " )" );
-
-    return out;
+    std::ostringstream sstream;
+    sstream << "( " << x << ", " << y << ", " << z << ")";
+    return sstream.str();
 }
 
 // static

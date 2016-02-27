@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QString>
-#include <QElapsedTimer>
+#include <chrono>
+#include <cstdint>
+#include <string>
 
 #include "math/Arithmetic.h"
 
@@ -17,15 +18,16 @@ public:
 
     // Construct a new ProgressReporter given a prefix string,
     // a predetermined number of tasks, and a reportRate of 1%
-    ProgressReporter( QString prefix, int nTasks );
+    ProgressReporter( const std::string& prefix, int nTasks );
 
-    ProgressReporter( QString prefix, int nTasks, float reportRatePercent );
+    ProgressReporter( const std::string& prefix, int nTasks,
+                     float reportRatePercent );
 
-    QString notifyAndGetProgressString();
+    std::string notifyAndGetProgressString();
     void notifyAndPrintProgressString();
     void notifyTaskCompleted();
 
-    QString getProgressString();
+    std::string getProgressString();
 
     float percentComplete();
     bool isComplete();
@@ -35,16 +37,20 @@ public:
 
 private:
 
-    void initialize( QString prefix, int nTasks, float reportRatePercent );
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::time_point< Clock > TimePoint;
 
-    QString m_prefix;
+    void initialize( const std::string& prefix, int nTasks,
+                    float reportRatePercent );
+
+    std::string m_prefix;
     int m_nTasks;
     float m_reportRatePercent;
 
-    qint64 m_totalMillisecondsElapsed;
-  QElapsedTimer m_stopwatch;
-    qint64 m_previousTaskCompletedTime;
+    TimePoint m_startTime;
+    TimePoint m_previousTaskCompletedTime;
 
-    float m_nextReportedPercent;
-    int m_nTasksCompleted;
+    int64_t m_totalMillisecondsElapsed = 0;
+    float m_nextReportedPercent = 0;
+    int m_nTasksCompleted = 0;
 };

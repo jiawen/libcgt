@@ -1,10 +1,9 @@
 #pragma once
 
 #include <initializer_list>
+#include <string>
 
 #include "vecmath/Vector3i.h"
-
-class QString;
 
 class Vector3f;
 
@@ -73,7 +72,7 @@ public:
     // Returns the same rectangle but with size() >= 0.
     Box3i standardized() const;
 
-    QString toString() const;
+    std::string toString() const;
 
     // flips this box up/down
     // (usually used to handle boxes on 3D images where y points down)

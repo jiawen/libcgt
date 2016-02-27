@@ -1,11 +1,10 @@
 #pragma once
 
+#include <cstdio>
+#include <string>
+
 #include "Vector2f.h"
 #include "Vector3f.h"
-
-#include <cstdio>
-
-class QString;
 
 class Vector4i;
 class Vector4d;
@@ -72,7 +71,7 @@ public:
     // implicit cast
     operator const float* () const;
     operator float* ();
-    QString toString() const;
+    std::string toString() const;
 
     static float dot( const Vector4f& v0, const Vector4f& v1 );
 

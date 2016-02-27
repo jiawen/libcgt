@@ -1,8 +1,7 @@
 #pragma once
 
 #include <initializer_list>
-
-class QString;
+#include <string>
 
 // A 1D range at integer coordinates
 // Considered a *half-open* interval:
@@ -44,7 +43,7 @@ public:
     // Returns the same range but with size() >= 0.
     Range1i standardized() const;
 
-    QString toString() const;
+    std::string toString() const;
 
     // Whether x is in this half-open interval.
     bool contains( int x );

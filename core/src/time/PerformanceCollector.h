@@ -1,40 +1,43 @@
 #pragma once
 
-#include <QString>
-#include <QHash>
-#include <QElapsedTimer>
+#include <chrono>
+#include <cstdint>
+#include <string>
+#include <unordered_map>
 
 class PerformanceCollector
 {
 public:
 
-    PerformanceCollector();
+    PerformanceCollector() = default;
 
-    // register an event for performance collection
-    // its event counter starts of as reset
-    void registerEvent( QString name );
+    // Register an event for performance collection.
+    void registerEvent( const std::string& name );
 
-    // unregister an event for performance collection
-    void unregisterEvent( QString name );
+    // Unregister an event from performance collection.
+    void unregisterEvent( const std::string& name );
 
-    // resets the statistics for an event
-    void resetEvent( QString name );
+    // Resets the statistics for an event.
+    void resetEvent( const std::string& name );
 
-    // call each time an event starts
-    void beginEvent( QString name );
+    // Call each time an event starts.
+    void beginEvent( const std::string& name );
 
-    // call each time an event ends
-    void endEvent( QString name );
+    // Call each time an event ends.
+    void endEvent( const std::string& name );
 
-    // returns the average time spent on an event
-    // over all beginEvent/endEvent pairs
-    float averageTimeMilliseconds( QString name );
+    // Returns the average time spent on an event over all
+    // beginEvent()/endEvent pairs.
+    float averageTimeMilliseconds( const std::string& name );
 
 private:
 
-  QElapsedTimer m_clock;
-    QHash< QString, qint64 > m_eventStartTimes;
-    QHash< QString, qint64 > m_eventTotalElapsedTime;
-    QHash< QString, int > m_eventCounts;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration< float, std::milli > FloatDurationMS;
+
+    // In nanoseconds.
+    std::unordered_map< std::string, Clock::time_point > m_eventStartTime;
+    std::unordered_map< std::string, Clock::duration > m_eventTotalElapsedTime;
+    std::unordered_map< std::string, int > m_eventCounts;
 
 };

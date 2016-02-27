@@ -1,7 +1,5 @@
 #include "vecmath/Rect2f.h"
 
-#include <QString>
-
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
 #include "vecmath/Rect2i.h"
@@ -137,9 +135,9 @@ std::string Rect2f::toString() const
 
     out.append( "Rect2f:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString().toStdString() );
+    out.append( m_origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString().toStdString() );
+    out.append( m_size.toString() );
 
     return out;
 }

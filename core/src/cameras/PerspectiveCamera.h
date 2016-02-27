@@ -1,9 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "Camera.h"
 #include <math/MathUtils.h>
-
-class QString;
 
 class PerspectiveCamera : public Camera
 {
@@ -135,11 +135,13 @@ public:
     virtual Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const override;
     virtual Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const override;
 
-    QString toString() const;
+    virtual std::string toString() const override;
     std::vector< Vector4f > frustumLines() const;
 
-    bool loadTXT( QString filename );
-    bool saveTXT( QString filename );
+    // TODO: implement save using toString().
+    // TODO: implement load using fromString().
+    bool loadTXT( const std::string& filename );
+    bool saveTXT( const std::string& filename );
 
     static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
     static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );

@@ -1,8 +1,12 @@
 #pragma once
 
-#include "vecmath/Vector2f.h"
+// TODO: get rid of this class.
+
+#include <vector>
 
 #include "OpenNaturalCubicSpline.h"
+
+#include "vecmath/Vector2f.h"
 
 class Spline2f
 {
@@ -65,6 +69,6 @@ private:
 
     bool m_bCacheIsDirty;
     int m_nPointsToEvaluateFactor;
-    QVector< Vector2f > m_cache;
+    std::vector< Vector2f > m_cache;
 
 };

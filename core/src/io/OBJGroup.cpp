@@ -6,7 +6,7 @@
 // Public
 //////////////////////////////////////////////////////////////////////////
 
-OBJGroup::OBJGroup( QString name ) :
+OBJGroup::OBJGroup( const std::string& name ) :
 
     m_name( name ),
     m_hasTextureCoordinates( false ),
@@ -16,7 +16,7 @@ OBJGroup::OBJGroup( QString name ) :
     addMaterial( "" );
 }
 
-QString OBJGroup::name() const
+const std::string& OBJGroup::name() const
 {
     return m_name;
 }
@@ -60,7 +60,7 @@ void OBJGroup::addFace( const OBJFace& face )
 {
     m_faces.push_back( face );
 
-    QString lastMaterial = m_materialNames.back();
+    const std::string& lastMaterial = m_materialNames.back();
     m_facesByMaterial[ lastMaterial ].push_back( numFaces() - 1 );
 }
 
@@ -69,35 +69,66 @@ int OBJGroup::numMaterials() const
     return static_cast< int >( m_materialNames.size() );
 }
 
-const std::vector< QString >& OBJGroup::materialNames() const
+const std::vector< std::string >& OBJGroup::materialNames() const
 {
     return m_materialNames;
 }
 
-std::vector< QString >& OBJGroup::materialNames()
+std::vector< std::string >& OBJGroup::materialNames()
 {
     return m_materialNames;
 }
 
-void OBJGroup::addMaterial( QString materialName )
+void OBJGroup::addMaterial( const std::string& materialName )
 {
     m_materialNames.push_back( materialName );
 
-    if( !( m_facesByMaterial.contains( materialName ) ) )
+    if( m_facesByMaterial.find( materialName ) == m_facesByMaterial.end() )
     {
-        m_facesByMaterial.insert( materialName, std::vector< int >() );
+        m_facesByMaterial[ materialName ] = std::vector< int >();
     }
 }
 
-std::vector< int >& OBJGroup::facesForMaterial( QString materialName )
+const std::vector< int >& OBJGroup::facesForMaterial(
+    const std::string& materialName ) const
 {
-    assert( m_facesByMaterial.contains( materialName ) );
-    std::vector< int >& output = m_facesByMaterial[ materialName ];
-    return output;
+    auto itr = m_facesByMaterial.find( materialName );
+    if( itr != m_facesByMaterial.end() )
+    {
+        return itr->second;
+    }
+    else
+    {
+        return s_invalidSentinel;
+    }
+}
+
+std::vector< int >& OBJGroup::facesForMaterial(
+    const std::string& materialName )
+{
+    return m_facesByMaterial[ materialName ];
+}
+
+const std::vector< int >& OBJGroup::facesForMaterial( int materialIndex ) const
+{
+    if( materialIndex < m_materialNames.size() )
+    {
+        return facesForMaterial( m_materialNames[ materialIndex ] );
+    }
+    else
+    {
+        return s_invalidSentinel;
+    }
 }
 
 std::vector< int >& OBJGroup::facesForMaterial( int materialIndex )
 {
-    assert( materialIndex < m_materialNames.size() );
-    return facesForMaterial( m_materialNames[ materialIndex ] );
+    if( materialIndex < m_materialNames.size() )
+    {
+        return facesForMaterial( m_materialNames[ materialIndex ] );
+    }
+    else
+    {
+        return facesForMaterial( "" );
+    }
 }

@@ -1,8 +1,6 @@
 #include "cameras/OrthographicCamera.h"
 
-#include <QFile>
-#include <QTextStream>
-#include <QString>
+#include <sstream>
 
 #include <math/MathUtils.h>
 #include <vecmath/Quat4f.h>
@@ -32,29 +30,20 @@ Matrix4f OrthographicCamera::projectionMatrix() const
     );
 }
 
-bool OrthographicCamera::saveTXT( QString filename )
+// virtual
+std::string OrthographicCamera::toString() const
 {
-    QFile outputFile( filename );
+    std::stringstream sstream;
 
-    // try to open the file in write only mode
-    if( !( outputFile.open( QIODevice::WriteOnly ) ) )
-    {
-        return false;
-    }
+    sstream << "eye " << m_eye.toString() << "\n";
+    sstream << "center " << m_center.toString() << "\n";
+    sstream << "up " << m_up.toString() << "\n";
+    sstream << "left " << m_frustum.left << "\n";
+    sstream << "right " << m_frustum.right << "\n";
+    sstream << "bottom " << m_frustum.bottom << "\n";
+    sstream << "top " << m_frustum.top << "\n";
+    sstream << "zNear " << m_frustum.zNear << "\n";
+    sstream << "zFar " << m_frustum.zFar << "\n";
 
-    QTextStream outputTextStream( &outputFile );
-    outputTextStream.setCodec( "UTF-8" );
-
-    outputTextStream << "eye " << m_eye[ 0 ] << " " << m_eye[ 1 ] << " " << m_eye[ 2 ] << "\n";
-    outputTextStream << "center " << m_center[ 0 ] << " " << m_center[ 1 ] << " " << m_center[ 2 ] << "\n";
-    outputTextStream << "up " << m_up[ 0 ] << " " << m_up[ 1 ] << " " << m_up[ 2 ] << "\n";
-    outputTextStream << "left " << m_frustum.left << "\n";
-    outputTextStream << "right " << m_frustum.right << "\n";
-    outputTextStream << "bottom " << m_frustum.bottom << "\n";
-    outputTextStream << "top " << m_frustum.top << "\n";
-    outputTextStream << "zNear " << m_frustum.zNear << "\n";
-    outputTextStream << "zFar " << m_frustum.zFar << "\n";
-
-    outputFile.close();
-    return true;
+    return sstream.str();
 }

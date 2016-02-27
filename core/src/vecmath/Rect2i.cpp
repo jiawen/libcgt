@@ -1,7 +1,7 @@
 #include "vecmath/Rect2i.h"
 
 #include <cmath>
-#include <QString>
+#include <cstdlib>
 
 #include "math/MathUtils.h"
 #include "vecmath/Rect2f.h"
@@ -77,17 +77,17 @@ Vector2i Rect2i::dy() const
 
 int Rect2i::width() const
 {
-    return abs( m_size.x );
+    return std::abs( m_size.x );
 }
 
 int Rect2i::height() const
 {
-    return abs( m_size.y );
+    return std::abs( m_size.y );
 }
 
 int Rect2i::area() const
 {
-    return abs( m_size.x * m_size.y );
+    return std::abs( m_size.x * m_size.y );
 }
 
 Vector2i Rect2i::center() const
@@ -141,9 +141,9 @@ std::string Rect2i::toString() const
 
     out.append( "Rect2f:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString().toStdString() );
+    out.append( m_origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString().toStdString() );
+    out.append( m_size.toString() );
 
     return out;
 }

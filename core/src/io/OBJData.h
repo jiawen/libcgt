@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QHash>
-#include <QString>
-
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "vecmath/Vector2f.h"
@@ -15,53 +14,57 @@ class OBJData
 {
 public:
 
-    OBJData();
-    virtual ~OBJData();
+    OBJData() = default;
 
     // ----- raw flattened geometry -----
+    const std::vector< Vector3f >& positions() const;
     std::vector< Vector3f >& positions();
+    const std::vector< Vector2f >& textureCoordinates() const;
     std::vector< Vector2f >& textureCoordinates();
+    const std::vector< Vector3f >& normals() const;
     std::vector< Vector3f >& normals();
 
     // ----- groups -----
 
-    // returns the number of groups
-    int numGroups();
+    // Returns the number of groups.
+    int numGroups() const;
 
-    // returns all the groups from OBJData (in file order)
+    // Returns all the groups from OBJData (in file order).
+    const std::vector< OBJGroup >& groups() const;
     std::vector< OBJGroup >& groups();
 
-    // adds a group and returns a reference to it
-    // if it already exists, returns the existing group
-    OBJGroup& addGroup( QString groupName );
+    // Adds a group and returns a reference to it.
+    // If it already exists, returns the existing group.
+    OBJGroup& addGroup( const std::string& groupName );
 
-    bool containsGroup( QString groupName );
+    bool containsGroup( const std::string& groupName ) const;
 
-    // returns a pointer to the group if it exists
-    // returns nullptr otherwise
-    OBJGroup* getGroupByName( QString groupName );
+    // Returns a reference to the group if it exists.
+    // Otherwise, returns a special invalid group with name "invalid".
+    OBJGroup& getGroupByName( const std::string& groupName );
 
     // ----- materials -----
 
-    // returns the number of materials
-    int numMaterials();
+    // Returns the number of materials.
+    int numMaterials() const;
 
     // returns all the materials from OBJData (in file order)
     std::vector< OBJMaterial >& materials();
 
-    // adds a new material by name and returns a reference to it
-    OBJMaterial& addMaterial( QString name );
+    // Adds a new material by name and returns a reference to it.
+    OBJMaterial& addMaterial( const std::string& name );
 
-    bool containsMaterial( QString name );
+    bool containsMaterial( const std::string& name ) const;
 
-    // returns nullptr if it doesn't exist
-    OBJMaterial* getMaterialByName( QString name );
+    // Returns a reference to the material if it exists.
+    // Otherwise, returns a special invalid material with name "invalid".
+    OBJMaterial& getMaterialByName( const std::string& name );
 
     // ----- Data cleanup -----
     void removeEmptyGroups();
 
     // ----- I/O -----
-    bool save( QString filename );
+    bool save( const std::string& filename );
 
 private:
 
@@ -70,9 +73,12 @@ private:
     std::vector< Vector3f > m_normals;
 
     std::vector< OBJGroup > m_groups;
-    QHash< QString, OBJGroup* > m_groupsByName;
+    std::unordered_map< std::string, int > m_groupIndicesByName;
 
     std::vector< OBJMaterial > m_materials;
-    QHash< QString, OBJMaterial* > m_materialsByName;
+    std::unordered_map< std::string, int > m_materialIndicesByName;
 
+    // TODO: deal with const.
+    static OBJGroup s_invalidGroup;
+    static OBJMaterial s_invalidMaterial;
 };

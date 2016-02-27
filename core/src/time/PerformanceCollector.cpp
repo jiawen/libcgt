@@ -1,44 +1,44 @@
 #include "time/PerformanceCollector.h"
 
-PerformanceCollector::PerformanceCollector()
+void PerformanceCollector::registerEvent( const std::string& name )
 {
-  m_clock.start();
-}
-
-void PerformanceCollector::registerEvent( QString name )
-{
-    m_eventStartTimes[ name ] = 0;
-    m_eventTotalElapsedTime[ name ] = 0;
+    m_eventStartTime[ name ] = Clock::now();
+    m_eventTotalElapsedTime[ name ] = Clock::duration::zero();
     m_eventCounts[ name ] = 0;
 }
 
-void PerformanceCollector::unregisterEvent( QString name )
+void PerformanceCollector::unregisterEvent( const std::string& name )
 {
-    m_eventStartTimes.remove( name );
-    m_eventTotalElapsedTime.remove( name );
-    m_eventCounts.remove( name );
+    m_eventStartTime.erase( name );
+    m_eventTotalElapsedTime.erase( name );
+    m_eventCounts.erase( name );
 }
 
-void PerformanceCollector::beginEvent( QString name )
+void PerformanceCollector::beginEvent( const std::string& name )
 {
-    qint64 now = m_clock.elapsed();
-    m_eventStartTimes[ name ] = now;
+    m_eventStartTime[ name ] = PerformanceCollector::Clock::now();
 }
 
-void PerformanceCollector::endEvent( QString name )
+void PerformanceCollector::endEvent( const std::string& name )
 {
-    qint64 now = m_clock.elapsed();
-    qint64 last = m_eventStartTimes[ name ];
-    qint64 dt = now - last;
+    auto now = PerformanceCollector::Clock::now();
+    auto last = m_eventStartTime[ name ];
+    auto dt = now - last;
 
     m_eventTotalElapsedTime[ name ] += dt;
     ++m_eventCounts[ name ];
 }
 
-float PerformanceCollector::averageTimeMilliseconds( QString name )
+float PerformanceCollector::averageTimeMilliseconds( const std::string& name )
 {
-    qint64 dt = m_eventTotalElapsedTime[ name ];
+    if( m_eventCounts.find( name ) == m_eventCounts.end() ||
+       m_eventCounts[ name ] == 0 )
+    {
+        return 0.0f;
+    }
+    auto dt = m_eventTotalElapsedTime[ name ];
     int count = m_eventCounts[ name ];
-    float dtMillis = static_cast< float >( dt );
+    float dtMillis = std::chrono::duration_cast<
+        PerformanceCollector::FloatDurationMS >( dt ).count();
     return dtMillis / count;
 }

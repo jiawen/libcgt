@@ -1,8 +1,8 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
 #include <vector>
-#include <QString>
-#include <QHash>
 
 #include "OBJFace.h"
 
@@ -10,9 +10,9 @@ class OBJGroup
 {
 public:
 
-    OBJGroup( QString name );
+    OBJGroup( const std::string& name );
 
-    QString name() const;
+    const std::string& name() const;
 
     bool hasTextureCoordinates() const;
     void setHasTextureCoordinates( bool b );
@@ -28,25 +28,29 @@ public:
     void addFace( const OBJFace& face );
 
     int numMaterials() const;
-    const std::vector< QString >& materialNames() const;
-    std::vector< QString >& materialNames();
+    const std::vector< std::string >& materialNames() const;
+    std::vector< std::string >& materialNames();
 
     // add a new material and sets it as current
-    void addMaterial( QString materialName );
+    void addMaterial( const std::string& materialName );
 
-    std::vector< int >& facesForMaterial( QString materialName );
+    const std::vector< int >& facesForMaterial(
+        const std::string& materialName ) const;
+    std::vector< int >& facesForMaterial( const std::string& materialName );
 
+    const std::vector< int >& facesForMaterial( int materialIndex ) const;
     std::vector< int >& facesForMaterial( int materialIndex );
 
 private:
 
-    QString m_name;
+    std::string m_name;
     bool m_hasTextureCoordinates;
     bool m_hasNormals;
 
-    std::vector< QString > m_materialNames;
-    QHash< QString, std::vector< int > > m_facesByMaterial;
+    std::vector< std::string > m_materialNames;
+    std::unordered_map< std::string, std::vector< int > > m_facesByMaterial;
 
     std::vector< OBJFace > m_faces;
 
+    const static std::vector< int > s_invalidSentinel;
 };

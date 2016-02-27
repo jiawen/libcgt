@@ -2,8 +2,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-
-#include <QString>
+#include <sstream>
 
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2d.h"
@@ -45,15 +44,13 @@ Vector2f& Vector2f::operator = ( const Vector2i& v )
 }
 
 // ---- Utility ----
-void Vector2f::print() const
+std::string Vector2f::toString() const
 {
-    printf( "%s\n", qPrintable( toString() ) );
+    std::ostringstream sstream;
+    sstream << "( " << x << ", " << y << ")";
+    return sstream.str();
 }
 
-QString Vector2f::toString() const
-{
-    return QString( "( %1, %2 )" ).arg( x, 10, 'g', 4 ).arg( y, 10, 'g', 4 );
-}
 
 //static
 Vector3f Vector2f::cross( const Vector2f& v0, const Vector2f& v1 )

@@ -1,4 +1,4 @@
-#include "cameras/FPSControls.h"
+#include "FPSControls.h"
 
 #include <cassert>
 #include <cmath>

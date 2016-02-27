@@ -1,14 +1,20 @@
+#include <iomanip>
+#include <sstream>
+
 #include "io/NumberedFilenameBuilder.h"
 
-NumberedFilenameBuilder::NumberedFilenameBuilder( QString prefix, QString suffix, int nDigits ) :
-
+NumberedFilenameBuilder::NumberedFilenameBuilder( const std::string& prefix,
+                                                 const std::string& suffix,
+                                                 int nDigits ) :
+    m_prefix( prefix ),
+    m_suffix( suffix ),
     m_nDigits( nDigits )
-
 {
-    m_baseString = prefix + "%1" + suffix;
 }
 
-QString NumberedFilenameBuilder::filenameForNumber( int number )
+std::string NumberedFilenameBuilder::filenameForNumber( int number )
 {
-    return m_baseString.arg( number, m_nDigits, 10, QChar( '0' ) );
+    std::stringstream numStream;
+    numStream << std::setw( m_nDigits ) << std::setfill( '0' ) << number;
+    return m_prefix + numStream.str() + m_suffix;
 }

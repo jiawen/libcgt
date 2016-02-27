@@ -1,11 +1,8 @@
 #include "vecmath/Box3i.h"
 
-#include <QString>
-
+#include <cstdlib>
 #include "math/MathUtils.h"
 #include "vecmath/Vector3f.h"
-
-using std::abs;
 
 Box3i::Box3i() :
     m_origin( 0 ),
@@ -211,11 +208,11 @@ Box3i Box3i::standardized() const
     return Box3i( origin, size );
 }
 
-QString Box3i::toString() const
+std::string Box3i::toString() const
 {
-    QString out;
+    std::string out;
 
-    out.append( "Box3f:\n" );
+    out.append( "Box3i:\n" );
     out.append( "\torigin: " );
     out.append( m_origin.toString() );
     out.append( "\n\tsize: " );

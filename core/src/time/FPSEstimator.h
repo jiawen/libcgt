@@ -1,15 +1,13 @@
 #pragma once
 
+#include <chrono>
+#include <cstdint>
+#include <string>
 #include <vector>
-#include <QElapsedTimer>
 
-class QString;
-
-// A simple frames-per-second estimator
-// based on sampling the last N frame times
-// Construct the class with N
-// and call update() every frame
-// fps() will return the fps as a float
+// A simple frames-per-second estimator based on sampling the last N frame
+// times. Construct the class with N and call update() every frame. You may
+// query the frame period in milliseconds or frequency in Hz.
 
 class FPSEstimator
 {
@@ -22,20 +20,23 @@ public:
     float framePeriodMilliseconds() const;
     float framesPerSecond() const;
 
-    // Returns the average frame period, rounded to the nearest millisecond, as a QString
-    QString framePeriodMillisecondsString() const;
+    // Returns the average frame period, rounded to the nearest millisecond, as
+    // a string.
+    std::string framePeriodMillisecondsString() const;
 
-    // Returns the average framerate, rounded to the nearest Hz, as a QString
-    QString framesPerSecondString() const;
+    // Returns the average framerate, rounded to the nearest Hz, as a string.
+    std::string framesPerSecondString() const;
 
 private:
 
-  QElapsedTimer m_clock;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration< float, std::milli > FloatDurationMS;
 
-    bool m_isFirstUpdate;
-    qint64 m_lastUpdateTime;
-    int m_nextSampleIndex;
-    int m_nActualSamples;
-    std::vector< qint64 > m_frameTimeSamples;
+    Clock::time_point m_lastUpdateTime;
+
+    bool m_isFirstUpdate = true;
+    int m_nextSampleIndex = 0;
+    int m_nActualSamples = 0;
+    std::vector< Clock::duration > m_frameTimeSamples;
 
 };

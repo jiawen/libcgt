@@ -1,10 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "Camera.h"
 #include "vecmath/Matrix4f.h"
 #include "vecmath/Vector4f.h"
-
-class QString;
 
 class OrthographicCamera : public Camera
 {
@@ -17,10 +17,11 @@ public:
 
     virtual Matrix4f projectionMatrix() const;
 
-    bool saveTXT( QString filename );
-
-    //static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );
+    virtual std::string toString() const override;
 
 private:
 
 };
+
+// TODO: implement lerp(). Implement a generic cubic interpolate based
+//   on lerp().

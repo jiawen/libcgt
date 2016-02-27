@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector3i.h>
 #include "ProgressReporter.h"
@@ -12,31 +14,41 @@ public:
     static void for2D( const Vector2i& count, const Function& func );
 
     template< typename Function >
-    static void for2D( const Vector2i& count, QString progressPrefix, const Function& func );
+    static void for2D( const Vector2i& count, const std::string& progressPrefix,
+                      const Function& func );
 
     template< typename Function >
-    static void for2D( const Vector2i& first, const Vector2i& count, const Function& func );
+    static void for2D( const Vector2i& first, const Vector2i& count,
+                      const Function& func );
 
     template< typename Function >
-    static void for2D( const Vector2i& first, const Vector2i& count, const Vector2i& step, const Function& func );
+    static void for2D( const Vector2i& first, const Vector2i& count,
+                      const Vector2i& step, const Function& func );
 
     template< typename Function >
-    static void for2D( const Vector2i& first, const Vector2i& count, const Vector2i& step, QString progressPrefix, const Function& func );
+    static void for2D( const Vector2i& first,
+                      const Vector2i& count, const Vector2i& step,
+                      const std::string& progressPrefix, const Function& func );
 
     template< typename Function >
     static void for3D( const Vector3i& count, const Function& func );
 
     template< typename Function >
-    static void for3D( const Vector3i& count, QString progressPrefix, const Function& func );
+    static void for3D( const Vector3i& count,
+                      const std::string& progressPrefix, const Function& func );
 
     template< typename Function >
-    static void for3D( const Vector3i& first, const Vector3i& count, const Function& func );
+    static void for3D( const Vector3i& first,
+                      const Vector3i& count, const Function& func );
 
     template< typename Function >
-    static void for3D( const Vector3i& first, const Vector3i& count, const Vector3i& step, const Function& func );
+    static void for3D( const Vector3i& first, const Vector3i& count,
+                      const Vector3i& step, const Function& func );
 
     template< typename Function >
-    static void for3D( const Vector3i& first, const Vector3i& count, const Vector3i& step, QString progressPrefix, const Function& func );
+    static void for3D( const Vector3i& first, const Vector3i& count,
+                      const Vector3i& step, const std::string& progressPrefix,
+                      const Function& func );
 };
 
 // static
@@ -48,21 +60,26 @@ inline void Iterators::for2D( const Vector2i& count, const Function& func )
 
 // static
 template< typename Function >
-inline void Iterators::for2D( const Vector2i& count, QString progressPrefix, const Function& func )
+inline void Iterators::for2D( const Vector2i& count,
+                             const std::string& progressPrefix,
+                             const Function& func )
 {
-    Iterators::for2D( Vector2i( 0, 0 ), count, Vector2i( 1, 1 ), progressPrefix, func );
+    Iterators::for2D( Vector2i( 0, 0 ), count, Vector2i( 1, 1 ), progressPrefix,
+                     func );
 }
 
 // static
 template< typename Function >
-inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, const Function& func )
+inline void Iterators::for2D( const Vector2i& first, const Vector2i& count,
+                             const Function& func )
 {
     Iterators::for2D( first, count, { 1, 1 }, func );
 }
 
 // static
 template< typename Function >
-inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, const Vector2i& step, const Function& func )
+inline void Iterators::for2D( const Vector2i& first, const Vector2i& count,
+                             const Vector2i& step, const Function& func )
 {
     for( int j = 0; j < count.y; j += step.y )
     {
@@ -78,7 +95,10 @@ inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, cons
 
 // static
 template< typename Function >
-inline void Iterators::for2D( const Vector2i& first, const Vector2i& count, const Vector2i& step, QString progressPrefix, const Function& func )
+inline void Iterators::for2D( const Vector2i& first, const Vector2i& count,
+                             const Vector2i& step,
+                             const std::string& progressPrefix,
+                             const Function& func )
 {
     ProgressReporter pr( progressPrefix, count.y / step.y );
 
@@ -104,21 +124,25 @@ inline void Iterators::for3D( const Vector3i& count, const Function& func )
 
 // static
 template< typename Function >
-inline void Iterators::for3D( const Vector3i& count, QString progressPrefix, const Function& func )
+inline void Iterators::for3D( const Vector3i& count,
+                             const std::string& progressPrefix,
+                             const Function& func )
 {
     Iterators::for3D( { 0, 0, 0 }, count, { 1, 1, 1 }, progressPrefix, func );
 }
 
 // static
 template< typename Function >
-inline void Iterators::for3D( const Vector3i& first, const Vector3i& count, const Function& func )
+inline void Iterators::for3D( const Vector3i& first, const Vector3i& count,
+                             const Function& func )
 {
     Iterators::for3D( first, count, { 1, 1, 1 }, func );
 }
 
 // static
 template< typename Function >
-inline void Iterators::for3D( const Vector3i& first, const Vector3i& count, const Vector3i& step, const Function& func )
+inline void Iterators::for3D( const Vector3i& first, const Vector3i& count,
+                             const Vector3i& step, const Function& func )
 {
     for( int k = 0; k < count.z; k += step.z )
     {
@@ -138,7 +162,10 @@ inline void Iterators::for3D( const Vector3i& first, const Vector3i& count, cons
 
 // static
 template< typename Function >
-inline void Iterators::for3D( const Vector3i& first, const Vector3i& count, const Vector3i& step, QString progressPrefix, const Function& func )
+inline void Iterators::for3D( const Vector3i& first, const Vector3i& count,
+                             const Vector3i& step,
+                             const std::string& progressPrefix,
+                             const Function& func )
 {
     ProgressReporter pr( progressPrefix, count.z / step.z );
 
