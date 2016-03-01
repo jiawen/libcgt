@@ -17,21 +17,22 @@ Array2DView< T >::Array2DView( void* pointer, const Vector2i& size, const Vector
 }
 
 template< typename T >
-bool Array2DView< T >::isNull( ) const
+bool Array2DView< T >::isNull() const
 {
     return( m_pointer == nullptr );
 }
 
 template< typename T >
-bool Array2DView< T >::notNull( ) const
+bool Array2DView< T >::notNull() const
 {
     return( m_pointer != nullptr );
 }
 
 template< typename T >
+template< typename U, typename >
 Array2DView< T >::operator const T* () const
 {
-    return reinterpret_cast< T* >( m_pointer );
+    return reinterpret_cast< const T* >( m_pointer );
 }
 
 template< typename T >
@@ -41,9 +42,10 @@ Array2DView< T >::operator T* ()
 }
 
 template< typename T >
+template< typename U, typename >
 const T* Array2DView< T >::pointer() const
 {
-    return reinterpret_cast< T* >( m_pointer );
+    return reinterpret_cast< const T* >( m_pointer );
 }
 
 template< typename T >

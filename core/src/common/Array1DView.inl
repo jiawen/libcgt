@@ -29,18 +29,20 @@ bool Array1DView< T >::notNull() const
 }
 
 template< typename T >
+template< typename U, typename >
 Array1DView< T >::operator const T* () const
 {
-    return m_pointer;
+    return reinterpret_cast< const T* >( m_pointer );
 }
 
 template< typename T >
 Array1DView< T >::operator T* ()
 {
-    return m_pointer;
+    return reinterpret_cast< T* >( m_pointer );
 }
 
 template< typename T >
+template< typename U, typename >
 const T* Array1DView< T >::pointer() const
 {
     return reinterpret_cast< const T* >( m_pointer );

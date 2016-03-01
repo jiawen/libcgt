@@ -24,10 +24,18 @@ public:
     bool isNull() const;
     bool notNull() const;
 
+    template< typename U = T,
+        typename = typename std::enable_if
+            < libcgt::core::common::not_const< U >::value >::type >
     operator const T* () const;
+
     operator T* ();
 
+    template< typename U = T,
+        typename = typename std::enable_if
+            < libcgt::core::common::not_const< U >::value >::type >
     const T* pointer() const;
+
     T* pointer();
 
     T* elementPointer( size_t x );

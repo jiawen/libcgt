@@ -5,10 +5,15 @@ project( cgt_gl )
 find_package( GLEW REQUIRED )
 include_directories( ${GLEW_INCLUDE_DIRS} )
 
-include_directories( ../core/src )
+add_definitions( -D GL_PLATFORM_45 )
 
-file( GLOB_RECURSE HEADERS include/*.h include/*.inl )
-file( GLOB_RECURSE SOURCES src/*.cpp )
+include_directories( ../core/src )
+include_directories( src/common )
+include_directories( src/GL45 )
+
+file( GLOB_RECURSE HEADERS src/common/*.h src/common/*.inl src/GL_45/*.h
+    src/GL_45/*.inl )
+file( GLOB_RECURSE SOURCES src/common/*.cpp src/GL_45/*.cpp )
 
 add_library( cgt_gl ${HEADERS} ${SOURCES} )
 target_link_libraries( cgt_gl cgt_core GLEW::GLEW )
