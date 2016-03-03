@@ -268,7 +268,7 @@ T* Array2D< T >::elementPointer( const Vector2i& xy )
 template< typename T >
 const T* Array2D< T >::rowPointer( size_t y ) const
 {
-    return elementPointer( { 0, y } );
+    return elementPointer( { 0, static_cast< int >( y ) } );
 }
 
 template< typename T >
@@ -316,10 +316,10 @@ Array2D< T >::operator T* ()
 template< typename T >
 const T& Array2D< T >::operator [] ( size_t k ) const
 {
-    size_t x;
-    size_t y;
+    int x;
+    int y;
     Indexing::indexToSubscript2D(
-        static_cast< int >( k ), m_size.x, x, y );
+        static_cast< int >( k ), static_cast< int >( m_size.x ), x, y );
     return ( *this )[ { x, y } ];
 }
 

@@ -411,8 +411,8 @@ int TriangleMesh::pruneInvalidFaces( std::map< Vector2i, int >& edgeToFace )
     {
         Vector3i face = m_faces[ f ];
 
-        Vector2i e0 = face.xy();
-        Vector2i e1 = face.yz();
+        Vector2i e0 = face.xy;
+        Vector2i e1 = face.yz;
         Vector2i e2 = face.zx();
 
         if( edgeToFace.find( e0 ) == edgeToFace.end() &&
@@ -480,8 +480,8 @@ void TriangleMesh::buildAdjacency()
         {
             Vector3i face = m_faces[ f ];
 
-            Vector2i e0 = face.xy();
-            Vector2i e1 = face.yz();
+            Vector2i e0 = face.xy;
+            Vector2i e1 = face.yz;
             Vector2i e2 = face.zx();
 
             m_edgeToFace[ e0 ] = f;
@@ -527,8 +527,8 @@ void TriangleMesh::buildAdjacency()
     {
         Vector3i face = m_faces[ f ];
 
-        Vector2i e0 = face.xy();
-        Vector2i e1 = face.yz();
+        Vector2i e0 = face.xy;
+        Vector2i e1 = face.yz;
         Vector2i e2 = face.zx();
 
         m_edgeToPrevEdge[ e0 ] = e2;

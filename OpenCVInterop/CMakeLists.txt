@@ -11,6 +11,7 @@ file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
 file( GLOB_RECURSE SOURCES src/*.cpp )
 
 add_library( cgt_opencv_interop ${HEADERS} ${SOURCES} )
+set_property( TARGET cgt_opencv_interop PROPERTY CXX_STANDARD 11 )
 target_link_libraries( cgt_opencv_interop cgt_core ${OpenCV_LIBS} )
 
 install( TARGETS cgt_opencv_interop DESTINATION lib )

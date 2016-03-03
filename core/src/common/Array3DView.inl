@@ -205,7 +205,7 @@ Array2DView< T > Array3DView< T >::xSlice( int x )
 template< typename T >
 Array2DView< T > Array3DView< T >::ySlice( int y )
 {
-    return Array2DView< T >( rowPointer( { y, 0 } ), m_size.xz, m_stride.xz );
+    return Array2DView< T >( rowPointer( { y, 0 } ), m_size.xz(), m_stride.xz() );
 }
 
 template< typename T >

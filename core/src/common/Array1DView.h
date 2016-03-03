@@ -19,7 +19,7 @@ public:
     Array1DView( void* pointer, size_t size );
 
     // Create an Array1DView with the specified size and element stride.
-    Array1DView( void* pointer, size_t size, ptrdiff_t  stride );
+    Array1DView( void* pointer, size_t size, ptrdiff_t stride );
 
     bool isNull() const;
     bool notNull() const;

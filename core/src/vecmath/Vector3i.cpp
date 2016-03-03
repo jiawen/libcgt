@@ -75,16 +75,6 @@ int& Vector3i::operator [] ( int i )
     return m_elements[ i ];
 }
 
-Vector2i Vector3i::xy() const
-{
-    return{ x, y };
-}
-
-Vector2i Vector3i::yz() const
-{
-    return{ y, z };
-}
-
 Vector2i Vector3i::zx() const
 {
     return{ z, x };

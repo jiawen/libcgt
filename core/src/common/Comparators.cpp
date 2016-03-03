@@ -46,7 +46,7 @@ bool Comparators::vector3iLexigraphicLess( const Vector3i& a, const Vector3i& b 
     }
     else
     {
-        return vector2iLexigraphicLess( a.yz(), b.yz() );
+        return vector2iLexigraphicLess( a.yz, b.yz );
     }
 }
 

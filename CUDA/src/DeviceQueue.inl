@@ -1,3 +1,5 @@
+#include "ErrorChecking.h"
+
 template< typename T >
 DeviceQueue< T >::DeviceQueue()
 {
@@ -216,8 +218,6 @@ void DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
     md_ringBuffer.copyFromHost( src );
     md_headTailAbsoluteIndices.set( make_uint2( 0, length ) );
 }
-
-#include <ErrorChecking.h>
 
 template< typename T >
 void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const

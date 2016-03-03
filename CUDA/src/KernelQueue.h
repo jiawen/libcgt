@@ -1,4 +1,4 @@
-#include <ThreadMath.cuh>
+#include "ThreadMath.cuh"
 
 template< typename T >
 struct KernelQueue

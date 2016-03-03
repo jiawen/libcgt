@@ -3,21 +3,30 @@ project( cgt_cuda )
 
 # CUDA
 find_package( CUDA REQUIRED )
-# Apparently, leaving this on interferes with parallel builds.
-set( CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF )
+
+set( CUDA_SEPARABLE_COMPILATION ON )
 
 # Add include to the set of compiler include paths
-include_directories( ../core/include )
+include_directories( ../core/src )
 include_directories( include )
 
-if( DEFINED ENV{NVCUDASAMPLES_ROOT} )
-    include_directories( $ENV{NVCUDASAMPLES_ROOT}/common/inc )
+# Define CUDA_SAMPLES_ROOT:
+if( WIN32 )
+    if( DEFINED ENV{NVCUDASAMPLES_ROOT} )
+        set( CUDA_SAMPLES_ROOT $ENV{NVCUDASAMPLES_ROOT} )
+    else()
+        message( "Environment variable NVCUDASAMPLES_ROOT must be set." )
+        return()
+    endif()
+    # Apparently, leaving this on interferes with parallel builds.
+    set( CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF )
 else()
-    message( "Environment variable NVCUDASAMPLES_ROOT must be set." )
-    return()
+    set( CUDA_SAMPLES_ROOT ${CUDA_TOOLKIT_ROOT_DIR}/samples )
 endif()
 
-file( GLOB_RECURSE HEADERS include/*.h include/*.inl include/*.cuh )
+include_directories( ${CUDA_SAMPLES_ROOT}/common/inc )
+
+file( GLOB_RECURSE HEADERS src/*.h src/*.inl src/*.cuh )
 file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
 file( GLOB_RECURSE SOURCES_CU src/*.cu )
 
@@ -27,4 +36,8 @@ set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
 cuda_add_library( cgt_cuda ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
-#file( COPY ${HEADERS} DESTINATION ${OUTPUT_INCLUDE_DIRECTORY} )
+set_property( TARGET cgt_cuda PROPERTY CXX_STANDARD 11 )
+
+install( TARGETS cgt_cuda DESTINATION lib )
+install( DIRECTORY src/ DESTINATION include/cuda
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" PATTERN "*.cuh" )

@@ -85,7 +85,7 @@ DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
 template< typename T >
 DeviceArray3D< T >& DeviceArray3D< T >::operator = ( const Array3D< T >& src )
 {
-    copyFromHost( copy );
+    copyFromHost( src );
     return *this;
 }
 

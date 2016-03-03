@@ -3,7 +3,8 @@
 #include <initializer_list>
 #include <string>
 
-class Vector2i;
+#include "Vector2i.h"
+
 class Vector3f;
 
 class Vector3i
@@ -24,8 +25,6 @@ public:
     const int& operator [] ( int i ) const;
     int& operator [] ( int i );
 
-    Vector2i xy() const;
-    Vector2i yz() const;
     Vector2i zx() const;
 
     Vector2i yx() const;
@@ -63,6 +62,15 @@ public:
             int x;
             int y;
             int z;
+        };
+        struct
+        {
+            Vector2i xy;
+        };
+        struct
+        {
+            int __padding0;
+            Vector2i yz;
         };
         int m_elements[ 3 ];
     };

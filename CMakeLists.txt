@@ -34,7 +34,6 @@ elseif( UNIX )
 	else()
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 	endif()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 elseif( WIN32 )
     # In debug mode, append "d" to the library name.
     set( CMAKE_DEBUG_POSTFIX d )
@@ -82,7 +81,7 @@ if( BUILD_OPENCV_INTEROP )
 endif()
 
 option( BUILD_QT_INTEROP "Build Qt Interop module." ON )
-if( BUILD_OPENCV_INTEROP )
+if( BUILD_QT_INTEROP )
     add_subdirectory( QtInterop )
 endif()
 
