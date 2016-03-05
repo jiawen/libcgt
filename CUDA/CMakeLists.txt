@@ -35,7 +35,7 @@ set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_52,code=sm_52 )
 set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
-cuda_add_library( cgt_cuda ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
+cuda_add_library( cgt_cuda STATIC ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
 set_property( TARGET cgt_cuda PROPERTY CXX_STANDARD 11 )
 
 install( TARGETS cgt_cuda DESTINATION lib )

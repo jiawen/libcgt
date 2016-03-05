@@ -113,6 +113,11 @@ void GLTexture::clear( const Vector4f& clearValue, int level )
     glClearTexImage( id(), level, GL_RGBA, GL_FLOAT, &clearValue );
 }
 
+GLuint GLTexture::id() const
+{
+    return m_id;
+}
+
 GLTexture::Target GLTexture::target() const
 {
     return m_target;
@@ -157,5 +162,5 @@ GLTexture::GLTexture( Target target, GLImageInternalFormat internalFormat,
     {
         m_nMipMapLevels = nMipMapLevels;
     }
-    glGenTextures( 1, &m_id );
+    glCreateTextures( glTarget(), 1, &m_id );
 }

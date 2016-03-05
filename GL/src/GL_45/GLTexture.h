@@ -105,7 +105,7 @@ protected:
 
     GLTexture( Target target, GLImageInternalFormat internalFormat,
               GLsizei nMipMapLevels );
-    
+
 private:
 
     GLuint m_id;
