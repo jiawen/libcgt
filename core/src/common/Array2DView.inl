@@ -1,17 +1,23 @@
 template< typename T >
-Array2DView< T >::Array2DView( void* pointer, const Vector2i& size ) :
+Array2DView< T >::Array2DView( Array2DView< T >::VoidPointer pointer,
+    const Vector2i& size ) :
     m_size( size ),
-    m_stride( Vector2i{ static_cast< int >( sizeof( T ) ), static_cast< int >( size.x * sizeof( T ) ) } ),
-    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
+    m_stride( Vector2i{
+        static_cast< int >( sizeof( T ) ),
+        static_cast< int >( size.x * sizeof( T ) ) } ),
+    m_pointer( reinterpret_cast< typename Array2DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( void* pointer, const Vector2i& size, const Vector2i& strides ) :
+Array2DView< T >::Array2DView( Array2DView< T >::VoidPointer pointer,
+    const Vector2i& size, const Vector2i& stride ) :
     m_size( size ),
-    m_stride( strides ),
-    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
+    m_stride( stride ),
+    m_pointer( reinterpret_cast< typename Array2DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }

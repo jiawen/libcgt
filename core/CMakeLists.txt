@@ -11,7 +11,8 @@ file( GLOB_RECURSE SOURCES src/*.cpp third_party/*.cpp )
 add_library( cgt_core SHARED ${HEADERS} ${SOURCES} )
 set_property( TARGET cgt_core PROPERTY CXX_STANDARD 11 )
 
-install( TARGETS cgt_core DESTINATION lib )
+install( TARGETS cgt_core DESTINATION lib EXPORT cgt_core-targets )
+install( EXPORT cgt_core-targets DESTINATION lib/cmake )
 install( DIRECTORY src/ DESTINATION include/core
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
 install( DIRECTORY third_party/ DESTINATION include/third_party

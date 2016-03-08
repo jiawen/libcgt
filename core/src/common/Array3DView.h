@@ -16,6 +16,11 @@ class Array3DView
 {
 public:
 
+    // T --> void*. const T --> const void*.
+    typedef typename WrapConstPointerT< T, void >::pointer VoidPointer;
+    // T --> uint8_t*. const T --> const uint8_t*.
+    typedef typename WrapConstPointerT< T, uint8_t >::pointer UInt8Pointer;
+
     // The null Array2DView:
     // pointer = nullptr, width = height = depth = 0.
     Array3DView() = default;
@@ -24,12 +29,12 @@ public:
     // the default element stride of sizeof( T ),
     // the default row stride of width * sizeof( T ),
     // and the default slice stride of width * height * sizeof( T ).
-    Array3DView( void* pointer, const Vector3i& size );
+    Array3DView( VoidPointer pointer, const Vector3i& size );
 
     // Create an Array3DView with specified
     // size { x, y, z } in elements
     // and stride { elementStride, rowStride, sliceStride } in bytes.
-    Array3DView( void* pointer, const Vector3i& size, const Vector3i& stride );
+    Array3DView( VoidPointer pointer, const Vector3i& size, const Vector3i& stride );
 
     bool isNull() const;
     bool notNull() const;
@@ -45,7 +50,7 @@ public:
         typename = typename std::enable_if
             < libcgt::core::common::not_const< U >::value >::type >
     const T* pointer() const;
-    
+
     T* pointer();
 
     T* elementPointer( const Vector3i& xyz );
@@ -108,7 +113,7 @@ public:
 
     // Extract 2D slice at a given x coordinate.
     Array2DView< T > xSlice( int x );
-    
+
     // Extract 2D slice at a given y coordinate.
     Array2DView< T > ySlice( int y );
 
@@ -119,7 +124,7 @@ private:
 
     Vector3i m_size;
     Vector3i m_stride;
-    typename WrapConstPointerT< T, uint8_t >::pointer m_pointer = nullptr;
+    UInt8Pointer m_pointer = nullptr;
 };
 
 #include "Array3DView.inl"

@@ -1,21 +1,24 @@
 template< typename T >
-Array3DView< T >::Array3DView( void* pointer, const Vector3i& size ) :
+Array3DView< T >::Array3DView( Array3DView< T >::VoidPointer pointer,
+    const Vector3i& size ) :
     m_size( size ),
     m_stride( Vector3i{
         static_cast< int >( sizeof( T ) ),
         static_cast< int >( size.x * sizeof( T ) ),
         static_cast< int >( size.x * size.y * sizeof( T ) ) } ),
-    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
+    m_pointer( reinterpret_cast< typename Array3DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }
 
 template< typename T >
-Array3DView< T >::Array3DView( void* pointer,
+Array3DView< T >::Array3DView( Array3DView< T >::VoidPointer pointer,
     const Vector3i& size, const Vector3i& strides ) :
     m_size( size ),
     m_stride( strides ),
-    m_pointer( reinterpret_cast< typename WrapConstPointerT< T, uint8_t >::pointer >( pointer ) )
+    m_pointer( reinterpret_cast< typename Array3DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }

@@ -1,17 +1,21 @@
 template< typename T >
-Array1DView< T >::Array1DView( void* pointer, size_t size ) :
+Array1DView< T >::Array1DView( Array1DView< T >::VoidPointer pointer,
+    size_t size ) :
     m_size( size ),
     m_stride( sizeof( T ) ),
-    m_pointer( reinterpret_cast< uint8_t* >( pointer) )
+    m_pointer( reinterpret_cast< typename Array1DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }
 
 template< typename T >
-Array1DView< T >::Array1DView( void* pointer, size_t size, ptrdiff_t stride ) :
+Array1DView< T >::Array1DView( Array1DView< T >::VoidPointer pointer,
+    size_t size, ptrdiff_t stride ) :
     m_size( size ),
     m_stride( stride ),
-    m_pointer( reinterpret_cast< uint8_t* >( pointer ) )
+    m_pointer( reinterpret_cast< typename Array1DView< T >::UInt8Pointer >(
+        pointer ) )
 {
 
 }

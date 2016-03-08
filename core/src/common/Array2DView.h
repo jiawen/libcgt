@@ -14,6 +14,11 @@ class Array2DView
 {
 public:
 
+    // T --> void*. const T --> const void*.
+    typedef typename WrapConstPointerT< T, void >::pointer VoidPointer;
+    // T --> uint8_t*. const T --> const uint8_t*.
+    typedef typename WrapConstPointerT< T, uint8_t >::pointer UInt8Pointer;
+
     // The null Array2DView:
     // pointer = nullptr, width = height = 0.
     Array2DView() = default;
@@ -21,12 +26,13 @@ public:
     // Create an Array2DView with:
     // the default element stride of sizeof( T )
     // and the default row stride of width * sizeof( T ).
-    Array2DView( void* pointer, const Vector2i& size );
+    Array2DView( VoidPointer pointer, const Vector2i& size );
 
     // Create an Array2DView with specified
     // size { x, y } in elements
     // and strides { elementStride, rowStride } in bytes.
-    Array2DView( void* pointer, const Vector2i& size, const Vector2i& strides );
+    Array2DView( VoidPointer pointer, const Vector2i& size,
+        const Vector2i& stride );
 
     bool isNull() const;
     bool notNull() const;
@@ -97,7 +103,7 @@ private:
 
     Vector2i m_size;
     Vector2i m_stride;
-    typename WrapConstPointerT< T, uint8_t >::pointer m_pointer = nullptr;
+    UInt8Pointer m_pointer = nullptr;
 };
 
 #include "Array2DView.inl"

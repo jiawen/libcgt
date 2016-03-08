@@ -11,15 +11,20 @@ class Array1DView
 {
 public:
 
+    // T --> void*. const T --> const void*.
+    typedef typename WrapConstPointerT< T, void >::pointer VoidPointer;
+    // T --> uint8_t*. const T --> const uint8_t*.
+    typedef typename WrapConstPointerT< T, uint8_t >::pointer UInt8Pointer;
+
     // The null Array2DView:
     // pointer = nullptr, width = 0.
     Array1DView() = default;
 
     // Create an Array1DView with the default element stride of sizeof( T ).
-    Array1DView( void* pointer, size_t size );
+    Array1DView( VoidPointer pointer, size_t size );
 
     // Create an Array1DView with the specified size and element stride.
-    Array1DView( void* pointer, size_t size, ptrdiff_t stride );
+    Array1DView( VoidPointer pointer, size_t size, ptrdiff_t stride );
 
     bool isNull() const;
     bool notNull() const;
@@ -71,7 +76,7 @@ private:
 
     size_t m_size = 0;
     ptrdiff_t m_stride = 0;
-    typename WrapConstPointerT< T, uint8_t >::pointer m_pointer = nullptr;
+    UInt8Pointer m_pointer = nullptr;
 };
 
 #include "Array1DView.inl"
