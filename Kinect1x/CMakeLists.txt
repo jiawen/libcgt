@@ -22,7 +22,6 @@ file( GLOB_RECURSE SOURCES src/*.cpp  )
 # set( MS_SPEECH_LIBRARIES strmiids.lib dmoguids.lib msdmo.lib avrt.lib )
 
 add_library( cgt_kinect1x ${HEADERS} ${SOURCES} )
-set_property( TARGET cgt_kinect1x PROPERTY CXX_STANDARD 11 )
 target_link_libraries( cgt_kinect1x cgt_core Kinect1x::Kinect1x Qt5::Core Qt5::Widgets )
 
 install( TARGETS cgt_kinect1x DESTINATION lib )

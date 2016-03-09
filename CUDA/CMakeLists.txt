@@ -30,13 +30,12 @@ file( GLOB_RECURSE HEADERS src/*.h src/*.inl src/*.cuh )
 file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
 file( GLOB_RECURSE SOURCES_CU src/*.cu )
 
-set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_52,code=sm_52 )
+set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-Xcompiler -fPIC -gencode arch=compute_52,code=sm_52 )
 
 set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
-cuda_add_library( cgt_cuda STATIC ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
-set_property( TARGET cgt_cuda PROPERTY CXX_STANDARD 11 )
+cuda_add_library( cgt_cuda SHARED ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
 
 install( TARGETS cgt_cuda DESTINATION lib )
 install( DIRECTORY src/ DESTINATION include/cuda

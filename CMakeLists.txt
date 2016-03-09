@@ -32,6 +32,7 @@ elseif( UNIX )
 		# Use libc++ with Clang.
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
 	else()
+        # Use the default stdlib with other compilers.
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 	endif()
 elseif( WIN32 )
@@ -51,7 +52,7 @@ elseif( WIN32 )
     endif()
 endif()
 
-# Set INSTALL directory by platform.
+# Set CMAKE_INSTALL_PREFIX on Windows.
 if( WIN32 )
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # CACHE means set cache variable instead of internal.
