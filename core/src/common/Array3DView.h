@@ -100,7 +100,7 @@ public:
     template< typename U = T,
         typename = typename std::enable_if
             < libcgt::core::common::not_const< U >::value >::type >
-        operator Array3DView< const T >() const;
+    operator Array3DView< const T >() const;
 
     // Extract 1D slice at a given x and y coordinate.
     Array1DView< T > xySlice( int x, int y );

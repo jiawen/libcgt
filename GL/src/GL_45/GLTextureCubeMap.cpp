@@ -66,7 +66,7 @@ bool GLTextureCubeMap::set( GLCubeMapFace face,
         return false;
     }
 
-    glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
+    //glPushClientAttribDefaultEXT( GL_CLIENT_PIXEL_STORE_BIT );
     // TODO: alignment, strides, ..., has to be packed
 
     // DSA treats a cube map as a 2D array texture.
@@ -79,7 +79,7 @@ bool GLTextureCubeMap::set( GLCubeMapFace face,
         data.pointer()
     );
 
-    glPopClientAttrib();
+    //glPopClientAttrib();
 
     return true;
 }

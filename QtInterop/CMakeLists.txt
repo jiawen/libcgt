@@ -13,7 +13,7 @@ file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
 file( GLOB_RECURSE SOURCES src/*.cpp )
 
 add_library( cgt_qt_interop SHARED ${HEADERS} ${SOURCES} )
-target_link_libraries( cgt_qt_interop Qt5::Core Qt5::Widgets )
+target_link_libraries( cgt_qt_interop cgt_core Qt5::Core Qt5::Widgets )
 
 install( TARGETS cgt_qt_interop DESTINATION lib )
 install( DIRECTORY src/ DESTINATION include/qt_interop

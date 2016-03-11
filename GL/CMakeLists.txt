@@ -1,8 +1,10 @@
 cmake_minimum_required( VERSION 3.1 )
 project( cgt_gl )
 
-# GLEW
+# OpenGL and GLEW
+find_package( OpenGL REQUIRED )
 find_package( GLEW REQUIRED )
+include_directories( ${OPENGL_INCLUDE_DIRS} )
 include_directories( ${GLEW_INCLUDE_DIRS} )
 
 add_definitions( -D GL_PLATFORM_45 )
@@ -17,7 +19,7 @@ file( GLOB_RECURSE SOURCES src/common/*.cpp src/GL_45/*.cpp )
 
 add_library( cgt_gl SHARED ${HEADERS} ${SOURCES} )
 set_property( TARGET cgt_gl PROPERTY CXX_STANDARD 11 )
-target_link_libraries( cgt_gl cgt_core GLEW::GLEW )
+target_link_libraries( cgt_gl cgt_core ${OPENGL_LIBRARIES} GLEW::GLEW )
 
 install( TARGETS cgt_gl DESTINATION lib )
 install( DIRECTORY src/common DESTINATION include/GL

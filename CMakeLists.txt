@@ -1,32 +1,9 @@
 cmake_minimum_required( VERSION 3.1 )
-project( libcgt )
-
-# Dependencies
-#
-# We use FindGLEW.cmake. It's amazingly good at finding glew headers/libs/dlls!
-# It uses find_path and find_library. On Windows, I had:
-# C:\Users\jiawen\work\libs\{bin/include/lib}, with the .dll, .h, and .lib files
-# in those directories, respectively.
-# I had *only* PATH=C:\Users\jiawen\work\libs\bin (as a literal). That was all
-# it took to find it.
-
-# On Windows, ensure that the appropriate dependencies are listed in
-# CMAKE_PREFIX_PATH:
-#
-# For OpenCV, this means adding the "build" directory that comes from the OpenCV
-# installer to CMAKE_PREFIX_PATH. This will set a a variable called "OpenCV_DIR"
-# to said "build" directory, along with a bunch of other variables.
-#
-# For Kinect SDK 1.x, this means having the environment variable
-# "KINECTSDK10_DIR" set. This should be set automatically by the SDK installer.
-
-# TODO: on Windows, figure how to make an omnibus static library that includes
-# other static libraries. I.e., Librarian / General / Additional Dependencies.
 
 # Compiler options by platform.
 if( APPLE )
     # Clang only
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7 -std=c++11 -stdlib=libc++" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
 elseif( UNIX )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 		# Use libc++ with Clang.
@@ -62,6 +39,8 @@ if( WIN32 )
         set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory" FORCE)
     endif()
 endif()
+
+project( libcgt )
 
 # TODO: can get fancy with the options: default to whether dependencies exist.
 add_subdirectory( core )
