@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.4 )
 
 # Compiler options by platform.
 if( APPLE )
@@ -13,6 +13,8 @@ elseif( UNIX )
     	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 	endif()
 elseif( WIN32 )
+    set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true )
+
     # In debug mode, append "d" to the library name.
     set( CMAKE_DEBUG_POSTFIX d )
 

@@ -8,6 +8,8 @@
 
 #include "GLUtilities.h"
 
+#include <algorithm>
+
 // static
 int GLTexture1D::calculateNumMipMapLevels( int size )
 {

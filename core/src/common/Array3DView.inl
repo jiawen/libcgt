@@ -1,5 +1,5 @@
 template< typename T >
-Array3DView< T >::Array3DView( Array3DView< T >::VoidPointer pointer,
+Array3DView< T >::Array3DView( typename Array3DView< T >::VoidPointer pointer,
     const Vector3i& size ) :
     m_size( size ),
     m_stride( Vector3i{
@@ -13,7 +13,7 @@ Array3DView< T >::Array3DView( Array3DView< T >::VoidPointer pointer,
 }
 
 template< typename T >
-Array3DView< T >::Array3DView( Array3DView< T >::VoidPointer pointer,
+Array3DView< T >::Array3DView( typename Array3DView< T >::VoidPointer pointer,
     const Vector3i& size, const Vector3i& strides ) :
     m_size( size ),
     m_stride( strides ),

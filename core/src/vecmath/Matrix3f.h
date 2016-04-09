@@ -25,9 +25,8 @@ public:
     // otherwise, sets the rows
     Matrix3f( const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, bool setColumns = true );
 
-    Matrix3f( const Matrix3f& copy ); // copy constructor
-    Matrix3f& operator = ( const Matrix3f& copy ); // assignment operator
-    // no destructor necessary
+    Matrix3f( const Matrix3f& copy ) = default;
+    Matrix3f& operator = ( const Matrix3f& copy ) = default;
 
     // read / write element (i,j)
     const float& operator () ( int i, int j ) const;

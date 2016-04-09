@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.4 )
 project( cgt_cuda )
 
 # CUDA
@@ -36,6 +36,7 @@ set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
 cuda_add_library( cgt_cuda SHARED ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
+target_link_libraries( cgt_cuda cgt_core )
 
 install( TARGETS cgt_cuda DESTINATION lib )
 install( DIRECTORY src/ DESTINATION include/cuda

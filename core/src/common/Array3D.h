@@ -123,8 +123,8 @@ public:
 
 private:
 
-    Vector3i m_size = { 0, 0, 0 };
-    Vector3i m_stride = { 0, 0, 0 };
+    Vector3i m_size = Vector3i{ 0, 0, 0 };
+    Vector3i m_stride = Vector3i{ 0, 0, 0 };
     uint8_t* m_data = nullptr;
     Allocator* m_allocator = NewDeleteAllocator::instance();
 };

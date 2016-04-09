@@ -54,20 +54,6 @@ Matrix3f::Matrix3f( const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, 
     }
 }
 
-Matrix3f::Matrix3f( const Matrix3f& copy )
-{
-    memcpy( m_elements, copy.m_elements, 9 * sizeof( float ) );
-}
-
-Matrix3f& Matrix3f::operator = ( const Matrix3f& copy )
-{
-    if( this != &copy )
-    {
-        memcpy( m_elements, copy.m_elements, 9 * sizeof( float ) );
-    }
-    return *this;
-}
-
 const float& Matrix3f::operator () ( int i, int j ) const
 {
     return m_elements[ j * 3 + i ];

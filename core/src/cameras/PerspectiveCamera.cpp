@@ -99,7 +99,7 @@ void PerspectiveCamera::setAspect( float aspect )
 
 void PerspectiveCamera::setAspect( const Vector2f& screenSize )
 {
-    setAspect( Arithmetic::divideIntsToFloat( screenSize.x, screenSize.y ) );
+    setAspect( screenSize.x / screenSize.y );
 }
 
 float PerspectiveCamera::fovXRadians() const

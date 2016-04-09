@@ -1,5 +1,6 @@
 #include "imageproc/ColorUtils.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <math/Arithmetic.h>

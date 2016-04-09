@@ -1,5 +1,6 @@
 #include "vecmath/Range1i.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 

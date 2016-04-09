@@ -1,5 +1,5 @@
 template< typename T >
-Array2DView< T >::Array2DView( Array2DView< T >::VoidPointer pointer,
+Array2DView< T >::Array2DView( typename Array2DView< T >::VoidPointer pointer,
     const Vector2i& size ) :
     m_size( size ),
     m_stride( Vector2i{
@@ -12,7 +12,7 @@ Array2DView< T >::Array2DView( Array2DView< T >::VoidPointer pointer,
 }
 
 template< typename T >
-Array2DView< T >::Array2DView( Array2DView< T >::VoidPointer pointer,
+Array2DView< T >::Array2DView( typename Array2DView< T >::VoidPointer pointer,
     const Vector2i& size, const Vector2i& stride ) :
     m_size( size ),
     m_stride( stride ),

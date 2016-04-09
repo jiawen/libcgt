@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.4 )
 project( cgt_core )
 
 # Add include to the set of compiler include paths

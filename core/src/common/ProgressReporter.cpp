@@ -116,7 +116,7 @@ float ProgressReporter::approximateMillisecondsRemaining()
 
 float ProgressReporter::averageMillisecondsPerTask()
 {
-    return m_totalMillisecondsElapsed / m_nTasksCompleted;
+    return static_cast< float >( m_totalMillisecondsElapsed ) / m_nTasksCompleted;
 }
 
 void ProgressReporter::initialize( const std::string& prefix, int nTasks,

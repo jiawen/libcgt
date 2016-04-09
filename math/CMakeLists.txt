@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.4 )
 project( libcgt_math )
 
 # Debug mode
