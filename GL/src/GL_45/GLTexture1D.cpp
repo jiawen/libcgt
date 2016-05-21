@@ -70,7 +70,7 @@ bool GLTexture1D::set( Array1DView< const uint8_t > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -87,7 +87,7 @@ bool GLTexture1D::set( Array1DView< const uint8x2 > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -142,7 +142,7 @@ bool GLTexture1D::set( Array1DView< const float > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -159,7 +159,7 @@ bool GLTexture1D::set( Array1DView< const Vector2f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -176,7 +176,7 @@ bool GLTexture1D::set( Array1DView< const Vector3f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -193,7 +193,7 @@ bool GLTexture1D::set( Array1DView< const Vector4f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }

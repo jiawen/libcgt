@@ -2,10 +2,43 @@
 
 #include <cstdlib>
 
+namespace libcgt { namespace core { namespace arrayutils {
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+template<>
+bool fill( Array2DView< uint8_t > view, const uint8_t& value )
+{
+    if( view.isNull( ) )
+    {
+        return false;
+    }
+
+    if( view.packed( ) )
+    {
+        memset( view.pointer( ), value, view.numElements( ) );
+        return true;
+    }
+
+    if( view.elementsArePacked( ) )
+    {
+        // Fill w bytes at a time.
+        int w = view.width( );
+        for( int y = 0; y < view.height( ); ++y )
+        {
+            memset( view.rowPointer( y ), value, w );
+        }
+        return true;
+    }
+
+    // Nothing is packed, iterate.
+    int ne = view.numElements( );
+    for( int k = 0; k < ne; ++k )
+    {
+        view[ k ] = value;
+    }
+    return true;
+}
+
+} } } // namespace arrayutils, core, libcgt
 
 // static
 bool ArrayUtils::saveTXT( Array1DView< const int16_t > view, const char* filename )
@@ -495,39 +528,4 @@ bool ArrayUtils::saveTXT( Array3DView< const Vector2f > view, const char* filena
 
     retVal = fclose( fp );
     return( retVal == 0 );
-}
-
-// static
-template<>
-bool ArrayUtils::fill( Array2DView< uint8_t > view, const uint8_t& value )
-{
-    if( view.isNull( ) )
-    {
-        return false;
-    }
-
-    if( view.packed( ) )
-    {
-        memset( view.pointer( ), value, view.numElements( ) );
-        return true;
-    }
-
-    if( view.elementsArePacked( ) )
-    {
-        // Fill w bytes at a time.
-        int w = view.width( );
-        for( int y = 0; y < view.height( ); ++y )
-        {
-            memset( view.rowPointer( y ), value, w );
-        }
-        return true;
-    }
-
-    // Nothing is packed, iterate.
-    int ne = view.numElements( );
-    for( int k = 0; k < ne; ++k )
-    {
-        view[ k ] = value;
-    }
-    return true;
 }

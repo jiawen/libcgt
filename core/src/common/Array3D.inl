@@ -77,6 +77,10 @@ Array3D< T >::Array3D( Array3D< T >&& move )
     m_stride = std::move( move.m_stride );
     m_data = std::move( move.m_data );
     m_allocator = std::move( move.m_allocator );
+
+    move.m_size = { 0, 0, 0 };
+    move.m_stride = { 0, 0, 0 };
+    move.m_data = nullptr;
 }
 
 template< typename T >
@@ -103,6 +107,10 @@ Array3D< T >& Array3D< T >::operator = ( Array3D< T >&& move )
         m_stride = std::move( move.m_stride );
         m_data = std::move( move.m_data );
         m_allocator = std::move( move.m_allocator );
+
+        move.m_size = { 0, 0, 0 };
+        move.m_stride = { 0, 0, 0 };
+        move.m_data = nullptr;
     }
     return *this;
 }

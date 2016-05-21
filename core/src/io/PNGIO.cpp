@@ -128,7 +128,7 @@ bool PNGIO::write( const std::string& filename, Array2DView< const uint8x3 > ima
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        ArrayUtils::copy< uint8x3 >( image, tmpImage );
+        libcgt::core::arrayutils::copy< uint8x3 >( image, tmpImage );
         pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
     }
     else
@@ -157,7 +157,7 @@ bool PNGIO::write( const std::string& filename, Array2DView< const uint8x4 > ima
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        ArrayUtils::copy< uint8x4 >( image, tmpImage );
+        libcgt::core::arrayutils::copy< uint8x4 >( image, tmpImage );
         pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
     }
     else

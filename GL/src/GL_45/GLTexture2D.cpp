@@ -180,7 +180,7 @@ bool GLTexture2D::get( Array2DView< Vector4f > output,
     }
     const GLPixelType dstType = GLPixelType::FLOAT;
     return get2D( 0, dstFormat, dstType, output.size(), output.pointer() );
-    
+
 }
 
 bool GLTexture2D::set( Array2DView< const uint8_t > srcData,
@@ -194,7 +194,7 @@ bool GLTexture2D::set( Array2DView< const uint8_t > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -211,7 +211,7 @@ bool GLTexture2D::set( Array2DView< const uint8x2 > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -266,7 +266,7 @@ bool GLTexture2D::set( Array2DView< const float > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -283,7 +283,7 @@ bool GLTexture2D::set( Array2DView< const Vector2f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -300,7 +300,7 @@ bool GLTexture2D::set( Array2DView< const Vector3f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }
@@ -317,7 +317,7 @@ bool GLTexture2D::set( Array2DView< const Vector4f > srcData,
     {
         return false;
     }
-    if( srcData.packed() )
+    if( !srcData.packed() )
     {
         return false;
     }

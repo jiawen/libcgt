@@ -22,3 +22,5 @@ enum class GLPrimitiveType
 
     PATCHES = GL_PATCHES
 };
+
+GLenum glPrimitiveType( GLPrimitiveType type );

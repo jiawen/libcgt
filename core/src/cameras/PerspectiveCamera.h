@@ -136,6 +136,11 @@ public:
     virtual Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const override;
 
     virtual std::string toString() const override;
+
+    // Returns the 24 points corresponding to the 12 lines of a perspective frustum.
+    // The first 8 points correspond to lines from the eye to each corner of the far plane.
+    // The next 8 points correspond to lines of the near plane.
+    // The last 8 points correspond to lines of the far plane.
     std::vector< Vector4f > frustumLines() const;
 
     // TODO: implement save using toString().

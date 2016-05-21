@@ -71,10 +71,14 @@ template< typename T >
 Array2D< T >::Array2D( Array2D< T >&& move )
 {
     invalidate();
-    m_size = std::move( move.m_size );
-    m_stride = std::move( move.m_stride );
-    m_data = std::move( move.m_data );
-    m_allocator = std::move( move.m_allocator );
+    m_size = move.m_size;
+    m_stride = move.m_stride;
+    m_data = move.m_data;
+    m_allocator = move.m_allocator;
+
+    move.m_size = { 0, 0 };
+    move.m_stride = { 0, 0 };
+    move.m_data = nullptr;
 }
 
 template< typename T >
@@ -97,10 +101,14 @@ Array2D< T >& Array2D< T >::operator = ( Array2D< T >&& move )
     if( this != &move )
     {
         invalidate();
-        m_size = std::move( move.m_size );
-        m_stride = std::move( move.m_stride );
-        m_data = std::move( move.m_data );
-        m_allocator = std::move( move.m_allocator );
+        m_size = move.m_size;
+        m_stride = move.m_stride;
+        m_data = move.m_data;
+        m_allocator = move.m_allocator;
+
+        move.m_size = { 0, 0 };
+        move.m_stride = { 0, 0 };
+        move.m_data = nullptr;
     }
     return *this;
 }
