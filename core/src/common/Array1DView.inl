@@ -33,6 +33,14 @@ bool Array1DView< T >::notNull() const
 }
 
 template< typename T >
+void Array1DView< T >::setNull()
+{
+    m_size = 0;
+    m_stride = 0;
+    m_pointer = nullptr;
+}
+
+template< typename T >
 template< typename U, typename >
 Array1DView< T >::operator const T* () const
 {

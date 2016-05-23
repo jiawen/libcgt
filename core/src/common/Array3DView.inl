@@ -36,6 +36,14 @@ bool Array3DView< T >::notNull() const
 }
 
 template< typename T >
+void Array3DView< T >::setNull()
+{
+    m_size = { 0, 0, 0 };
+    m_stride = { 0, 0, 0 };
+    m_pointer = nullptr;
+}
+
+template< typename T >
 template< typename U, typename >
 Array3DView< T >::operator const T* () const
 {

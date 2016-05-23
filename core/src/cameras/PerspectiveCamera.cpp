@@ -10,9 +10,8 @@
 #include "math/MathUtils.h"
 #include "vecmath/Quat4f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+using libcgt::core::cameras::focalLengthPixelsToFoVRadians;
+using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
 
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
@@ -70,7 +69,7 @@ void PerspectiveCamera::setPerspective( float fovYRadians, float aspect,
 void PerspectiveCamera::setPerspectiveFromIntrinsics( const Vector2f& focalLengthPixels,
     const Vector2f& imageSize )
 {
-    m_fovYRadians = CameraUtils::focalLengthPixelsToFoVRadians( focalLengthPixels.y, imageSize.y );
+    m_fovYRadians = focalLengthPixelsToFoVRadians( focalLengthPixels.y, imageSize.y );
     m_aspect = imageSize.x / imageSize.y;
 
     updateFrustum();
@@ -174,8 +173,8 @@ void PerspectiveCamera::setZNear( float zNear )
 
 Vector2f PerspectiveCamera::focalLengthPixels( const Vector2f& screenSize ) const
 {
-    float fx = CameraUtils::fovRadiansToFocalLengthPixels( fovXRadians(), screenSize.x );
-    float fy = CameraUtils::fovRadiansToFocalLengthPixels( fovYRadians(), screenSize.y );
+    float fx = fovRadiansToFocalLengthPixels( fovXRadians(), screenSize.x );
+    float fy = fovRadiansToFocalLengthPixels( fovYRadians(), screenSize.y );
     return{ fx, fy };
 }
 

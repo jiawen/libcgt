@@ -1,61 +1,54 @@
 #pragma once
 
+#include <limits>
+
 #include <vecmath/Rect2i.h>
 #include <vecmath/Vector2f.h>
+#include "cameras/GLFrustum.h"
+#include "cameras/Intrinsics.h"
 
-class CameraUtils
-{
-public:
+namespace libcgt { namespace core { namespace cameras {
 
-    // TODO: make a CameraIntrinsics class
+// Computes new camera intrinsics when an image is cropped.
+// It is independent of original image size.
+//
+// This has only been tested when y points up for both the crop window and the
+// the principal point.
+// TODO(jiawen): verify that this works when y points down.
+Intrinsics adjustIntrinsicsToCrop( const Intrinsics& input,
+    const Rect2i& cropWindow );
 
-    // note that y points up, for both the crop window
-    // and the principal point
-    static void adjustIntrinsicsToCrop
-    (
-        int imageWidth,
-        int imageHeight,
-        const Rect2i& cropWindow,
+// Computes new camera intrinsics when an image is uniformly scaled.
+// It is independent of original image size.
+//
+// uniformScale is the parameter s such that x' = x * s
+// --> s = new_size / old_size
+// (when downsampling, s is < 1, when upsampling, s is > 1)
+Intrinsics adjustIntrinsicsToScale( const Intrinsics& input,
+    float uniformScale );
 
-        const Vector2f& focalLengthPixels,
-        const Vector2f& principalPointPixels,
+// For a *centered* perspective camera, convert focal length (in pixels) to
+// field of view (in radians).
+float focalLengthPixelsToFoVRadians( float focalLengthPixels,
+    float imageSize );
+Vector2f focalLengthPixelsToFoVRadians( const Vector2f& focalLengthPixels,
+    const Vector2f& imageSize );
 
-        Vector2f& newFocalLengthPixels,
-        Vector2f& newPrincipalPointPixels
-    );
+// For a *centered* perspective camera, convert field of view (in radians) to
+// focal length (in pixels).
+float fovRadiansToFocalLengthPixels( float fovRadians, float imageSize );
+Vector2f fovRadiansToFocalLengthPixels( const Vector2f& fovRadians,
+    const Vector2f& imageSize);
 
-    // uniformScale is the parameter s such that x' = x * s
-    // --> s = new_size / old_size
-    // (when downsampling, s is < 1, when upsampling, s is > 1)
-    static void adjustIntrinsicsToScale
-    (
-        int imageWidth,
-        int imageHeight,
+// Convert camera intrinsics to an OpenGL frustum.
+//
+// The intrinsics *must* be given in the OpenGL convention, such that the
+// principal point is in a coordinate system where *y points up*.
+//
+// The principal point does not have to be centered (it does not have to equal
+// half the image size in both both dimensions).
+GLFrustum intrinsicsToFrustum( const Intrinsics& input,
+    const Vector2f& imageSize,
+    float zNear, float zFar = std::numeric_limits< float >::infinity() );
 
-        float uniformScale,
-
-        const Vector2f& focalLengthPixels,
-        const Vector2f& principalPointPixels,
-
-        Vector2f& newFocalLengthPixels,
-        Vector2f& newPrincipalPointPixels
-    );
-
-    // for a centered perspective camera
-    static float focalLengthPixelsToFoVRadians( float focalLengthPixels, float imageSize );
-    static float fovRadiansToFocalLengthPixels( float fovRadians, float imageSize );
-
-    // given potentially off-center intrinsics
-    // (principal point != imageSize / 2,
-    //  note that *y points up*, even for the principal point)
-    // returns frustum parameters
-    static void intrinsicsToFrustum
-    (
-        const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-        const Vector2f& imageSize,
-
-        float zNear,
-        float& left, float& right,
-        float& bottom, float& top
-    );
-};
+} } } // cameras, core, libcgt

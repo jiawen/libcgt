@@ -9,9 +9,7 @@
 #include "vecmath/Vector4f.h"
 #include "vecmath/Quat4f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+using libcgt::core::cameras::intrinsicsToFrustum;
 
 void Camera::setDirectX( bool directX )
 {
@@ -85,36 +83,18 @@ void Camera::setFrustum( const GLFrustum& frustum )
     m_frustum = frustum;
 }
 
-void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
+void Camera::setFrustumFromIntrinsics( const Intrinsics& intrinsics,
     const Vector2f& imageSize )
 {
-    CameraUtils::intrinsicsToFrustum
-    (
-        focalLengthPixels, principalPointPixels,
-        imageSize,
-
-        m_frustum.zNear,
-        m_frustum.left, m_frustum.right,
-        m_frustum.bottom, m_frustum.top
-    );
+    m_frustum = intrinsicsToFrustum( intrinsics, imageSize,
+        m_frustum.zNear, m_frustum.zFar );
 }
 
-void Camera::setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-    const Vector2f& imageSize,
-    float zNear, float zFar )
+void Camera::setFrustumFromIntrinsics( const Intrinsics& intrinsics,
+    const Vector2f& imageSize, float zNear, float zFar )
 {
     assert( zNear > 0 );
-
-    CameraUtils::intrinsicsToFrustum
-    (
-        focalLengthPixels, principalPointPixels,
-        imageSize,
-
-        zNear,
-        m_frustum.left, m_frustum.right,
-        m_frustum.bottom, m_frustum.top
-    );
-    m_frustum.zFar = zFar;
+    m_frustum = intrinsicsToFrustum( intrinsics, imageSize, zNear, zFar);
 }
 
 void Camera::getLookAt( Vector3f& eye,

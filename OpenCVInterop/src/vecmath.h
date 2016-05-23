@@ -15,13 +15,6 @@ namespace opencv_interop
 {
 namespace vecmath
 {
-    // Interpret a as an image and return it as an Array2DView.
-    // a is normally indexed as (row, col), but stored row major.
-    // The returned Array2DView will be indexed as (x, y) (aka, col, row),
-    // with the same storage.
-    template< typename T >
-    Array2DView< T > viewOfCvMatAsImage( const cv::Mat_< T >& a );
-
     cv::Point2f toOpenCVPoint2f( const Vector2f& v );
 
     cv::Point3f toOpenCVPoint3f( const Vector3f& v );
@@ -38,14 +31,42 @@ namespace vecmath
     // a( i0 : i0 + 3, j )
     Vector3f fromOpenCV3x1( const cv::Mat_< float >& a, int i0 = 0, int j = 0 );
 
-    template< typename T >
-    Array2DView< T > viewOfCvMatAsImage( const cv::Mat_< T >& a )
+    // TODO(jiawen): Move to another file.
+    // Interpret a an Array2DView over the given type S.
+    // a is normally indexed as (row, col), but stored row major.
+    // The returned Array2DView will be indexed as (x, y) (aka, col, row),
+    // with the same storage.
+    template< typename S >
+    Array2DView< S > cvMatAsArray2DView( const cv::Mat& a )
     {
-        // strides is (step[1], step[0]) because cv::Mat is indexed
+        // stride is (step[1], step[0]) because cv::Mat is indexed
         // as (row, col) but stored row major.
         Vector2i size{ a.cols, a.rows };
-        Vector2i strides{ static_cast< int >( a.step[ 1 ] ), static_cast< int >( a.step[ 0 ] ) };
-        return Array2DView< T >( a.data, size, strides );
+        Vector2i stride
+        {
+            static_cast< int >( a.step[1] ),
+            static_cast< int >( a.step[0] )
+        };
+        return Array2DView< S >( a.data, size, stride );
+    }
+
+    // TODO(jiawen): Move to another file.
+    // Interpret a an Array2DView over the given type S.
+    // a is normally indexed as (row, col), but stored row major.
+    // The returned Array2DView will be indexed as (x, y) (aka, col, row),
+    // with the same storage.
+    template< typename S, typename T >
+    Array2DView< S > cvMatAsArray2DView( const cv::Mat_< T >& a )
+    {
+        // stride is (step[1], step[0]) because cv::Mat is indexed
+        // as (row, col) but stored row major.
+        Vector2i size{ a.cols, a.rows };
+        Vector2i stride
+        {
+            static_cast< int >( a.step[1] ),
+            static_cast< int >( a.step[0] )
+        };
+        return Array2DView< S >( a.data, size, stride );
     }
 } // vecmath
 } // opencv_interop

@@ -38,6 +38,7 @@ public:
 
     bool isNull() const;
     bool notNull() const;
+    void setNull();
 
     template< typename U = T,
         typename = typename std::enable_if

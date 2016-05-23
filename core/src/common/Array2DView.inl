@@ -35,6 +35,14 @@ bool Array2DView< T >::notNull() const
 }
 
 template< typename T >
+void Array2DView< T >::setNull()
+{
+    m_size = { 0, 0 };
+    m_stride = { 0, 0 };
+    m_pointer = nullptr;
+}
+
+template< typename T >
 template< typename U, typename >
 Array2DView< T >::operator const T* () const
 {

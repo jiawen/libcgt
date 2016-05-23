@@ -1,18 +1,9 @@
 #include "cameras/CameraUtils.h"
 
-// static
-void CameraUtils::adjustIntrinsicsToCrop
-(
-    int imageWidth,
-    int imageHeight,
-    const Rect2i& cropWindow,
+namespace libcgt { namespace core { namespace cameras {
 
-    const Vector2f& focalLengthPixels,
-    const Vector2f& principalPointPixels,
-
-    Vector2f& newFocalLengthPixels,
-    Vector2f& newPrincipalPointPixels
-)
+Intrinsics adjustIntrinsicsToCrop( const Rect2i& cropWindow,
+    Intrinsics input )
 {
     // camera model:
     // x = fl * ( X / Z ) + pp
@@ -23,28 +14,15 @@ void CameraUtils::adjustIntrinsicsToCrop
     // fl' = fl
     // pp' = pp - left
 
-    // image size is ignored
-    ( void )imageWidth;
-    ( void )imageHeight;
-
-    newFocalLengthPixels = focalLengthPixels;
-    newPrincipalPointPixels = principalPointPixels - cropWindow.origin();
+    return
+    {
+        input.focalLength,
+        input.principalPoint - cropWindow.origin()
+    };
 }
 
-// static
-void CameraUtils::adjustIntrinsicsToScale
-(
-    int imageWidth,
-    int imageHeight,
-
-    float uniformScale,
-
-    const Vector2f& focalLengthPixels,
-    const Vector2f& principalPointPixels,
-
-    Vector2f& newFocalLengthPixels,
-    Vector2f& newPrincipalPointPixels
-)
+Intrinsics adjustIntrinsicsToScale( Intrinsics input,
+    float uniformScale )
 {
     // camera model:
     // x = fl * ( X / Z ) + pp
@@ -55,42 +33,65 @@ void CameraUtils::adjustIntrinsicsToScale
     // fl' = fl * uniformScale
     // pp' = pp * uniformScale
 
-    // image size is ignored
-    (void)imageWidth;
-    (void)imageHeight;
-
-    newFocalLengthPixels = focalLengthPixels * uniformScale;
-    newPrincipalPointPixels = principalPointPixels * uniformScale;
+    return
+    {
+        input.focalLength * uniformScale,
+        input.principalPoint * uniformScale
+    };
 }
 
-// static
-float CameraUtils::focalLengthPixelsToFoVRadians( float focalLengthPixels, float imageSize )
+float focalLengthPixelsToFoVRadians( float focalLengthPixels, float imageSize )
 {
     return 2 * atan( 0.5f * imageSize / focalLengthPixels );
 }
 
-// static
-float CameraUtils::fovRadiansToFocalLengthPixels( float fovRadians, float imageSize )
+Vector2f focalLengthPixelsToFoVRadians( const Vector2f& focalLengthPixels,
+    const Vector2f& imageSize )
+{
+    return
+    {
+        focalLengthPixelsToFoVRadians( focalLengthPixels.x, imageSize.x ),
+        focalLengthPixelsToFoVRadians( focalLengthPixels.y, imageSize.y )
+    };
+}
+
+float fovRadiansToFocalLengthPixels( float fovRadians, float imageSize )
 {
     return 0.5f * imageSize / tan( 0.5f * fovRadians );
 }
 
-// static
-void CameraUtils::intrinsicsToFrustum( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-    const Vector2f& imageSize,
+Vector2f fovRadiansToFocalLengthPixels( const Vector2f& fovRadians,
+    const Vector2f& imageSize )
+{
+    return
+    {
+        fovRadiansToFocalLengthPixels( fovRadians.x, imageSize.x ),
+        fovRadiansToFocalLengthPixels( fovRadians.y, imageSize.y )
+    };
+}
 
-    float zNear,
-    float& left, float& right,
-    float& bottom, float& top )
+GLFrustum intrinsicsToFrustum( const Intrinsics& input,
+    const Vector2f& imageSize,
+    float zNear, float zFar )
 {
     // TODO: point to a diagram
 
     // pp.x / fl = -left / zNear
     // ( width - pp.x ) / fl = right / zNear
+    GLFrustum output;
 
-    left = -zNear * principalPointPixels.x / focalLengthPixels.x;
-    right = zNear * ( imageSize.x - principalPointPixels.x ) / focalLengthPixels.x;
+    output.left = -zNear * input.principalPoint.x / input.focalLength.x;
+    output.right =
+        zNear * (imageSize.x - input.principalPoint.x) / input.focalLength.x;
 
-    bottom = -zNear * principalPointPixels.y / focalLengthPixels.y;
-    top = zNear * ( imageSize.y - principalPointPixels.y ) / focalLengthPixels.y;
+    output.bottom = -zNear * input.principalPoint.y / input.focalLength.y;
+    output.top =
+        zNear * (imageSize.y - input.principalPoint.y) / input.focalLength.y;
+
+    output.zNear = zNear;
+    output.zFar = zFar;
+
+    return output;
 }
+
+} } } // cameras, core, libcgt

@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "GLFrustum.h"
+#include "cameras/GLFrustum.h"
+#include "cameras/Intrinsics.h"
 
 #include "geometry/Plane3f.h"
 #include "vecmath/Vector2f.h"
@@ -35,16 +36,15 @@ public:
     bool isZFarInfinite() const;
 
     // Same as below, but uses existing zNear and zFar.
-    void setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
+    void setFrustumFromIntrinsics( const Intrinsics& intrinsics,
         const Vector2f& imageSize );
 
     // Sets the perspective projection given computer-vision style intrinsics:
     // TODO: principal point needs to specify which direction is up.
     // focal length and image size in pixels
     // Does not allow for radial distortion
-    void setFrustumFromIntrinsics( const Vector2f& focalLengthPixels, const Vector2f& principalPointPixels,
-        const Vector2f& imageSize,
-        float zNear, float zFar );
+    void setFrustumFromIntrinsics( const Intrinsics& intrinsics,
+        const Vector2f& imageSize, float zNear, float zFar );
 
     // Returns the three OpenGL style lookat parameters:
     // the eye point, the center point (eye + distance * forward), and the up vector.
