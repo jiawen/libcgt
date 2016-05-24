@@ -29,8 +29,6 @@ public:
 
     void negate();
 
-    Vector2i floored() const;
-
     // ---- Utility ----
     operator const double* (); // automatic type conversion for GL
     void print() const;

@@ -5,12 +5,8 @@
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 
-namespace libcgt
-{
-namespace opencv_interop
-{
-namespace vecmath
-{
+namespace libcgt { namespace opencv_interop { namespace vecmath {
+
 cv::Point2f toOpenCVPoint2f( const Vector2f& v )
 {
     return cv::Point2f( v.x, v.y );
@@ -70,6 +66,5 @@ Vector3f fromOpenCV3x1( const cv::Mat_< float >& a, int i0, int j )
     }
     return output;
 }
-} // vecmath
-} // opencv_interop
-} // libcgt
+
+} } } // vecmath, opencv_interop, libcgt

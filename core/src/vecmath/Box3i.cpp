@@ -129,12 +129,12 @@ Vector3i Box3i::rightTopFront() const
 
 Vector3i Box3i::minimum() const
 {
-    return MathUtils::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
 }
 
 Vector3i Box3i::maximum() const
 {
-    return MathUtils::maximum( m_origin, m_origin + m_size );
+    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
 }
 
 int Box3i::width() const
@@ -267,8 +267,8 @@ Box3i Box3i::flippedUDBF( int height, int depth ) const
 // static
 Box3i Box3i::united( const Box3i& r0, const Box3i& r1 )
 {
-    Vector3i unitedMin = MathUtils::minimum( r0.leftBottomBack(), r1.leftBottomBack() );
-    Vector3i unitedMax = MathUtils::maximum( r0.rightTopFront(), r1.rightTopFront() );
+    Vector3i unitedMin = libcgt::core::math::minimum( r0.leftBottomBack(), r1.leftBottomBack() );
+    Vector3i unitedMax = libcgt::core::math::maximum( r0.rightTopFront(), r1.rightTopFront() );
 
     return Box3i( unitedMin, unitedMax - unitedMin );
 }

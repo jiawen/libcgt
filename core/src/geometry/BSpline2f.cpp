@@ -4,6 +4,8 @@
 
 #include "math/MathUtils.h"
 
+using libcgt::core::math::clampToRangeExclusive;
+
 BSpline2f::BSpline2f() :
 
     m_basis
@@ -136,7 +138,7 @@ int BSpline2f::findControlPointStartIndex( float t, float& u ) const
     float segmentLength = 1.0f / ( n - 3 );
 
     int c0 = static_cast< int >( t * ( n - 3 ) );
-    c0 = MathUtils::clampToRangeExclusive( c0, 0, n - 3 );
+    c0 = clampToRangeExclusive( c0, 0, n - 3 );
 
     // where does t start for this segment?
     // c0 is the index:

@@ -5,20 +5,26 @@
 
 #include "common/Array1D.h"
 
-// static
-int Arithmetic::mod( int x, int n )
+namespace libcgt { namespace core { namespace math {
+
+const float s_fReciprocalLog2 = 1.f / logf(2.f);
+
+// Almost .5f = .5f - 1e^(number of exp bits).
+const double s_dDoubleMagicRoundEpsilon = 0.5 - 1.4e-11;
+
+const double s_dDoubleMagic = 6755399441055744.0;
+
+int mod( int x, int n )
 {
     return ( ( x % n ) + n ) % n;
 }
 
-// static
-Vector2i Arithmetic::mod( const Vector2i& v, const Vector2i& n )
+Vector2i mod( const Vector2i& v, const Vector2i& n )
 {
     return{ mod( v.x, n.x ), mod( v.y, n.y ) };
 }
 
-// static
-Vector3i Arithmetic::mod( const Vector3i& v, const Vector3i& n )
+Vector3i mod( const Vector3i& v, const Vector3i& n )
 {
     return
     {
@@ -28,8 +34,7 @@ Vector3i Arithmetic::mod( const Vector3i& v, const Vector3i& n )
     };
 }
 
-// static
-Vector4i Arithmetic::mod( const Vector4i& v, const Vector4i& n )
+Vector4i mod( const Vector4i& v, const Vector4i& n )
 {
     return
     {
@@ -40,8 +45,7 @@ Vector4i Arithmetic::mod( const Vector4i& v, const Vector4i& n )
     };
 }
 
-// static
-int Arithmetic::sign( int x )
+int sign( int x )
 {
     if( x < 0 )
     {
@@ -54,8 +58,7 @@ int Arithmetic::sign( int x )
     return 0;
 }
 
-// static
-int Arithmetic::sign( float x )
+int sign( float x )
 {
     if( x < 0 )
     {
@@ -68,8 +71,7 @@ int Arithmetic::sign( float x )
     return 0;
 }
 
-// static
-int Arithmetic::sign( double x )
+int sign( double x )
 {
     if( x < 0 )
     {
@@ -82,58 +84,49 @@ int Arithmetic::sign( double x )
     return 0;
 }
 
-// static
-Vector2i Arithmetic::sign( const Vector2f& v )
+Vector2i sign( const Vector2f& v )
 {
     return{ sign( v.x ), sign( v.y ) };
 }
 
-// static
-Vector3i Arithmetic::sign( const Vector3f& v )
+Vector3i sign( const Vector3f& v )
 {
     return{ sign( v.x ), sign( v.y ), sign( v.z ) };
 }
 
-// static
-Vector4i Arithmetic::sign( const Vector4f& v )
+Vector4i sign( const Vector4f& v )
 {
     return{ sign( v.x ), sign( v.y ), sign( v.z ), sign( v.w ) };
 }
 
-// static
-bool Arithmetic::sameSign( float x, float y )
+bool sameSign( float x, float y )
 {
     return sign( x ) == sign( y );
 }
 
-// static
-float Arithmetic::divideIntsToFloat( int numerator, int denominator )
+float divideIntsToFloat( int numerator, int denominator )
 {
     float fNumerator = static_cast< float >( numerator );
     return fNumerator / denominator;
 }
 
-// static
-int Arithmetic::divideIntsToFloatAndRound( int numerator, int denominator )
+int divideIntsToFloatAndRound( int numerator, int denominator )
 {
-    float f = Arithmetic::divideIntsToFloat( numerator, denominator );
-    return Arithmetic::roundToInt( f );
+    float f = divideIntsToFloat( numerator, denominator );
+    return roundToInt( f );
 }
 
-// static
-float Arithmetic::percentage( int numerator, int denominator )
+float percentage( int numerator, int denominator )
 {
     return 100.0f * divideIntsToFloat( numerator, denominator );
 }
 
-// static
-int Arithmetic::numBins( int arraySize, int binSize )
+int numBins( int arraySize, int binSize )
 {
     return ceilToInt( divideIntsToFloat( arraySize, binSize ) );
 }
 
-// static
-bool Arithmetic::isPowerOfTwo( int x )
+bool isPowerOfTwo( int x )
 {
     if( x <= 0 )
     {
@@ -145,150 +138,126 @@ bool Arithmetic::isPowerOfTwo( int x )
     }
 }
 
-// static
-int Arithmetic::roundToInt( float x )
+int roundToInt( float x )
 {
     return static_cast< int >( x + 0.5f );
 }
 
-// static
-int Arithmetic::floatToInt( float x )
+int floatToInt( float x )
 {
     return static_cast< int >( x );
 }
 
-// static
-int Arithmetic::floorToInt( float x )
+int floorToInt( float x )
 {
     return static_cast< int >( ::floor( x ) );
 }
 
-// static
-int Arithmetic::ceilToInt( float x )
+int ceilToInt( float x )
 {
     return static_cast< int >( ::ceil( x ) );
 }
 
-// static
-int Arithmetic::roundToInt( double x )
+int roundToInt( double x )
 {
     // 2^52 * 1.5, uses limited precision to floor
-    x = x + Arithmetic::s_dDoubleMagic;
+    x = x + s_dDoubleMagic;
     return( ( int* ) &x )[0];
 }
 
-// static
-int Arithmetic::doubleToInt( double x )
+int doubleToInt( double x )
 {
     return( ( x < 0 ) ?
-        Arithmetic::roundToInt( x + s_dDoubleMagicRoundEpsilon ) :
-        Arithmetic::roundToInt( x - s_dDoubleMagicRoundEpsilon ) );
+        roundToInt( x + s_dDoubleMagicRoundEpsilon ) :
+        roundToInt( x - s_dDoubleMagicRoundEpsilon ) );
 }
 
-// static
-int Arithmetic::floorToInt( double x )
+int floorToInt( double x )
 {
-    return Arithmetic::roundToInt( x - s_dDoubleMagicRoundEpsilon );
+    return roundToInt( x - s_dDoubleMagicRoundEpsilon );
 }
 
-// static
-int Arithmetic::ceilToInt( double x )
+int ceilToInt( double x )
 {
-    return Arithmetic::roundToInt( x + s_dDoubleMagicRoundEpsilon );
+    return roundToInt( x + s_dDoubleMagicRoundEpsilon );
 }
 
-// static
-Vector2f Arithmetic::floor( const Vector2f& v )
+Vector2f floor( const Vector2f& v )
 {
     return Vector2f{ std::floor( v.x ), std::floor( v.y ) };
 }
 
-// static
-Vector2f Arithmetic::ceil( const Vector2f& v )
+Vector2f ceil( const Vector2f& v )
 {
     return Vector2f{ std::ceil( v.x ), std::ceil( v.y ) };
 }
 
-// static
-Vector2i Arithmetic::roundToInt( const Vector2f& v )
+Vector2i roundToInt( const Vector2f& v )
 {
     return{ roundToInt( v.x ), roundToInt( v.y ) };
 }
 
-// static
-Vector2i Arithmetic::floorToInt( const Vector2f& v )
+Vector2i floorToInt( const Vector2f& v )
 {
     return{ floorToInt( v.x ), floorToInt( v.y ) };
 }
 
-// static
-Vector2i Arithmetic::ceilToInt( const Vector2f& v )
+Vector2i ceilToInt( const Vector2f& v )
 {
     return{ ceilToInt( v.x ), ceilToInt( v.y ) };
 }
 
-// static
-Vector3f Arithmetic::floor( const Vector3f& v )
+Vector3f floor( const Vector3f& v )
 {
     return Vector3f( ::floor( v.x ), ::floor( v.y ), ::floor( v.z ) );
 }
 
-// static
-Vector3f Arithmetic::ceil( const Vector3f& v )
+Vector3f ceil( const Vector3f& v )
 {
     return Vector3f( ::ceil( v.x ), ::ceil( v.y ), ::ceil( v.z ) );
 }
 
-// static
-Vector3i Arithmetic::roundToInt( const Vector3f& v )
+Vector3i roundToInt( const Vector3f& v )
 {
     return{ roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ) };
 }
 
-// static
-Vector3i Arithmetic::floorToInt( const Vector3f& v )
+Vector3i floorToInt( const Vector3f& v )
 {
     return{ floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ) };
 }
 
-// static
-Vector3i Arithmetic::ceilToInt( const Vector3f& v )
+Vector3i ceilToInt( const Vector3f& v )
 {
     return{ ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ) };
 }
 
-// static
-Vector4f Arithmetic::floor( const Vector4f& v )
+Vector4f floor( const Vector4f& v )
 {
     return Vector4f( ::floor( v.x ), ::floor( v.y ), ::floor( v.z ), ::floor( v.w ) );
 }
 
-// static
-Vector4f Arithmetic::ceil( const Vector4f& v )
+Vector4f ceil( const Vector4f& v )
 {
     return Vector4f( ::ceil( v.x ), ::ceil( v.y ), ::ceil( v.z ), ::ceil( v.w ) );
 }
 
-// static
-Vector4i Arithmetic::roundToInt( const Vector4f& v )
+Vector4i roundToInt( const Vector4f& v )
 {
     return{ roundToInt( v.x ), roundToInt( v.y ), roundToInt( v.z ), roundToInt( v.w ) };
 }
 
-// static
-Vector4i Arithmetic::floorToInt( const Vector4f& v )
+Vector4i floorToInt( const Vector4f& v )
 {
     return{ floorToInt( v.x ), floorToInt( v.y ), floorToInt( v.z ), floorToInt( v.w ) };
 }
 
-// static
-Vector4i Arithmetic::ceilToInt( const Vector4f& v )
+Vector4i ceilToInt( const Vector4f& v )
 {
     return{ ceilToInt( v.x ), ceilToInt( v.y ), ceilToInt( v.z ), ceilToInt( v.w ) };
 }
 
-// static
-int Arithmetic::log2( int x )
+int log2( int x )
 {
     int output = 0;
     x >>= 1;
@@ -300,20 +269,17 @@ int Arithmetic::log2( int x )
     return output;
 }
 
-// static
-float Arithmetic::log2( float x )
+float log2( float x )
 {
-    return( logf( x ) * Arithmetic::s_fReciprocalLog2 );
+    return( logf( x ) * s_fReciprocalLog2 );
 }
 
-// static
-int Arithmetic::log2ToInt( float x )
+int log2ToInt( float x )
 {
     return( ( *( int* )( &x ) ) >> 23 ) - 127;
 }
 
-// static
-uint32_t Arithmetic::roundUpToNearestPowerOfTwo( uint32_t v )
+uint32_t roundUpToNearestPowerOfTwo( uint32_t v )
 {
     v--;
     v |= v >> 1;
@@ -325,38 +291,32 @@ uint32_t Arithmetic::roundUpToNearestPowerOfTwo( uint32_t v )
     return( v + 1 );
 }
 
-// static
-int Arithmetic::roundUpToNearestMultipleOf4( int x )
+int roundUpToNearestMultipleOf4( int x )
 {
     return ( x + 3 ) & ( ~( 0x3 ) );
 }
 
-// static
-int Arithmetic::roundUpToNearestMultipleOf8( int x )
+int roundUpToNearestMultipleOf8( int x )
 {
     return ( x + 7 ) & ( ~( 0x7 ) );
 }
 
-// static
-int Arithmetic::roundUpToNearestMultipleOf16( int x )
+int roundUpToNearestMultipleOf16( int x )
 {
     return ( x + 15 ) & ( ~( 0xf ) );
 }
 
-// static
-int Arithmetic::roundUpToNearestMultipleOf128( int x )
+int roundUpToNearestMultipleOf128( int x )
 {
     return ( x + 127 ) & ( ~( 0x7f ) );
 }
 
-// static
-int Arithmetic::roundUpToNearestMultipleOf256( int x )
+int roundUpToNearestMultipleOf256( int x )
 {
     return ( x + 255 ) & ( ~( 0xff ) );
 }
 
-// static
-int Arithmetic::findNextPerfectSquare( int x )
+int findNextPerfectSquare( int x )
 {
     int y = x;
     while( !isPerfectSquare( y ) )
@@ -367,8 +327,7 @@ int Arithmetic::findNextPerfectSquare( int x )
     return y;
 }
 
-// static
-int Arithmetic::findNextPerfectSquare( int x, int& sqrtOut )
+int findNextPerfectSquare( int x, int& sqrtOut )
 {
     int y = x;
     while( !isPerfectSquare( y, sqrtOut ) )
@@ -379,19 +338,17 @@ int Arithmetic::findNextPerfectSquare( int x, int& sqrtOut )
     return y;
 }
 
-// static
-bool Arithmetic::isPerfectSquare( int x )
+bool isPerfectSquare( int x )
 {
     int s;
     return isPerfectSquare( x, s );
 }
 
-// static
-bool Arithmetic::isPerfectSquare( int x, int& sqrtOut )
+bool isPerfectSquare( int x, int& sqrtOut )
 {
     float fx = static_cast< float >( x );
     float sqrtFX = sqrt( fx );
-    int sqrtXLower = Arithmetic::floorToInt( sqrtFX );
+    int sqrtXLower = floorToInt( sqrtFX );
     int sqrtXUpper = sqrtXLower + 1;
 
     if( sqrtXLower * sqrtXLower == x )
@@ -409,12 +366,11 @@ bool Arithmetic::isPerfectSquare( int x, int& sqrtOut )
     return false;
 }
 
-// static
-int Arithmetic::integerSquareRoot( int x )
+int integerSquareRoot( int x )
 {
     float fx = static_cast< float >( x );
     float sqrtFX = sqrt( fx );
-    int sqrtXLower = Arithmetic::floorToInt( sqrtFX );
+    int sqrtXLower = floorToInt( sqrtFX );
     int sqrtXUpper = sqrtXLower + 1;
 
     if( sqrtXUpper * sqrtXUpper == x )
@@ -427,27 +383,14 @@ int Arithmetic::integerSquareRoot( int x )
     }
 }
 
-// static
-bool Arithmetic::inRangeExclusive( float x, float lo, float hi )
+bool inRangeExclusive( float x, float lo, float hi )
 {
     return( lo <= x && x < hi );
 }
 
-// static
-bool Arithmetic::inRangeInclusive( float x, float lo, float hi )
+bool inRangeInclusive( float x, float lo, float hi )
 {
     return( lo <= x && x <= hi );
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
-
-// static
-const float Arithmetic::s_fReciprocalLog2 = 1.f / logf( 2.f );
-
-// static
-const double Arithmetic::s_dDoubleMagicRoundEpsilon = 0.5 - 1.4e-11;
-
-// static
-const double Arithmetic::s_dDoubleMagic = 6755399441055744.0;
+} } } // math, core, libcgt

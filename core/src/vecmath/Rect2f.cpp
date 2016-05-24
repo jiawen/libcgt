@@ -4,9 +4,8 @@
 #include "math/MathUtils.h"
 #include "vecmath/Rect2i.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
+using libcgt::core::math::ceilToInt;
+using libcgt::core::math::floorToInt;
 
 Rect2f::Rect2f( const Vector2f& size ) :
     m_origin( 0.f ),
@@ -56,12 +55,12 @@ Vector2f Rect2f::limit() const
 
 Vector2f Rect2f::minimum() const
 {
-    return MathUtils::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
 }
 
 Vector2f Rect2f::maximum() const
 {
-    return MathUtils::maximum( m_origin, m_origin + m_size );
+    return libcgt::core::math::maximum( m_origin, m_origin + m_size );
 }
 
 Vector2f Rect2f::dx() const
@@ -144,8 +143,8 @@ std::string Rect2f::toString() const
 
 Rect2i Rect2f::enlargedToInt() const
 {
-    Vector2i minimum = Arithmetic::floorToInt( origin() );
-    Vector2i maximum = Arithmetic::ceilToInt( limit() );
+    Vector2i minimum = floorToInt( origin() );
+    Vector2i maximum = ceilToInt( limit() );
 
     // size does not need a +1:
     // say min is 1.1 and max is 3.6
@@ -179,14 +178,14 @@ bool Rect2f::intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirecti
     Vector2f tTopRight = rcpDir * ( limit() - rayOrigin );
 
     // find the smallest and largest distances along each axis
-    Vector2f tMin = MathUtils::minimum( tBottomLeft, tTopRight );
-    Vector2f tMax = MathUtils::maximum( tBottomLeft, tTopRight );
+    Vector2f tMin = libcgt::core::math::minimum( tBottomLeft, tTopRight );
+    Vector2f tMax = libcgt::core::math::maximum( tBottomLeft, tTopRight );
 
     // tNear is the largest tMin
-    tNear = MathUtils::maximum( tMin );
+    tNear = libcgt::core::math::maximum( tMin );
 
     // tFar is the smallest tMax
-    tFar = MathUtils::minimum( tMax );
+    tFar = libcgt::core::math::minimum( tMax );
 
     bool intersected = ( tFar > tNear );
     if( intersected )
@@ -228,8 +227,8 @@ bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1 )
 // static
 bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection )
 {
-    Vector2f minimum = MathUtils::maximum( r0.minimum(), r1.minimum() );
-    Vector2f maximum = MathUtils::minimum( r0.maximum(), r1.maximum() );
+    Vector2f minimum = libcgt::core::math::maximum( r0.minimum(), r1.minimum() );
+    Vector2f maximum = libcgt::core::math::minimum( r0.maximum(), r1.maximum() );
 
     if( minimum.x < maximum.x &&
         minimum.y < maximum.y )

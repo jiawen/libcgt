@@ -15,6 +15,7 @@
 #include "vecmath/Vector4d.h"
 
 using std::abs;
+using libcgt::core::math::degreesToRadians;
 
 Matrix4d::Matrix4d()
 {
@@ -395,7 +396,7 @@ Matrix4d Matrix4d::rotation( const Vector3d& rDirection, double degrees )
 {
     Vector3d normalizedDirection = rDirection.normalized();
 
-    double theta = MathUtils::degreesToRadians( degrees );
+    double theta = degreesToRadians( degrees );
     double cosTheta = cos( theta );
     double sinTheta = sin( theta );
 

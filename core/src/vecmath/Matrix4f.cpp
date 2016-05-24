@@ -14,6 +14,7 @@
 #include "vecmath/Rect2f.h"
 
 using std::abs;
+using libcgt::core::math::cot;
 
 // static
 Matrix4f Matrix4f::ROTATE_X_180 = Matrix4f
@@ -672,7 +673,7 @@ Matrix4f Matrix4f::perspectiveProjection( float fovYRadians, float aspect, float
 {
     Matrix4f m; // zero matrix
 
-    float yScale = MathUtils::cot( 0.5f * fovYRadians );
+    float yScale = cot( 0.5f * fovYRadians );
     float xScale = yScale / aspect;
 
     m( 0, 0 ) = xScale;
@@ -727,7 +728,7 @@ Matrix4f Matrix4f::infinitePerspectiveProjection( float fovYRadians, float aspec
 {
     Matrix4f projection; // zero matrix
 
-    float yScale = MathUtils::cot( 0.5f * fovYRadians );
+    float yScale = cot( 0.5f * fovYRadians );
     float xScale = yScale / aspect;
 
     projection( 0, 0 ) = xScale;

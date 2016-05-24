@@ -21,7 +21,7 @@ void FPSEstimator::update()
         auto dt = now - m_lastUpdateTime;
 
         int n = static_cast< int >( m_frameTimeSamples.size() );
-        m_nActualSamples = MathUtils::clampToRangeExclusive(
+        m_nActualSamples = libcgt::core::math::clampToRangeExclusive(
             m_nActualSamples + 1, 0, n + 1 );
 
         m_frameTimeSamples[ m_nextSampleIndex ] = dt;

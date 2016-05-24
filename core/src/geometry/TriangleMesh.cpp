@@ -257,7 +257,7 @@ bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& directi
     float& t, Vector3f& barycentrics, int& faceIndex, float tMin ) const
 {
     bool hit = false;
-    t = MathUtils::POSITIVE_INFINITY;
+    t = libcgt::core::math::POSITIVE_INFINITY;
 
     for( int f = 0; f < numFaces(); ++f )
     {

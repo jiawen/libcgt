@@ -12,26 +12,29 @@
 
 using libcgt::core::cameras::focalLengthPixelsToFoVRadians;
 using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
+using libcgt::core::math::degreesToRadians;
+using libcgt::core::math::radiansToDegrees;
+using libcgt::core::math::HALF_PI;
 
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
     Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ), Vector3f( 0, 1, 0 ),
-    MathUtils::HALF_PI, 1.0f, 1.0f, 100.0f );
+    HALF_PI, 1.0f, 1.0f, 100.0f );
 
 // static
 const PerspectiveCamera PerspectiveCamera::FRONT(
     Vector3f( 0, 0, 5 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
-    MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
+    degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
 
 // static
 const PerspectiveCamera PerspectiveCamera::RIGHT(
     Vector3f( 5, 0, 0 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 1, 0 ),
-    MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
+    degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
 
 // static
 const PerspectiveCamera PerspectiveCamera::TOP(
     Vector3f( 0, 5, 0 ), Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ),
-    MathUtils::degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
+    degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
 
 PerspectiveCamera::PerspectiveCamera( const Vector3f& eye, const Vector3f& center, const Vector3f& up,
     float fovYRadians, float aspect,
@@ -119,17 +122,17 @@ void PerspectiveCamera::setFovYRadians( float fovY )
 
 float PerspectiveCamera::fovXDegrees() const
 {
-    return MathUtils::radiansToDegrees( fovXRadians() );
+    return radiansToDegrees( fovXRadians() );
 }
 
 float PerspectiveCamera::fovYDegrees() const
 {
-    return MathUtils::radiansToDegrees( m_fovYRadians );
+    return radiansToDegrees( m_fovYRadians );
 }
 
 void PerspectiveCamera::setFovYDegrees( float fovY )
 {
-    m_fovYRadians = MathUtils::degreesToRadians( fovY );
+    m_fovYRadians = degreesToRadians( fovY );
 
     updateFrustum();
 }
@@ -382,15 +385,15 @@ bool PerspectiveCamera::saveTXT( const std::string& filename )
 // static
 PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t )
 {
-    float fov = MathUtils::lerp( c0.m_fovYRadians, c1.m_fovYRadians, t );
-    float aspect = MathUtils::lerp( c0.m_aspect, c1.m_aspect, t );
+    float fov = libcgt::core::math::lerp( c0.m_fovYRadians, c1.m_fovYRadians, t );
+    float aspect = libcgt::core::math::lerp( c0.m_aspect, c1.m_aspect, t );
 
-    float zNear = MathUtils::lerp( c0.m_frustum.zNear, c1.m_frustum.zNear, t );
-    float zFar = MathUtils::lerp( c0.m_frustum.zFar, c1.m_frustum.zFar, t );
+    float zNear = libcgt::core::math::lerp( c0.m_frustum.zNear, c1.m_frustum.zNear, t );
+    float zFar = libcgt::core::math::lerp( c0.m_frustum.zFar, c1.m_frustum.zFar, t );
 
     bool isDirectX = c0.m_directX;
 
-    Vector3f position = MathUtils::lerp( c0.m_eye, c1.m_eye, t );
+    Vector3f position = libcgt::core::math::lerp( c0.m_eye, c1.m_eye, t );
 
     Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );
     Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );
@@ -418,15 +421,15 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
 // static
 PerspectiveCamera PerspectiveCamera::cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t )
 {
-    float fov = MathUtils::cubicInterpolate( c0.m_fovYRadians, c1.m_fovYRadians, c2.m_fovYRadians, c3.m_fovYRadians, t );
-    float aspect = MathUtils::cubicInterpolate( c0.m_aspect, c1.m_aspect, c2.m_aspect, c3.m_aspect, t );
+    float fov = libcgt::core::math::cubicInterpolate( c0.m_fovYRadians, c1.m_fovYRadians, c2.m_fovYRadians, c3.m_fovYRadians, t );
+    float aspect = libcgt::core::math::cubicInterpolate( c0.m_aspect, c1.m_aspect, c2.m_aspect, c3.m_aspect, t );
 
-    float zNear = MathUtils::cubicInterpolate( c0.m_frustum.zNear, c1.m_frustum.zNear, c2.m_frustum.zNear, c3.m_frustum.zNear, t );
-    float zFar = MathUtils::cubicInterpolate( c0.m_frustum.zFar, c1.m_frustum.zFar, c2.m_frustum.zFar, c3.m_frustum.zFar, t );
+    float zNear = libcgt::core::math::cubicInterpolate( c0.m_frustum.zNear, c1.m_frustum.zNear, c2.m_frustum.zNear, c3.m_frustum.zNear, t );
+    float zFar = libcgt::core::math::cubicInterpolate( c0.m_frustum.zFar, c1.m_frustum.zFar, c2.m_frustum.zFar, c3.m_frustum.zFar, t );
 
     bool isDirectX = c0.m_directX;
 
-    Vector3f position = MathUtils::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
+    Vector3f position = libcgt::core::math::cubicInterpolate( c0.m_eye, c1.m_eye, c2.m_eye, c3.m_eye, t );
 
     Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );
     Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );

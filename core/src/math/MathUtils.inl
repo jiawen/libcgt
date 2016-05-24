@@ -2,23 +2,22 @@
 
 #include <algorithm>
 
-// static
+namespace libcgt { namespace core { namespace math {
+
 template< typename T >
-T MathUtils::lerp( const T& x, const T& y, float t )
+T lerp( const T& x, const T& y, float t )
 {
     return( x + t * ( y - x ) );
 }
 
-// static
 template< typename T >
-T MathUtils::clampToRange( const T& x, const T& lo, const T& hi )
+T clampToRange( const T& x, const T& lo, const T& hi )
 {
     return std::max( lo, std::min( x, hi ) );
 }
 
-// static
 template< typename T >
-T MathUtils::cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t )
+T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t )
 {
     // geometric construction:
     //            t
@@ -38,14 +37,14 @@ T MathUtils::cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p
     return lerp( p0p1_p1p2, p1p2_p2p3, t );
 }
 
-// static
-inline float MathUtils::oo_0( float x )
+float oo_0( float x )
 {
     return x != 0 ? 1.0f / x : 0.0f;
 }
 
-// static
-inline double MathUtils::oo_0( double x )
+double oo_0( double x )
 {
     return x != 0 ? 1.0 / x : 0.0;
 }
+
+} } } // math, core, libcgt

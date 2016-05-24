@@ -3,7 +3,9 @@
 #include <imageproc/ColorUtils.h>
 #include <math/MathUtils.h>
 
-using namespace libcgt::core::imageproc::colorutils;
+using libcgt::core::imageproc::colorutils::toUInt8;
+using libcgt::core::imageproc::colorutils::colorMapJet;
+using libcgt::core::math::clampToRange;
 
 // static
 void ColorMap::toJet( Array2DView< const float > src, float minValue, float maxValue,
@@ -14,7 +16,7 @@ void ColorMap::toJet( Array2DView< const float > src, float minValue, float maxV
         for( int x = 0; x < src.width(); ++x )
         {
             float value = src[ { x, y } ];
-            value = MathUtils::clampToRange( value, minValue, maxValue );
+            value = clampToRange(value, minValue, maxValue);
             float z = ( value - minValue ) / ( maxValue - minValue );
 
             dst[ { x, y } ] = toUInt8( colorMapJet( z ) );

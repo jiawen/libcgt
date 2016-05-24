@@ -9,11 +9,8 @@
 #include "vecmath/Vector3d.h"
 #include "vecmath/Vector4d.h"
 
+using libcgt::core::math::PI;
 using std::abs;
-
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
 
 Quat4d::Quat4d()
 {
@@ -266,9 +263,9 @@ Quat4d Quat4d::slerp( const Quat4d& a, const Quat4d& b, float t, bool allowFlip 
 Quat4d Quat4d::randomRotation( double u0, double u1, double u2 )
 {
     double z = u0;
-    double theta = 2.0 * MathUtils::PI * u1;
+    double theta = 2.0 * PI * u1;
     double r = sqrt( 1.0 - z * z );
-    double w = MathUtils::PI * u2;
+    double w = PI * u2;
 
     return Quat4d
     (

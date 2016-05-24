@@ -453,9 +453,9 @@ Quat4f Quat4f::fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vec
 Quat4f Quat4f::randomRotation( float u0, float u1, float u2 )
 {
     float z = u0;
-    float theta = static_cast< float >( 2.f * MathUtils::PI * u1 );
+    float theta = 2.0f * libcgt::core::math::PI * u1;
     float r = sqrt( 1.f - z * z );
-    float w = static_cast< float >( MathUtils::PI * u2 );
+    float w = libcgt::core::math::PI * u2;
 
     return Quat4f
     (

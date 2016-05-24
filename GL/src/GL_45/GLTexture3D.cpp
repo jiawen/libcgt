@@ -8,10 +8,13 @@
 #include <math/MathUtils.h>
 #include <vecmath/Vector3f.h>
 
+using libcgt::core::math::log2;
+using libcgt::core::math::maximum;
+
 // static
 int GLTexture3D::calculateNumMipMapLevels( const Vector3i& size )
 {
-    return 1 + Arithmetic::log2( MathUtils::maximum( size ) );
+    return 1 + log2( maximum( size ) );
 }
 
 // static
@@ -26,7 +29,7 @@ Vector3i GLTexture3D::calculateMipMapSizeForLevel( const Vector3i& baseSize,
     Vector3i size = baseSize;
     while( level > 0 )
     {
-        size = MathUtils::maximum( Vector3i{ 1, 1 }, size / 2 );
+        size = maximum( Vector3i{ 1, 1 }, size / 2 );
         --level;
     }
     return size;

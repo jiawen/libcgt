@@ -1,5 +1,6 @@
 #include "GLTexture1D.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -8,12 +9,12 @@
 
 #include "GLUtilities.h"
 
-#include <algorithm>
+using libcgt::core::math::log2;
 
 // static
 int GLTexture1D::calculateNumMipMapLevels( int size )
 {
-    return 1 + Arithmetic::log2( size );
+    return 1 + log2( size );
 }
 
 // static

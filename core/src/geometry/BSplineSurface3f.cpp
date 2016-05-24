@@ -5,6 +5,8 @@
 #include "math/MathUtils.h"
 #include "vecmath/Vector3f.h"
 
+using libcgt::core::math::clampToRangeExclusive;
+
 BSplineSurface3f::BSplineSurface3f() :
 
     m_basis
@@ -156,8 +158,8 @@ Vector2i BSplineSurface3f::findControlPointStartIndex( float u, float v, float& 
 
     int c0 = static_cast< int >( u * ( width() - 3 ) );
     int d0 = static_cast< int >( v * ( height() - 3 ) );
-    c0 = MathUtils::clampToRangeExclusive( c0, 0, width() - 3 );
-    d0 = MathUtils::clampToRangeExclusive( d0, 0, height() - 3 );
+    c0 = clampToRangeExclusive( c0, 0, width() - 3 );
+    d0 = clampToRangeExclusive( d0, 0, height() - 3 );
 
     // where does t start for this segment?
     // c0 is the index:

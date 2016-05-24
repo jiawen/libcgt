@@ -2,21 +2,23 @@
 
 #include "math/MathUtils.h"
 
+using libcgt::core::math::PHI;
+
 // TODO: initializer_list
 Vector3f Icosahedron::s_defaultPositions[12] =
 {
-    Vector3f(               0,               1, -MathUtils::PHI ),
-    Vector3f(               1,  MathUtils::PHI,               0 ),
-    Vector3f(              -1,  MathUtils::PHI,               0 ),
-    Vector3f(               0,               1,  MathUtils::PHI ),
-    Vector3f(               0,              -1,  MathUtils::PHI ),
-    Vector3f( -MathUtils::PHI,               0,               1 ),
-    Vector3f(               0,              -1, -MathUtils::PHI ),
-    Vector3f(  MathUtils::PHI,               0,              -1 ),
-    Vector3f(  MathUtils::PHI,               0,               1 ),
-    Vector3f( -MathUtils::PHI,               0,              -1 ),
-    Vector3f(               1, -MathUtils::PHI,               0 ),
-    Vector3f(              -1, -MathUtils::PHI,               0 )
+    Vector3f(    0,    1, -PHI ),
+    Vector3f(    1,  PHI,    0 ),
+    Vector3f(    1,  PHI,    0 ),
+    Vector3f(    0,    1,  PHI ),
+    Vector3f(    0,   -1,  PHI ),
+    Vector3f( -PHI,    0,    1 ),
+    Vector3f(    0,   -1, -PHI ),
+    Vector3f(  PHI,    0,   -1 ),
+    Vector3f(  PHI,    0,    1 ),
+    Vector3f( -PHI,    0,   -1 ),
+    Vector3f(    1, -PHI,    0 ),
+    Vector3f(   -1, -PHI,    0 )
 };
 
 Vector3i Icosahedron::s_faces[20] =

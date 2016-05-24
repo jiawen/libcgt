@@ -4,6 +4,9 @@
 #include "math/MathUtils.h"
 #include "vecmath/Box3i.h"
 
+using libcgt::core::math::ceilToInt;
+using libcgt::core::math::floorToInt;
+
 Box3f::Box3f() :
     m_origin( 0.f ),
     m_size( 0.f )
@@ -62,12 +65,12 @@ Vector3f& Box3f::size()
 
 Vector3f Box3f::minimum() const
 {
-    return MathUtils::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
 }
 
 Vector3f Box3f::maximum() const
 {
-    return MathUtils::maximum( m_origin, m_origin + m_size );
+    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
 }
 
 float Box3f::left() const
@@ -266,8 +269,8 @@ Box3f Box3f::flippedUDBF( float height, float depth ) const
 
 Box3i Box3f::enlargedToInt() const
 {
-    Vector3i minimum = Arithmetic::floorToInt( leftBottomBack() );
-    Vector3i maximum = Arithmetic::ceilToInt( rightTopFront() );
+    Vector3i minimum = floorToInt( leftBottomBack() );
+    Vector3i maximum = ceilToInt( rightTopFront() );
 
     // size does not need a +1:
     // say min is 1.1 and max is 3.6
@@ -293,8 +296,8 @@ bool Box3f::contains( const Vector3f& p )
 
 void Box3f::enlargeToContain( const Vector3f& p )
 {
-    m_origin = MathUtils::minimum( m_origin, p );
-    Vector3f rtf = MathUtils::maximum( rightTopFront(), p );
+    m_origin = libcgt::core::math::minimum( m_origin, p );
+    Vector3f rtf = libcgt::core::math::maximum( rightTopFront(), p );
 
     m_size = rtf - m_origin;
 }
@@ -302,8 +305,10 @@ void Box3f::enlargeToContain( const Vector3f& p )
 // static
 Box3f Box3f::united( const Box3f& b0, const Box3f& b1 )
 {
-    Vector3f unitedMin = MathUtils::minimum( b0.leftBottomBack(), b1.leftBottomBack() );
-    Vector3f unitedMax = MathUtils::maximum( b0.rightTopFront(), b1.rightTopFront() );
+    Vector3f unitedMin = libcgt::core::math::minimum(
+        b0.leftBottomBack(), b1.leftBottomBack() );
+    Vector3f unitedMax = libcgt::core::math::maximum(
+        b0.rightTopFront(), b1.rightTopFront() );
 
     return Box3f( unitedMin, unitedMax - unitedMin );
 }
@@ -318,8 +323,10 @@ bool Box3f::intersect( const Box3f& b0, const Box3f& b1 )
 // static
 bool Box3f::intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection )
 {
-    Vector3f minimum = MathUtils::maximum( b0.leftBottomBack(), b1.leftBottomBack() );
-    Vector3f maximum = MathUtils::minimum( b0.rightTopFront(), b1.rightTopFront() );
+    Vector3f minimum = libcgt::core::math::maximum(
+        b0.leftBottomBack(), b1.leftBottomBack() );
+    Vector3f maximum = libcgt::core::math::minimum(
+        b0.rightTopFront(), b1.rightTopFront() );
 
     if( minimum.x < maximum.x &&
         minimum.y < maximum.y &&
@@ -367,14 +374,14 @@ bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
     Vector3f tTop = rcpDir * ( maximum() - origin );
 
     // find the smallest and largest distances along each axis
-    Vector3f tMin = MathUtils::minimum( tBottom, tTop );
-    Vector3f tMax = MathUtils::maximum( tBottom, tTop );
+    Vector3f tMin = libcgt::core::math::minimum( tBottom, tTop );
+    Vector3f tMax = libcgt::core::math::maximum( tBottom, tTop );
 
     // tNear is the largest tMin
-    tNear = MathUtils::maximum( tMin );
+    tNear = libcgt::core::math::maximum( tMin );
 
     // tFar is the smallest tMax
-    tFar = MathUtils::minimum( tMax );
+    tFar = libcgt::core::math::minimum( tMax );
 
     return tFar > tNear;
 }

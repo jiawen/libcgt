@@ -63,7 +63,7 @@ std::string ProgressReporter::getProgressString()
         std::string timeRemainingString;
         if( approximateMillisecondsRemaining() < 1000 )
         {
-            int ms = Arithmetic::roundToInt
+            int ms = libcgt::core::math::roundToInt
                 ( approximateMillisecondsRemaining() );
             timeRemainingString = std::to_string( ms ) + " ms";
         }
@@ -96,7 +96,7 @@ std::string ProgressReporter::getProgressString()
 float ProgressReporter::percentComplete()
 {
     return 100.0f *
-        Arithmetic::divideIntsToFloat( m_nTasksCompleted, m_nTasks );
+        libcgt::core::math::divideIntsToFloat( m_nTasksCompleted, m_nTasks );
 }
 
 bool ProgressReporter::isComplete()

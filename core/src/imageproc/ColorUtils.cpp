@@ -6,6 +6,8 @@
 #include <math/Arithmetic.h>
 #include <common/Iterators.h>
 
+using libcgt::core::math::floorToInt;
+
 float libcgt::core::imageproc::colorutils::toFloat( uint8_t x )
 {
     return x / 255.f;
@@ -175,7 +177,7 @@ Vector3f libcgt::core::imageproc::colorutils::hsv2rgb( const Vector3f& hsv )
     else
     {
         h /= 60.f; // sector 0 to 5
-        i = Arithmetic::floorToInt( h );
+        i = floorToInt( h );
         f = h - i; // factorial part of h
         p = v * ( 1.f - s );
         q = v * ( 1.f - s * f );

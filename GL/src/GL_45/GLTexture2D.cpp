@@ -13,10 +13,13 @@
 
 #include "GLSamplerObject.h"
 
+using libcgt::core::math::log2;
+using libcgt::core::math::maximum;
+
 // static
 int GLTexture2D::calculateNumMipMapLevels( const Vector2i& size )
 {
-    return 1 + Arithmetic::log2( MathUtils::maximum( size ) );
+    return 1 + log2( maximum( size ) );
 }
 
 // static
@@ -31,7 +34,7 @@ Vector2i GLTexture2D::calculateMipMapSizeForLevel( const Vector2i& baseSize,
     Vector2i size = baseSize;
     while( level > 0 )
     {
-        size = MathUtils::maximum( Vector2i{ 1, 1 }, size / 2 );
+        size = maximum( Vector2i{ 1, 1 }, size / 2 );
         --level;
     }
     return size;

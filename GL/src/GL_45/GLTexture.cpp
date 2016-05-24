@@ -7,6 +7,8 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
+using libcgt::core::math::log2;
+
 // static
 GLenum GLTexture::activeTextureUnit()
 {
@@ -156,7 +158,7 @@ GLTexture::GLTexture( Target target, GLImageInternalFormat internalFormat,
 {
     if( nMipMapLevels == 0 )
     {
-        m_nMipMapLevels = Arithmetic::log2( nMipMapLevels );
+        m_nMipMapLevels = log2( nMipMapLevels );
     }
     else
     {

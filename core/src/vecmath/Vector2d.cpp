@@ -95,12 +95,6 @@ void Vector2d::negate()
     m_elements[1] = -m_elements[1];
 }
 
-Vector2i Vector2d::floored() const
-{
-    return{ Arithmetic::floorToInt( m_elements[ 0 ] ), Arithmetic::floorToInt( m_elements[ 1 ] ) };
-}
-
-// ---- Utility ----
 Vector2d::operator const double* ()
 {
     return m_elements;

@@ -68,12 +68,11 @@ int Spline2f::insertControlPoint( const Vector2f& p )
     }
     else
     {
-        controlPointIndex = Arithmetic::roundToInt( t * numControlPoints() );
+        controlPointIndex = libcgt::core::math::roundToInt( t * numControlPoints() );
     }
 
-    controlPointIndex = MathUtils::clampToRangeExclusive( controlPointIndex, 0, numControlPoints() );
-
-    printf( "closest t = %f, controlPointIndex = %d\n", t, controlPointIndex );
+    controlPointIndex = libcgt::core::math::clampToRangeExclusive(
+        controlPointIndex, 0, numControlPoints());
 
     m_xSpline.insertControlPoint( controlPointIndex, p.x );
     m_ySpline.insertControlPoint( controlPointIndex, p.y );

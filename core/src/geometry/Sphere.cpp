@@ -23,8 +23,8 @@ void Sphere::tesselate( int nTheta, int nPhi,
     positions.reserve( 6 * nTheta * nPhi );
     normals.reserve( 6 * nTheta * nPhi );
 
-    float dt = MathUtils::TWO_PI / nTheta;
-    float dp = MathUtils::PI / nPhi;
+    float dt = libcgt::core::math::TWO_PI / nTheta;
+    float dp = libcgt::core::math::PI / nPhi;
 
     Vector3f c( center );
 
@@ -87,8 +87,8 @@ void Sphere::tesselate( int nTheta, int nPhi,
     positions.reserve( 6 * nTheta * nPhi );
     normals.reserve( 6 * nTheta * nPhi );
 
-    float dt = MathUtils::TWO_PI / nTheta;
-    float dp = MathUtils::PI / nPhi;
+    float dt = libcgt::core::math::TWO_PI / nTheta;
+    float dp = libcgt::core::math::PI / nPhi;
 
     Vector4f c( center, 0 );
 

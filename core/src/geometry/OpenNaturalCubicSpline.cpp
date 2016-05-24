@@ -4,23 +4,19 @@
 #include <math/MathUtils.h>
 
 using std::abs;
+using libcgt::core::math::clampToRange;
 
-OpenNaturalCubicSpline::OpenNaturalCubicSpline()
+int OpenNaturalCubicSpline::numControlPoints() const
 {
-
+    return static_cast< int >( m_vControlPoints.size() );
 }
 
-int OpenNaturalCubicSpline::numControlPoints()
-{
-    return m_vControlPoints.size();
-}
-
-bool OpenNaturalCubicSpline::isValid()
+bool OpenNaturalCubicSpline::isValid() const
 {
     return( numControlPoints() >= 4 );
 }
 
-float OpenNaturalCubicSpline::getControlPoint( int i )
+float OpenNaturalCubicSpline::getControlPoint( int i ) const
 {
     return m_vControlPoints[ i ];
 }
@@ -66,7 +62,7 @@ void OpenNaturalCubicSpline::insertControlPoint( int i, float p )
     }
 }
 
-float OpenNaturalCubicSpline::evaluateAt( float t )
+float OpenNaturalCubicSpline::evaluateAt( float t ) const
 {
     if( !isValid() )
     {
@@ -76,7 +72,7 @@ float OpenNaturalCubicSpline::evaluateAt( float t )
     // spacing between control points
     float delta = 1.0f / static_cast< float >( m_vControlPoints.size() - 1 );
     // clamp t
-    float ct = MathUtils::clampToRange( t, 0.0f, 1.0f );
+    float ct = clampToRange( t, 0.0f, 1.0f );
 
     // find the 4 nearest control points
     int n;
@@ -97,7 +93,7 @@ float OpenNaturalCubicSpline::evaluateAt( float t )
            u2 * m_vCoefficients[n][2] + u3 * m_vCoefficients[n][3] );
 }
 
-float OpenNaturalCubicSpline::derivativeAt( float t )
+float OpenNaturalCubicSpline::derivativeAt( float t ) const
 {
     if( !isValid() )
     {
@@ -107,7 +103,7 @@ float OpenNaturalCubicSpline::derivativeAt( float t )
     // spacing between control points
     float delta = 1.0f / static_cast< float >( m_vControlPoints.size() - 1 );
     // clamp t
-    float ct = MathUtils::clampToRange( t, 0.0f, 1.0f );
+    float ct = libcgt::core::math::clampToRange(t, 0.0f, 1.0f);
 
     // find the 3 nearest control points
     int n;

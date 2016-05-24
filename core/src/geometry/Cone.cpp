@@ -22,7 +22,7 @@ void Cone::tesselate( int nTheta, int nHeight,
     positions.reserve( 6 * nTheta * nHeight );
     normals.reserve( 6 * nTheta * nHeight );
 
-    float dt = MathUtils::TWO_PI / nTheta;
+    float dt = libcgt::core::math::TWO_PI / nTheta;
     float dh = height / nHeight;
 
     Vector4f bc( baseCenter, 0 );
@@ -85,7 +85,7 @@ void Cone::tesselate( int nTheta, int nHeight,
 void Cone::sample( float thetaFraction, float zFraction, Vector4f& position, Vector3f& normal )
 {
     // TODO: make tesselate use this?
-    float theta = thetaFraction * MathUtils::TWO_PI;
+    float theta = thetaFraction * libcgt::core::math::TWO_PI;
     float z = zFraction * height;
 
     float r = ( 1 - zFraction ) * baseRadius;

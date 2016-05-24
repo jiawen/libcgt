@@ -7,14 +7,14 @@ class OpenNaturalCubicSpline
 {
 public:
 
-    OpenNaturalCubicSpline();
+    OpenNaturalCubicSpline() = default;
 
-    bool isValid();
+    bool isValid() const;
 
     void setControlPoints( const std::vector< float >& controlPoints );
 
-    int numControlPoints();
-    float getControlPoint( int i );
+    int numControlPoints() const;
+    float getControlPoint( int i ) const;
     void setControlPoint( int i, float p );
     void insertControlPoint( int i, float p );
 
@@ -22,11 +22,11 @@ public:
 
     // output = x( t )
     // t between 0 and 1
-    float evaluateAt( float t );
+    float evaluateAt( float t ) const;
 
     // output = dx/dt ( t )
     // t between 0 and 1
-    float derivativeAt( float t );
+    float derivativeAt( float t ) const;
 
     // get the inverse spline
     // given a value of x, find t such that x(t) = x

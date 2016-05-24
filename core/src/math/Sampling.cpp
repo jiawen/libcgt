@@ -43,7 +43,7 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 Vector2f Sampling::areaSampleDisc( float u0, float u1 )
 {
     float r = sqrt( u0 );
-    float theta = MathUtils::TWO_PI * u1;
+    float theta = libcgt::core::math::TWO_PI * u1;
     return{ r * std::cos( theta ), r * std::sin( theta ) };
 }
 
@@ -102,14 +102,14 @@ Vector2f Sampling::concentricSampleDisc( float u0, float u1 )
         }
     }
 
-    theta *= MathUtils::QUARTER_PI;
+    theta *= libcgt::core::math::QUARTER_PI;
     return{ r * std::cos( theta ), r * std::sin( theta ) };
 }
 
 // static
 Vector2f Sampling::perimeterSampleCircle( float u0 )
 {
-    float theta = MathUtils::TWO_PI * u0; // [0,2*pi]
+    float theta = libcgt::core::math::TWO_PI * u0; // [0,2*pi]
     return{ std::cos( theta ), std::sin( theta ) };
 }
 
@@ -118,7 +118,7 @@ Vector3f Sampling::areaSampleSphere( float u0, float u1 )
 {
     // See: http://www.cs.cmu.edu/~mws/rpos.html
     float z = 2 * u0 - 1; // [-1,1]
-    float phi = MathUtils::TWO_PI * u1; // [0,2*pi]
+    float phi = libcgt::core::math::TWO_PI * u1; // [0,2*pi]
 
     float sqrtOneMinusSSquared = sqrt( 1.0f - z * z );
     float cosPhi = cos( phi );

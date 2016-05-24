@@ -57,12 +57,12 @@ Vector2i Rect2i::limit() const
 
 Vector2i Rect2i::minimum() const
 {
-    return MathUtils::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum(m_origin, m_origin + m_size);
 }
 
 Vector2i Rect2i::maximum() const
 {
-    return MathUtils::maximum( m_origin, m_origin + m_size );
+    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
 }
 
 Vector2i Rect2i::dx() const

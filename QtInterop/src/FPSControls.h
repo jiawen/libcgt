@@ -9,6 +9,8 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Matrix3f.h>
 
+using libcgt::core::math::degreesToRadians;
+
 #ifdef XBOX_CONTROLLER_SUPPORT
 #include "XboxController.h"
 #endif
@@ -32,9 +34,9 @@ struct FPSMouseParameters
 
     FPSMouseParameters( bool invertX = false, bool invertY = true,
         const Vector3f& translationPerPixel = Vector3f( 0.05f, 0.05f, 0.05f ),
-        float yawRadiansPerPixel = MathUtils::degreesToRadians( 0.25f ),
-        float pitchRadiansPerPixel = MathUtils::degreesToRadians( 0.25f ),
-        float fovRadiansPerMouseWheelDelta = MathUtils::degreesToRadians( 0.01f ) );
+        float yawRadiansPerPixel = degreesToRadians( 0.25f ),
+        float pitchRadiansPerPixel = degreesToRadians( 0.25f ),
+        float fovRadiansPerMouseWheelDelta = degreesToRadians( 0.01f ) );
 };
 
 struct FPSKeyboardParameters
@@ -58,8 +60,8 @@ struct FPSXboxGamepadParameters
 
     FPSXboxGamepadParameters( bool invertX = false, bool invertY = true,
         float translationPerTick = 1e-6f,
-        float yawRadiansPerTick = MathUtils::degreesToRadians( -1.0f / 32000.0f ),
-        float pitchRadiansPerTick = MathUtils::degreesToRadians( 1.0f / 32000.0f ),
+        float yawRadiansPerTick = degreesToRadians( -1.0f / 32000.0f ),
+        float pitchRadiansPerTick = degreesToRadians( 1.0f / 32000.0f ),
         float fovRadiansPerTick = 0.0002f );
 };
 

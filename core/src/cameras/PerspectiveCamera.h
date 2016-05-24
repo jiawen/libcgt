@@ -36,7 +36,8 @@ public:
     PerspectiveCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
         const Vector3f& center = Vector3f( 0, 0, 0 ),
         const Vector3f& up = Vector3f( 0, 1, 0 ),
-        float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
+        float fovYRadians = libcgt::core::math::degreesToRadians( 50.0f ),
+        float aspect = 1.0f,
         float zNear = 1.0f, float zFar = 100.0f,
         bool isDirectX = true );
 
@@ -50,7 +51,9 @@ public:
     void getPerspective( float& fovYRadians, float aspect,
         float& zNear, float& zFar );
 
-    void setPerspective( float fovYRadians = MathUtils::degreesToRadians( 50.0f ), float aspect = 1.0f,
+    void setPerspective(
+        float fovYRadians = libcgt::core::math::degreesToRadians( 50.0f ),
+        float aspect = 1.0f,
         float zNear = 1.0f, float zFar = 100.0f );
 
     // same as below, but uses existing zNear and zFar

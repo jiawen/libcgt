@@ -7,6 +7,11 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
+using libcgt::core::math::clampToRange;
+using libcgt::core::math::clampToRangeExclusive;
+using libcgt::core::math::floorToInt;
+using libcgt::core::math::lerp;
+
 // static
 template< typename T >
 T bilerp( Array2DView< T > view, float x, float y )
@@ -15,13 +20,13 @@ T bilerp( Array2DView< T > view, float x, float y )
     y = y - 0.5f;
 
     // clamp to edge
-    x = MathUtils::clampToRange( x, 0.f, static_cast< float >( view.width() ) );
-    y = MathUtils::clampToRange( y, 0.f, static_cast< float >( view.height() ) );
+    x = clampToRange( x, 0.f, static_cast< float >( view.width() ) );
+    y = clampToRange( y, 0.f, static_cast< float >( view.height() ) );
 
-    int x0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( x ), 0, view.width() );
-    int x1 = MathUtils::clampToRangeExclusive( x0 + 1, 0, view.width() );
-    int y0 = MathUtils::clampToRangeExclusive( Arithmetic::floorToInt( y ), 0, view.height() );
-    int y1 = MathUtils::clampToRangeExclusive( y0 + 1, 0, view.height() );
+    int x0 = clampToRangeExclusive( floorToInt( x ), 0, view.width() );
+    int x1 = clampToRangeExclusive( x0 + 1, 0, view.width() );
+    int y0 = clampToRangeExclusive( floorToInt( y ), 0, view.height() );
+    int y1 = clampToRangeExclusive( y0 + 1, 0, view.height() );
 
     float xf = x - ( x0 + 0.5f );
     float yf = y - ( y0 + 0.5f );
@@ -31,10 +36,10 @@ T bilerp( Array2DView< T > view, float x, float y )
     T v10 = view[ { x1, y0 } ];
     T v11 = view[ { x1, y1 } ];
 
-    T v0 = MathUtils::lerp( v00, v01, yf ); // x = 0
-    T v1 = MathUtils::lerp( v10, v11, yf ); // x = 1
+    T v0 = lerp( v00, v01, yf ); // x = 0
+    T v1 = lerp( v10, v11, yf ); // x = 1
 
-    return MathUtils::lerp( v0, v1, xf );
+    return lerp( v0, v1, xf );
 }
 
 float ImageSampling::bilinearSample( Array2DView< float > view, float x, float y )

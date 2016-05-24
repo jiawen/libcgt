@@ -21,7 +21,7 @@ public:
     SpotLight( const Vector3f& position = Vector3f( 0, 5, 0 ),
         const Vector3f& center = Vector3f( 0, 0, 0 ),
         const Vector3f& up = Vector3f( 0, 0, 1 ),
-        float fovYRadians = MathUtils::degreesToRadians( 50.f ),
+        float fovYRadians = libcgt::core::math::degreesToRadians( 50.f ),
         float zNear = 1.0f, float fZFar = 100.0f, float aspect = 1.0f,
         const Vector3f& color = Vector3f( 1, 1, 1 ),
         const Vector3f& distanceFalloff = Vector3f( 0, 1, 0 ) );
