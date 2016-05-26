@@ -7,6 +7,7 @@
 #include "cameras/Intrinsics.h"
 
 #include "geometry/Plane3f.h"
+#include "vecmath/EuclideanTransform.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
@@ -18,151 +19,105 @@ class Camera
 {
 public:
 
-    void setDirectX( bool directX );
+    // TODO(jiawen): remove this.
+    bool isDirectX() const;
 
-    const GLFrustum& getFrustum() const;
-    void setFrustum( const GLFrustum& frustum );
+    // ---------------- Intrinsics ----------------
 
-    // return the 8 corners of the camera frustum
-    // 0-3 are the near plane, in ccw order
-    // 4-7 are the far plane, in ccw order
-    std::vector< Vector3f > frustumCorners() const;
+    const GLFrustum& frustum() const;
 
-    // return the 6 planes of the camera frustum
-    // in the order: left, bottom, right, top, near, far
-    // all the planes have normals pointing outward
-    std::vector< Plane3f > frustumPlanes() const;
+    float zNear() const;
+    float zFar() const;
 
     bool isZFarInfinite() const;
 
-    // Same as below, but uses existing zNear and zFar.
-    void setFrustumFromIntrinsics( const Intrinsics& intrinsics,
-        const Vector2f& imageSize );
-
-    // Sets the perspective projection given computer-vision style intrinsics:
-    // TODO: principal point needs to specify which direction is up.
-    // focal length and image size in pixels
-    // Does not allow for radial distortion
-    void setFrustumFromIntrinsics( const Intrinsics& intrinsics,
-        const Vector2f& imageSize, float zNear, float zFar );
-
-    // Returns the three OpenGL style lookat parameters:
-    // the eye point, the center point (eye + distance * forward), and the up vector.
-    void getLookAt( Vector3f& eye, Vector3f& center, Vector3f& up ) const;
-
-    // Sets the camera position with an OpenGL-style gluLookAt().
-    // eye is a point, center is a point towards which the camera is pointing.
-    // (center - eye) is not necessary a unit vector.
-    // forward is (center - eye).normalized()
-    // the z axis is -forward().
-    // Up should be a unit vector that's orthogonal to (center - eye).
-    void setLookAt( const Vector3f& eye,
-        const Vector3f& center,
-        const Vector3f& up );
-
-    // Sets the view matrix given an "inverse view matrix"
-    // ivm: the mapping from eye coordinates -> world coordinates.
-    // ivm = [ right | up | right cross up | eye ]
-    //       [   0      0           0      |   1 ]
-    // where right, up and eye are considered column vectors in world coordinates.
-    void setLookAtFromInverseViewMatrix( const Matrix4f& ivm );
-
-    Vector3f eye() const;
-    void setEye( const Vector3f& eye );
-
-    Vector3f center() const;
-    void setCenter( const Vector3f& center );
-
-    // return the "up" unit vector
-    Vector3f up() const;
-    void setUp( const Vector3f& up );
-
-    // Returns the "forward" unit vector, equivalent to
-    // ( center() - eye() ).normalized().
-    Vector3f forward() const;
-
-    // Returns the "right" unit vector, equivalent to
-    // cross( forward(), up() ).
-    Vector3f right() const;
-
-    float zNear() const;
-    virtual void setZNear( float zNear );
-
-    float zFar() const;
-    virtual void setZFar( float zFar );
-
-    virtual std::string toString() const = 0;
-
     // Returns the OpenGL / Direct3D style projection matrix,
     // mapping eye space to clip space.
+    // TODO(jiawen): get it directly from the frustum, instead of virtual.
     virtual Matrix4f projectionMatrix() const = 0;
+
+    Matrix4f inverseProjectionMatrix() const;
+
+    // Get the 8 corners of the camera frustum.
+    // 0-3 are the near plane, in ccw order.
+    // 4-7 are the far plane, in ccw order.
+    std::vector< Vector3f > frustumCorners() const;
+
+    // Get the 6 planes of the camera frustum,
+    // in the order: left, bottom, right, top, near, far
+    // all the planes have normals pointing outward.
+    std::vector< Plane3f > frustumPlanes() const;
+
+    // ---------------- Extrinsics ----------------
+
+    libcgt::core::vecmath::EuclideanTransform cameraFromWorld() const;
+    void setCameraFromWorld( const libcgt::core::vecmath::EuclideanTransform& cfw );
+
+    // Set the camera from world (view) matrix directly.
+    // This function assumes that cfw is a Euclidean transformation.
+    void setCameraFromWorldMatrix(const Matrix4f& cfw);
+
+    libcgt::core::vecmath::EuclideanTransform worldFromCamera() const;
+    void setWorldFromCamera( const libcgt::core::vecmath::EuclideanTransform& wfc );
+
+    // Set the world from camera (inverse view) matrix directly
+    // (this is not common).
+    // This function assumes that wfc is a Euclidean transformation.
+    void setWorldFromCameraMatrix(const Matrix4f& wfc);
+
+    // Sets the camera pose with an OpenGL-style gluLookAt().
+    // eye is a point, center is a point towards which the camera is pointing.
+    // (center - eye) does not have to be a unit vector, but will be normalized
+    // when stored.
+    // The z axis will be -forward().
+    // up should be a unit vector that's orthogonal to (center - eye).
+    void setLookAt( const Vector3f& eye, const Vector3f& center,
+        const Vector3f& up );
+
+    // The camera origin, in world coordinates.
+    Vector3f eye() const;
+
+    // Set the camera origin, in world coordinates.
+    void setEye( const Vector3f& eye );
+
+    // Returns the "right" unit vector, the camera x-axis, in the world frame.
+    Vector3f right() const;
+
+    // Return the "up" unit vector, the camera y-axis, in the world frame.
+    Vector3f up() const;
+
+    // Return the "back" unit vector, the camera z-axis, in the world frame.
+    Vector3f back() const;
+
+    // Returns the "forward" unit vector, the camera negative z-axis,
+    // in the world frame.
+    Vector3f forward() const;
 
     // Returns the OpenGL / Direct3D style view matrix,
     // mapping world space to eye space.
+    // (Equivalent to cameraFromWorld, but as a Matrix4f).
     Matrix4f viewMatrix() const;
 
-    // returns the view matrix V such that
+    Matrix4f inverseViewMatrix() const;
+
+    // Returns the view matrix V such that
     // the eye has been moved by (fEyeX, fEyeY)
     // *in the plane of the lens*
     // i.e. eyeX is in the direction of getRight()
-    // and eyeY is in the direction of getUp()
+    // and eyeY is in the direction of getUp().
     Matrix4f jitteredViewMatrix( float eyeX, float eyeY ) const;
 
-    // equivalent to viewMatrix() * projectionMatrix()
+    // Equivalent to viewMatrix() * projectionMatrix().
     Matrix4f viewProjectionMatrix() const;
 
-    Matrix4f inverseProjectionMatrix() const;
-    Matrix4f inverseViewMatrix() const;
     Matrix4f inverseViewProjectionMatrix() const;
 
-    // Returns computer vision camera extrinsics:
-    // Directly mapping GL-convention world space points
-    // to CV-convention eye space points.
-    Matrix4f extrinsicsCG2CV() const;
-
-    // Returns computer vision camera extrinsics:
-    // a matrix mapping points in CV-convention world space
-    // to CV-convention eye space.
+    // Returns the camera intrinsics, a 3x3 matrix mapping eye-space rays to
+    // pixel-space points.
     //
-    // Recall that CV-convention coordinates are right handed
-    // and have x right, y down, z into the screen. To use
-    // this matrix correctly, input points in world space should
-    // also have this convention.
-    //
-    // If your world coordinates are GL-convention, with
-    // x right, y up, and z out of the screen, convert them
-    // to CV-convention world coordinates by first multiplying
-    // by Matrix4f::ROTATE_X_180. Or, directly go from GL world
-    // coordinates to CV eye coordinates with extrinsicsCG2CV().
-    //
-    // The bottom row is [0 0 0 1] and can be ignored
-    // if the CV convention is a 3x4 matrix.
-    //
-    // If the CV library uses a Rodrigues rotation vector,
-    // use Quat4f::fromRotationMatrix(extrinsics().getSubmatrix3x3()).toAxisAngle().
-    // And multiply the unit vector by the angle in radians.
-    // TODO: directly return rotation vector.
-    //
-    // Since OpenCV's coordinate convention is right handed,
-    // but with x right, y down, z into the screen,
-    // this matrix is equivalent *conjugated* by rotX(pi):
-    // to rotX(pi)^-1 * viewMatrix() * rotX(pi).
-    // But rotX(pi)^-1 = rotx(pi).
-    // This of the operation as:
-    // Given a point in the CV world:
-    // - apply rotX(pi) to bring it into the GL world
-    // - apply the view matrix in the GL world
-    // - apply rotX(pi) again to bring it back into the CV world
-    Matrix4f extrinsicsCV() const;
-
-    // Returns the CV-convention camera intrinsics:
-    // A matrix mapping homogenized CV-convention eye-space points
-    // ( (x_eye_cv / z_eye_cv), (y_eye_cv / z_eye_cv)) to CV-convention
-    // pixels in screen space.
-    //
-    // CV-convention eye space has x right, y down, z into the screen,
-    // as does CV-convension screen space pixels.
-    Matrix3f intrinsicsCV( const Vector2f& screenSize ) const;
+    // These intrinsics retain OpenGL-convention right-handed coordinates,
+    // with x-right, y-up, z-towards-viewer.
+    Intrinsics intrinsics( const Vector2f& screenSize ) const;
 
     // ----- projection: world --> eye --> clip --> NDC --> screen -----
 
@@ -237,22 +192,30 @@ public:
     // xy and viewport are in pixel coordinates
     Vector3f screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const;
 
+    virtual std::string toString() const = 0;
+
     // TODO: support viewports
     // Given a pixel (x,y) in screen space (\in [0,screenSize.x), [0,screenSize.y))
     // returns its NDC \in [-1,1]^2.
     static Vector2f screenToNDC( const Vector2f& xy, const Vector2f& screenSize );
 
-    // Copies the camera position and orientation (extrinsics), from --> to.
-    static void copyLookAt( const Camera& from, Camera& to );
+    // Copies the camera frustum (intrinsics), from --> to.
+    static void copyFrustum( const Camera& from, Camera& to );
+
+    // Copies the camera pose (extrinsics), from --> to.
+    static void copyPose( const Camera& from, Camera& to );
 
 protected:
 
-    GLFrustum m_frustum;
+    void setFrustum( const GLFrustum& frustum );
 
-    // TODO: get rid of center
-    Vector3f m_eye;
-    Vector3f m_center;
-    Vector3f m_up;
+    // TODO(jiawen): remove this.
+    void setDirectX( bool directX );
+
+private:
+
+    libcgt::core::vecmath::EuclideanTransform m_cameraFromWorld;
+    GLFrustum m_frustum; // TODO(jiawen): rename class to Frustum?
 
     // if the projection matrix is for DirectX or OpenGL
     // the view matrix is always right handed

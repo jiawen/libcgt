@@ -5,10 +5,6 @@
 #include <math/MathUtils.h>
 #include <vecmath/Quat4f.h>
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 OrthographicCamera::OrthographicCamera( const Vector3f& eye,
     const Vector3f& center,
     const Vector3f& up,
@@ -21,29 +17,35 @@ OrthographicCamera::OrthographicCamera( const Vector3f& eye,
 // virtual
 Matrix4f OrthographicCamera::projectionMatrix() const
 {
+    GLFrustum f = frustum();
+
     return Matrix4f::orthographicProjection
     (
-        m_frustum.left, m_frustum.right,
-        m_frustum.bottom, m_frustum.top,
-        m_frustum.zNear, m_frustum.zFar,
-        m_directX
+        f.left, f.right,
+        f.bottom, f.top,
+        f.zNear, f.zFar,
+        isDirectX()
     );
 }
 
 // virtual
 std::string OrthographicCamera::toString() const
 {
-    std::stringstream sstream;
+    GLFrustum f = frustum();
 
-    sstream << "eye " << m_eye.toString() << "\n";
-    sstream << "center " << m_center.toString() << "\n";
-    sstream << "up " << m_up.toString() << "\n";
-    sstream << "left " << m_frustum.left << "\n";
-    sstream << "right " << m_frustum.right << "\n";
-    sstream << "bottom " << m_frustum.bottom << "\n";
-    sstream << "top " << m_frustum.top << "\n";
-    sstream << "zNear " << m_frustum.zNear << "\n";
-    sstream << "zFar " << m_frustum.zFar << "\n";
+    std::ostringstream sstream;
+
+    sstream << "orthographic_camera" << "\n";
+    sstream << "eye " << eye().toString() << "\n";
+    sstream << "right " << right().toString() << "\n";
+    sstream << "up " << up().toString() << "\n";
+    sstream << "back " << back().toString() << "\n";
+    sstream << "frustum_left " << f.left << "\n";
+    sstream << "frustum_right " << f.right << "\n";
+    sstream << "frustum_bottom " << f.bottom << "\n";
+    sstream << "frustum_top " << f.top << "\n";
+    sstream << "frustum_zNear " << f.zNear << "\n";
+    sstream << "frustum_zFar " << f.zFar << "\n";
 
     return sstream.str();
 }

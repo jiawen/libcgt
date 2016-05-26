@@ -235,6 +235,19 @@ bool map( Array1DView< TSrc > src, Array1DView< TDst > dst, Func f )
     return true;
 }
 
+template< typename T >
+Array1DView< const T > readViewOf( const std::vector< T >& v )
+{
+    return Array1DView< const T >( v.data(), v.size() );
+}
+
+template< typename T >
+Array1DView< T > writeViewOf( std::vector< T >& v )
+{
+    return Array1DView< T >(v.data(), v.size());
+}
+
+
 } } } // namespace arrayutils, core, libcgt
 
 // static

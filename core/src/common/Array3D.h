@@ -106,8 +106,8 @@ public:
     const T* slicePointer( int z ) const;
     T* slicePointer( int z );
 
-    Array3DView< const T > readOnlyView() const;
-    Array3DView< T > readWriteView() const;
+    Array3DView< const T > readView() const;
+    Array3DView< T > writeView() const;
 
     operator const Array3DView< const T >() const;
     operator Array3DView< T >();

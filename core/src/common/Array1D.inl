@@ -107,7 +107,7 @@ bool Array1D< T >::notNull() const
 template< typename T >
 std::pair< Array1DView< T >, Allocator* > Array1D< T >::relinquish()
 {
-    Array1DView< T > view = readWriteView();
+    Array1DView< T > view = writeView();
 
     m_data = nullptr;
     m_size = 0;
@@ -223,13 +223,13 @@ T* Array1D< T >::elementPointer( size_t x )
 }
 
 template< typename T >
-Array1DView< const T > Array1D< T >::readOnlyView() const
+Array1DView< const T > Array1D< T >::readView() const
 {
     return Array1DView< const T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array1DView< T > Array1D< T >::readWriteView() const
+Array1DView< T > Array1D< T >::writeView() const
 {
     return Array1DView< T >( m_data, m_size, m_stride );
 }
@@ -237,13 +237,13 @@ Array1DView< T > Array1D< T >::readWriteView() const
 template< typename T >
 Array1D< T >::operator Array1DView< const T >() const
 {
-    return readOnlyView();
+    return readView();
 }
 
 template< typename T >
 Array1D< T >::operator Array1DView< T >()
 {
-    return readWriteView();
+    return writeView();
 }
 
 template< typename T >

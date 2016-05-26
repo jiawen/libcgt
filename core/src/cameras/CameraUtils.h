@@ -51,4 +51,7 @@ GLFrustum intrinsicsToFrustum( const Intrinsics& input,
     const Vector2f& imageSize,
     float zNear, float zFar = std::numeric_limits< float >::infinity() );
 
+Intrinsics frustumToIntrinsics( const GLFrustum& frustum,
+    const Vector2f& imageSize );
+
 } } } // cameras, core, libcgt

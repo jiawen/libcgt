@@ -1,6 +1,6 @@
 #include "cameras/Intrinsics.h"
 
-Matrix3f Intrinsics::asMatrix() const
+Intrinsics::operator Matrix3f() const
 {
     Matrix3f k;
 

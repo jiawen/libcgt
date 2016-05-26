@@ -24,7 +24,7 @@ public:
 
     // Takes ownership of pointer and views it as a 2D array with stride.
     // All sizes and strides must be positive.
-    Array2D( void* pointer, const Vector2i& size,        
+    Array2D( void* pointer, const Vector2i& size,
         Allocator* allocator = NewDeleteAllocator::instance() );
 
     // Takes ownership of pointer and views it as a 2D array with stride.
@@ -94,11 +94,11 @@ public:
     const T* rowPointer( size_t y ) const;
     T* rowPointer( size_t y );
 
-    Array2DView< const T > readOnlyView() const;
-    Array2DView< T > readWriteView() const;
+    Array2DView< const T > readView() const;
+    Array2DView< T > writeView() const;
 
     operator Array2DView< const T >() const;
-    operator Array2DView< T >();    
+    operator Array2DView< T >();
 
     operator const T* () const;
     operator T* ();
@@ -110,7 +110,7 @@ public:
     T& operator [] ( const Vector2i& xy ); // write
 
 private:
-    
+
     Vector2i m_size = { 0, 0 };
     Vector2i m_stride = { 0, 0 };
     uint8_t* m_data = nullptr;

@@ -16,5 +16,5 @@ public:
 
     // TODO(jiawen): support skew.
 
-    Matrix3f asMatrix() const;
+    operator Matrix3f() const;
 };

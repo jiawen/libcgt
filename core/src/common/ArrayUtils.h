@@ -95,7 +95,6 @@ Array2DView< T > flipUpDown( Array2DView< T > src );
 
 // TODO(jiawen): tranpose on 2D.
 
-
 // Classical "map" function: dst[ i ] = f( src[ i ] )
 #if 0
 // TODO(MSVC_2015): the following should work but does not in VS2013.
@@ -107,6 +106,12 @@ static bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array1DView< TSrc > src, Array1DView< TDst > dst, Func f );
 #endif
+
+template< typename T >
+Array1DView< const T > readViewOf( const std::vector< T >& v );
+
+template< typename T >
+Array1DView< T > writeViewOf( std::vector< T >& v );
 
 } } } // arrayutils, core, libcgt
 

@@ -137,7 +137,7 @@ bool Array3D< T >::notNull() const
 template< typename T >
 std::pair< Array3DView< T >, Allocator* > Array3D< T >::relinquish()
 {
-    Array3DView< T > view = readWriteView();
+    Array3DView< T > view = writeView();
 
     m_data = nullptr;
     m_size = { 0, 0, 0 };
@@ -315,13 +315,13 @@ T* Array3D< T >::slicePointer( int z )
 }
 
 template< typename T >
-Array3DView< const T > Array3D< T >::readOnlyView() const
+Array3DView< const T > Array3D< T >::readView() const
 {
     return Array3DView< const T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array3DView< T > Array3D< T >::readWriteView() const
+Array3DView< T > Array3D< T >::writeView() const
 {
     return Array3DView< T >( m_data, m_size, m_stride );
 }
@@ -329,13 +329,13 @@ Array3DView< T > Array3D< T >::readWriteView() const
 template< typename T >
 Array3D< T >::operator const Array3DView< const T >() const
 {
-    return readOnlyView();
+    return readView();
 }
 
 template< typename T >
 Array3D< T >::operator Array3DView< T >()
 {
-    return readWriteView();
+    return writeView();
 }
 
 template< typename T >

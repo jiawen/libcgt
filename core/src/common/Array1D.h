@@ -80,8 +80,8 @@ public:
     const T* elementPointer( size_t x ) const;
     T* elementPointer( size_t x );
 
-    Array1DView< const T > readOnlyView() const;
-    Array1DView< T > readWriteView() const;
+    Array1DView< const T > readView() const;
+    Array1DView< T > writeView() const;
 
     operator Array1DView< const T >() const;
     operator Array1DView< T >();

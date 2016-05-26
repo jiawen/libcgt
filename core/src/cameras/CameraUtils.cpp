@@ -82,16 +82,31 @@ GLFrustum intrinsicsToFrustum( const Intrinsics& input,
 
     output.left = -zNear * input.principalPoint.x / input.focalLength.x;
     output.right =
-        zNear * (imageSize.x - input.principalPoint.x) / input.focalLength.x;
+        zNear * ( imageSize.x - input.principalPoint.x ) / input.focalLength.x;
 
     output.bottom = -zNear * input.principalPoint.y / input.focalLength.y;
     output.top =
-        zNear * (imageSize.y - input.principalPoint.y) / input.focalLength.y;
+        zNear * ( imageSize.y - input.principalPoint.y ) / input.focalLength.y;
 
     output.zNear = zNear;
     output.zFar = zFar;
 
     return output;
+}
+
+Intrinsics frustumToIntrinsics( const GLFrustum& frustum,
+    const Vector2f& imageSize )
+{
+    float fx = imageSize.x * frustum.zNear / ( frustum.right - frustum.left );
+    float fy = imageSize.y * frustum.zNear / ( frustum.top - frustum.bottom );
+    float cx = 0.5f * imageSize.x + 0.5f * imageSize.x * ( frustum.left + frustum.right ) / ( frustum.right - frustum.left );
+    float cy = 0.5f * imageSize.y + 0.5f * imageSize.y * ( frustum.bottom + frustum.top ) / ( frustum.top - frustum.bottom );
+
+    return
+    {
+        { fx, fy },
+        { cx, cy }
+    };
 }
 
 } } } // cameras, core, libcgt
