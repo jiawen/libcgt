@@ -24,9 +24,15 @@ public:
 
     // ---------------- Intrinsics ----------------
 
-    const GLFrustum& frustum() const;
+    const libcgt::core::cameras::GLFrustum& frustum() const;
 
+    // The image aspect ratio (width divided by height).
+    float aspectRatio() const;
+
+    // The (strictly positive) distance to the near plane.
     float zNear() const;
+
+    // The distance to the far plane. May be infinite.
     float zFar() const;
 
     bool isZFarInfinite() const;
@@ -93,11 +99,14 @@ public:
     // in the world frame.
     Vector3f forward() const;
 
-    // Returns the OpenGL / Direct3D style view matrix,
+    // Get the OpenGL / Direct3D style view matrix,
     // mapping world space to eye space.
     // (Equivalent to cameraFromWorld, but as a Matrix4f).
     Matrix4f viewMatrix() const;
 
+    // Get the inverse of the view matrix, mapping
+    // eye space back to world space.
+    // (Equivalent to worldFromCamera, but as a Matrix4f).
     Matrix4f inverseViewMatrix() const;
 
     // Returns the view matrix V such that
@@ -117,9 +126,11 @@ public:
     //
     // These intrinsics retain OpenGL-convention right-handed coordinates,
     // with x-right, y-up, z-towards-viewer.
-    Intrinsics intrinsics( const Vector2f& screenSize ) const;
+    libcgt::core::cameras::Intrinsics intrinsics( const Vector2f& screenSize ) const;
 
     // ----- projection: world --> eye --> clip --> NDC --> screen -----
+
+    // TODO: rename these to yFromX conventions.
 
     // Given a point in world coordinates, transforms it into eye coordinates
     // by computing viewMatrix() * world.
@@ -180,14 +191,14 @@ public:
     // pixelToEye and pixelToWorld are much more useful.
     // In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye), zEye = -depth
 
-    // TODO: this probably only works for a PerspectiveCamera, an orthographic camera's
-    // rays don't use the eye as the origin
-    // given a 2D pixel (x,y) on a screen of size screenSize
-    // returns a 3D ray direction
-    // (call eye() to get the ray origin)
-    // (integer versions are at the center of pixel)
-    Vector3f screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
+    // Converts a 2D pixel (x,y) on a screen of size "screenSize"
+    // to a 3D ray direction.
     Vector3f screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const;
+
+    // Converts a 2D pixel (x,y) on a screen of size "screenSize"
+    // to a 3D ray direction.
+    // The integer pixel coordinates (xy) places the point at the center of the pixel.
+    Vector3f screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
 
     // xy and viewport are in pixel coordinates
     Vector3f screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const;
@@ -207,7 +218,7 @@ public:
 
 protected:
 
-    void setFrustum( const GLFrustum& frustum );
+    void setFrustum( const libcgt::core::cameras::GLFrustum& frustum );
 
     // TODO(jiawen): remove this.
     void setDirectX( bool directX );
@@ -215,7 +226,7 @@ protected:
 private:
 
     libcgt::core::vecmath::EuclideanTransform m_cameraFromWorld;
-    GLFrustum m_frustum; // TODO(jiawen): rename class to Frustum?
+    libcgt::core::cameras::GLFrustum m_frustum; // TODO(jiawen): rename class to Frustum?
 
     // if the projection matrix is for DirectX or OpenGL
     // the view matrix is always right handed

@@ -5,6 +5,8 @@
 #include <math/MathUtils.h>
 #include <vecmath/Quat4f.h>
 
+using libcgt::core::cameras::GLFrustum;
+
 OrthographicCamera::OrthographicCamera( const Vector3f& eye,
     const Vector3f& center,
     const Vector3f& up,

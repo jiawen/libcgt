@@ -1,5 +1,7 @@
 #include "cameras/Intrinsics.h"
 
+namespace libcgt { namespace core { namespace cameras {
+
 Intrinsics::operator Matrix3f() const
 {
     Matrix3f k;
@@ -13,3 +15,5 @@ Intrinsics::operator Matrix3f() const
 
     return k;
 }
+
+} } } // cameras, core, libcgt

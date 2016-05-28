@@ -14,9 +14,12 @@
 using libcgt::core::cameras::focalLengthPixelsToFoVRadians;
 using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
 using libcgt::core::cameras::intrinsicsToFrustum;
+using libcgt::core::cameras::GLFrustum;
+using libcgt::core::cameras::Intrinsics;
 using libcgt::core::math::degreesToRadians;
 using libcgt::core::math::radiansToDegrees;
 using libcgt::core::math::HALF_PI;
+using libcgt::core::vecmath::EuclideanTransform;
 
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
@@ -39,7 +42,7 @@ const PerspectiveCamera PerspectiveCamera::TOP(
     degreesToRadians( 50.0f ), 1.0f, 1.0f, 100.0f );
 
 PerspectiveCamera::PerspectiveCamera(
-    const libcgt::core::vecmath::EuclideanTransform& cameraFromWorld,
+    const EuclideanTransform& cameraFromWorld,
     const GLFrustum& frustum,
     bool isDirectX)
 {
@@ -65,7 +68,7 @@ PerspectiveCamera::PerspectiveCamera(
     bool isDirectX )
 {
     setLookAt( eye, center, up );
-    setFrustum( GLFrustum::symmetric(
+    setFrustum( GLFrustum::makeSymmetricPerspective(
         fovYRadians, aspect, zNear, zFar ) );
     setDirectX( isDirectX );
 }

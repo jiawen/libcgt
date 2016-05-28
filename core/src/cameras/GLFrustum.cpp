@@ -5,19 +5,66 @@
 using libcgt::core::math::cubicInterpolate;
 using libcgt::core::math::lerp;
 
+namespace libcgt { namespace core { namespace cameras {
+
+float GLFrustum::aspectRatio() const
+{
+    return ( right - left ) / ( top - bottom );
+}
+
+float GLFrustum::fovXRadians() const
+{
+    // The left half of the fov is probably negative unless the frustum is
+    // extremely skewed. The total is still right - left.
+    float leftHalfFovX = atan( left / zNear );
+    float rightHalfFovX = atan( right / zNear );
+    return( rightHalfFovX - leftHalfFovX );
+}
+
+float GLFrustum::foVYRadians() const
+{
+    float bottomHalfFovX = atan( bottom / zNear );
+    float topHalfFovX = atan( top / zNear );
+    return( topHalfFovX - bottomHalfFovX );
+}
+
 // static
-GLFrustum GLFrustum::symmetric( float fovYRadians, float aspectRatio,
+GLFrustum GLFrustum::makeAsymmetricPerspective(
+    float leftFovRadians, float rightFoVRadians,
+    float bottomFoVRadians, float topFoVRadians,
+    float zNear, float zFar )
+{
+    GLFrustum frustum;
+
+    frustum.left = zNear * tan( leftFovRadians );
+    frustum.right = zNear * tan( rightFoVRadians );
+    frustum.bottom = zNear * tan( bottomFoVRadians );
+    frustum.top = zNear * tan( topFoVRadians );
+
+    frustum.zNear = zNear;
+    frustum.zFar = zFar;
+
+    return frustum;
+}
+
+// static
+GLFrustum GLFrustum::makeSymmetricPerspective(
+    float fovYRadians, float aspectRatio,
     float zNear, float zFar )
 {
     GLFrustum frustum;
 
     float tanHalfFovY = tan( 0.5f * fovYRadians );
 
-    // tan( theta / 2 ) = up / zNear
+    // tan( theta / 2 ) = top / zNear
     frustum.top = zNear * tanHalfFovY;
     frustum.bottom = -frustum.top;
 
-    // aspect = width / height = ( right - left ) / ( top - bottom )
+    // aspectRatio = width / height
+    //             = ( right - left ) / ( top - bottom )
+    // But left = -right and bottom = -top:
+    //             = (2 * right) / (2 * top)
+    // --> right = aspectRatio * top.
     frustum.right = aspectRatio * frustum.top;
     frustum.left = -frustum.right;
 
@@ -76,3 +123,5 @@ GLFrustum GLFrustum::cubicInterpolate(
 
     return frustum;
 }
+
+} } } // cameras, core, libcgt

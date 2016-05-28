@@ -58,7 +58,9 @@ public:
 
     void setMinFilterMode( GLTextureFilterMode mode );
     void setMagFilterMode( GLTextureFilterMode mode );
-    void setMinMagFilterMode( GLTextureFilterMode minMode, GLTextureFilterMode magMode );
+    void setMinMagFilterModes( GLTextureFilterMode minMode, GLTextureFilterMode magMode );
+    // Set both the min and mag filter to the same value.
+    void setMinMagFilterModes( GLTextureFilterMode mode );
 
     // Enable anisotropic filtering.
     // anisotropy is a value \in [1, getLargestSupportedAnisotropy()].

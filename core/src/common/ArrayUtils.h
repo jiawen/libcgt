@@ -104,8 +104,18 @@ static bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
 #else
 // f should be a function object that mapping TSrc -> TDst
 template< typename TSrc, typename TDst, typename Func >
-bool map( Array1DView< TSrc > src, Array1DView< TDst > dst, Func f );
+bool map( Array1DView< const TSrc > src, Array1DView< TDst > dst, Func f );
 #endif
+
+// Classical "map" function: dst[ xy ] = f( src[ xy ] )
+// f should be a function object that mapping TSrc -> TDst
+template< typename TSrc, typename TDst, typename Func >
+bool map( Array2DView< const TSrc > src, Array2DView< TDst > dst, Func f );
+
+// Classical "map" function: dst[ xyz ] = f( src[ xyz ] )
+// f should be a function object that mapping TSrc -> TDst
+template< typename TSrc, typename TDst, typename Func >
+bool map( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f );
 
 template< typename T >
 Array1DView< const T > readViewOf( const std::vector< T >& v );

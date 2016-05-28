@@ -13,7 +13,7 @@ public:
     OrthographicCamera( const Vector3f& eye = Vector3f( 0, 0, 5 ),
         const Vector3f& center = Vector3f( 0, 0, 0 ),
         const Vector3f& up = Vector3f( 0, 1, 0 ),
-        const GLFrustum& frustum = { -5.0f, 5.0f, -5.0f, 5.0f, -1.0f, 1.0f } );
+        const libcgt::core::cameras::GLFrustum& frustum = { -5.0f, 5.0f, -5.0f, 5.0f, -1.0f, 1.0f } );
 
     virtual Matrix4f projectionMatrix() const override;
 

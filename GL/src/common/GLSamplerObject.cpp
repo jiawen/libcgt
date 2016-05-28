@@ -71,10 +71,16 @@ void GLSamplerObject::setMagFilterMode( GLTextureFilterMode mode )
     glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( mode ) );
 }
 
-void GLSamplerObject::setMinMagFilterMode( GLTextureFilterMode minMode, GLTextureFilterMode magMode )
+void GLSamplerObject::setMinMagFilterModes( GLTextureFilterMode minMode, GLTextureFilterMode magMode )
 {
     glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, static_cast< GLint >( minMode ) );
     glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( magMode ) );
+}
+
+void GLSamplerObject::setMinMagFilterModes( GLTextureFilterMode mode )
+{
+    glSamplerParameteri( m_id, GL_TEXTURE_MIN_FILTER, static_cast< GLint >( mode ) );
+    glSamplerParameteri( m_id, GL_TEXTURE_MAG_FILTER, static_cast< GLint >( mode ) );
 }
 
 void GLSamplerObject::setAnisotropy( GLfloat anisotropy )

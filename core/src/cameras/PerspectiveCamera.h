@@ -35,12 +35,12 @@ public:
 
     PerspectiveCamera(
         const libcgt::core::vecmath::EuclideanTransform& cameraFromWorld,
-        const GLFrustum& frustum,
+        const libcgt::core::cameras::GLFrustum& frustum,
         bool isDirectX = false );
 
     PerspectiveCamera(
         const Vector3f& eye, const Vector3f& center, const Vector3f& up,
-        const GLFrustum& frustum,
+        const libcgt::core::cameras::GLFrustum& frustum,
         bool isDirectX = false );
 
     PerspectiveCamera(
@@ -52,18 +52,20 @@ public:
         float zNear = 1.0f, float zFar = 100.0f,
         bool isDirectX = false );
 
-    void setFrustum( const GLFrustum& frustum );
+    void setFrustum( const libcgt::core::cameras::GLFrustum& frustum );
 
     // Same as below, but uses existing zNear and zFar.
-    void setFrustumFromIntrinsics(const Intrinsics& intrinsics,
-        const Vector2f& imageSize);
+    void setFrustumFromIntrinsics(
+        const libcgt::core::cameras::Intrinsics& intrinsics,
+        const Vector2f& imageSize );
 
     // Sets this camera's GL-style frustum parameters from camera intrinsics.
     // focal length, principal point, and image size are in pixels.
     // The principal point has the y-axis pointing *up* on the image:
     // this is opposite the usual computer-vision convension.
-    void setFrustumFromIntrinsics(const Intrinsics& intrinsics,
-        const Vector2f& imageSize, float zNear, float zFar);
+    void setFrustumFromIntrinsics(
+        const libcgt::core::cameras::Intrinsics& intrinsics,
+        const Vector2f& imageSize, float zNear, float zFar );
 
     // Returns the OpenGL / Direct3D style projection matrix,
     // mapping eye space to clip space.

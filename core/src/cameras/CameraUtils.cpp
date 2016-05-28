@@ -99,8 +99,8 @@ Intrinsics frustumToIntrinsics( const GLFrustum& frustum,
 {
     float fx = imageSize.x * frustum.zNear / ( frustum.right - frustum.left );
     float fy = imageSize.y * frustum.zNear / ( frustum.top - frustum.bottom );
-    float cx = 0.5f * imageSize.x + 0.5f * imageSize.x * ( frustum.left + frustum.right ) / ( frustum.right - frustum.left );
-    float cy = 0.5f * imageSize.y + 0.5f * imageSize.y * ( frustum.bottom + frustum.top ) / ( frustum.top - frustum.bottom );
+    float cx = -frustum.left * fx / frustum.zNear;
+    float cy = -frustum.bottom * fy / frustum.zNear;
 
     return
     {

@@ -3,6 +3,8 @@
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Vector2f.h>
 
+namespace libcgt { namespace core { namespace cameras {
+
 // A simple class describing camera intrinsics.
 // All values have units of pixels and thus, requires an image resolution to
 // interpret as angles, and a pixel size to interpret as rays in a given
@@ -18,3 +20,5 @@ public:
 
     operator Matrix3f() const;
 };
+
+} } } // cameras, core, libcgt

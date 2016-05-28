@@ -2,6 +2,8 @@
 
 #include <vecmath/Matrix4f.h>
 
+namespace libcgt { namespace core { namespace cameras {
+
 // An OpenGL-style frustum, comprising:
 // near and far planes:
 //   zNear and zFar are *distances*, not coordinates, in front of the center of
@@ -17,11 +19,6 @@ class GLFrustum
 {
 public:
 
-    // Make a symmetric frustum from field of view (in radians) and screen
-    // aspect ratio. This is a replacement for gluPerspective().
-    static GLFrustum symmetric( float fovYRadians, float aspectRatio,
-        float zNear, float zFar );
-
     float left;
     float right;
     float bottom;
@@ -29,6 +26,33 @@ public:
 
     float zNear;
     float zFar; // May be std::numeric_limits<float>::infinity().
+
+    // The image aspect ratio (width divided by height).
+    // Works even for an asymmetric frustum.
+    float aspectRatio() const;
+
+    // The full horizontal field of view in radians.
+    // Works even for an asymmetric frustum.
+    float fovXRadians() const;
+
+    // The full vertical field of view in radians.
+    // Works even for an asymmetric frustum.
+    float foVYRadians() const;
+
+    // Make an asymmetric frustum from 4 fields of view (in radians).
+    // This fully determines the aspect ratio.
+    //
+    // To be fully consistent, leftFovRadians and bottomFoVRadians are
+    // typically *negative* numbers unless the frustum is extremely skewed.
+    static GLFrustum makeAsymmetricPerspective(
+        float leftFovRadians, float rightFoVRadians,
+        float bottomFoVRadians, float topFoVRadians,
+        float zNear, float zFar );
+
+    // Make a symmetric frustum from field of view (in radians) and image
+    // aspect ratio. This is a replacement for gluPerspective().
+    static GLFrustum makeSymmetricPerspective( float fovYRadians, float aspectRatio,
+        float zNear, float zFar);
 
     // Linear interpolation between two GLFrustum instances.
     // If either input has zFar = infinity, the result will have zFar = infinity.
@@ -41,3 +65,4 @@ public:
         float t );
 };
 
+} } } // cameras, core, libcgt

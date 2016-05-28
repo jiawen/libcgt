@@ -11,6 +11,8 @@
 
 using libcgt::core::vecmath::EuclideanTransform;
 using libcgt::core::cameras::frustumToIntrinsics;
+using libcgt::core::cameras::GLFrustum;
+using libcgt::core::cameras::Intrinsics;
 using libcgt::core::vecmath::inverse;
 using libcgt::core::vecmath::transformPoint;
 using libcgt::core::vecmath::transformVector;
@@ -23,6 +25,11 @@ bool Camera::isDirectX() const
 const GLFrustum& Camera::frustum() const
 {
     return m_frustum;
+}
+
+float Camera::aspectRatio() const
+{
+    return m_frustum.aspectRatio();
 }
 
 float Camera::zNear() const

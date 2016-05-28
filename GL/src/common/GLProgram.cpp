@@ -94,6 +94,36 @@ void GLProgram::setUniformFloat( GLint uniformLocation, float x )
     glProgramUniform1f( m_id, uniformLocation, x );
 }
 
+void GLProgram::setUniformVector2f( GLint uniformLocation, const Vector2f& v )
+{
+    glProgramUniform2fv( m_id, uniformLocation, 1, v );
+}
+
+void GLProgram::setUniformVector2i( GLint uniformLocation, const Vector2i& v )
+{
+    glProgramUniform2iv( m_id, uniformLocation, 1, v );
+}
+
+void GLProgram::setUniformVector3f( GLint uniformLocation, const Vector3f& v )
+{
+    glProgramUniform3fv( m_id, uniformLocation, 1, v );
+}
+
+void GLProgram::setUniformVector3i( GLint uniformLocation, const Vector3i& v )
+{
+    glProgramUniform3iv( m_id, uniformLocation, 1, v );
+}
+
+void GLProgram::setUniformVector4f( GLint uniformLocation, const Vector4f& v )
+{
+    glProgramUniform4fv( m_id, uniformLocation, 1, v );
+}
+
+void GLProgram::setUniformVector4i( GLint uniformLocation, const Vector4i& v )
+{
+    glProgramUniform4iv( m_id, uniformLocation, 1, v );
+}
+
 void GLProgram::setUniformFloat( const GLchar* name, float x )
 {
     setUniformFloat( uniformLocation( name ), x );
@@ -104,29 +134,14 @@ void GLProgram::setUniformMatrix4f( const GLchar* name, const Matrix4f& matrix )
     setUniformMatrix4f( uniformLocation( name ), matrix );
 }
 
-void GLProgram::setUniformVector2f( const GLchar* name, float x, float y )
-{
-    glProgramUniform2f( m_id, uniformLocation( name ), x, y );
-}
-
 void GLProgram::setUniformVector2f( const GLchar* name, const Vector2f& v )
 {
     glProgramUniform2fv( m_id, uniformLocation( name ), 1, v );
 }
 
-void GLProgram::setUniformVector3f( const GLchar* name, float x, float y, float z )
-{
-    glProgramUniform3f( m_id, uniformLocation( name ), x, y, z );
-}
-
 void GLProgram::setUniformVector3f( const GLchar* name, const Vector3f& v )
 {
     glProgramUniform3fv( m_id, uniformLocation( name ), 1, v );
-}
-
-void GLProgram::setUniformVector4f( const GLchar* name, float x, float y, float z, float w )
-{
-    glProgramUniform4f( m_id, uniformLocation( name ), x, y, z, w );
 }
 
 void GLProgram::setUniformVector4f( const GLchar* name, const Vector4f& v )
@@ -139,29 +154,14 @@ void GLProgram::setUniformInt( const GLchar* name, int x )
     setUniformInt( uniformLocation( name ), x );
 }
 
-void GLProgram::setUniformVector2i( const GLchar* name, int x, int y )
-{
-    glProgramUniform2i( m_id, uniformLocation( name ), x, y );
-}
-
 void GLProgram::setUniformVector2i( const GLchar* name, const Vector2i& v )
 {
     glProgramUniform2iv( m_id, uniformLocation( name ), 1, v );
 }
 
-void GLProgram::setUniformVector3i( const GLchar* name, int x, int y, int z )
-{
-    glProgramUniform3i( m_id, uniformLocation( name ), x, y, z );
-}
-
 void GLProgram::setUniformVector3i( const GLchar* name, const Vector3i& v )
 {
     glProgramUniform3iv( m_id, uniformLocation( name ), 1, v );
-}
-
-void GLProgram::setUniformVector4i( const GLchar* name, int x, int y, int z, int w )
-{
-    glProgramUniform4i( m_id, uniformLocation( name ), x, y, z, w );
 }
 
 void GLProgram::setUniformVector4i( const GLchar* name, const Vector4i& v )
