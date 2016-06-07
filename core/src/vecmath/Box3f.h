@@ -7,89 +7,84 @@
 class Box3i;
 class Vector3f;
 
+// A 3D box represented as an origin and a size.
+//
+// Unless otherwise marked, functions assume that boxes are in "standard form",
+// where all components of size are non-negative.
+//
+// Semantically, the box is defined as right handed: x points right, y points
+// up, and z points out of the screen. Therefore, the origin is at coordinates
+// "left, bottom, back".
 class Box3f
 {
 public:
 
-    Box3f(); // (0,0,0,0,0,0), a null box
-    Box3f( float left, float bottom, float back, float width, float height, float depth );
-    Box3f( float width, float height, float depth );
+    Vector3f origin;
+    Vector3f size;
+
+    Box3f() = default;
+    explicit Box3f( const Vector3f& size ); // origin = (0, 0, 0)
     Box3f( const Vector3f& origin, const Vector3f& size );
-    explicit Box3f( const Vector3f& size );
 
-    Box3f( const Box3f& copy ) = default;
-    Box3f& operator = ( const Box3f& copy ) = default;
+    // ------------------------------------------------------------------------
+    // These functions only make sense if the box is in standard form and
+    // thought of as right handed.
+    // ------------------------------------------------------------------------
 
-    Vector3f origin() const;
-    Vector3f& origin();
+    float width() const; // size.x
+    float height() const; // size.y
+    float depth() const; // size.z
+    float volume() const; // size.x * size.y * size.z
 
-    Vector3f size() const;
-    Vector3f& size();
+    float left() const; // origin.x
+    float right() const; // origin.x + width
+    float bottom() const; // origin.y
+    float top() const; // origin.y + height
+    float back() const; // origin.z
+    float front() const; // origin.z + depth
+
+    Vector3f leftBottomBack() const; // For consistency, same as origin.
+    Vector3f rightBottomBack() const;
+    Vector3f leftTopBack() const;
+    Vector3f rightTopBack() const;
+    Vector3f leftBottomFront() const;
+    Vector3f rightBottomFront() const;
+    Vector3f leftTopFront() const;
+    Vector3f rightTopFront() const;
+
+    // ------------------------------------------------------------------------
+    // minimum, maximum, and center are well defined even if the box is not in
+    // standard form.
+    // ------------------------------------------------------------------------
 
     Vector3f minimum() const; // min( origin, origin + size )
     Vector3f maximum() const; // max( origin, origin + size )
 
-    float left() const; // origin.x
-    float right() const; // origin.x + width
-
-    float bottom() const; // origin.y
-    float top() const; // origin.y + height
-
-    float back() const; // origin.z
-    float front() const; // origin.z + depth
-
-    Vector3f leftBottomBack() const; // for convenience, same as origin and is considered inside
-    Vector3f rightBottomBack() const; // x is one past the end
-    Vector3f leftTopBack() const; // y is one past the end
-    Vector3f rightTopBack() const; // x and y are one past the end
-
-    Vector3f leftBottomFront() const; // z is one past the end
-    Vector3f rightBottomFront() const; // x and z are one past the end
-    Vector3f leftTopFront() const; // y and z is one past the end
-    Vector3f rightTopFront() const; // x, y, and z are one past the end
-
-    float width() const;
-    float height() const;
-    float depth() const;
-    float volume() const;
-
     Vector3f center() const;
 
-    // returns if this box is null:
-    // width == 0 and height == 0
-    // (a null box is empty and not valid)
-    bool isNull() const;
-
-    // returns true if size().x < 0 or size().y < 0
-    // a box is empty iff it's not valid
-    // (a null box is empty and not valid)
-    // call standardized() to return a valid box with the corners flipped
+    // A box is empty if any component of size is zero.
     bool isEmpty() const;
 
-    // returns true if size().x > 0 and size().y > 0
-    // a box is valid iff it's not empty
-    // (a null box is empty and not valid)
-    // call standardized() to return a valid box with the corners flipped
-    bool isValid() const;
+    // A box is standard if all components of size are non-negative.
+    bool isStandard() const;
 
-    // if this box is invalid,
-    // returns a valid box with positive size
-    // otherwise, returns this
-    // Standardizing a null box is still a null box.
+    // Returns a standardized version of this box by flipping its coordinates
+    // such that all sizes are non-negative.
     Box3f standardized() const;
 
     std::string toString() const;
 
-    // flips this box up/down
-    // (usually used to handle boxes on 3D images where y points down)
+    // Flips a standard box left/right.
+    Box3f flippedLR( float width ) const;
+
+    // TODO(jiawen): make these free functions in BoxUtilities.
+    // Flips a standard box up/down such that it is the same box but the
+    // coordinate system points down starting from height. This is usually
+    // used to handle 3D volumes where y points down.
     Box3f flippedUD( float height ) const;
 
-    // flips this box back/front
-    // (usually used to handle boxes on 3D volumes where z points in)
+    // Flips a standard box back/front.
     Box3f flippedBF( float depth ) const;
-
-    // flips this box up/down and back/front
-    Box3f flippedUDBF( float height, float depth ) const;
 
     // returns the smallest integer-aligned box that contains this
     Box3i enlargedToInt() const;
@@ -128,10 +123,4 @@ public:
     //   Returns true, with the parametric distances tNear and tFar.
     //   tNear and tFar can both be < 0. tNear <= tFar.
     bool intersectLine( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
-
-private:
-
-    Vector3f m_origin;
-    Vector3f m_size;
-
 };

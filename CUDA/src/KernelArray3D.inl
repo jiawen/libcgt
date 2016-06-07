@@ -16,7 +16,7 @@ KernelArray3D< T >::KernelArray3D( cudaPitchedPtr d_pitchedPointer, int depth ) 
 
     md_pPitchedPointer( reinterpret_cast< T* >( d_pitchedPointer.ptr ) ),
     m_width( static_cast< int >( d_pitchedPointer.xsize / sizeof( T ) ) ),
-    m_height( d_pitchedPointer.ysize ),
+    m_height( static_cast< int >( d_pitchedPointer.ysize ) ),
     m_depth( depth ),
     m_rowPitch( d_pitchedPointer.pitch )
 

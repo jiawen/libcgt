@@ -1,92 +1,60 @@
 #include "vecmath/Range1i.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 
-using std::abs;
-
-Range1i::Range1i() :
-    m_origin( 0 ),
-    m_size( 0 )
-{
-
-}
-
 Range1i::Range1i( int size ) :
-    m_origin( 0 ),
-    m_size( size )
+    size{ size }
 {
 }
 
-Range1i::Range1i( std::initializer_list< int > os )
-{
-    m_origin = *( os.begin() );
-    m_size = *( os.begin() + 1 );
-}
-
-Range1i::Range1i( const Range1i& copy ) :
-
-    m_origin( copy.m_origin ),
-    m_size( copy.m_size )
-
+Range1i::Range1i( int origin, int size ) :
+    origin{ origin },
+    size{ size }
 {
 
-}
-
-Range1i& Range1i::operator = ( const Range1i& copy )
-{
-    if( this != &copy )
-    {
-        m_origin = copy.m_origin;
-        m_size = copy.m_size;
-    }
-    return *this;
-}
-
-int Range1i::origin() const
-{
-    return m_origin;
-}
-
-int& Range1i::origin()
-{
-    return m_origin;
-}
-
-int Range1i::size() const
-{
-    return m_size;
-}
-
-int& Range1i::size()
-{
-    return m_size;
-}
-
-int Range1i::left() const
-{
-    return std::min( m_origin, m_origin + m_size );
-}
-
-int Range1i::right() const
-{
-    return left() + width();
 }
 
 int Range1i::width() const
 {
-    return abs( m_size );
+    return size;
+}
+
+int Range1i::left() const
+{
+    return origin;
+}
+
+int Range1i::right() const
+{
+    return origin + size;
+}
+
+int Range1i::minimum() const
+{
+    return std::min( origin, origin + size );
+}
+
+int Range1i::maximum() const
+{
+    return std::max( origin, origin + size );
 }
 
 float Range1i::center() const
 {
-    return m_origin + 0.5f * m_size;
+    return origin + 0.5f * size;
 }
 
-bool Range1i::isStandardized() const
+bool Range1i::isEmpty() const
 {
-    return( m_size >= 0 );
+    return( size == 0 );
+}
+
+bool Range1i::isStandard() const
+{
+    return( size >= 0 );
 }
 
 Range1i Range1i::standardized() const
@@ -94,15 +62,15 @@ Range1i Range1i::standardized() const
     int origin;
     int size;
 
-    if( m_size > 0 )
+    if( size > 0 )
     {
-        origin = m_origin;
-        size = m_size;
+        origin = origin;
+        size = size;
     }
     else
     {
-        origin = m_origin + m_size;
-        size = -m_size;
+        origin = origin + size;
+        size = -size;
     }
 
     return{ origin, size };
@@ -114,15 +82,17 @@ std::string Range1i::toString() const
 
     out.append( "Range1i:\n" );
     out.append( "\torigin: " );
-    out.append( std::to_string(m_origin) );
+    out.append( std::to_string(origin) );
     out.append( "\n\tsize: " );
-    out.append( std::to_string(m_size) );
+    out.append( std::to_string(size) );
 
     return out;
 }
 
 bool Range1i::contains( int x )
 {
+    assert( isStandard() );
+
     return
     (
         ( x >= left() ) &&
@@ -133,6 +103,8 @@ bool Range1i::contains( int x )
 // static
 Range1i Range1i::united( const Range1i& r0, const Range1i& r1 )
 {
+    assert( isStandard() );
+
     int r0Min = r0.left();
     int r0Max = r0.right();
     int r1Min = r1.left();

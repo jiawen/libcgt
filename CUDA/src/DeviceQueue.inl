@@ -163,7 +163,7 @@ void DeviceQueue< T >::setHeadAndTailAbsoluteIndices( const uint2& ht )
 }
 
 template< typename T >
-DeviceVector< T >& DeviceQueue< T >::ringBuffer()
+DeviceArray1D< T >& DeviceQueue< T >::ringBuffer()
 {
     return md_ringBuffer;
 }

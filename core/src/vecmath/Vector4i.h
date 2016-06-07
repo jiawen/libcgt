@@ -1,6 +1,5 @@
 #pragma once
 
-#include <initializer_list>
 #include <string>
 
 class Vector2i;
@@ -13,17 +12,13 @@ public:
 
     Vector4i(); // (0,0,0,0)
     explicit Vector4i( int i ); // fills all 4 components with i
-    Vector4i( std::initializer_list< int > xyzw );
+    Vector4i( int x, int y, int z, int w );
     Vector4i( const Vector2i& xy, int z, int w );
     Vector4i( int x, const Vector2i& yz, int w );
     Vector4i( int x, int y, const Vector2i& zw );
     Vector4i( const Vector2i& xy, const Vector2i& zw );
     Vector4i( const Vector3i& xyz, int w );
     Vector4i( int x, const Vector3i& yzw );
-
-    Vector4i( const Vector4i& rv ); // copy constructor
-    Vector4i& operator = ( const Vector4i& rv ); // assignment operator
-    // no destructor necessary
 
     // returns the ith element
     const int& operator [] ( int i ) const;

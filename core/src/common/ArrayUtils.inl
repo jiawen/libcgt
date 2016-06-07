@@ -48,23 +48,42 @@ bool copy( Array2DView< const T > src, Array2DView< T > dst )
     {
         memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
     }
-    // Elements are packed within each row, do a memcpy per row.
-    else if( src.elementsArePacked() && dst.elementsArePacked() )
-    {
-        for( int y = 0; y < src.height(); ++y )
-        {
-            memcpy( dst.rowPointer( y ), src.rowPointer( y ), src.width() * src.elementStrideBytes() );
-        }
-    }
-    // Otherwise, iterate.
+    // Otherwise, copy row by row.
     else
     {
         for( int y = 0; y < src.height(); ++y )
         {
-            for( int x = 0; x < src.width(); ++x )
-            {
-                dst[ { x, y } ] = src[ { x, y } ];
-            }
+            copy( src.row( y ), dst.row( y ) );
+        }
+    }
+
+    return true;
+}
+
+template< typename T >
+bool copy( Array3DView< const T > src, Array3DView< T > dst )
+{
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
+
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
+
+    // Both views are packed, do a single memcpy.
+    if( src.packed() && dst.packed() )
+    {
+        memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
+    }
+    // Otherwise, copy slice by slice.    
+    else
+    {
+        for( int z = 0; z < src.depth(); ++z )
+        {
+            copy( src.row( z ), dst.row( z ) );
         }
     }
 
@@ -88,29 +107,42 @@ Array2DView< S > componentView( Array2DView< T > src, int componentOffsetBytes )
 }
 
 template< typename T >
+Array1DView< T > crop( Array1DView< T > view, int x )
+{
+    return crop( view, { x, view.width() - x } );
+}
+
+template< typename T >
+Array1DView< T > crop( Array1DView< T > view, const Range1i& range )
+{
+    T* cornerPointer = view.elementPointer( range.origin );
+    return Array2DView< T >( cornerPointer, range.size(), view.stride() );
+}
+
+template< typename T >
 Array2DView< T > crop( Array2DView< T > view, const Vector2i& xy )
 {
-    return crop( view, xy, { view.width() - xy.x, view.height() - xy.y } );
+    return crop( view, { xy, view.size() - xy } );
 }
 
 template< typename T >
 Array2DView< T > crop( Array2DView< T > view, const Rect2i& rect )
 {
-    T* cornerPointer = view.elementPointer( rect.origin() );
-    return Array2DView< T >( cornerPointer, rect.size(), view.strides() );
+    T* cornerPointer = view.elementPointer( rect.origin );
+    return Array2DView< T >( cornerPointer, rect.size(), view.stride() );
 }
 
 template< typename T >
 Array3DView< T > crop( Array3DView< T > view, const Vector3i& xyz )
 {
-    return crop( view, xyz, view.width() - xyz.x, view.height() - xyz.y, view.depth() - xyz.z );
+    return crop( view, { xyz, view.size() - xyz } );
 }
 
 template< typename T >
 Array3DView< T > crop( Array3DView< T > view, const Box3i& box )
 {
-    T* cornerPointer = view.elementPointer( box.origin() );
-    return Array3DView< T >( cornerPointer, box.size(), view.strides() );
+    T* cornerPointer = view.elementPointer( box.origin );
+    return Array3DView< T >( cornerPointer, box.size(), view.stride() );
 }
 
 template< typename T >

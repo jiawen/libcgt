@@ -17,7 +17,7 @@ Intrinsics adjustIntrinsicsToCrop( const Rect2i& cropWindow,
     return
     {
         input.focalLength,
-        input.principalPoint - cropWindow.origin()
+        input.principalPoint - cropWindow.origin
     };
 }
 

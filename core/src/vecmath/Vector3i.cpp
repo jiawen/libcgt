@@ -8,10 +8,6 @@
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 Vector3i::Vector3i()
 {
     m_elements[ 0 ] = 0;
@@ -26,11 +22,12 @@ Vector3i::Vector3i( int i )
     m_elements[ 2 ] = i;
 }
 
-Vector3i::Vector3i( std::initializer_list< int > xyz )
+Vector3i::Vector3i( int x, int y, int z ) :
+    x{ x },
+    y{ y },
+    z{ z }
 {
-    m_elements[ 0 ] = *( xyz.begin( ) );
-    m_elements[ 1 ] = *( xyz.begin( ) + 1 );
-    m_elements[ 2 ] = *( xyz.begin( ) + 2 );
+
 }
 
 Vector3i::Vector3i( const Vector2i& xy, int z )
@@ -45,24 +42,6 @@ Vector3i::Vector3i( int x, const Vector2i& yz )
     m_elements[0] = x;
     m_elements[1] = yz.x;
     m_elements[2] = yz.y;
-}
-
-Vector3i::Vector3i( const Vector3i& rv )
-{
-    m_elements[0] = rv.m_elements[0];
-    m_elements[1] = rv.m_elements[1];
-    m_elements[2] = rv.m_elements[2];
-}
-
-Vector3i& Vector3i::operator = ( const Vector3i& rv )
-{
-    if( this != &rv )
-    {
-        m_elements[0] = rv.m_elements[0];
-        m_elements[1] = rv.m_elements[1];
-        m_elements[2] = rv.m_elements[2];
-    }
-    return *this;
 }
 
 const int& Vector3i::operator [] ( int i ) const

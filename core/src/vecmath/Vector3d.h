@@ -8,14 +8,12 @@ class Vector3d
 public:
 
     Vector3d();
-    Vector3d( double fx, double fy, double fz );
+    Vector3d( double x, double y, double z );
     Vector3d( const Vector2d& xy, double z );
     Vector3d( double x, const Vector2d& yz );
 
-    Vector3d( const Vector3d& rv ); // copy constructor
     Vector3d( const Vector3f& rv );
-    Vector3d& operator = ( const Vector3d& rv ); // assignment operator
-    // no destructor necessary
+    Vector3d& operator = ( const Vector3f& rv );
 
     // returns the ith element
     const double& operator [] ( int i ) const;

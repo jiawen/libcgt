@@ -43,7 +43,7 @@ Rect2i GLUtilities::getViewport()
 {
     int vp[4];
     glGetIntegerv( GL_VIEWPORT, vp );
-    return{ vp[0], vp[1], vp[2], vp[3] };
+    return{ { vp[0], vp[1] }, { vp[2], vp[3] } };
 }
 
 // static
@@ -57,13 +57,13 @@ Box3f GLUtilities::getViewport3D()
 
     float zNear = dr[0];
     float zFar = dr[1];
-    return Box3f( vp[0], vp[1], zNear, vp[2], vp[3], zFar - zNear );
+    return{ { vp[0], vp[1], zNear }, { vp[2], vp[3], zFar - zNear } };
 }
 
 // static
 void GLUtilities::setViewport( const Rect2i& vp )
 {
-    glViewport( vp.origin().x, vp.origin().y, vp.size().x, vp.size().y );
+    glViewport( vp.origin.x, vp.origin.y, vp.size.x, vp.size.y );
 }
 
 // static

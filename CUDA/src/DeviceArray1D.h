@@ -1,8 +1,5 @@
 #pragma once
 
-// STL
-#include <vector>
-
 // CUDA
 #include <cuda_runtime.h>
 #include <helper_functions.h>
@@ -19,18 +16,18 @@
 // Basic vector interface around CUDA global memory.
 // Wraps around cudaMalloc() (linear allocation).
 template< typename T >
-class DeviceVector
+class DeviceArray1D
 {
 public:
 
-    DeviceVector();
-    DeviceVector( int length );
-    DeviceVector( const std::vector< T >& src );
-    DeviceVector( const DeviceVector< T >& copy );
-    DeviceVector( DeviceVector< T >&& move );
-    DeviceVector< T >& operator = ( const DeviceVector< T >& copy );
-    DeviceVector< T >& operator = ( DeviceVector< T >&& move );
-    virtual ~DeviceVector();
+    DeviceArray1D() = default;
+    DeviceArray1D( int length );
+    DeviceArray1D( Array1DView< const T > src );
+    DeviceArray1D( const DeviceArray1D< T >& copy );
+    DeviceArray1D( DeviceArray1D< T >&& move );
+    DeviceArray1D< T >& operator = ( const DeviceArray1D< T >& copy );
+    DeviceArray1D< T >& operator = ( DeviceArray1D< T >&& move );
+    virtual ~DeviceArray1D();
 
     bool isNull() const;
     bool notNull() const;
@@ -60,9 +57,9 @@ public:
     // WARNING: probably slow as it incurs a cudaMemcpy
     void set( int index, const T& value );
 
-    // copy from another DeviceVector to this
+    // copy from another DeviceArray1D to this
     // this is automatically resized
-    void copyFromDevice( const DeviceVector< T >& src );
+    void copyFromDevice( const DeviceArray1D< T >& src );
 
     // copy length() elements from input --> device vector
     // this is automatically resized
@@ -98,11 +95,11 @@ public:
 
 private:
 
-    size_t m_sizeInBytes;
-    int m_length;
-    T* m_devicePointer;
+    size_t m_sizeInBytes = 0;
+    int m_length = 0;
+    T* m_devicePointer = nullptr;
 
     void destroy();
 };
 
-#include "DeviceVector.inl"
+#include "DeviceArray1D.inl"

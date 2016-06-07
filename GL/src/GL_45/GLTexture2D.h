@@ -122,7 +122,7 @@ public:
     // windowCoords = Rect2f( 0, 0, width(), height() )
     void drawNV( GLSamplerObject* pSampler = nullptr,
         float z = 0,
-        const Rect2f& texCoords = { 0, 0, 1, 1 } );
+        const Rect2f& texCoords = Rect2f{ { 1, 1 } });
 
     // Using NV_draw_texture, draw this texture to the screen
     // to the rectangle windowCoords.
@@ -139,7 +139,7 @@ public:
     void drawNV( const Rect2f& windowCoords,
         GLSamplerObject* pSampler = nullptr,
         float z = 0,
-        const Rect2f& texCoords = { 0, 0, 1, 1 } );
+        const Rect2f& texCoords = Rect2f{ { 1, 1 } });
 
 private:
 

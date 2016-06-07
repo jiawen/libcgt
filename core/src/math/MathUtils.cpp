@@ -138,14 +138,14 @@ Vector2i clampToRectangleExclusive( const Vector2i& v, const Vector2i& size )
 // static
 Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect )
 {
-    return clampToRectangleExclusive( v, rect.origin(), rect.size() );
+    return clampToRectangleExclusive( v, rect.origin, rect.size );
 }
 
 // static
 Vector2f clampToRectangle( const Vector2f& v, const Rect2f& rect )
 {
-    float x = clampToRange( v.x, rect.origin().x, rect.limit().x );
-    float y = clampToRange( v.y, rect.origin().y, rect.limit().y );
+    float x = clampToRange( v.x, rect.left(), rect.right() );
+    float y = clampToRange( v.y, rect.bottom(), rect.top() );
     return{ x, y };
 }
 
@@ -175,7 +175,7 @@ Vector3i clampToBoxExclusive( const Vector3i& v, const Vector3i& size )
 // static
 Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box )
 {
-    return clampToBoxExclusive( v, box.origin(), box.size() );
+    return clampToBoxExclusive( v, box.origin, box.size );
 }
 
 // static

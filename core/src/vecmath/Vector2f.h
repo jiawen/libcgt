@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <initializer_list>
 #include <string>
 
 class Vector2d;
@@ -18,7 +17,6 @@ public:
     Vector2f() = default;
     explicit Vector2f( float f ); // (f,f)
     Vector2f( float _x, float _y );
-    //Vector2f( std::initializer_list< float > xy );
 
     // copy constructors
     Vector2f( const Vector2f& v ) = default;

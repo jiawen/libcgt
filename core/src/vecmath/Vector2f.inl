@@ -12,13 +12,6 @@ inline Vector2f::Vector2f( float _x, float _y ) :
 
 }
 
-/*
-inline Vector2f::Vector2f( std::initializer_list< float > xy )
-{
-    x = *( xy.begin() );
-    y = *( xy.begin() + 1 );
-}*/
-
 inline const float& Vector2f::operator [] ( int i ) const
 {
     return ( &x )[ i ];

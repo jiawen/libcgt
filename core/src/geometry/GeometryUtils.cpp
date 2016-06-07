@@ -65,7 +65,7 @@ Box3f GeometryUtils::boundingBoxForPoints( const std::vector< Vector3f >& points
         }
     }
 
-    return Box3f( minimum, maximum - minimum );
+    return{ minimum, maximum - minimum };
 }
 
 // static
@@ -77,7 +77,7 @@ Rect2f GeometryUtils::triangleBoundingBox( const Vector2f& v0, const Vector2f& v
     float maxX = max( max( v0.x, v1.x ), v2.x );
     float maxY = max( max( v0.y, v1.y ), v2.y );
 
-    return{ minX, minY, maxX - minX, maxY - minY };
+    return{ { minX, minY }, { maxX - minX, maxY - minY } };
 }
 
 // static
@@ -94,7 +94,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, con
     std::vector< Vector2f > pointsInside;
     pointsInside.reserve( bbox.area() );
 
-    Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
+    Iterators::for2D( bbox.minimum(), bbox.size, [&]( int x, int y )
     {
         Vector2f p = { x + 0.5f, y + 0.5f };
 
@@ -151,7 +151,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vecto
     std::vector< Vector2f > pointsInside;
     pointsInside.reserve( bbox.area() );
 
-    Iterators::for2D( bbox.minimum(), bbox.size(), [&]( int x, int y )
+    Iterators::for2D( bbox.minimum(), bbox.size, [&]( int x, int y )
     {
         Vector2f p = { x + 0.5f, y + 0.5f };
 

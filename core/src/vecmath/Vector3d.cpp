@@ -35,28 +35,18 @@ Vector3d::Vector3d( double x, const Vector2d& yz )
     m_elements[2] = yz.y;
 }
 
-Vector3d::Vector3d( const Vector3d& rv )
-{
-    m_elements[0] = rv.m_elements[0];
-    m_elements[1] = rv.m_elements[1];
-    m_elements[2] = rv.m_elements[2];
-}
-
 Vector3d::Vector3d( const Vector3f& rv )
 {
-    m_elements[0] = rv[0];
-    m_elements[1] = rv[1];
-    m_elements[2] = rv[2];
+    m_elements[0] = rv.x;
+    m_elements[1] = rv.y;
+    m_elements[2] = rv.z;
 }
 
-Vector3d& Vector3d::operator = ( const Vector3d& rv )
+Vector3d& Vector3d::operator = ( const Vector3f& rv )
 {
-    if( this != &rv )
-    {
-        m_elements[0] = rv.m_elements[0];
-        m_elements[1] = rv.m_elements[1];
-        m_elements[2] = rv.m_elements[2];
-    }
+    m_elements[0] = rv.x;
+    m_elements[1] = rv.y;
+    m_elements[2] = rv.z;
     return *this;
 }
 

@@ -1,63 +1,17 @@
 template< typename T >
-DeviceArray3D< T >::DeviceArray3D() :
-
-    m_width( -1 ),
-    m_height( -1 ),
-    m_depth( -1 ),
-
-    m_sizeInBytes( 0 ),
-    m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
-    m_extent( make_cudaExtent( 0, 0, 0 ) )
-
+DeviceArray3D< T >::DeviceArray3D( const Vector3i& size )
 {
-    m_pitchedPointer.ptr = NULL;
-    m_pitchedPointer.pitch = 0;
-    m_pitchedPointer.xsize = 0;
-    m_pitchedPointer.ysize = 0;
-
-    m_extent = make_cudaExtent( 0, 0, 0 );
+    resize( size );
 }
 
 template< typename T >
-DeviceArray3D< T >::DeviceArray3D( int width, int height, int depth ) :
-
-    m_width( -1 ),
-    m_height( -1 ),
-    m_depth( -1 ),
-
-    m_sizeInBytes( 0 ),
-    m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
-    m_extent( make_cudaExtent( 0, 0, 0 ) )
-
-{
-    resize( width, height, depth );
-}
-
-template< typename T >
-DeviceArray3D< T >::DeviceArray3D( const Array3D< T >& src ) :
-
-    m_width( -1 ),
-    m_height( -1 ),
-    m_depth( -1 ),
-
-    m_sizeInBytes( 0 ),
-    m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
-    m_extent( make_cudaExtent( 0, 0, 0 ) )
+DeviceArray3D< T >::DeviceArray3D( Array3DView< const T > src )
 {
     copyFromHost( src );
 }
 
 template< typename T >
-DeviceArray3D< T >::DeviceArray3D( const DeviceArray3D< T >& copy ) :
-
-    m_width( -1 ),
-    m_height( -1 ),
-    m_depth( -1 ),
-
-    m_sizeInBytes( 0 ),
-    m_pitchedPointer( make_cudaPitchedPtr( nullptr, 0, 0, 0 ) ),
-    m_extent( make_cudaExtent( 0, 0, 0 ) )
-
+DeviceArray3D< T >::DeviceArray3D( const DeviceArray3D< T >& copy )
 {
     copyFromDevice( copy );
 }
@@ -65,25 +19,21 @@ DeviceArray3D< T >::DeviceArray3D( const DeviceArray3D< T >& copy ) :
 template< typename T >
 DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
 {
-    m_width = move.m_width;
-    m_height = move.m_height;
-    m_depth = move.m_depth;
+    destroy();
 
+    m_size = move.m_size;
     m_sizeInBytes = move.m_sizeInBytes;
     m_pitchedPointer = move.m_pitchedPointer;
     m_extent = move.m_extent;
 
-    move.m_width = -1;
-    move.m_height = -1;
-    move.m_depth = -1;
-
+    move.m_size = Vector3i{ 0 };
     move.m_sizeInBytes = 0;
     move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
     move.m_extent = make_cudaExtent( 0, 0, 0 );
 }
 
 template< typename T >
-DeviceArray3D< T >& DeviceArray3D< T >::operator = ( const Array3D< T >& src )
+DeviceArray3D< T >& DeviceArray3D< T >::operator = ( Array3DView< const T > src )
 {
     copyFromHost( src );
     return *this;
@@ -106,18 +56,12 @@ DeviceArray3D< T >& DeviceArray3D< T >::operator = ( DeviceArray3D< T >&& move )
     {
         destroy();
 
-        m_width = move.m_width;
-        m_height = move.m_height;
-        m_depth = move.m_depth;
-
+        m_size = move.m_size;
         m_sizeInBytes = move.m_sizeInBytes;
         m_pitchedPointer = move.m_pitchedPointer;
         m_extent = move.m_extent;
 
-        move.m_width = -1;
-        move.m_height = -1;
-        move.m_depth = -1;
-
+        move.m_size = Vector3i{ 0 };
         move.m_sizeInBytes = 0;
         move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
         move.m_extent = make_cudaExtent( 0, 0, 0 );
@@ -147,31 +91,31 @@ bool DeviceArray3D< T >::notNull() const
 template< typename T >
 int DeviceArray3D< T >::width() const
 {
-    return m_width;
+    return m_size.x;
 }
 
 template< typename T >
 int DeviceArray3D< T >::height() const
 {
-    return m_height;
+    return m_size.y;
 }
 
 template< typename T >
 int DeviceArray3D< T >::depth() const
 {
-    return m_depth;
+    return m_size.z;
 }
 
 template< typename T >
-int3 DeviceArray3D< T >::size() const
+Vector3i DeviceArray3D< T >::size() const
 {
-    return make_int3( m_width, m_height, m_depth );
+    return m_size;
 }
 
 template< typename T >
 int DeviceArray3D< T >::numElements() const
 {
-    return m_width * m_height;
+    return m_size.x * m_size.y * m_size.z;
 }
 
 template< typename T >
@@ -193,36 +137,27 @@ size_t DeviceArray3D< T >::sizeInBytes() const
 }
 
 template< typename T >
-void DeviceArray3D< T >::resize( int width, int height, int depth )
+void DeviceArray3D< T >::resize( const Vector3i& size )
 {
-    if( width == m_width &&
-        height == m_height &&
-        depth == m_depth )
+    if( size == m_size )
     {
         return;
     }
 
     destroy();
 
-    // TODO: make myself null if sizes are <= 0
+    if( size.x > 0 && size.y > 0 && size.z > 0 )
+    {
+        m_size = size;
+        m_extent = make_cudaExtent( size.x * sizeof( T ), size.y, size.z );
 
-    m_width = width;
-    m_height = height;
-    m_depth = depth;
-    m_extent = make_cudaExtent( width * sizeof( T ), height, depth );
+        checkCudaErrors
+        (
+            cudaMalloc3D( &m_pitchedPointer, m_extent )
+        );
 
-    checkCudaErrors
-    (
-        cudaMalloc3D( &m_pitchedPointer, m_extent )
-    );
-
-    m_sizeInBytes = m_pitchedPointer.pitch * height * depth;
-}
-
-template< typename T >
-void DeviceArray3D< T >::resize( const int3& size )
-{
-    resize( size.x, size.y, size.z );
+        m_sizeInBytes = m_pitchedPointer.pitch * size.y * size.z;
+    }
 }
 
 template< typename T >
@@ -231,12 +166,25 @@ void DeviceArray3D< T >::clear()
     checkCudaErrors( cudaMemset3D( m_pitchedPointer, 0, m_extent ) );
 }
 
+#include <thrust/fill.h>
+#include <thrust/execution_policy.h>
+
 template< typename T >
 void DeviceArray3D< T >::fill( const T& value )
 {
-    // TODO: use thrust::fill?
-    Array3D< T > h_array( width(), height(), depth(), value );
-    copyFromHost( h_array );
+    // TODO(jiawen): write a function for this.
+    if( m_pitchedPointer.xsize == m_size.x * sizeof( T ) )
+    {
+        T* begin = reinterpret_cast< T* >( m_pitchedPointer.ptr );
+        T* end = begin + numElements();
+        thrust::fill( thrust::device, begin, end, value );
+    }
+    else
+    {
+        // TODO(jiawen): optimize this with thrust::fill().
+        Array3D< T > h_array( m_size, value );
+        copyFromHost( h_array );
+    }
 }
 
 template< typename T >
@@ -255,7 +203,7 @@ T DeviceArray3D< T >::get( int x, int y, int z ) const
 }
 
 template< typename T >
-T DeviceArray3D< T >::get( const int3& subscript ) const
+T DeviceArray3D< T >::get( const Vector3i& subscript ) const
 {
     return get( subscript.x, subscript.y, subscript.z );
 }
@@ -267,7 +215,7 @@ T DeviceArray3D< T >::operator () ( int x, int y, int z ) const
 }
 
 template< typename T >
-T DeviceArray3D< T >::operator [] ( const int3& subscript ) const
+T DeviceArray3D< T >::operator [] ( const Vector3i& subscript ) const
 {
     return get( subscript );
 }
@@ -275,23 +223,21 @@ T DeviceArray3D< T >::operator [] ( const int3& subscript ) const
 template< typename T >
 void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
 {
-    const uint8_t* destinationPointer = reinterpret_cast< const uint8_t* >( m_pitchedPointer.ptr );
-    const uint8_t* slicePointer = destinationPointer + z * slicePitch();
-    const uint8_t* rowPointer = slicePointer + y * rowPitch();
-    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
+    uint8_t* destinationPointer = reinterpret_cast< uint8_t* >( m_pitchedPointer.ptr );
+    uint8_t* slicePointer = destinationPointer + z * slicePitch();
+    uint8_t* rowPointer = slicePointer + y * rowPitch();
+    uint8_t* elementPointer = rowPointer + x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
-void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
+bool DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
 {
-    if( isNull() || src.isNull() )
+    if( isNull() || src.isNull() || m_size != src.size() )
     {
-        return;
+        return false;
     }
-
-    resize( src.m_width, src.m_height, src.m_depth );
 
     cudaMemcpy3DParms params;
 
@@ -308,14 +254,16 @@ void DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
     params.extent = src.m_extent;
 
     checkCudaErrors( cudaMemcpy3D( &params ) );
+    return true;
 }
 
 template< typename T >
-void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
+bool DeviceArray3D< T >::copyFromHost( Array3DView< const T > src )
 {
-    // TODO: check if source is length zero: how well does resize handle it?
-
-    resize( src.width(), src.height(), src.depth() );
+    if( isNull() || src.isNull() || m_size != src.size() )
+    {
+        return false;
+    }
 
     cudaMemcpy3DParms params;
 
@@ -335,17 +283,16 @@ void DeviceArray3D< T >::copyFromHost( const Array3D< T >& src )
     params.extent = m_extent;
 
     checkCudaErrors( cudaMemcpy3D( &params ) );
+    return true;
 }
 
 template< typename T >
-void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
+bool DeviceArray3D< T >::copyToHost( Array3DView< T > dst ) const
 {
-    if( isNull() )
+    if( isNull() || dst.isNull() || m_size != dst.size() )
     {
-        return;
+        return false;
     }
-
-    dst.resize( { width(), height(), depth() } );
 
     cudaMemcpy3DParms params;
 
@@ -363,7 +310,9 @@ void DeviceArray3D< T >::copyToHost( Array3D< T >& dst ) const
 
     params.extent = m_extent;
 
+    // TODO(jiawen): check for error, return it.
     checkCudaErrors( cudaMemcpy3D( &params ) );
+    return true;
 }
 
 template< typename T >
@@ -381,7 +330,7 @@ cudaPitchedPtr DeviceArray3D< T >::pitchedPointer()
 template< typename T >
 KernelArray3D< T > DeviceArray3D< T >::kernelArray() const
 {
-    return KernelArray3D< T >( m_pitchedPointer, m_depth );
+    return KernelArray3D< T >( m_pitchedPointer, m_size.z );
 }
 
 template< typename T >
@@ -409,17 +358,10 @@ void DeviceArray3D< T >::destroy()
     if( notNull() )
     {
         checkCudaErrors( cudaFree( m_pitchedPointer.ptr ) );
-        m_pitchedPointer.ptr = NULL;
-        m_pitchedPointer.pitch = 0;
-        m_pitchedPointer.xsize = 0;
-        m_pitchedPointer.ysize = 0;
+        m_pitchedPointer = { 0 };
     }
 
-    m_width = -1;
-    m_height = -1;
-    m_depth = -1;
-
+    m_size = Vector3i{ 0 };
     m_sizeInBytes = 0;
-
-    m_extent = make_cudaExtent( 0, 0, 0 );
+    m_extent = { 0 };
 }

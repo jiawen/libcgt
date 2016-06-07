@@ -29,7 +29,7 @@ Vector3i GLTexture3D::calculateMipMapSizeForLevel( const Vector3i& baseSize,
     Vector3i size = baseSize;
     while( level > 0 )
     {
-        size = maximum( Vector3i{ 1, 1 }, size / 2 );
+        size = maximum( Vector3i{ 1 }, size / 2 );
         --level;
     }
     return size;

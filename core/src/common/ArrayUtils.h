@@ -10,6 +10,7 @@
 #include "BasicTypes.h" // TODO: uint8x4 --> Vector4ub
 
 #include <vecmath/Box3i.h>
+#include <vecmath/Range1i.h>
 #include <vecmath/Rect2i.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector2i.h>
@@ -21,20 +22,26 @@ namespace libcgt { namespace core { namespace arrayutils {
 
 // Copy between two Array1DViews, with potentially varying stride.
 // If both are packed(), uses memcpy to do a single fast copy.
-// Otherwise, iterates the copy one element at a time.
+// Otherwise, copies element by element.
 // Returns false if the dimensions don't match, or if either is null.
 template< typename T >
 bool copy( Array1DView< const T > src, Array1DView< T > dst );
 
 // Copy between two Array2DViews, with potentially varying strides.
 // If both are packed(), uses memcpy to do a single fast copy.
-// If both row strides are the same, then uses memcpy row by row.
+// If both row strides are equal, then calls copy() on each row.
 // Otherwise, iterates the copy one element at a time.
 // Returns false if the dimensions don't match, or if either is null.
 template< typename T >
 bool copy( Array2DView< const T > src, Array2DView< T > dst );
 
-// TODO(jiawen): copy of Array3DView.
+// Copy between two Array3DViews, with potentially varying strides.
+// If both are packed(), uses memcpy to do a single fast copy.
+// If both slice strides are the same, then calls copy() on each slice.
+// Otherwise, iterates the copy one element at a time.
+// Returns false if the dimensions don't match, or if either is null.
+template< typename T >
+bool copy( Array3DView< const T > src, Array3DView< T > dst );
 
 // TODO: rename this to sliceChannel()?
 // Given an existing Array1DView< T >, returns a Array1DView< S > with the
@@ -49,7 +56,13 @@ Array1DView< S > componentView( Array1DView< T > src, int componentOffsetBytes )
 template< typename S, typename T >
 Array2DView< S > componentView( Array2DView< T > src, int componentOffsetBytes );
 
-// TODO(jiawen): crop of Array1DView.
+// Get a linear subset of an Array1DView, starting at x.
+template< typename T >
+Array1DView< T > crop( Array1DView< T > view, int x );
+
+// Get a linear subset of an Array1DView.
+template< typename T >
+Array1DView< T > crop( Array1DView< T > view, const Range1i& range );
 
 // Get a rectangular subset of an Array2DView, starting at xy.
 template< typename T >

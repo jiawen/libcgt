@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <vector_types.h>
+//#include <vector_types.h>
 #include <helper_cuda.h>
 
 #include <common/Array3D.h>
+#include <common/Array3DView.h>
+#include <vecmath/Vector3i.h>
 
 #include "KernelArray3D.h"
 
@@ -15,13 +17,12 @@ class DeviceArray3D
 {
 public:
 
-    DeviceArray3D();
-    DeviceArray3D( int width, int height, int depth );
-    DeviceArray3D( const int& size );
-    DeviceArray3D( const Array3D< T >& src );
+    DeviceArray3D() = default;
+    DeviceArray3D( const Vector3i& size );
+    DeviceArray3D( Array3DView< const T > src );
     DeviceArray3D( const DeviceArray3D< T >& copy );
     DeviceArray3D( DeviceArray3D< T >&& move );
-    DeviceArray3D< T >& operator = ( const Array3D< T >& src );
+    DeviceArray3D< T >& operator = ( Array3DView< const T > src );
     DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
     DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
     virtual ~DeviceArray3D();
@@ -32,7 +33,7 @@ public:
     int width() const;
     int height() const;
     int depth() const;
-    int3 size() const;
+    Vector3i size() const;
     int numElements() const;
 
     // The number of bytes between rows within any slice
@@ -46,9 +47,9 @@ public:
 
     // resizes the array, original data is not preserved
     void resize( int width, int height, int depth );
-    void resize( const int3& size );
+    void resize( const Vector3i& size );
 
-    // TODO: implement get/set/operator() with int3, vector3
+    // TODO: implement get/set/operator() with Vector3i, vector3
     // TODO: implement constructors for strided, pitched, slicePitched
 
     // fills this array with the 0 byte pattern
@@ -57,29 +58,29 @@ public:
     // fills this array with value
     void fill( const T& value );
 
-    // get an element of the array from the device
-    // WARNING: probably slow as it incurs a cudaMemcpy
+    // Get an element of the array from the device.
+    // WARNING: probably slow as it incurs a call to cudaMemcpy().
     T get( int x, int y, int z ) const;
-    T get( const int3& subscript ) const;
+    T get( const Vector3i& subscript ) const;
 
-    // get an element of the array from the device
-    // WARNING: probably slow as it incurs a cudaMemcpy
+    // Get an element of the array from the device.
+    // WARNING: probably slow as it incurs a call to cudaMemcpy().
     T operator () ( int x, int y, int z ) const;
-    T operator [] ( const int3& subscript ) const;
+    T operator [] ( const Vector3i& subscript ) const;
 
-    // sets an element of the array from the host
-    // WARNING: probably slow as it incurs a cudaMemcpy
+    // Set an element of the array with data from the host.
+    // WARNING: probably slow as it incurs a call to cudaMemcpy().
     void set( int x, int y, int z, const T& value );
 
-    // copy from another DeviceArray3D to this
-    // this is automatically resized
-    void copyFromDevice( const DeviceArray3D< T >& src );
+    // TODO(jiawen): move these into utility functions.
+    // Copy from another DeviceArray3D to this
+    bool copyFromDevice( const DeviceArray3D< T >& src );
 
     // copy from host array src to this
-    void copyFromHost( const Array3D< T >& src );
+    bool copyFromHost( Array3DView< const T > src );
 
     // copy from this to host array dst
-    void copyToHost( Array3D< T >& dst ) const;
+    bool copyToHost( Array3DView< T > dst ) const;
 
     const cudaPitchedPtr pitchedPointer() const;
     cudaPitchedPtr pitchedPointer();
@@ -91,15 +92,28 @@ public:
 
 private:
 
-    int m_width;
-    int m_height;
-    int m_depth;
+    Vector3i m_size;
 
-    size_t m_sizeInBytes;
-    cudaPitchedPtr m_pitchedPointer;
-    cudaExtent m_extent;
+    size_t m_sizeInBytes = 0;
 
-    // frees the memory if this is not null
+    // We allocate memory by first making a cudaExtent, which expects:
+    // width in *bytes*, height and depth in elements.
+    // TODO(VS2015): cudaExtent m_extent = { 0 };
+    cudaExtent m_extent = make_cudaExtent( 0, 0, 0 );
+
+    // We then pass m_extent to cudaMalloc3D() to allocate a 3D block of
+    // memory. It returns a cudaPitchedPtr, which only knows about 2D pitch.
+    //
+    // The returned pitch is the width of a row in bytes.
+    // The returned xsize and ysize echo what was passed in:
+    //   xsize is the logical width in bytes (not elements).
+    //   ysize is the logical height.
+    //   depth is not echoed.
+    // There is never any space between slices.
+    // TODO(VS2015): cudaPitchedPtr m_pitchedPointer = { 0 };
+    cudaPitchedPtr m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
+
+    // Frees the memory if this is not null.
     void destroy();
 };
 

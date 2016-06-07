@@ -5,12 +5,12 @@
 void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBox( const Box3f& box,
     Array1DView< Vector4f > vertexPositions )
 {
-    float x = box.origin().x;
-    float y = box.origin().y;
-    float z = box.origin().z;
-    float width = box.size().x;
-    float height = box.size().y;
-    float depth = box.size().z;
+    float x = box.origin.x;
+    float y = box.origin.y;
+    float z = box.origin.z;
+    float width = box.size.x;
+    float height = box.size.y;
+    float depth = box.size.z;
 
     // TODO: z may be flipped on all of these, since z = 0 is the back, z = d is the front
 
@@ -118,12 +118,12 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBoxTextureCoordinate
 void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeBox( const Box3f& box,
     Array1DView< Vector4f > vertexPositions )
 {
-    float x = box.origin().x;
-    float y = box.origin().y;
-    float z = box.origin().z;
-    float width = box.size().x;
-    float height = box.size().y;
-    float depth = box.size().z;
+    float x = box.origin.x;
+    float y = box.origin.y;
+    float z = box.origin.z;
+    float width = box.size.x;
+    float height = box.size.y;
+    float depth = box.size.z;
 
     // front
     vertexPositions[  0 ] = Vector4f( x, y, z, 1 );
@@ -170,7 +170,7 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     const Box3f& box, const Vector3i& resolution,
     Array1DView< Vector4f > vertexPositions )
 {
-    Vector3f delta = box.size() / resolution;
+    Vector3f delta = box.size / resolution;
     Vector3f dx( 1, 0, 0 );
     Vector3f dy( 0, 1, 0 );
     Vector3f dz( 0, 0, 1 );
@@ -181,8 +181,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int y = 0; y < resolution.y + 1; ++y )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin() + y * delta.y * dy + z * delta.z * dz, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin() + box.size().x * dx + y * delta.y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k ] = Vector4f( box.origin + y * delta.y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + box.size.x * dx + y * delta.y * dy + z * delta.z * dz, 1 );
 
             ++k;
         }
@@ -192,8 +192,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int x = 0; x < resolution.x + 1; ++x )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin() + x * delta.x * dx + z * delta.z * dz, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin() + x * delta.x * dx + box.size().y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k ] = Vector4f( box.origin + x * delta.x * dx + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + x * delta.x * dx + box.size.y * dy + z * delta.z * dz, 1 );
 
             ++k;
         }
@@ -203,8 +203,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int x = 0; x < resolution.x + 1; ++x )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin() + x * delta.x * dx + y * delta.y * dy, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin() + x * delta.x * dx + y * delta.y * dy + box.size().z * dz, 1 );
+            vertexPositions[ 2 * k ] = Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy, 1 );
+            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy + box.size.z * dz, 1 );
 
             ++k;
         }
@@ -213,7 +213,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
 
 Box3f libcgt::core::geometry::boxutils::makeCube( const Vector3f& center, float sideLength )
 {
-    return Box3f( center - 0.5f * Vector3f( sideLength ), Vector3f( sideLength ) );
+    Vector3f side{ sideLength };
+    return{ center - 0.5f * side, side };
 }
 
 std::vector< Vector3f > libcgt::core::geometry::boxutils::corners( const Box3f& b )

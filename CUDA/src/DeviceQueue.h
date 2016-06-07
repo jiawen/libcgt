@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "DeviceVariable.h"
-#include "DeviceVector.h"
+#include "DeviceArray1D.h"
 
 #include "MathUtils.h"
 #include "KernelQueue.h"
@@ -66,7 +66,7 @@ public:
     void setHeadAndTailAbsoluteIndices( int headIndex, int tailIndex );
     void setHeadAndTailAbsoluteIndices( const uint2& ht );
 
-    DeviceVector< T >& ringBuffer();
+    DeviceArray1D< T >& ringBuffer();
 
     KernelQueue< T > kernelQueue();
 
@@ -94,7 +94,7 @@ private:
 
     // stores an absolute head and tail pointer
     DeviceVariable< uint2 > md_headTailAbsoluteIndices;
-    DeviceVector< T > md_ringBuffer;
+    DeviceArray1D< T > md_ringBuffer;
 
 };
 

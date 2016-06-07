@@ -157,5 +157,5 @@ public:
     DeviceQueue< int > md_freeList;
 
     // backing store of capacity * elementSizeBytes bytes
-    DeviceVector< uint8_t > md_backingStore;
+    DeviceArray1D< uint8_t > md_backingStore;
 };

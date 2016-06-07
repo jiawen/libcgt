@@ -10,12 +10,8 @@
 
 #include "vecmath.h"
 
-namespace libcgt
-{
-namespace qt_interop
-{
-namespace vecmath
-{
+namespace libcgt { namespace qt_interop { namespace vecmath {
+
 QPointF toQPointF( const Vector2f& v )
 {
     return QPointF( v.x, v.y );
@@ -28,9 +24,11 @@ QPoint toQPoint( const Vector2i& v )
 
 Vector2f toVector2f( const QPointF& q )
 {
-    return Vector2f{
+    return
+    {
         static_cast< float >( q.x() ),
-        static_cast< float >( q.y() ) };
+        static_cast< float >( q.y() )
+    };
 }
 
 Vector2i toVector2i( const QPoint& q )
@@ -40,15 +38,26 @@ Vector2i toVector2i( const QPoint& q )
 
 Rect2f toRect2f( const QRectF& r )
 {
-    return{ static_cast< float >( r.x() ), static_cast< float >( r.y() ),
-        static_cast< float >( r.width() ),
-        static_cast< float >( r.height() ) };
+    return
+    {
+        {
+            static_cast< float >( r.x() ),
+            static_cast< float >( r.y() )
+        },
+        {
+            static_cast< float >( r.width() ),
+            static_cast< float >( r.height() )
+        }
+    };
 }
 
 Rect2i toRect2i( const QRect& r )
 {
-    return{ r.x(), r.y(), r.width(), r.height() };
+    return
+    {
+        { r.x(), r.y() },
+        { r.width(), r.height() }
+    };
 }
-} // qimage
-} // vecmath
-} // libcgt
+
+} } } // qimage, vecmath, libcgt

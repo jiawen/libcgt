@@ -1,90 +1,71 @@
 #include "vecmath/Box3i.h"
 
-#include <cstdlib>
+#include <cassert>
+
 #include "math/MathUtils.h"
 #include "vecmath/Vector3f.h"
 
-Box3i::Box3i() :
-    m_origin( 0 ),
-    m_size( 0 )
-{
-
-}
-
 Box3i::Box3i( const Vector3i& size ) :
-    m_origin( { 0, 0, 0 } ),
-    m_size( { size } )
+    size{ size }
 {
 
 }
 
 Box3i::Box3i( const Vector3i& origin, const Vector3i& size ) :
-
-    m_origin( origin ),
-    m_size( size )
-
+    origin( origin ),
+    size( size )
 {
 
 }
 
-Box3i::Box3i( std::initializer_list< int > os )
+int Box3i::width() const
 {
-    m_origin.x = *( os.begin() );
-    m_origin.y = *( os.begin() + 1 );
-    m_origin.z = *( os.begin() + 2 );
-    m_size.x = *( os.begin() + 3 );
-    m_size.y = *( os.begin() + 4 );
-    m_size.z = *( os.begin() + 5 );
+    return size.x;
 }
 
-Vector3i Box3i::origin() const
+int Box3i::height() const
 {
-    return m_origin;
+    return size.y;
 }
 
-Vector3i& Box3i::origin()
+int Box3i::depth() const
 {
-    return m_origin;
+    return size.z;
 }
 
-Vector3i Box3i::size() const
+int Box3i::volume() const
 {
-    return m_size;
-}
-
-Vector3i& Box3i::size()
-{
-    return m_size;
+    return size.x * size.y * size.z;
 }
 
 int Box3i::left() const
 {
-    return std::min( m_origin.x, m_origin.x + m_size.x );
+    return origin.x;
 }
 
 int Box3i::right() const
 {
-    return left() + width();
+    return origin.x + size.x;
 }
 
 int Box3i::bottom() const
 {
-    return std::min( m_origin.y, m_origin.y + m_size.y );
+    return origin.y;
 }
 
 int Box3i::top() const
 {
-    return bottom() + height();
+    return origin.y + size.y;
 }
 
 int Box3i::back() const
 {
-    return std::min( m_origin.z, m_origin.z + m_size.z );
+    return origin.z;
 }
 
 int Box3i::front() const
 {
-    return back() + depth();
+    return origin.z + size.z;
 }
 
 Vector3i Box3i::leftBottomBack() const
@@ -129,42 +110,27 @@ Vector3i Box3i::rightTopFront() const
 
 Vector3i Box3i::minimum() const
 {
-    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum( origin, origin + size );
 }
 
 Vector3i Box3i::maximum() const
 {
-    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
-}
-
-int Box3i::width() const
-{
-    return abs( m_size.x );
-}
-
-int Box3i::height() const
-{
-    return abs( m_size.y );
-}
-
-int Box3i::depth() const
-{
-    return abs( m_size.z );
-}
-
-int Box3i::volume() const
-{
-    return abs( m_size.x * m_size.y * m_size.z );
+    return libcgt::core::math::maximum(origin, origin + size);
 }
 
 Vector3f Box3i::center() const
 {
-    return m_origin + 0.5f * m_size;
+    return origin + 0.5f * size;
 }
 
-bool Box3i::isStandardized() const
+bool Box3i::isEmpty() const
 {
-    return( m_size.x >= 0 && m_size.y >= 0 && m_size.z >= 0 );
+    return( size.x == 0 || size.y == 0 || size.z == 0 );
+}
+
+bool Box3i::isStandard() const
+{
+    return( size.x >= 0 && size.y >= 0 && size.z >= 0 );
 }
 
 Box3i Box3i::standardized() const
@@ -172,37 +138,37 @@ Box3i Box3i::standardized() const
     Vector3i origin;
     Vector3i size;
 
-    if( m_size.x > 0 )
+    if( size.x > 0 )
     {
-        origin.x = m_origin.x;
-        size.x = m_size.x;
+        origin.x = origin.x;
+        size.x = size.x;
     }
     else
     {
-        origin.x = m_origin.x + m_size.x;
-        size.x = -m_size.x;
+        origin.x = origin.x + size.x;
+        size.x = -size.x;
     }
 
-    if( m_size.y > 0 )
+    if( size.y > 0 )
     {
-        origin.y = m_origin.y;
-        size.y = m_size.y;
+        origin.y = origin.y;
+        size.y = size.y;
     }
     else
     {
-        origin.y = m_origin.y + m_size.y;
-        size.y = -m_size.y;
+        origin.y = origin.y + size.y;
+        size.y = -size.y;
     }
 
-    if( m_size.z > 0 )
+    if( size.z > 0 )
     {
-        origin.z = m_origin.z;
-        size.z = m_size.z;
+        origin.z = origin.z;
+        size.z = size.z;
     }
     else
     {
-        origin.z = m_origin.z + m_size.z;
-        size.z = -m_size.z;
+        origin.z = origin.z + size.z;
+        size.z = -size.z;
     }
 
     return Box3i( origin, size );
@@ -214,15 +180,17 @@ std::string Box3i::toString() const
 
     out.append( "Box3i:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString() );
+    out.append( origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString() );
+    out.append( size.toString() );
 
     return out;
 }
 
 bool Box3i::contains( const Vector3i& p )
 {
+    assert( isStandard() );
+
     return
     (
         ( p.x >= left() ) &&
@@ -236,37 +204,33 @@ bool Box3i::contains( const Vector3i& p )
 
 Box3i Box3i::flippedUD( int height ) const
 {
-    Vector3i origin;
-    origin.x = m_origin.x;
-    origin.y = height - top();
-    origin.z = m_origin.z;
+    assert( isStandard() );
 
-    return Box3i( origin, m_size );
+    Vector3i origin;
+    origin.x = origin.x;
+    origin.y = height - top();
+    origin.z = origin.z;
+
+    return Box3i( origin, size );
 }
 
 Box3i Box3i::flippedBF( int depth ) const
 {
+    assert( isStandard() );
+
     Vector3i origin;
-    origin.x = m_origin.x;
-    origin.y = m_origin.y;
+    origin.x = origin.x;
+    origin.y = origin.y;
     origin.z = depth - front();
 
-    return Box3i( origin, m_size );
-}
-
-Box3i Box3i::flippedUDBF( int height, int depth ) const
-{
-    Vector3i origin;
-    origin.x = m_origin.x;
-    origin.y = height - top();
-    origin.z = depth - front();
-
-    return Box3i( origin, m_size );
+    return Box3i( origin, size );
 }
 
 // static
 Box3i Box3i::united( const Box3i& r0, const Box3i& r1 )
 {
+    assert( r0.isStandard() && r1.isStandard() );
+
     Vector3i unitedMin = libcgt::core::math::minimum( r0.leftBottomBack(), r1.leftBottomBack() );
     Vector3i unitedMax = libcgt::core::math::maximum( r0.rightTopFront(), r1.rightTopFront() );
 

@@ -153,8 +153,8 @@ void Array3D< T >::invalidate()
     {
         m_allocator->deallocate( m_data, m_size.z * m_stride.z );
         m_data = nullptr;
-        m_size = { 0, 0 };
-        m_stride = { 0, 0 };
+        m_size = Vector3i{ 0 };
+        m_stride = Vector3i{ 0 };
     }
 }
 

@@ -34,7 +34,7 @@ Vector2i GLTexture2D::calculateMipMapSizeForLevel( const Vector2i& baseSize,
     Vector2i size = baseSize;
     while( level > 0 )
     {
-        size = maximum( Vector2i{ 1, 1 }, size / 2 );
+        size = maximum( Vector2i{ 1 }, size / 2 );
         --level;
     }
     return size;
@@ -343,11 +343,11 @@ void GLTexture2D::drawNV( const Rect2f& windowCoords,
 {
     GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
 
-    Vector2f p0 = windowCoords.origin();
-    Vector2f p1 = windowCoords.limit();
+    Vector2f p0 = windowCoords.leftBottom();
+    Vector2f p1 = windowCoords.rightTop();
 
-    Vector2f t0 = texCoords.origin();
-    Vector2f t1 = texCoords.limit();
+    Vector2f t0 = texCoords.leftBottom();
+    Vector2f t1 = texCoords.rightTop();
 
     glDrawTextureNV
     (

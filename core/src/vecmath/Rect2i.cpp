@@ -1,108 +1,118 @@
 #include "vecmath/Rect2i.h"
 
-#include <cmath>
-#include <cstdlib>
+#include <cassert>
 
 #include "math/MathUtils.h"
 #include "vecmath/Rect2f.h"
 #include "vecmath/Vector2f.h"
 
-using std::abs;
-
 Rect2i::Rect2i( const Vector2i& size ) :
-    m_origin( 0 ),
-    m_size( size )
+    origin( 0 ),
+    size( size )
 {
 
 }
 
 Rect2i::Rect2i( const Vector2i& origin, const Vector2i& size ) :
-    m_origin( origin ),
-    m_size( size )
+    origin( origin ),
+    size( size )
 {
 
-}
-
-Rect2i::Rect2i( int originX, int originY, int sizeX, int sizeY ) :
-    m_origin( originX, originY ),
-    m_size( sizeX, sizeY )
-{
-
-}
-
-Vector2i Rect2i::origin() const
-{
-    return m_origin;
-}
-
-Vector2i& Rect2i::origin()
-{
-    return m_origin;
-}
-
-Vector2i Rect2i::size() const
-{
-    return m_size;
-}
-
-Vector2i& Rect2i::size()
-{
-    return m_size;
-}
-
-Vector2i Rect2i::limit() const
-{
-    return m_origin + m_size;
-}
-
-Vector2i Rect2i::minimum() const
-{
-    return libcgt::core::math::minimum(m_origin, m_origin + m_size);
-}
-
-Vector2i Rect2i::maximum() const
-{
-    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
-}
-
-Vector2i Rect2i::dx() const
-{
-    return{ m_size.x, 0 };
-}
-
-Vector2i Rect2i::dy() const
-{
-    return{ 0, m_size.y };
 }
 
 int Rect2i::width() const
 {
-    return std::abs( m_size.x );
+    return size.x;
 }
 
 int Rect2i::height() const
 {
-    return std::abs( m_size.y );
+    return size.y;
 }
 
 int Rect2i::area() const
 {
-    return std::abs( m_size.x * m_size.y );
+    return size.x * size.y;
+}
+
+int Rect2i::left() const
+{
+    return origin.x;
+}
+
+int Rect2i::right() const
+{
+    return origin.x + size.x;
+}
+
+int Rect2i::bottom() const
+{
+    return origin.y;
+}
+
+int Rect2i::top() const
+{
+    return origin.y + size.y;
+}
+
+Vector2i Rect2i::leftBottom() const
+{
+    return{ left(), bottom() };
+}
+
+Vector2i Rect2i::rightBottom() const
+{
+    return{ right(), bottom() };
+}
+
+Vector2i Rect2i::leftTop() const
+{
+    return{ left(), top() };
+}
+
+Vector2i Rect2i::rightTop() const
+{
+    return{ right(), top() };
+}
+
+Vector2i Rect2i::dx() const
+{
+    return{ size.x, 0 };
+}
+
+Vector2i Rect2i::dy() const
+{
+    return{ 0, size.y };
+}
+
+Vector2i Rect2i::minimum() const
+{
+    return libcgt::core::math::minimum( origin, origin + size );
+}
+
+Vector2i Rect2i::maximum() const
+{
+    return libcgt::core::math::maximum( origin, origin + size );
 }
 
 Vector2i Rect2i::center() const
 {
-    return ( m_origin + m_size ) / 2;
+    return ( origin + size ) / 2;
 }
 
 Vector2f Rect2i::exactCenter() const
 {
-    return m_origin + 0.5f * m_size;
+    return origin + 0.5f * size;
 }
 
-bool Rect2i::isStandardized() const
+bool Rect2i::isEmpty() const
 {
-    return( m_size.x >= 0 && m_size.y >= 0 );
+    return( size.x == 0 || size.y == 0 );
+}
+
+bool Rect2i::isStandard() const
+{
+    return( size.x >= 0 && size.y >= 0 );
 }
 
 Rect2i Rect2i::standardized() const
@@ -110,26 +120,26 @@ Rect2i Rect2i::standardized() const
     Vector2i origin;
     Vector2i size;
 
-    if( m_size.x > 0 )
+    if( size.x > 0 )
     {
-        origin.x = m_origin.x;
-        size.x = m_size.x;
+        origin.x = origin.x;
+        size.x = size.x;
     }
     else
     {
-        origin.x = m_origin.x + m_size.x;
-        size.x = -m_size.x;
+        origin.x = origin.x + size.x;
+        size.x = -size.x;
     }
 
-    if( m_size.y > 0 )
+    if( size.y > 0 )
     {
-        origin.y = m_origin.y;
-        size.y = m_size.y;
+        origin.y = origin.y;
+        size.y = size.y;
     }
     else
     {
-        origin.y = m_origin.y + m_size.y;
-        size.y = -m_size.y;
+        origin.y = origin.y + size.y;
+        size.y = -size.y;
     }
 
     return Rect2i( origin, size );
@@ -141,27 +151,29 @@ std::string Rect2i::toString() const
 
     out.append( "Rect2f:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString() );
+    out.append( origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString() );
+    out.append( size.toString() );
 
     return out;
 }
 
 bool Rect2i::contains( const Vector2i& p )
 {
+    assert( isStandard() );
+
     return
     (
-        ( p.x >= m_origin.x ) &&
-        ( p.x < ( m_origin.x + m_size.x ) ) &&
-        ( p.y >= m_origin.y ) &&
-        ( p.y < ( m_origin.y + m_size.y ) )
+        ( p.x >= origin.x ) &&
+        ( p.x < ( origin.x + size.x ) ) &&
+        ( p.y >= origin.y ) &&
+        ( p.y < ( origin.y + size.y ) )
     );
 }
 
 Rect2f Rect2i::castToFloat() const
 {
-    return Rect2f( m_origin, m_size );
+    return Rect2f( origin, size );
 }
 
 // static

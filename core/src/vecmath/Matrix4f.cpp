@@ -793,7 +793,7 @@ Matrix4f Matrix4f::viewport( float x0, float y0, float width, float height,
 // static
 Matrix4f Matrix4f::viewport( const Rect2f& rect, bool directX )
 {
-    return Matrix4f::viewport( rect.origin().x, rect.origin().y, rect.width(), rect.height(), directX );
+    return Matrix4f::viewport( rect.origin.x, rect.origin.y, rect.width(), rect.height(), directX );
 }
 
 // static

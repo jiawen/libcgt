@@ -26,12 +26,10 @@ public:
     Vector4f( float _x, const Vector3f& _yzw );
 
     // copy constructors
-    Vector4f( const Vector4f& v ) = default;
     Vector4f( const Vector4d& v );
     Vector4f( const Vector4i& v );
 
     // assignment operators
-    Vector4f& operator = ( const Vector4f& v ) = default;
     Vector4f& operator = ( const Vector4d& v );
     Vector4f& operator = ( const Vector4i& v );
 

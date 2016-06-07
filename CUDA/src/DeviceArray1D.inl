@@ -1,50 +1,23 @@
 template< typename T >
-DeviceVector< T >::DeviceVector() :
-
-    m_sizeInBytes( 0 ),
-    m_length( -1 ),
-    m_devicePointer( nullptr )
-
-{
-
-}
-
-
-template< typename T >
-DeviceVector< T >::DeviceVector( int length ) :
-
-    m_sizeInBytes( 0 ),
-    m_length( -1 ),
-    m_devicePointer( nullptr )
-
+DeviceArray1D< T >::DeviceArray1D( int length )
 {
     resize( length );
 }
 
 template< typename T >
-DeviceVector< T >::DeviceVector( const std::vector< T >& src ) :
-
-    m_sizeInBytes( 0 ),
-    m_length( -1 ),
-    m_devicePointer( nullptr )
-
+DeviceArray1D< T >::DeviceArray1D( Array1DView< const T > src )
 {
     copyFromHost( src );
 }
 
 template< typename T >
-DeviceVector< T >::DeviceVector( const DeviceVector< T >& copy ) :
-
-    m_sizeInBytes( 0 ),
-    m_length( -1 ),
-    m_devicePointer( nullptr )
-
+DeviceArray1D< T >::DeviceArray1D( const DeviceArray1D< T >& copy )
 {
     copyFromDevice( copy );
 }
 
 template< typename T >
-DeviceVector< T >::DeviceVector( DeviceVector< T >&& move )
+DeviceArray1D< T >::DeviceArray1D( DeviceArray1D< T >&& move )
 {
     m_sizeInBytes = move.m_sizeInBytes;
     m_length = move.m_length;
@@ -56,7 +29,7 @@ DeviceVector< T >::DeviceVector( DeviceVector< T >&& move )
 }
 
 template< typename T >
-DeviceVector< T >& DeviceVector< T >::operator = ( const DeviceVector< T >& copy )
+DeviceArray1D< T >& DeviceArray1D< T >::operator = ( const DeviceArray1D< T >& copy )
 {
     if( this != &copy )
     {
@@ -66,7 +39,7 @@ DeviceVector< T >& DeviceVector< T >::operator = ( const DeviceVector< T >& copy
 }
 
 template< typename T >
-DeviceVector< T >& DeviceVector< T >::operator = ( DeviceVector< T >&& move )
+DeviceArray1D< T >& DeviceArray1D< T >::operator = ( DeviceArray1D< T >&& move )
 {
     if( this != &move )
     {
@@ -77,7 +50,7 @@ DeviceVector< T >& DeviceVector< T >::operator = ( DeviceVector< T >&& move )
         m_devicePointer = move.m_devicePointer;
 
         move.m_sizeInBytes = 0;
-        move.m_length = -1;
+        move.m_length = 0;
         move.m_devicePointer = nullptr;
     }
     return *this;
@@ -85,37 +58,37 @@ DeviceVector< T >& DeviceVector< T >::operator = ( DeviceVector< T >&& move )
 
 template< typename T >
 // virtual
-DeviceVector< T >::~DeviceVector()
+DeviceArray1D< T >::~DeviceArray1D()
 {
     destroy();
 }
 
 template< typename T >
-bool DeviceVector< T >::isNull() const
+bool DeviceArray1D< T >::isNull() const
 {
     return( m_devicePointer == nullptr );
 }
 
 template< typename T >
-bool DeviceVector< T >::notNull() const
+bool DeviceArray1D< T >::notNull() const
 {
     return( m_devicePointer != nullptr );
 }
 
 template< typename T >
-int DeviceVector< T >::length() const
+int DeviceArray1D< T >::length() const
 {
     return m_length;
 }
 
 template< typename T >
-size_t DeviceVector< T >::sizeInBytes() const
+size_t DeviceArray1D< T >::sizeInBytes() const
 {
     return m_sizeInBytes;
 }
 
 template< typename T >
-void DeviceVector< T >::resize( int length )
+void DeviceArray1D< T >::resize( int length )
 {
     if( m_length == length )
     {
@@ -132,20 +105,20 @@ void DeviceVector< T >::resize( int length )
 
 
 template< typename T >
-void DeviceVector< T >::clear()
+void DeviceArray1D< T >::clear()
 {
     checkCudaErrors( cudaMemset( m_devicePointer, 0, m_sizeInBytes ) );
 }
 
 template< typename T >
-void DeviceVector< T >::fill( const T& value )
+void DeviceArray1D< T >::fill( const T& value )
 {
     std::vector< T > h_array( length(), value );
     copyFromHost( h_array );
 }
 
 template< typename T >
-T DeviceVector< T >::get( int index ) const
+T DeviceArray1D< T >::get( int index ) const
 {
     T output;
     checkCudaErrors( cudaMemcpy( &output, m_devicePointer + index, sizeof( T ), cudaMemcpyDeviceToHost ) );
@@ -153,33 +126,33 @@ T DeviceVector< T >::get( int index ) const
 }
 
 template< typename T >
-T DeviceVector< T >::operator [] ( int index ) const
+T DeviceArray1D< T >::operator [] ( int index ) const
 {
     return get( index );
 }
 
 template< typename T >
-void DeviceVector< T >::set( int index, const T& value )
+void DeviceArray1D< T >::set( int index, const T& value )
 {
     checkCudaErrors( cudaMemcpy( m_devicePointer + index, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
-void DeviceVector< T >::copyFromDevice( const DeviceVector< T >& src )
+void DeviceArray1D< T >::copyFromDevice( const DeviceArray1D< T >& src )
 {
     resize( src.length() );
     checkCudaErrors( cudaMemcpy( m_devicePointer, src.m_devicePointer, src.m_sizeInBytes, cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >
-void DeviceVector< T >::copyFromHost( const std::vector< T >& src )
+void DeviceArray1D< T >::copyFromHost( const std::vector< T >& src )
 {
     resize( static_cast< int >( src.size() ) );
     checkCudaErrors( cudaMemcpy( m_devicePointer, src.data(), m_sizeInBytes, cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
-bool DeviceVector< T >::copyFromHost( const Array1DView< T >& src, int dstOffset )
+bool DeviceArray1D< T >::copyFromHost( const Array1DView< T >& src, int dstOffset )
 {
     if( dstOffset < 0 )
     {
@@ -201,7 +174,7 @@ bool DeviceVector< T >::copyFromHost( const Array1DView< T >& src, int dstOffset
 }
 
 template< typename T >
-void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
+void DeviceArray1D< T >::copyToHost( std::vector< T >& dst ) const
 {
     if( isNull() )
     {
@@ -219,7 +192,7 @@ void DeviceVector< T >::copyToHost( std::vector< T >& dst ) const
 }
 
 template< typename T >
-bool DeviceVector< T >::copyToHost( Array1DView< T >& dst, int srcOffset ) const
+bool DeviceArray1D< T >::copyToHost( Array1DView< T >& dst, int srcOffset ) const
 {
     if( srcOffset < 0 )
     {
@@ -241,25 +214,25 @@ bool DeviceVector< T >::copyToHost( Array1DView< T >& dst, int srcOffset ) const
 }
 
 template< typename T >
-const T* DeviceVector< T >::devicePointer() const
+const T* DeviceArray1D< T >::devicePointer() const
 {
     return m_devicePointer;
 }
 
 template< typename T >
-T* DeviceVector< T >::devicePointer()
+T* DeviceArray1D< T >::devicePointer()
 {
     return m_devicePointer;
 }
 
 template< typename T >
-KernelVector< T > DeviceVector< T >::kernelVector() const
+KernelVector< T > DeviceArray1D< T >::kernelVector() const
 {
     return KernelVector< T >( m_devicePointer, m_length );
 }
 
 template< typename T >
-void DeviceVector< T >::destroy()
+void DeviceArray1D< T >::destroy()
 {
     if( notNull() )
     {
@@ -268,6 +241,6 @@ void DeviceVector< T >::destroy()
     }
 
     m_sizeInBytes = 0;
-    m_length = -1;
+    m_length = 0;
     m_devicePointer = nullptr;
 }

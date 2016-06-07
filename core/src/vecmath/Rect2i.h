@@ -2,41 +2,49 @@
 
 #include <string>
 
-#include "vecmath/Vector2i.h"
+#include "Vector2i.h"
 
 class Vector2f;
 class Rect2f;
 
-// A 2D rectangle in integer coordinates.
-// Considered the cartesian product of *half-open* intervals:
-// [x, x + width) x [y, y + height)
+// A 2D rectangle at integer coordinates, represented as an origin and a size.
+//
+// All functions treat a box as a Cartesian product of half-open intervals
+// [x, x + width) x [y, y + height) and unless otherwise marked, functions
+// assume that the box is in "standard form", where all components of size are
+// non-negative.
+//
+// Semantically, the rectangle is defined as right handed: x points right, and
+// y points right. Therefore, the origin is at coordinates "left, bottom".
 class Rect2i
 {
 public:
 
+    Vector2i origin;
+    Vector2i size;
+
     Rect2i() = default;
     explicit Rect2i( const Vector2i& size ); // origin = (0, 0)
     Rect2i( const Vector2i& origin, const Vector2i& size );
-    Rect2i( int originX, int originY, int sizeX, int sizeY );
 
-    Rect2i( const Rect2i& copy ) = default;
-    Rect2i& operator = ( const Rect2i& copy ) = default;
+    // ------------------------------------------------------------------------
+    // These functions only make sense if the rectangle is in standard form and
+    // thought of as right handed.
+    // ------------------------------------------------------------------------
 
-    // The origin coordinates, as is.
-    Vector2i origin() const;
-    Vector2i& origin();
+    int width() const;
+    int height() const;
+    int area() const;
 
-    // The size values, as is: they may be negative.
-    Vector2i size() const;
-    Vector2i& size();
+    int left() const; // origin.x
+    int right() const; // origin.x + width
+    int bottom() const; // origin.y
+    int top() const; // origin.y + height
 
-    // origin() + size(),
-    // equal to maximum() if this rectangle is standardized,
-    // otherwise equal to minimum().
-    Vector2i limit() const;
-
-    Vector2i minimum() const; // min( origin, origin + size )
-    Vector2i maximum() const; // max( origin, origin + size )
+    Vector2i leftBottom() const; // For consistency, same as origin.
+    Vector2i rightBottom() const;
+    Vector2i leftTop() const;
+    Vector2i rightTop() const;
 
     // (size().x, 0)
     Vector2i dx() const;
@@ -44,9 +52,13 @@ public:
     // (0, size().y)
     Vector2i dy() const;
 
-    int width() const; // abs( size.x )
-    int height() const; // abs( size.y )
-    int area() const; // abs( size.x * size.y )
+    // ------------------------------------------------------------------------
+    // minimum, maximum, and center are well defined even if the rectangle is
+    // not in standard form.
+    // ------------------------------------------------------------------------
+
+    Vector2i minimum() const; // min( origin, origin + size )
+    Vector2i maximum() const; // max( origin, origin + size )
 
     // Returns the "center" of this Rect2i in integer coordinates, truncating.
     Vector2i center() const;
@@ -54,9 +66,12 @@ public:
     // Returns the "exact center" of this Rect2i in floating point coordinates.
     Vector2f exactCenter() const;
 
+    // A rectangle is empty if any component of size is zero.
+    bool isEmpty() const;
+
     // Returns true if size() >= 0.
     // Call standardized() to return a valid range with the endpoints flipped
-    bool isStandardized() const;
+    bool isStandard() const;
 
     // Returns the same rectangle but with size() >= 0.
     Rect2i standardized() const;
@@ -72,10 +87,5 @@ public:
     // Returns the smallest Rect2i that contains both r0 and r1.
     // r0 and r1 must both be valid.
     static Rect2i united( const Rect2i& r0, const Rect2i& r1 );
-
-private:
-
-    Vector2i m_origin;
-    Vector2i m_size;
 
 };

@@ -1,46 +1,53 @@
 #pragma once
 
-#include <initializer_list>
 #include <string>
 
-// A 1D range at integer coordinates
-// Considered a *half-open* interval:
-// [x, x + width)
+// A 1D range at integer coordinates, represented as an origin and a size.
+//
+// All functions treat a range as a *half-open* interval [x, x + width), and
+// unless otherwise marked, functions assume that the range is in
+// "standard form", where size is non-negative.
+//
+// Semantically, the range is defined with x pointing right.
 class Range1i
 {
 public:
 
-    Range1i(); // (0,0), a null range.
+    int origin = 0;
+    int size = 0;
+
+    Range1i() = default;
     explicit Range1i( int size ); // (0, size)
-    // { origin, size }
-    Range1i( std::initializer_list< int > os );
+    Range1i( int origin, int size );
 
-    Range1i( const Range1i& copy ); // copy constructor
-    Range1i& operator = ( const Range1i& copy ); // assignment operator
+    // ------------------------------------------------------------------------
+    // These functions only make sense if the range is in standard form.
+    // ------------------------------------------------------------------------
 
-    // The origin coordinate, as is.
-    int origin() const;
-    int& origin();
+    int width() const; // == size, for consistency with Rect and Box.
 
-    // The size value, as is: it may be negative.
-    int size() const;
-    int& size();
-
-    // TODO: make these clear
     int left() const; // origin.x
     int right() const; // origin.x + size
 
-    // abs(size()), >= 0.
-    int width() const;
+    // ------------------------------------------------------------------------
+    // minimum, maximum, and center are well defined even if the box is not in
+    // standard form.
+    // ------------------------------------------------------------------------
+
+    int minimum() const; // min( origin, origin + size )
+    int maximum() const; // max( origin, origin + size )
 
     // TODO: --> exactCenter()?
     float center() const;
 
-    // Returns true if size() >= 0.
-    // Call standardized() to return a valid range with the endpoints flipped
-    bool isStandardized() const;
+    // A range is empty if size is zero.
+    bool isEmpty() const;
 
-    // Returns the same range but with size() >= 0.
+    // A range is standard if size is non-negative.
+    bool isStandard() const;
+
+    // Returns a standardized version of this range by flipping its coordinates
+    // such that all sizes are non-negative.
     Range1i standardized() const;
 
     std::string toString() const;
@@ -51,10 +58,5 @@ public:
     // Returns the smallest Range1i that contains both r0 and r1.
     // r0 and r1 do not have to be standard.
     static Range1i united( const Range1i& r0, const Range1i& r1 );
-
-private:
-
-    int m_origin;
-    int m_size;
 
 };

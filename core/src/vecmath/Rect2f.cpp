@@ -1,5 +1,7 @@
 #include "vecmath/Rect2f.h"
 
+#include <cassert>
+
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
 #include "vecmath/Rect2i.h"
@@ -8,94 +10,106 @@ using libcgt::core::math::ceilToInt;
 using libcgt::core::math::floorToInt;
 
 Rect2f::Rect2f( const Vector2f& size ) :
-    m_origin( 0.f ),
-    m_size( size )
+    size( size )
 {
 
 }
 
 Rect2f::Rect2f( const Vector2f& origin, const Vector2f& size ) :
-    m_origin( origin ),
-    m_size( size )
+    origin( origin ),
+    size( size )
 {
 
-}
-
-Rect2f::Rect2f( float originX, float originY, float sizeX, float sizeY ) :
-    m_origin( originX, originY ),
-    m_size( sizeX, sizeY )
-{
-
-}
-
-Vector2f Rect2f::origin() const
-{
-    return m_origin;
-}
-
-Vector2f& Rect2f::origin()
-{
-    return m_origin;
-}
-
-Vector2f Rect2f::size() const
-{
-    return m_size;
-}
-
-Vector2f& Rect2f::size()
-{
-    return m_size;
-}
-
-Vector2f Rect2f::limit() const
-{
-    return m_origin + m_size;
-}
-
-Vector2f Rect2f::minimum() const
-{
-    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
-}
-
-Vector2f Rect2f::maximum() const
-{
-    return libcgt::core::math::maximum( m_origin, m_origin + m_size );
-}
-
-Vector2f Rect2f::dx() const
-{
-    return{ m_size.x, 0 };
-}
-
-Vector2f Rect2f::dy() const
-{
-    return{ 0, m_size.y };
 }
 
 float Rect2f::width() const
 {
-    return m_size.x;
+    return size.x;
 }
 
 float Rect2f::height() const
 {
-    return m_size.y;
+    return size.y;
 }
 
 float Rect2f::area() const
 {
-    return( m_size.x * m_size.y );
+    return( size.x * size.y );
+}
+
+float Rect2f::left() const
+{
+    return origin.x;
+}
+
+float Rect2f::right() const
+{
+    return origin.x + size.x;
+}
+
+float Rect2f::bottom() const
+{
+    return origin.y;
+}
+
+float Rect2f::top() const
+{
+    return origin.y + size.y;
+}
+
+Vector2f Rect2f::leftBottom() const
+{
+    return{ left(), bottom() };
+}
+
+Vector2f Rect2f::rightBottom() const
+{
+    return{ right(), bottom() };
+}
+
+Vector2f Rect2f::leftTop() const
+{
+    return{ left(), top() };
+}
+
+Vector2f Rect2f::rightTop() const
+{
+    return{ right(), top() };
+}
+
+Vector2f Rect2f::dx() const
+{
+    return{ size.x, 0 };
+}
+
+Vector2f Rect2f::dy() const
+{
+    return{ 0, size.y };
+}
+
+Vector2f Rect2f::minimum() const
+{
+    return libcgt::core::math::minimum( origin, origin + size );
+}
+
+Vector2f Rect2f::maximum() const
+{
+    return libcgt::core::math::maximum( origin, origin + size );
 }
 
 Vector2f Rect2f::center() const
 {
-    return m_origin + 0.5f * m_size;
+    return origin + 0.5f * size;
 }
 
-bool Rect2f::isStandardized() const
+bool Rect2f::isEmpty() const
 {
-    return( m_size.x >= 0 && m_size.y >= 0 );
+    return( size.x == 0 || size.y == 0 );
+}
+
+bool Rect2f::isStandard() const
+{
+    return( size.x >= 0 && size.y >= 0 );
 }
 
 Rect2f Rect2f::standardized() const
@@ -103,26 +117,26 @@ Rect2f Rect2f::standardized() const
     Vector2f origin;
     Vector2f size;
 
-    if( m_size.x > 0 )
+    if( size.x > 0 )
     {
-        origin.x = m_origin.x;
-        size.x = m_size.x;
+        origin.x = origin.x;
+        size.x = size.x;
     }
     else
     {
-        origin.x = m_origin.x + m_size.x;
-        size.x = -m_size.x;
+        origin.x = origin.x + size.x;
+        size.x = -size.x;
     }
 
-    if( m_size.y > 0 )
+    if( size.y > 0 )
     {
-        origin.y = m_origin.y;
-        size.y = m_size.y;
+        origin.y = origin.y;
+        size.y = size.y;
     }
     else
     {
-        origin.y = m_origin.y + m_size.y;
-        size.y = -m_size.y;
+        origin.y = origin.y + size.y;
+        size.y = -size.y;
     }
 
     return Rect2f( origin, size );
@@ -134,17 +148,19 @@ std::string Rect2f::toString() const
 
     out.append( "Rect2f:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString() );
+    out.append( origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString() );
+    out.append( size.toString() );
 
     return out;
 }
 
 Rect2i Rect2f::enlargedToInt() const
 {
-    Vector2i minimum = floorToInt( origin() );
-    Vector2i maximum = ceilToInt( limit() );
+    assert( isStandard() );
+
+    Vector2i minimum = floorToInt( origin );
+    Vector2i maximum = ceilToInt( rightTop() );
 
     // size does not need a +1:
     // say min is 1.1 and max is 3.6
@@ -157,25 +173,29 @@ Rect2i Rect2f::enlargedToInt() const
 
 bool Rect2f::contains( const Vector2f& p ) const
 {
+    assert( isStandard() );
+
     return
     (
-        ( p.x >= m_origin.x ) &&
-        ( p.x < ( m_origin.x + m_size.x ) ) &&
-        ( p.y >= m_origin.y ) &&
-        ( p.y < ( m_origin.y + m_size.y ) )
+        ( p.x >= origin.x ) &&
+        ( p.x < ( origin.x + size.x ) ) &&
+        ( p.y >= origin.y ) &&
+        ( p.y < ( origin.y + size.y ) )
     );
 }
 
 bool Rect2f::intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirection,
     float& tNear, float& tFar, int& axis ) const
 {
+    assert( isStandard() );
+
     // compute t to each face
     Vector2f rcpDir = 1.0f / rayDirection;
 
     // intersect left and bottom
-    Vector2f tBottomLeft = rcpDir * ( origin() - rayOrigin );
+    Vector2f tBottomLeft = rcpDir * ( leftBottom() - rayOrigin );
     // intersect right and top
-    Vector2f tTopRight = rcpDir * ( limit() - rayOrigin );
+    Vector2f tTopRight = rcpDir * ( rightTop() - rayOrigin );
 
     // find the smallest and largest distances along each axis
     Vector2f tMin = libcgt::core::math::minimum( tBottomLeft, tTopRight );
@@ -206,6 +226,8 @@ bool Rect2f::intersectRay( const Vector2f& rayOrigin, const Vector2f& rayDirecti
 // static
 Rect2f Rect2f::united( const Rect2f& r0, const Rect2f& r1 )
 {
+    assert( r0.isStandard() && r1.isStandard() );
+
     Vector2f r0Min = r0.minimum();
     Vector2f r0Max = r0.maximum();
     Vector2f r1Min = r1.minimum();
@@ -227,14 +249,16 @@ bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1 )
 // static
 bool Rect2f::intersect( const Rect2f& r0, const Rect2f& r1, Rect2f& intersection )
 {
+    assert( r0.isStandard() && r1.isStandard() );
+
     Vector2f minimum = libcgt::core::math::maximum( r0.minimum(), r1.minimum() );
     Vector2f maximum = libcgt::core::math::minimum( r0.maximum(), r1.maximum() );
 
     if( minimum.x < maximum.x &&
         minimum.y < maximum.y )
     {
-        intersection.m_origin = minimum;
-        intersection.m_size = maximum - minimum;
+        intersection.origin = minimum;
+        intersection.size = maximum - minimum;
         return true;
     }
     return false;

@@ -7,6 +7,7 @@
 namespace libcgt { namespace core { namespace vecmath {
 
 // TODO(jiawen): templatize this for floats and doubles.
+// TODO(jiawen): store a quaternion
 class EuclideanTransform
 {
 public:

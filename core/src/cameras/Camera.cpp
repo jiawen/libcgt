@@ -319,8 +319,8 @@ Vector3f Camera::screenToDirection( const Vector2f& xy, const Vector2f& screenSi
 Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const
 {
     // Convert from screen coordinates to NDC.
-    float ndcX = 2 * ( xy.x - viewport.origin().x ) / viewport.width() - 1;
-    float ndcY = 2 * ( xy.y - viewport.origin().y ) / viewport.height() - 1;
+    float ndcX = 2 * ( xy.x - viewport.left() ) / viewport.width() - 1;
+    float ndcY = 2 * ( xy.y - viewport.bottom() ) / viewport.height() - 1;
 
     Vector4f clipPoint( ndcX, ndcY, 0, 1 );
     Vector4f eyePoint = inverseProjectionMatrix() * clipPoint;

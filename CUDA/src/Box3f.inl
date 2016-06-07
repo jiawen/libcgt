@@ -1,94 +1,63 @@
-libcgt::cuda::Box3f::Box3f() :
+namespace libcgt { namespace cuda {
 
-    m_origin( make_float3( 0.f, 0.f, 0.f ) ),
-    m_size( make_float3( 0.f, 0.f, 0.f ) )
-
-{
-
-}
-
-libcgt::cuda::Box3f::Box3f( float left, float bottom, float back, float width, float height, float depth ) :
-
-    m_origin( make_float3( left, bottom, back ) ),
-    m_size( make_float3( width, height, depth ) )
-
-{
-
-}
-
-libcgt::cuda::Box3f::Box3f( float width, float height, float depth ) :
-
-    m_origin( make_float3( 0.f, 0.f, 0.f ) ),
-    m_size( make_float3( width, height, depth ) )
-
-{
-
-}
-
-libcgt::cuda::Box3f::Box3f( const float3& origin, const float3& size ) :
-
-    m_origin( origin ),
+Box3f::Box3f( const float3& size ) :
     m_size( size )
-
 {
 
 }
 
-libcgt::cuda::Box3f::Box3f( const float3& size ) :
-
-    m_origin( make_float3( 0.f, 0.f, 0.f ) ),
-    m_size( size )
-
+Box3f::Box3f( const int3& size ) :
+    m_size( make_float3( size.x, size.y, size.z ) )
 {
 
 }
 
-float libcgt::cuda::Box3f::left() const
+float Box3f::left() const
 {
     return m_origin.x;
 }
 
-float libcgt::cuda::Box3f::right() const
+float Box3f::right() const
 {
     return m_origin.x + m_size.x;
 }
 
-float libcgt::cuda::Box3f::bottom() const
+float Box3f::bottom() const
 {
     return m_origin.y;
 }
 
-float libcgt::cuda::Box3f::top() const
+float Box3f::top() const
 {
     return m_origin.y + m_size.y;
 }
 
-float libcgt::cuda::Box3f::back() const
+float Box3f::back() const
 {
     return m_origin.z;
 }
 
-float libcgt::cuda::Box3f::front() const
+float Box3f::front() const
 {
     return m_origin.z + m_size.z;
 }
 
-float3 libcgt::cuda::Box3f::leftBottomBack() const
+float3 Box3f::minimum() const
 {
     return m_origin;
 }
 
-float3 libcgt::cuda::Box3f::rightTopFront() const
+float3 Box3f::maximum() const
 {
     return m_origin + m_size;
 }
 
-float3 libcgt::cuda::Box3f::center() const
+float3 Box3f::center() const
 {
     return m_origin + 0.5f * m_size;
 }
 
-void libcgt::cuda::Box3f::getCorners( float3 corners[8] ) const
+void Box3f::getCorners( float3 corners[8] ) const
 {
     for( int i = 0; i < 8; ++i )
     {
@@ -102,7 +71,7 @@ void libcgt::cuda::Box3f::getCorners( float3 corners[8] ) const
     }
 }
 
-bool libcgt::cuda::Box3f::contains( float x, float y, float z ) const
+bool Box3f::contains( float x, float y, float z ) const
 {
     return
     (
@@ -115,23 +84,23 @@ bool libcgt::cuda::Box3f::contains( float x, float y, float z ) const
     );
 }
 
-bool libcgt::cuda::Box3f::contains( const float3& p ) const
+bool Box3f::contains( const float3& p ) const
 {
     return contains( p.x, p.y, p.z );
 }
 
 // static
-bool libcgt::cuda::Box3f::intersect( const libcgt::cuda::Box3f& r0, const libcgt::cuda::Box3f& r1 )
+bool Box3f::intersect( const Box3f& r0, const Box3f& r1 )
 {
-    libcgt::cuda::Box3f isect;
+    Box3f isect;
     return intersect( r0, r1, isect );
 }
 
 // static
-bool libcgt::cuda::Box3f::intersect( const libcgt::cuda::Box3f& r0, const libcgt::cuda::Box3f& r1, libcgt::cuda::Box3f& intersection )
+bool Box3f::intersect( const Box3f& r0, const Box3f& r1, Box3f& intersection )
 {
-    float3 minimum = fmaxf( r0.leftBottomBack(), r1.leftBottomBack() );
-    float3 maximum = fminf( r0.rightTopFront(), r1.rightTopFront() );
+    float3 minimum = fmaxf( r0.minimum(), r1.minimum() );
+    float3 maximum = fminf( r0.maximum(), r1.maximum() );
 
     if( minimum.x < maximum.x &&
         minimum.y < maximum.y )
@@ -142,3 +111,5 @@ bool libcgt::cuda::Box3f::intersect( const libcgt::cuda::Box3f& r0, const libcgt
     }
     return false;
 }
+
+} } // cuda, libcgt

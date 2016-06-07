@@ -9,10 +9,10 @@ Rect2i RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2i& wind
     int w = std::min( window.width(), static_cast< int >( window.height() * imageAspectRatio ) );
     int h = std::min( static_cast< int >( window.width() / imageAspectRatio ), window.height() );
 
-    int x = window.origin().x + ( window.width() - w ) / 2;
-    int y = window.origin().y + ( window.height() - h ) / 2;
+    int x = window.left() + ( window.width() - w ) / 2;
+    int y = window.bottom() + ( window.height() - h ) / 2;
 
-    return{ x, y, w, h };
+    return{ { x, y }, { w, h } };
 }
 
 // static
@@ -27,10 +27,10 @@ Rect2f RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2f& wind
     float w = std::min( window.width(), window.height() * imageAspectRatio );
     float h = std::min( window.width() / imageAspectRatio, window.height() );
 
-    float x = window.origin().x + 0.5f * ( window.width() - w );
-    float y = window.origin().y + 0.5f * ( window.height() - h );
+    float x = window.left() + 0.5f * ( window.width() - w );
+    float y = window.bottom() + 0.5f * ( window.height() - h );
 
-    return{ x, y, w, h };
+    return{ { x, y }, { w, h } };
 }
 
 // static
@@ -48,17 +48,17 @@ Matrix4f RectangleUtils::transformBetween( const Rect2f& from, const Rect2f& to 
     // 2. p2 = p1 * to.size
     // 3. p3 = p2 + to.origin
 
-    return Matrix4f::translation( to.origin().x, to.origin().y, 0 ) *
-        Matrix4f::scaling( to.size().x, to.size().y, 1 ) *
-        Matrix4f::scaling( 1.0f / from.size().x, 1.0f / from.size().y, 1 ) *
-        Matrix4f::translation( -from.origin().x, -from.origin().y, 0 );
+    return Matrix4f::translation( to.origin.x, to.origin.y, 0 ) *
+        Matrix4f::scaling( to.size.x, to.size.y, 1 ) *
+        Matrix4f::scaling( 1.0f / from.size.x, 1.0f / from.size.y, 1 ) *
+        Matrix4f::translation( -from.origin.x, -from.origin.y, 0 );
 }
 
 // static
 Vector2f RectangleUtils::normalizedCoordinatesWithinRectangle( const Vector2f& p,
     const Rect2f& r )
 {
-    return ( p - r.origin() ) / r.size();
+    return ( p - r.origin ) / r.size;
 }
 
 // static
@@ -66,10 +66,10 @@ Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
 {
     assert( r.isStandardized() );
     Vector2f origin;
-    origin.x = width - r.limit().x;
-    origin.y = r.origin().y;
+    origin.x = width - r.right();
+    origin.y = r.origin.y;
 
-    return{ origin, r.size() };
+    return{ origin, r.size };
 }
 
 // static
@@ -77,10 +77,10 @@ Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
 {
     assert( r.isStandardized() );
     Vector2i origin;
-    origin.x = width - r.limit().x;
-    origin.y = r.origin().y;
+    origin.x = width - r.right();
+    origin.y = r.origin.y;
 
-    return{ origin, r.size() };
+    return{ origin, r.size };
 }
 
 // static
@@ -88,10 +88,10 @@ Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
 {
     assert( r.isStandardized() );
     Vector2f origin;
-    origin.x = r.origin().x;
-    origin.y = height - r.limit().y;
+    origin.x = r.origin.x;
+    origin.y = height - r.top();
 
-    return{ origin, r.size() };
+    return{ origin, r.size };
 }
 
 // static
@@ -99,18 +99,18 @@ Rect2i RectangleUtils::flipY( const Rect2i& r, int height )
 {
     assert( r.isStandardized() );
     Vector2i origin;
-    origin.x = r.origin().x;
-    origin.y = height - r.limit().y;
+    origin.x = r.origin.x;
+    origin.y = height - r.top();
 
-    return{ origin, r.size() };
+    return{ origin, r.size };
 }
 
 // static
 Rect2f RectangleUtils::flipStandardizationX( const Rect2f& rect )
 {
     Rect2f output = rect;
-    output.origin().x = output.origin().x + output.size().x;
-    output.size().x = -output.size().x;
+    output.origin.x = output.origin.x + output.size.x;
+    output.size.x = -output.size.x;
     return output;
 }
 
@@ -118,8 +118,8 @@ Rect2f RectangleUtils::flipStandardizationX( const Rect2f& rect )
 Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
 {
     Rect2f output = rect;
-    output.origin().y = output.origin().y + output.size().y;
-    output.size().y = -output.size().y;
+    output.origin.y = output.origin.y + output.size.y;
+    output.size.y = -output.size.y;
     return output;
 }
 
@@ -143,10 +143,10 @@ void RectangleUtils::writeScreenAlignedTriangleStripPositions(
         const Rect2f& rect,
         float z, float w )
 {
-    positions[ 0 ] = Vector4f( rect.origin().x, rect.origin().y, z, w );
-    positions[ 1 ] = Vector4f( rect.limit().x, rect.origin().y, z, w );
-    positions[ 2 ] = Vector4f( rect.origin().x, rect.limit().y, z, w );
-    positions[ 3 ] = Vector4f( rect.limit().x, rect.limit().y, z, w );
+    positions[ 0 ] = Vector4f( rect.leftBottom(), z, w );
+    positions[ 1 ] = Vector4f( rect.rightBottom(), z, w );
+    positions[ 2 ] = Vector4f( rect.leftTop(), z, w );
+    positions[ 3 ] = Vector4f( rect.rightTop(), z, w );
 }
 
 //  static
@@ -154,10 +154,10 @@ void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
         Array1DView< Vector2f > textureCoordinates,
         const Rect2f& rect )
 {
-    textureCoordinates[ 0 ] = Vector2f{ rect.origin().x, rect.origin().y };
-    textureCoordinates[ 1 ] = Vector2f{ rect.limit().x, rect.origin().y };
-    textureCoordinates[ 2 ] = Vector2f{ rect.origin().x, rect.limit().y };
-    textureCoordinates[ 3 ] = Vector2f{ rect.limit().x, rect.limit().y };
+    textureCoordinates[ 0 ] = rect.leftBottom();
+    textureCoordinates[ 1 ] = rect.rightBottom();
+    textureCoordinates[ 2 ] = rect.leftTop();
+    textureCoordinates[ 3 ] = rect.rightTop();
 }
 
 // static
@@ -172,10 +172,10 @@ std::vector< Vector2f > RectangleUtils::corners( const Rect2f& r )
     assert( r.isStandardized() );
     return
     {
-        r.origin(),
-        Vector2f{ r.limit().x, r.origin().y },
-        r.limit(),
-        Vector2f{ r.origin().x, r.limit().y }
+        r.leftBottom(),
+        r.rightBottom(),
+        r.rightTop(),
+        r.leftTop()
     };
 }
 
@@ -185,9 +185,9 @@ std::vector< Vector2i > RectangleUtils::corners( const Rect2i& r )
     assert( r.isStandardized() );
     return
     {
-        r.origin(),
-        Vector2i{ r.limit().x, r.origin().y },
-        r.limit(),
-        Vector2i{ r.origin().x, r.limit().y }
+        r.leftBottom(),
+        r.rightBottom(),
+        r.rightTop(),
+        r.leftTop()
     };
 }

@@ -96,9 +96,9 @@ public:
     static void writeScreenAlignedTriangleStrip(
         Array1DView< Vector4f > positions,
         Array1DView< Vector2f > textureCoordinates,
-        const Rect2f& positionRectangle = Rect2f{ -1, -1, 2, 2 },
+        const Rect2f& positionRectangle = Rect2f{ { -1, -1 }, { 2, 2 } },
         float z = 0.f, float w = 1.f,
-        const Rect2f& textureRectangle = Rect2f{ 0, 0, 1, 1 }
+        const Rect2f& textureRectangle = Rect2f{ { 1, 1 } }
     );
 
     // Write the positions of a screen-aligned rectangle as a triangle strip
@@ -112,7 +112,7 @@ public:
     // orthographicProjection( 0, 0, width, height ).
     static void writeScreenAlignedTriangleStripPositions(
         Array1DView< Vector4f > positions,
-        const Rect2f& rect = Rect2f{ -1, -1, 2, 2 },
+        const Rect2f& rect = Rect2f{ { -1, -1 }, { 2, 2 } },
         float z = 0.f, float w = 1.f
     );
 
@@ -120,7 +120,7 @@ public:
     // pass in Rect2f( 0, 1, 1, -1 )
     static void writeScreenAlignedTriangleStripTextureCoordinates(
         Array1DView< Vector2f > textureCoordinates,
-        const Rect2f& rect = Rect2f{ 0, 0, 1, 1 }
+        const Rect2f& rect = Rect2f{ { 1, 1 } }
     );
 
     // Returns a standard rectangle (square) with the given center and side length.

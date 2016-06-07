@@ -24,12 +24,13 @@ Vector4i::Vector4i( int i )
     m_elements[ 3 ] = i;
 }
 
-Vector4i::Vector4i( std::initializer_list< int > xyzw )
+Vector4i::Vector4i( int x, int y, int z, int w ) :
+    x{ x },
+    y{ y },
+    z{ z },
+    w{ w }
 {
-    m_elements[ 0 ] = *( xyzw.begin( ) );
-    m_elements[ 1 ] = *( xyzw.begin( ) + 1 );
-    m_elements[ 2 ] = *( xyzw.begin( ) + 2 );
-    m_elements[ 3 ] = *( xyzw.begin( ) + 3 );
+
 }
 
 Vector4i::Vector4i( const Vector2i& xy, int z, int w )
@@ -78,26 +79,6 @@ Vector4i::Vector4i( int x, const Vector3i& yzw )
     m_elements[1] = yzw.x;
     m_elements[2] = yzw.y;
     m_elements[3] = yzw.z;
-}
-
-Vector4i::Vector4i( const Vector4i& rv )
-{
-    m_elements[0] = rv.m_elements[0];
-    m_elements[1] = rv.m_elements[1];
-    m_elements[2] = rv.m_elements[2];
-    m_elements[3] = rv.m_elements[3];
-}
-
-Vector4i& Vector4i::operator = ( const Vector4i& rv )
-{
-    if( this != &rv )
-    {
-        m_elements[0] = rv.m_elements[0];
-        m_elements[1] = rv.m_elements[1];
-        m_elements[2] = rv.m_elements[2];
-        m_elements[3] = rv.m_elements[3];
-    }
-    return *this;
 }
 
 const int& Vector4i::operator [] ( int i ) const

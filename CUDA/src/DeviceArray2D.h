@@ -15,13 +15,12 @@ class DeviceArray2D
 {
 public:
 
-    DeviceArray2D();
-    DeviceArray2D( int width, int height );
-    DeviceArray2D( const int2& size );
-    DeviceArray2D( const Array2D< T >& src );
+    DeviceArray2D() = default;
+    DeviceArray2D( const Vector2i& size );
+    DeviceArray2D( Array2DView< const T > src );
     DeviceArray2D( const DeviceArray2D< T >& copy );
     DeviceArray2D( DeviceArray2D< T >&& move );
-    DeviceArray2D< T >& operator = ( const Array2D< T >& src );
+    DeviceArray2D< T >& operator = ( Array2DView< const T > src );
     DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
     DeviceArray2D< T >& operator = ( DeviceArray2D< T >&& move );
     virtual ~DeviceArray2D();
@@ -31,7 +30,7 @@ public:
 
     int width() const;
     int height() const;
-    int2 size() const; // (width, height)
+    Vector2i size() const; // (width, height)
     int numElements() const;
 
     // The number of bytes between rows
@@ -42,8 +41,7 @@ public:
 
     // resizes the vector
     // original data is not preserved
-    void resize( int width, int height );
-    void resize( const int2& size );
+    void resize( const Vector2i& size );
 
     // sets the vector to 0 (all bytes to 0)
     void clear();
@@ -53,17 +51,15 @@ public:
 
     // get an element of the array from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T get( int x, int y ) const;
-    T get( const int2& subscript ) const;
+    T get( const Vector2i& subscript ) const;
 
     // get an element of the array from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T operator () ( int x, int y ) const;
-    T operator [] ( const int2& subscript ) const;
+    T operator [] ( const Vector2i& subscript ) const;
 
     // sets an element of the array from the host
     // WARNING: probably slow as it incurs a cudaMemcpy
-    void set( int x, int y, const T& value );
+    void set( const Vector2i& subscript, const T& value );
 
     // copy from another DeviceArray2D to this
     // this is automatically resized
@@ -93,11 +89,10 @@ public:
 
 private:
 
-    int m_width;
-    int m_height;
-    size_t m_pitch;
-    size_t m_sizeInBytes;
-    T* m_devicePointer;
+    Vector2i m_size;
+    size_t m_pitch = 0;
+    T* m_devicePointer = nullptr;
+    size_t m_sizeInBytes = 0;
 
     // frees the memory if this is not null
     void destroy();

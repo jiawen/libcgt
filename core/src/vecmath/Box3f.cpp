@@ -7,75 +7,32 @@
 using libcgt::core::math::ceilToInt;
 using libcgt::core::math::floorToInt;
 
-Box3f::Box3f() :
-    m_origin( 0.f ),
-    m_size( 0.f )
-{
-
-}
-
-Box3f::Box3f( float left, float bottom, float back, float width, float height, float depth ) :
-    m_origin( left, bottom, back ),
-    m_size( width, height, depth )
-{
-
-}
-
-Box3f::Box3f( float width, float height, float depth ) :
-    m_origin( 0.f ),
-    m_size( width, height, depth )
+Box3f::Box3f( const Vector3f& size ) :
+    size{ size }
 {
 
 }
 
 Box3f::Box3f( const Vector3f& origin, const Vector3f& size ) :
-    m_origin( origin ),
-    m_size( size )
+    origin{ origin },
+    size{ size }
 {
 
-}
-
-Box3f::Box3f( const Vector3f& size ) :
-    m_origin( 0.f ),
-    m_size( size )
-
-{
-
-}
-
-Vector3f Box3f::origin() const
-{
-    return m_origin;
-}
-
-Vector3f& Box3f::origin()
-{
-    return m_origin;
-}
-
-Vector3f Box3f::size() const
-{
-    return m_size;
-}
-
-Vector3f& Box3f::size()
-{
-    return m_size;
 }
 
 Vector3f Box3f::minimum() const
 {
-    return libcgt::core::math::minimum( m_origin, m_origin + m_size );
+    return libcgt::core::math::minimum( origin, origin + size );
 }
 
 Vector3f Box3f::maximum() const
 {
-    return libcgt::core::math::maximum(m_origin, m_origin + m_size);
+    return libcgt::core::math::maximum( origin, origin + size );
 }
 
 float Box3f::left() const
 {
-    return m_origin.x;
+    return origin.x;
 }
 
 float Box3f::right() const
@@ -85,7 +42,7 @@ float Box3f::right() const
 
 float Box3f::bottom() const
 {
-    return m_origin.y;
+    return origin.y;
 }
 
 float Box3f::top() const
@@ -95,7 +52,7 @@ float Box3f::top() const
 
 float Box3f::back() const
 {
-    return m_origin.z;
+    return origin.z;
 }
 
 float Box3f::front() const
@@ -105,82 +62,77 @@ float Box3f::front() const
 
 Vector3f Box3f::leftBottomBack() const
 {
-    return m_origin;
+    return origin;
 }
 
 Vector3f Box3f::rightBottomBack() const
 {
-    return m_origin + Vector3f( m_size.x, 0, 0 );
+    return origin + Vector3f( size.x, 0, 0 );
 }
 
 Vector3f Box3f::leftTopBack() const
 {
-    return m_origin + Vector3f( 0, m_size.y, 0 );
+    return origin + Vector3f( 0, size.y, 0 );
 }
 
 Vector3f Box3f::rightTopBack() const
 {
-    return m_origin + Vector3f( m_size.x, m_size.y, 0 );
+    return origin + Vector3f( size.x, size.y, 0 );
 }
 
 Vector3f Box3f::leftBottomFront() const
 {
-    return m_origin + Vector3f( 0, 0, m_size.z );
+    return origin + Vector3f( 0, 0, size.z );
 }
 
 Vector3f Box3f::rightBottomFront() const
 {
-    return m_origin + Vector3f( m_size.x, 0, m_size.z );
+    return origin + Vector3f( size.x, 0, size.z );
 }
 
 Vector3f Box3f::leftTopFront() const
 {
-    return m_origin + Vector3f( 0, m_size.y, m_size.z );
+    return origin + Vector3f( 0, size.y, size.z );
 }
 
 Vector3f Box3f::rightTopFront() const
 {
-    return m_origin + Vector3f( m_size.x, m_size.y, m_size.z );
+    return origin + Vector3f( size.x, size.y, size.z );
 }
 
 float Box3f::width() const
 {
-    return m_size.x;
+    return size.x;
 }
 
 float Box3f::height() const
 {
-    return m_size.y;
+    return size.y;
 }
 
 float Box3f::depth() const
 {
-    return m_size.z;
+    return size.z;
 }
 
 float Box3f::volume() const
 {
-    return( m_size.x * m_size.y * m_size.z );
+    return( size.x * size.y * size.z );
 }
 
 Vector3f Box3f::center() const
 {
-    return m_origin + 0.5f * m_size;
-}
-
-bool Box3f::isNull() const
-{
-    return( m_size.x == 0 && m_size.y == 0 );
+    return origin + 0.5f * size;
 }
 
 bool Box3f::isEmpty() const
 {
-    return( !isValid() );
+    return( size.x == 0 || size.y == 0 || size.z == 0 );
 }
 
-bool Box3f::isValid() const
+bool Box3f::isStandard() const
 {
-    return( m_size.x > 0 && m_size.y > 0 );
+    return( size.x >= 0 && size.y >= 0 && size.z >= 0 );
 }
 
 Box3f Box3f::standardized() const
@@ -188,40 +140,40 @@ Box3f Box3f::standardized() const
     Vector3f origin;
     Vector3f size;
 
-    if( m_size.x > 0 )
+    if( size.x > 0 )
     {
-        origin.x = m_origin.x;
-        size.x = m_size.x;
+        origin.x = origin.x;
+        size.x = size.x;
     }
     else
     {
-        origin.x = m_origin.x + m_size.x;
-        size.x = -m_size.x;
+        origin.x = origin.x + size.x;
+        size.x = -size.x;
     }
 
-    if( m_size.y > 0 )
+    if( size.y > 0 )
     {
-        origin.y = m_origin.y;
-        size.y = m_size.y;
+        origin.y = origin.y;
+        size.y = size.y;
     }
     else
     {
-        origin.y = m_origin.y + m_size.y;
-        size.y = -m_size.y;
+        origin.y = origin.y + size.y;
+        size.y = -size.y;
     }
 
-    if( m_size.z > 0 )
+    if( size.z > 0 )
     {
-        origin.z = m_origin.z;
-        size.z = m_size.z;
+        origin.z = origin.z;
+        size.z = size.z;
     }
     else
     {
-        origin.z = m_origin.z + m_size.z;
-        size.z = -m_size.z;
+        origin.z = origin.z + size.z;
+        size.z = -size.z;
     }
 
-    return Box3f( origin, size );
+    return Box3f{ origin, size };
 }
 
 std::string Box3f::toString() const
@@ -230,41 +182,41 @@ std::string Box3f::toString() const
 
     out.append( "Box3f:\n" );
     out.append( "\torigin: " );
-    out.append( m_origin.toString() );
+    out.append( origin.toString() );
     out.append( "\n\tsize: " );
-    out.append( m_size.toString() );
+    out.append( size.toString() );
 
     return out;
+}
+
+Box3f Box3f::flippedLR( float width ) const
+{
+    Vector3f origin;
+    origin.x = width - left();
+    origin.y = origin.y;
+    origin.z = origin.z;
+
+    return{ origin, size };
 }
 
 Box3f Box3f::flippedUD( float height ) const
 {
     Vector3f origin;
-    origin.x = m_origin.x;
+    origin.x = origin.x;
     origin.y = height - top();
-    origin.z = m_origin.z;
+    origin.z = origin.z;
 
-    return Box3f( origin, m_size );
+    return{ origin, size };
 }
 
 Box3f Box3f::flippedBF( float depth ) const
 {
     Vector3f origin;
-    origin.x = m_origin.x;
-    origin.y = m_origin.y;
+    origin.x = origin.x;
+    origin.y = origin.y;
     origin.z = depth - front();
 
-    return Box3f( origin, m_size );
-}
-
-Box3f Box3f::flippedUDBF( float height, float depth ) const
-{
-    Vector3f origin;
-    origin.x = m_origin.x;
-    origin.y = height - top();
-    origin.z = depth - front();
-
-    return Box3f( origin, m_size );
+    return{ origin, size };
 }
 
 Box3i Box3f::enlargedToInt() const
@@ -285,21 +237,21 @@ bool Box3f::contains( const Vector3f& p )
 {
     return
     (
-        ( p.x >= m_origin.x ) &&
-        ( p.x < ( m_origin.x + m_size.x ) ) &&
-        ( p.y >= m_origin.y ) &&
-        ( p.y < ( m_origin.y + m_size.y ) ) &&
-        ( p.z >= m_origin.z ) &&
-        ( p.z < ( m_origin.z + m_size.z ) )
+        ( p.x >= origin.x ) &&
+        ( p.x < ( origin.x + size.x ) ) &&
+        ( p.y >= origin.y ) &&
+        ( p.y < ( origin.y + size.y ) ) &&
+        ( p.z >= origin.z ) &&
+        ( p.z < ( origin.z + size.z ) )
     );
 }
 
 void Box3f::enlargeToContain( const Vector3f& p )
 {
-    m_origin = libcgt::core::math::minimum( m_origin, p );
+    origin = libcgt::core::math::minimum( origin, p );
     Vector3f rtf = libcgt::core::math::maximum( rightTopFront(), p );
 
-    m_size = rtf - m_origin;
+    size = rtf - origin;
 }
 
 // static
@@ -310,7 +262,7 @@ Box3f Box3f::united( const Box3f& b0, const Box3f& b1 )
     Vector3f unitedMax = libcgt::core::math::maximum(
         b0.rightTopFront(), b1.rightTopFront() );
 
-    return Box3f( unitedMin, unitedMax - unitedMin );
+    return{ unitedMin, unitedMax - unitedMin };
 }
 
 // static
@@ -332,8 +284,8 @@ bool Box3f::intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection )
         minimum.y < maximum.y &&
         minimum.z < maximum.z )
     {
-        intersection.m_origin = minimum;
-        intersection.m_size = maximum - minimum;
+        intersection.origin = minimum;
+        intersection.size = maximum - minimum;
         return true;
     }
     return false;
@@ -389,6 +341,6 @@ bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
 // static
 Box3f Box3f::scale( const Box3f& b, const Vector3f& s )
 {
-    Vector3f size = s * b.size();
-    return Box3f( b.center() - 0.5f * size, size );
+    Vector3f size = s * b.size;
+    return{ b.center() - 0.5f * size, size };
 }
