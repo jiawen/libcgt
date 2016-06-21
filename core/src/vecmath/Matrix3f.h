@@ -120,12 +120,15 @@ public:
 
 Matrix3f operator + ( const Matrix3f& x, const Matrix3f& y );
 Matrix3f operator - ( const Matrix3f& x, const Matrix3f& y );
-// negate
+// Negate.
 Matrix3f operator - ( const Matrix3f& x );
 
-// Matrix-Scalar multiplication
+// Multiply matrix by scalar.
 Matrix3f operator * ( float f, const Matrix3f& m );
 Matrix3f operator * ( const Matrix3f& m, float f );
+
+// Divide matrix by scalar.
+Matrix3f operator / ( const Matrix3f& m, float f );
 
 // Matrix-Vector multiplication
 // 3x3 * 3x1 ==> 3x1

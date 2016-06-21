@@ -8,11 +8,9 @@
 // libcgt
 #include <common/Array1DView.h>
 
-// local
-#include "KernelVector.h"
+#include "KernelArray1D.h"
 #include "ErrorChecking.h"
 
-// TODO: rename to DeviceArray1D.
 // Basic vector interface around CUDA global memory.
 // Wraps around cudaMalloc() (linear allocation).
 template< typename T >
@@ -22,7 +20,6 @@ public:
 
     DeviceArray1D() = default;
     DeviceArray1D( int length );
-    DeviceArray1D( Array1DView< const T > src );
     DeviceArray1D( const DeviceArray1D< T >& copy );
     DeviceArray1D( DeviceArray1D< T >&& move );
     DeviceArray1D< T >& operator = ( const DeviceArray1D< T >& copy );
@@ -47,23 +44,19 @@ public:
 
     // get an element of the vector from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T get( int index ) const;
+    T get( int x ) const;
 
     // get an element of the vector from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T operator [] ( int index ) const;
+    T operator [] ( int x ) const;
 
     // sets an element of the vector from the host
     // WARNING: probably slow as it incurs a cudaMemcpy
-    void set( int index, const T& value );
+    void set( int x, const T& value );
 
     // copy from another DeviceArray1D to this
     // this is automatically resized
     void copyFromDevice( const DeviceArray1D< T >& src );
-
-    // copy length() elements from input --> device vector
-    // this is automatically resized
-    void copyFromHost( const std::vector< T >& src );
 
     // copy src.length() elements from host --> device vector
     // starting at dstOffset
@@ -74,11 +67,7 @@ public:
     // src must be packed()
     //
     // returns false on failure
-    bool copyFromHost( const Array1DView< T >& src, int dstOffset = 0 );
-
-    // copy length() elements from device vector --> host
-    // dst is automatically resized
-    void copyToHost( std::vector< T >& dst ) const;
+    bool copyFromHost( Array1DView< const T > src, int dstOffset = 0 );
 
     // copy dst.length() elements from device vector --> host
     // starting from srcOffset
@@ -86,18 +75,20 @@ public:
     // length() - srcOffset must be >= dst.length()
     // dst must be packed()
     // return false on failure
-    bool copyToHost( Array1DView< T >& dst, int srcOffset = 0 ) const;
+    bool copyToHost( Array1DView< T > dst, int srcOffset = 0 ) const;
 
-    const T* devicePointer() const;
-    T* devicePointer();
+    const T* pointer() const;
+    T* pointer();
 
-    KernelVector< T > kernelVector() const;
+    const T* elementPointer( int x ) const;
+    T* elementPointer( int x );
+
+    KernelArray1D< T > kernelArray1D();
 
 private:
 
-    size_t m_sizeInBytes = 0;
     int m_length = 0;
-    T* m_devicePointer = nullptr;
+    uint8_t* m_devicePointer = nullptr;
 
     void destroy();
 };

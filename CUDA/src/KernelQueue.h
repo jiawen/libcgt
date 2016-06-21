@@ -7,7 +7,7 @@ struct KernelQueue
     KernelQueue();
 
     __inline__ __host__ __device__
-    KernelQueue( uint2* d_pReadIndexAndCount, KernelVector< T > elements );
+    KernelQueue( uint2* d_pReadIndexAndCount, KernelArray1D< T > elements );
 
     // enqueues a value at the tail the queue
     // (atomically increment the tail pointer
@@ -52,7 +52,7 @@ struct KernelQueue
     bool isFull();
 
     __inline__ __device__
-    KernelVector< T >& ringBuffer();
+    KernelArray1D< T >& ringBuffer();
 
     // pointer to the head index
     // &( md_pHeadTailAbsoluteIndices->x )
@@ -67,7 +67,7 @@ struct KernelQueue
 private:
 
     uint2* md_pHeadTailAbsoluteIndices;
-    KernelVector< T > md_ringBuffer;
+    KernelArray1D< T > md_ringBuffer;
 
 };
 

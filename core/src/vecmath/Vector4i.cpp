@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -24,13 +25,12 @@ Vector4i::Vector4i( int i )
     m_elements[ 3 ] = i;
 }
 
-Vector4i::Vector4i( int x, int y, int z, int w ) :
-    x{ x },
-    y{ y },
-    z{ z },
-    w{ w }
+Vector4i::Vector4i( int x, int y, int z, int w )
 {
-
+    m_elements[ 0 ] = x;
+    m_elements[ 1 ] = y;
+    m_elements[ 2 ] = z;
+    m_elements[ 3 ] = w;
 }
 
 Vector4i::Vector4i( const Vector2i& xy, int z, int w )

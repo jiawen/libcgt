@@ -1,6 +1,7 @@
 #include "cameras/PerspectiveCamera.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <fstream>
 #include <limits>
@@ -44,21 +45,21 @@ const PerspectiveCamera PerspectiveCamera::TOP(
 PerspectiveCamera::PerspectiveCamera(
     const EuclideanTransform& cameraFromWorld,
     const GLFrustum& frustum,
-    bool isDirectX)
+    bool isDirectX )
 {
     setFrustum( frustum );
     setCameraFromWorld( cameraFromWorld );
-    setDirectX(isDirectX);
+    setDirectX( isDirectX );
 }
 
 PerspectiveCamera::PerspectiveCamera(
     const Vector3f& eye, const Vector3f& center, const Vector3f& up,
     const GLFrustum& frustum,
-    bool isDirectX)
+    bool isDirectX )
 {
     setLookAt( eye, center, up );
     setFrustum( frustum );
-    setDirectX(isDirectX);
+    setDirectX( isDirectX );
 }
 
 PerspectiveCamera::PerspectiveCamera(

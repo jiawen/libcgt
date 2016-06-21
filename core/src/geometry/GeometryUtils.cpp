@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include "common/Iterators.h"

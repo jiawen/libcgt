@@ -264,7 +264,8 @@ T* Array2D< T >::pointer()
 template< typename T >
 const T* Array2D< T >::elementPointer( const Vector2i& xy ) const
 {
-    return reinterpret_cast< const T* >( &( m_data[ Vector2i::dot( xy, m_stride ) ] ) );
+    return reinterpret_cast< const T* >(
+        &( m_data[ Vector2i::dot( xy, m_stride ) ] ) );
 }
 
 template< typename T >

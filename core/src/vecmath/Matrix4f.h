@@ -73,13 +73,6 @@ public:
     // inverse transpose of top left 3x3 submatrix on top left, 0 elsewhere
     Matrix4f normalMatrix4x4() const;
 
-    // *assuming* this matrix is a composition of a rotation and a translation
-    // and *no scaling*, decomposes it into its components such that.
-    // rotation is applied first, then translation.
-    // TODO: rename to decomposeEuclidean, add a rotation vector as output.
-    void decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation ) const;
-    void decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const;
-
     // *assuming* this matrix is a composition of a rotation, a scaling, and a translation
     // decomposes it into its components
     void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const;
@@ -107,10 +100,8 @@ public:
     static Matrix4f rotateY( float radians );
     static Matrix4f rotateZ( float radians );
     static Matrix4f rotation( const Vector3f& axis, float radians );
-    static Matrix4f scaling( float sx, float sy, float sz );
     static Matrix4f scaling( const Vector3f& xyz );
     static Matrix4f uniformScaling( float s );
-    static Matrix4f translation( float x, float y, float z );
     static Matrix4f translation( const Vector3f& xyz );
     static Matrix4f scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
         const Vector3f& dstOrigin, const Vector3f& dstSize );
@@ -204,16 +195,19 @@ public:
 
 Matrix4f operator + ( const Matrix4f& x, const Matrix4f& y );
 Matrix4f operator - ( const Matrix4f& x, const Matrix4f& y );
-// negate
+// Negate.
 Matrix4f operator - ( const Matrix4f& x );
 
-// Matrix-Scalar multiplication
+// Multiply matrix by scalar.
 Matrix4f operator * ( float f, const Matrix4f& m );
 Matrix4f operator * ( const Matrix4f& m, float f );
 
-// Matrix-Vector multiplication
+// Divide matrix by scalar.
+Matrix4f operator / ( const Matrix4f& m, float f );
+
+// Matrix-Vector multiplication.
 // 4x4 * 4x1 ==> 4x1
 Vector4f operator * ( const Matrix4f& m, const Vector4f& v );
 
-// Matrix-Matrix multiplication
+// Matrix-Matrix multiplication.
 Matrix4f operator * ( const Matrix4f& x, const Matrix4f& y );

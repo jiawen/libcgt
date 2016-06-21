@@ -83,8 +83,9 @@ void HostPool::copyFromDevice( const DevicePool& pool )
     printf( "Copying free list...\n" );
     pool.md_freeList.copyToHost( m_freeList );
 
+    // TODO(jiawen): use Array1D.
     printf( "Copying backing store...\n" );
-    pool.md_backingStore.copyToHost( m_backingStore );
+    pool.md_backingStore.copyToHost( writeViewOf( m_backingStore ) );
 }
 
 void HostPool::copyToDevice( DevicePool& pool )
@@ -92,7 +93,7 @@ void HostPool::copyToDevice( DevicePool& pool )
     pool.resize( m_capacity, m_elementSizeBytes );
 
     pool.md_freeList.copyFromHost( m_freeList );
-    pool.md_backingStore.copyFromHost( m_backingStore );
+    pool.md_backingStore.copyFromHost( writeViewOf( m_backingStore ) );
 }
 
 void HostPool::loadBinary( FILE* fp )

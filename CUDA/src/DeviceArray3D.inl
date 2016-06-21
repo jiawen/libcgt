@@ -1,13 +1,10 @@
+#include <thrust/fill.h>
+#include <thrust/execution_policy.h>
+
 template< typename T >
 DeviceArray3D< T >::DeviceArray3D( const Vector3i& size )
 {
     resize( size );
-}
-
-template< typename T >
-DeviceArray3D< T >::DeviceArray3D( Array3DView< const T > src )
-{
-    copyFromHost( src );
 }
 
 template< typename T >
@@ -22,21 +19,12 @@ DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
     destroy();
 
     m_size = move.m_size;
-    m_sizeInBytes = move.m_sizeInBytes;
     m_pitchedPointer = move.m_pitchedPointer;
     m_extent = move.m_extent;
 
     move.m_size = Vector3i{ 0 };
-    move.m_sizeInBytes = 0;
     move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
     move.m_extent = make_cudaExtent( 0, 0, 0 );
-}
-
-template< typename T >
-DeviceArray3D< T >& DeviceArray3D< T >::operator = ( Array3DView< const T > src )
-{
-    copyFromHost( src );
-    return *this;
 }
 
 template< typename T >
@@ -57,12 +45,10 @@ DeviceArray3D< T >& DeviceArray3D< T >::operator = ( DeviceArray3D< T >&& move )
         destroy();
 
         m_size = move.m_size;
-        m_sizeInBytes = move.m_sizeInBytes;
         m_pitchedPointer = move.m_pitchedPointer;
         m_extent = move.m_extent;
 
         move.m_size = Vector3i{ 0 };
-        move.m_sizeInBytes = 0;
         move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
         move.m_extent = make_cudaExtent( 0, 0, 0 );
     }
@@ -127,13 +113,13 @@ size_t DeviceArray3D< T >::rowPitch() const
 template< typename T >
 size_t DeviceArray3D< T >::slicePitch() const
 {
-    return m_pitchedPointer.pitch * m_height;
+    return m_pitchedPointer.pitch * m_size.y;
 }
 
 template< typename T >
 size_t DeviceArray3D< T >::sizeInBytes() const
 {
-    return m_sizeInBytes;
+    return slicePitch() * m_size.z;
 }
 
 template< typename T >
@@ -155,8 +141,6 @@ void DeviceArray3D< T >::resize( const Vector3i& size )
         (
             cudaMalloc3D( &m_pitchedPointer, m_extent )
         );
-
-        m_sizeInBytes = m_pitchedPointer.pitch * size.y * size.z;
     }
 }
 
@@ -165,9 +149,6 @@ void DeviceArray3D< T >::clear()
 {
     checkCudaErrors( cudaMemset3D( m_pitchedPointer, 0, m_extent ) );
 }
-
-#include <thrust/fill.h>
-#include <thrust/execution_policy.h>
 
 template< typename T >
 void DeviceArray3D< T >::fill( const T& value )
@@ -188,14 +169,14 @@ void DeviceArray3D< T >::fill( const T& value )
 }
 
 template< typename T >
-T DeviceArray3D< T >::get( int x, int y, int z ) const
+T DeviceArray3D< T >::get( const Vector3i& xyz ) const
 {
     T output;
 
     const uint8_t* sourcePointer = reinterpret_cast< const uint8_t* >( m_pitchedPointer.ptr );
-    const uint8_t* slicePointer = sourcePointer + z * slicePitch();
-    const uint8_t* rowPointer = slicePointer + y * rowPitch();
-    const uint8_t* elementPointer = rowPointer + x * sizeof( T );
+    const uint8_t* slicePointer = sourcePointer + xyz.z * slicePitch();
+    const uint8_t* rowPointer = slicePointer + xyz.y * rowPitch();
+    const uint8_t* elementPointer = rowPointer + xyz.x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
 
@@ -203,30 +184,18 @@ T DeviceArray3D< T >::get( int x, int y, int z ) const
 }
 
 template< typename T >
-T DeviceArray3D< T >::get( const Vector3i& subscript ) const
+T DeviceArray3D< T >::operator [] ( const Vector3i& xyz ) const
 {
-    return get( subscript.x, subscript.y, subscript.z );
+    return get( xyz );
 }
 
 template< typename T >
-T DeviceArray3D< T >::operator () ( int x, int y, int z ) const
-{
-    return get( x, y, z );
-}
-
-template< typename T >
-T DeviceArray3D< T >::operator [] ( const Vector3i& subscript ) const
-{
-    return get( subscript );
-}
-
-template< typename T >
-void DeviceArray3D< T >::set( int x, int y, int z, const T& value )
+void DeviceArray3D< T >::set( const Vector3i& xyz, const T& value )
 {
     uint8_t* destinationPointer = reinterpret_cast< uint8_t* >( m_pitchedPointer.ptr );
-    uint8_t* slicePointer = destinationPointer + z * slicePitch();
-    uint8_t* rowPointer = slicePointer + y * rowPitch();
-    uint8_t* elementPointer = rowPointer + x * sizeof( T );
+    uint8_t* slicePointer = destinationPointer + xyz.z * slicePitch();
+    uint8_t* rowPointer = slicePointer + xyz.y * rowPitch();
+    uint8_t* elementPointer = rowPointer + xyz.x * sizeof( T );
 
     checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
 }
@@ -271,8 +240,11 @@ bool DeviceArray3D< T >::copyFromHost( Array3DView< const T > src )
 
     // Since the source (on the host) is not pitched
     // make a pitchedPointer for it
-    const T* srcPointer = src; // using const_cast since CUDA is stupid and wants a void*
-    params.srcPtr = make_cudaPitchedPtr( const_cast< T* >( srcPointer ), src.width() * sizeof( T ), src.width(), src.height() );
+
+    // using const_cast since CUDA is stupid and wants a void* instead of
+    // const void* for src.
+    T* srcPointer = const_cast< T* >( src.pointer() );
+    params.srcPtr = make_cudaPitchedPtr( srcPointer, src.width() * sizeof( T ), src.width(), src.height() );
     params.srcArray = NULL; // we're not copying a CUDA array
     params.srcPos = make_cudaPos( 0, 0, 0 );
 
@@ -345,14 +317,6 @@ void DeviceArray3D< T >::load( const char* filename )
 }
 
 template< typename T >
-void DeviceArray3D< T >::save( const char* filename ) const
-{
-    Array3D< T > h_arr( width(), height(), height() );
-    copyToHost( h_arr );
-    h_arr.save( filename );
-}
-
-template< typename T >
 void DeviceArray3D< T >::destroy()
 {
     if( notNull() )
@@ -362,6 +326,5 @@ void DeviceArray3D< T >::destroy()
     }
 
     m_size = Vector3i{ 0 };
-    m_sizeInBytes = 0;
     m_extent = { 0 };
 }

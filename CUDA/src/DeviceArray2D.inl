@@ -1,13 +1,9 @@
+#include <common/Array2D.h>
+
 template< typename T >
 DeviceArray2D< T >::DeviceArray2D( const Vector2i& size )
 {
     resize( size );
-}
-
-template< typename T >
-DeviceArray2D< T >::DeviceArray2D( Array2DView< const T > src )
-{
-    copyFromHost( src );
 }
 
 template< typename T >
@@ -20,25 +16,17 @@ template< typename T >
 DeviceArray2D< T >::DeviceArray2D( DeviceArray2D< T >&& move )
 {
     m_size = move.m_size;
-    m_pitch = move.m_pitch;
-    m_sizeInBytes = move.m_sizeInBytes;
+    m_stride = move.m_stride;
     m_devicePointer = move.m_devicePointer;
 
     move.m_size = Vector2i{ 0 };
-    move.m_pitch = 0;
-    move.m_sizeInBytes = 0;
+    move.m_stride = Vector2i{ 0 };
     move.m_devicePointer = nullptr;
 }
 
 template< typename T >
-DeviceArray2D< T >& DeviceArray2D< T >::operator = ( Array2DView< const T > src )
-{
-    copyFromHost( src );
-    return *this;
-}
-
-template< typename T >
-DeviceArray2D< T >& DeviceArray2D< T >::operator = ( const DeviceArray2D< T >& copy )
+DeviceArray2D< T >& DeviceArray2D< T >::operator = (
+    const DeviceArray2D< T >& copy )
 {
     if( this != &copy )
     {
@@ -48,20 +36,19 @@ DeviceArray2D< T >& DeviceArray2D< T >::operator = ( const DeviceArray2D< T >& c
 }
 
 template< typename T >
-DeviceArray2D< T >& DeviceArray2D< T >::operator = ( DeviceArray2D< T >&& move )
+DeviceArray2D< T >& DeviceArray2D< T >::operator = (
+    DeviceArray2D< T >&& move )
 {
     if( this != &move )
     {
         destroy();
 
         m_size = move.m_size;
-        m_pitch = move.m_pitch;
-        m_sizeInBytes = move.m_sizeInBytes;
+        m_stride = move.m_stride;
         m_devicePointer = move.m_devicePointer;
 
         move.m_size = Vector2i{ 0 };
-        move.m_pitch = 0;
-        move.m_sizeInBytes = 0;
+        move.m_stride = Vector2i{ 0 };
         move.m_devicePointer = nullptr;
     }
     return *this;
@@ -111,15 +98,27 @@ int DeviceArray2D< T >::numElements() const
 }
 
 template< typename T >
-size_t DeviceArray2D< T >::pitch() const
+size_t DeviceArray2D< T >::elementStrideBytes() const
 {
-    return m_pitch;
+    return m_stride.x;
+}
+
+template< typename T >
+size_t DeviceArray2D< T >::rowStrideBytes() const
+{
+    return m_stride.y;
+}
+
+template< typename T >
+Vector2i DeviceArray2D< T >::stride() const
+{
+    return m_stride;
 }
 
 template< typename T >
 size_t DeviceArray2D< T >::sizeInBytes() const
 {
-    return m_sizeInBytes;
+    return m_stride.y * m_size.y;
 }
 
 template< typename T >
@@ -135,63 +134,66 @@ void DeviceArray2D< T >::resize( const Vector2i& size )
     if( size.x > 0 && size.y > 0 )
     {
         m_size = size;
+        size_t pitch;
 
         checkCudaErrors
         (
             cudaMallocPitch
             (
                 reinterpret_cast< void** >( &m_devicePointer ),
-                &m_pitch,
+                &pitch,
                 m_size.x * sizeof( T ),
                 m_size.y
             )
         );
 
-        m_sizeInBytes = m_pitch * m_size.y;
+        m_stride = { sizeof( T ), static_cast< int >( pitch ) };
     }
 }
 
 template< typename T >
 void DeviceArray2D< T >::clear()
 {
-    checkCudaErrors( cudaMemset2D( devicePointer(), pitch(), 0, widthInBytes(), height() ) );
+    checkCudaErrors
+    (
+        cudaMemset2D( pointer(), rowStrideBytes(), 0, widthInBytes(), height() )
+    );
 }
 
 template< typename T >
 void DeviceArray2D< T >::fill( const T& value )
 {
+    // TODO(jiawen): get rid of Array2D and use thrust::fill.
     Array2D< T > h_array( width(), height(), value );
     copyFromHost( h_array );
 }
 
 template< typename T >
-T DeviceArray2D< T >::get( const Vector2i& subscript ) const
+T DeviceArray2D< T >::get( const Vector2i& xy ) const
 {
     T output;
-
-    const uint8_t* sourcePointer = reinterpret_cast< const uint8_t* >( devicePointer() );
-    const uint8_t* rowPointer = sourcePointer + subscript.y * pitch();
-    const uint8_t* elementPointer = rowPointer + subscript.x * sizeof( T );
-
-    checkCudaErrors( cudaMemcpy( &output, elementPointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
-
+    const T* p = elementPointer( xy );
+    checkCudaErrors
+    (
+        cudaMemcpy( &output, p, sizeof( T ), cudaMemcpyDeviceToHost )
+    );
     return output;
 }
 
 template< typename T >
-T DeviceArray2D< T >::operator [] ( const Vector2i& subscript ) const
+T DeviceArray2D< T >::operator [] ( const Vector2i& xy ) const
 {
-    return get( subscript );
+    return get( xy );
 }
 
 template< typename T >
-void DeviceArray2D< T >::set( const Vector2i& subscript, const T& value )
+void DeviceArray2D< T >::set( const Vector2i& xy, const T& value )
 {
-    uint8_t* destinationPointer = reinterpret_cast< uint8_t* >( devicePointer() );
-    uint8_t* rowPointer = destinationPointer + subscript.y * pitch();
-    uint8_t* elementPointer = rowPointer + subscript.x * sizeof( T );
-
-    checkCudaErrors( cudaMemcpy( elementPointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
+    T* p = elementPointer( xy );
+    checkCudaErrors
+    (
+        cudaMemcpy( p, &value, sizeof( T ), cudaMemcpyHostToDevice )
+    );
 }
 
 template< typename T >
@@ -203,8 +205,16 @@ void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
     }
 
     resize( src.size() );
-    checkCudaErrors( cudaMemcpy2D( m_devicePointer, m_pitch, src.m_devicePointer, src.m_pitch,
-        src.widthInBytes(), src.height(), cudaMemcpyDeviceToDevice ) );
+    checkCudaErrors
+    (
+        cudaMemcpy2D
+        (
+            m_devicePointer,
+            rowStrideBytes(), src.m_devicePointer, src.m_stride.y,
+            src.widthInBytes(), src.height(),
+            cudaMemcpyDeviceToDevice
+        )
+    );
 }
 
 template< typename T >
@@ -219,14 +229,13 @@ bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
         return false;
     }
 
-
     resize( src.size() );
     checkCudaErrors
     (
         cudaMemcpy2D
         (
-            devicePointer(), pitch(),
-            src, src.rowStrideBytes(),
+            pointer(), rowStrideBytes(),
+            src.pointer(), src.rowStrideBytes(),
             src.width() * sizeof( T ), src.height(),
             cudaMemcpyHostToDevice
         )
@@ -236,24 +245,25 @@ bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
 }
 
 template< typename T >
-void DeviceArray2D< T >::copyToHost( Array2D< T >& dst ) const
+bool DeviceArray2D< T >::copyToHost( Array2DView< T > dst ) const
 {
-    if( isNull() )
+    if( isNull() || dst.isNull() || m_size != dst.size() )
     {
-        return;
+        return false;
     }
 
-    dst.resize( size() );
     checkCudaErrors
     (
         cudaMemcpy2D
         (
-            dst, dst.width() * sizeof( T ),
-            devicePointer(), pitch(),
+            dst.pointer(), dst.width() * sizeof( T ),
+            pointer(), m_stride.y,
             widthInBytes(), height(),
             cudaMemcpyDeviceToHost
         )
     );
+
+    return true;
 }
 
 template< typename T >
@@ -263,7 +273,7 @@ void DeviceArray2D< T >::copyFromArray( cudaArray* src )
     (
         cudaMemcpy2DFromArray
         (
-            devicePointer(), pitch(),
+            pointer(), rowStrideBytes(),
             src,
             0, 0,
             widthInBytes(), height(),
@@ -281,7 +291,7 @@ void DeviceArray2D< T >::copyToArray( cudaArray* dst ) const
         (
             dst,
             0, 0,
-            devicePointer(), pitch(),
+            pointer(), rowStrideBytes(),
             widthInBytes(), height(),
             cudaMemcpyDeviceToDevice
         )
@@ -289,21 +299,47 @@ void DeviceArray2D< T >::copyToArray( cudaArray* dst ) const
 }
 
 template< typename T >
-const T* DeviceArray2D< T >::devicePointer() const
+const T* DeviceArray2D< T >::pointer() const
 {
-    return m_devicePointer;
+    return reinterpret_cast< const T* >( m_devicePointer );
 }
 
 template< typename T >
-T* DeviceArray2D< T >::devicePointer()
+T* DeviceArray2D< T >::pointer()
 {
-    return m_devicePointer;
+    return reinterpret_cast< T* >( m_devicePointer );
 }
 
 template< typename T >
-KernelArray2D< T > DeviceArray2D< T >::kernelArray() const
+const T* DeviceArray2D< T >::elementPointer( const Vector2i& xy ) const
 {
-    return KernelArray2D< T >( m_devicePointer, m_size.x, m_size.y, m_pitch );
+    return reinterpret_cast< const T* >(
+        m_devicePointer + Vector2i::dot( xy, m_stride ) );
+}
+
+template< typename T >
+T* DeviceArray2D< T >::elementPointer( const Vector2i& xy )
+{
+    return reinterpret_cast< T* >(
+        m_devicePointer + Vector2i::dot( xy, m_stride ) );
+}
+
+template< typename T >
+const T* DeviceArray2D< T >::rowPointer( size_t y ) const
+{
+    return elementPointer( { 0, static_cast< int >( y ) } );
+}
+
+template< typename T >
+T* DeviceArray2D< T >::rowPointer( size_t y )
+{
+    return elementPointer( { 0, static_cast< int >( y ) } );
+}
+
+template< typename T >
+KernelArray2D< T > DeviceArray2D< T >::kernelArray()
+{
+    return KernelArray2D< T >( pointer(), m_size.x, m_size.y, m_stride.y );
 }
 
 template< typename T >
@@ -318,14 +354,6 @@ void DeviceArray2D< T >::load( const char* filename )
 }
 
 template< typename T >
-void DeviceArray2D< T >::save( const char* filename ) const
-{
-    Array2D< T > h_arr( width(), height() );
-    copyToHost( h_arr );
-    h_arr.save( filename );
-}
-
-template< typename T >
 void DeviceArray2D< T >::destroy()
 {
     if( notNull() )
@@ -335,8 +363,7 @@ void DeviceArray2D< T >::destroy()
     }
 
     m_size = Vector2i{ 0 };
-    m_pitch = 0;
-    m_sizeInBytes = 0;
+    m_stride = Vector2i{ 0 };
 }
 
 template< typename T >

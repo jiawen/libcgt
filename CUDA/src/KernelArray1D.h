@@ -1,16 +1,16 @@
 #pragma once
 
 template< typename T >
-struct KernelVector
+struct KernelArray1D
 {
     T* pointer;
     int length;
 
     __inline__ __host__ __device__
-    KernelVector();
+    KernelArray1D();
 
     __inline__ __host__ __device__
-    KernelVector( T* _pointer, int _length );
+    KernelArray1D( T* _pointer, int _length );
 
     __inline__ __device__
     const T& operator [] ( int i ) const;
@@ -19,4 +19,4 @@ struct KernelVector
     T& operator [] ( int i );
 };
 
-#include "KernelVector.inl"
+#include "KernelArray1D.inl"

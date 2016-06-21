@@ -32,14 +32,14 @@ public:
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator const T* () const;
 
     operator T* ();
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     const T* pointer() const;
 
     T* pointer();
@@ -70,7 +70,7 @@ public:
     // Enabled only if T is not const.
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator Array1DView< const T >() const;
 
 private:

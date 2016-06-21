@@ -30,7 +30,7 @@ FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Box3f
         for( int k = 0; k < 8 && ( nVerticesInside == 0 || nVerticesOutside == 0 ); k++ )
         {
             // is the corner inside or outside?
-            float d = planes[ i ].distance( boxCorners[ k ] );
+            float d = planes[ i ].distance( boxCorners[ k ].xyz );
             if( d < 0 )
             {
                 ++nVerticesInside;

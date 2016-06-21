@@ -5,6 +5,7 @@ Array3D< T >::Array3D( void* pointer, const Vector3i& size,
     (
         pointer,
         size,
+        Vector3i
         {
             static_cast< int >( sizeof( T ) ),
             static_cast< int >( size.x * sizeof( T ) ),
@@ -33,15 +34,17 @@ Array3D< T >::Array3D( const Vector3i& size, const T& fillValue,
     Array3D
     (
         size,
-        {
+        Vector3i
+        (
             static_cast< int >( sizeof( T ) ),
             static_cast< int >( size.x * sizeof( T ) ),
             static_cast< int >( size.x * size.y * sizeof( T ) )
-        },
+        ),
         fillValue,
         allocator
     )
 {
+
 }
 
 template< typename T >

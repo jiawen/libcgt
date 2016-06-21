@@ -42,14 +42,14 @@ public:
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator const T* () const;
 
     operator T* ();
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     const T* pointer() const;
 
     T* pointer();
@@ -100,17 +100,17 @@ public:
     // Enabled only if T is not const.
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator Array3DView< const T >() const;
 
     // Extract 1D slice at a given x and y coordinate.
-    Array1DView< T > xySlice( int x, int y );
+    Array1DView< T > xySlice( const Vector2i& xy );
 
     // Extract 1D slice at a given y and z coordinate.
-    Array1DView< T > yzSlice( int y, int z );
+    Array1DView< T > yzSlice( const Vector2i& yz );
 
     // Extract 1D slice at a given x and z coordinate.
-    Array1DView< T > xzSlice( int x, int z );
+    Array1DView< T > xzSlice( const Vector2i& xz );
 
     // Extract 2D slice at a given x coordinate.
     Array2DView< T > xSlice( int x );

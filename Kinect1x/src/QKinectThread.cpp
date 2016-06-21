@@ -8,10 +8,6 @@
 #include <math/Arithmetic.h>
 #include <vector>
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 QKinectThread::QKinectThread( std::shared_ptr< QKinect > pKinect, int pollingIntervalMS ) :
 
     m_pKinect( pKinect ),
@@ -38,10 +34,6 @@ void QKinectThread::stop()
     m_running = false;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Protected
-//////////////////////////////////////////////////////////////////////////
-
 // virtual
 void QKinectThread::run()
 {
@@ -54,12 +46,22 @@ void QKinectThread::run()
     // TODO: pass in resolutions to QKinect on initialization
     // query it to get the sizes
     Array2D< uint8x4 > bgra( { 640, 480 } );
-    Array2D< ushort > depth( { 640, 480 } );
-    Array2D< ushort > playerIndex( { 640, 480 } );
+    Array2D< uint16_t > depth( { 640, 480 } );
+    Array2D< uint16_t > playerIndex( { 640, 480 } );
+
+    int64_t bgraTimestamp;
+    int bgraFrameNumber;
+    int64_t depthTimestamp;
+    int depthFrameNumber;
+    bool depthCapturedWithNearMode;
 
     while( m_running )
     {
-        QKinect::Event e = m_pKinect->poll( skeletonFrame, bgra, depth, playerIndex, m_pollingIntervalMS );
+        QKinect::Event e = m_pKinect->poll( skeletonFrame,
+            bgra, bgraTimestamp, bgraFrameNumber,
+            depth, playerIndex,
+            depthTimestamp, depthFrameNumber, depthCapturedWithNearMode,
+            m_pollingIntervalMS );
         auto t1 = std::chrono::high_resolution_clock::now();
 
         switch( e )

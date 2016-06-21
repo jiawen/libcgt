@@ -78,7 +78,7 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst )
     {
         memcpy( dst.pointer(), src.pointer(), src.numElements() * src.elementStrideBytes() );
     }
-    // Otherwise, copy slice by slice.    
+    // Otherwise, copy slice by slice.
     else
     {
         for( int z = 0; z < src.depth(); ++z )
@@ -116,7 +116,7 @@ template< typename T >
 Array1DView< T > crop( Array1DView< T > view, const Range1i& range )
 {
     T* cornerPointer = view.elementPointer( range.origin );
-    return Array2DView< T >( cornerPointer, range.size(), view.stride() );
+    return Array2DView< T >( cornerPointer, range.size, view.stride() );
 }
 
 template< typename T >
@@ -129,7 +129,7 @@ template< typename T >
 Array2DView< T > crop( Array2DView< T > view, const Rect2i& rect )
 {
     T* cornerPointer = view.elementPointer( rect.origin );
-    return Array2DView< T >( cornerPointer, rect.size(), view.stride() );
+    return Array2DView< T >( cornerPointer, rect.size, view.stride() );
 }
 
 template< typename T >
@@ -142,7 +142,7 @@ template< typename T >
 Array3DView< T > crop( Array3DView< T > view, const Box3i& box )
 {
     T* cornerPointer = view.elementPointer( box.origin );
-    return Array3DView< T >( cornerPointer, box.size(), view.stride() );
+    return Array3DView< T >( cornerPointer, box.size, view.stride() );
 }
 
 template< typename T >

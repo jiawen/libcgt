@@ -189,21 +189,21 @@ Array3DView< T >::operator Array3DView< const T >() const
 }
 
 template< typename T >
-Array1DView< T > Array3DView< T >::xySlice( int x, int y )
+Array1DView< T > Array3DView< T >::xySlice( const Vector2i& xy )
 {
-    return Array1DView< T >( elementPointer( { x, y, 0 } ), m_size.z );
+    return Array1DView< T >( elementPointer( { xy.x, xy.y, 0 } ), m_size.z );
 }
 
 template< typename T >
-Array1DView< T > Array3DView< T >::yzSlice( int y, int z )
+Array1DView< T > Array3DView< T >::yzSlice( const Vector2i& yz )
 {
-    return Array1DView< T >( elementPointer( { 0, y, z } ), m_size.x );
+    return Array1DView< T >( elementPointer( { 0, yz.x, yz.y } ), m_size.x );
 }
 
 template< typename T >
-Array1DView< T > Array3DView< T >::xzSlice( int x, int z )
+Array1DView< T > Array3DView< T >::xzSlice( const Vector2i& xz )
 {
-    return Array1DView< T >( elementPointer( { x, 0, z } ), m_size.y );
+    return Array1DView< T >( elementPointer( { xz.x, 0, xz.y } ), m_size.y );
 }
 
 template< typename T >

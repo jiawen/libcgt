@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -22,12 +23,11 @@ Vector3i::Vector3i( int i )
     m_elements[ 2 ] = i;
 }
 
-Vector3i::Vector3i( int x, int y, int z ) :
-    x{ x },
-    y{ y },
-    z{ z }
+Vector3i::Vector3i( int x, int y, int z )
 {
-
+    m_elements[ 0 ] = x;
+    m_elements[ 1 ] = y;
+    m_elements[ 2 ] = z;
 }
 
 Vector3i::Vector3i( const Vector2i& xy, int z )

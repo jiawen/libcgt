@@ -23,6 +23,12 @@ public:
     explicit Box3f( const int3& size );
 
     __inline__ __host__ __device__
+    explicit Box3f( const float3& origin, const float3& size );
+
+    __inline__ __host__ __device__
+    explicit Box3f( const int3& origin, const int3& size );
+
+    __inline__ __host__ __device__
     float left() const;
 
     __inline__ __host__ __device__
@@ -75,28 +81,7 @@ public:
 __inline__ __host__ __device__
 bool intersectLine( const float3& origin, const float3& direction,
     const Box3f& box,
-    float& tNear, float& tFar )
-{
-    // Compute t to each face.
-    float3 rcpDir = 1.0f / direction;
-
-    // Intersect the three "bottom" faces (min of the box).
-    float3 tBottom = rcpDir * (box.minimum() - origin);
-    // Intersect the three "top" faces (max of the box).
-    float3 tTop = rcpDir * (box.maximum() - origin);
-
-    // Find the smallest and largest distances along each axis.
-    float3 tMin = fminf( tBottom, tTop );
-    float3 tMax = fmaxf( tBottom, tTop );
-
-    // tNear is the largest tMin
-    tNear = libcgt::cuda::math::maximum(tMin);
-
-    // tFar is the smallest tMax
-    tFar = libcgt::cuda::math::minimum(tMax);
-
-    return tFar > tNear;
-}
+    float& tNear, float& tFar );
 
 } } // cuda, libcgt
 

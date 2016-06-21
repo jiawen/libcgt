@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 
@@ -121,14 +122,12 @@ void Camera::setWorldFromCamera( const libcgt::core::vecmath::EuclideanTransform
 
 void Camera::setCameraFromWorldMatrix( const Matrix4f& cfw )
 {
-    cfw.decomposeRotationTranslation( m_cameraFromWorld.rotation,
-        m_cameraFromWorld.translation );
+    m_cameraFromWorld = EuclideanTransform::fromMatrix( cfw );
 }
 
 void Camera::setWorldFromCameraMatrix( const Matrix4f& wfc )
 {
-    Matrix4f::inverseEuclidean( wfc ).decomposeRotationTranslation(
-        m_cameraFromWorld.rotation, m_cameraFromWorld.translation);
+    m_cameraFromWorld = inverse( EuclideanTransform::fromMatrix( wfc ) );
 }
 
 void Camera::setLookAt( const Vector3f& eye, const Vector3f& center,

@@ -114,32 +114,32 @@ bool Rect2f::isStandard() const
 
 Rect2f Rect2f::standardized() const
 {
-    Vector2f origin;
-    Vector2f size;
+    Vector2f origin2;
+    Vector2f size2;
 
     if( size.x > 0 )
     {
-        origin.x = origin.x;
-        size.x = size.x;
+        origin2.x = origin.x;
+        size2.x = size.x;
     }
     else
     {
-        origin.x = origin.x + size.x;
-        size.x = -size.x;
+        origin2.x = origin.x + size.x;
+        size2.x = -size.x;
     }
 
     if( size.y > 0 )
     {
-        origin.y = origin.y;
-        size.y = size.y;
+        origin2.y = origin.y;
+        size2.y = size.y;
     }
     else
     {
-        origin.y = origin.y + size.y;
-        size.y = -size.y;
+        origin2.y = origin.y + size.y;
+        size2.y = -size.y;
     }
 
-    return Rect2f( origin, size );
+    return{ origin2, size2 };
 }
 
 std::string Rect2f::toString() const
@@ -159,7 +159,7 @@ Rect2i Rect2f::enlargedToInt() const
 {
     assert( isStandard() );
 
-    Vector2i minimum = floorToInt( origin );
+    Vector2i minimum = floorToInt( leftBottom() );
     Vector2i maximum = ceilToInt( rightTop() );
 
     // size does not need a +1:
@@ -228,10 +228,10 @@ Rect2f Rect2f::united( const Rect2f& r0, const Rect2f& r1 )
 {
     assert( r0.isStandard() && r1.isStandard() );
 
-    Vector2f r0Min = r0.minimum();
-    Vector2f r0Max = r0.maximum();
-    Vector2f r1Min = r1.minimum();
-    Vector2f r1Max = r1.maximum();
+    Vector2f r0Min = r0.leftBottom();
+    Vector2f r0Max = r0.rightTop();
+    Vector2f r1Min = r1.leftBottom();
+    Vector2f r1Max = r1.rightTop();
 
     Vector2f unitedMin{ std::min( r0Min.x, r1Min.x ), std::min( r0Min.y, r1Min.y ) };
     Vector2f unitedMax{ std::max( r0Max.x, r1Max.x ), std::max( r0Max.y, r1Max.y ) };

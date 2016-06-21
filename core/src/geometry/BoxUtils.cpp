@@ -2,173 +2,81 @@
 
 #include <cassert>
 
-void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBox( const Box3f& box,
-    Array1DView< Vector4f > vertexPositions )
+namespace libcgt { namespace core { namespace geometry { namespace boxutils {
+
+void writeSolid( const Box3f& box, Array1DView< Vector4f > vertexPositions )
 {
-    float x = box.origin.x;
-    float y = box.origin.y;
-    float z = box.origin.z;
-    float width = box.size.x;
-    float height = box.size.y;
-    float depth = box.size.z;
-
-    // TODO: z may be flipped on all of these, since z = 0 is the back, z = d is the front
-
-    // front
-    vertexPositions[  0 ] = { x, y, z, 1 };
-    vertexPositions[  1 ] = { x + width, y, z, 1 };
-    vertexPositions[  2 ] = { x, y + height, z, 1 };
-    vertexPositions[  3 ] = { x, y + height, z, 1 };
-    vertexPositions[  4 ] = { x + width, y, z, 1 };
-    vertexPositions[  5 ] = { x + width, y + height, z, 1 };
-
-    // right
-    vertexPositions[  6 ] = { x + width, y, z, 1 };
-    vertexPositions[  7 ] = { x + width, y, z + depth, 1 };
-    vertexPositions[  8 ] = { x + width, y + height, z, 1 };
-    vertexPositions[  9 ] = { x + width, y + height, z, 1 };
-    vertexPositions[ 10 ] = { x + width, y, z + depth, 1 };
-    vertexPositions[ 11 ] = { x + width, y + height, z + depth, 1 };
-
-    // back
-    vertexPositions[ 12 ] = { x + width, y, z + depth, 1 };
-    vertexPositions[ 13 ] = { x, y, z + depth, 1 };
-    vertexPositions[ 14 ] = { x + width, y + height, z + depth, 1 };
-    vertexPositions[ 15 ] = { x + width, y + height, z + depth, 1 };
-    vertexPositions[ 16 ] = { x, y, z + depth, 1 };
-    vertexPositions[ 17 ] = { x, y + height, z + depth, 1 };
-
-    // left
-    vertexPositions[ 18 ] = { x, y, z + depth, 1 };
-    vertexPositions[ 19 ] = { x, y, z, 1 };
-    vertexPositions[ 20 ] = { x, y + height, z + depth, 1 };
-    vertexPositions[ 21 ] = { x, y + height, z + depth, 1 };
-    vertexPositions[ 22 ] = { x, y, z, 1 };
-    vertexPositions[ 23 ] = { x, y + height, z, 1 };
-
-    // top
-    vertexPositions[ 24 ] = { x, y + height, z, 1 };
-    vertexPositions[ 25 ] = { x + width, y + height, z, 1 };
-    vertexPositions[ 26 ] = { x, y + height, z + depth, 1 };
-    vertexPositions[ 27 ] = { x, y + height, z + depth, 1 };
-    vertexPositions[ 28 ] = { x + width, y + height, z, 1 };
-    vertexPositions[ 29 ] = { x + width, y + height, z + depth, 1 };
-
-    // bottom
-    vertexPositions[ 30 ] = { x, y, z + depth, 1 };
-    vertexPositions[ 31 ] = { x + width, y, z + depth, 1 };
-    vertexPositions[ 32 ] = { x, y, z, 1 };
-    vertexPositions[ 33 ] = { x, y, z, 1 };
-    vertexPositions[ 34 ] = { x + width, y, z + depth, 1 };
-    vertexPositions[ 35 ] = { x + width, y, z, 1 };
+    writeSolid( box, Matrix4f::identity(), vertexPositions );
 }
 
-void libcgt::core::geometry::boxutils::writeAxisAlignedSolidBoxTextureCoordinates(
+void writeSolid( const Box3f& box, const Matrix4f& worldFromBox,
+    Array1DView< Vector4f > vertexPositions )
+{
+    // Hypercube corners.
+    Array1D< Vector4f > pos = corners( box );
+    Array1D< int > idx = solidTriangleListIndices();
+
+    for( int i = 0; i < idx.size(); ++i )
+    {
+        vertexPositions[ i ] = worldFromBox * pos[ idx[ i ] ];
+    }
+}
+
+void writeAxisAlignedSolidTextureCoordinates(
     Array1DView< Vector2f > vertexTextureCoordinates )
 {
-    // front
-    vertexTextureCoordinates[  0 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[  1 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[  2 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[  3 ] = vertexTextureCoordinates[ 2 ];
-    vertexTextureCoordinates[  4 ] = vertexTextureCoordinates[ 1 ];
-    vertexTextureCoordinates[  5 ] = Vector2f{ 1, 1 };
+    Array1D< Vector2f > uv =
+    {
+        { 0, 0 },
+        { 1, 0 },
+        { 0, 1 },
+        { 1, 1 }
+    };
 
-    // right
-    vertexTextureCoordinates[  6 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[  7 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[  8 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[  9 ] = vertexTextureCoordinates[ 8 ];
-    vertexTextureCoordinates[ 10 ] = vertexTextureCoordinates[ 7 ];
-    vertexTextureCoordinates[ 11 ] = Vector2f{ 1, 1 };
+    Array1D< int > idx =
+    {
+        0, 1, 2, 2, 1, 3,
+        0, 1, 2, 2, 1, 3,
+        0, 1, 2, 2, 1, 3,
+        0, 1, 2, 2, 1, 3,
+        0, 1, 2, 2, 1, 3,
+        0, 1, 2, 2, 1, 3
+    };
 
-    // back
-    vertexTextureCoordinates[ 12 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[ 13 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[ 14 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[ 15 ] = vertexTextureCoordinates[ 14 ];
-    vertexTextureCoordinates[ 16 ] = vertexTextureCoordinates[ 13 ];
-    vertexTextureCoordinates[ 17 ] = Vector2f{ 1, 1 };
-
-    // left
-    vertexTextureCoordinates[ 18 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[ 19 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[ 20 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[ 21 ] = vertexTextureCoordinates[ 20 ];
-    vertexTextureCoordinates[ 22 ] = vertexTextureCoordinates[ 19 ];
-    vertexTextureCoordinates[ 23 ] = Vector2f{ 1, 1 };
-
-    // top
-    vertexTextureCoordinates[ 24 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[ 25 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[ 26 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[ 27 ] = vertexTextureCoordinates[ 26 ];
-    vertexTextureCoordinates[ 28 ] = vertexTextureCoordinates[ 25 ];
-    vertexTextureCoordinates[ 29 ] = Vector2f{ 1, 1 };
-
-    // bottom
-    vertexTextureCoordinates[ 30 ] = Vector2f{ 0, 0 };
-    vertexTextureCoordinates[ 31 ] = Vector2f{ 1, 0 };
-    vertexTextureCoordinates[ 32 ] = Vector2f{ 0, 1 };
-    vertexTextureCoordinates[ 33 ] = vertexTextureCoordinates[ 32 ];
-    vertexTextureCoordinates[ 34 ] = vertexTextureCoordinates[ 31 ];
-    vertexTextureCoordinates[ 35 ] = Vector2f{ 1, 1 };
+    for( int i = 0; i < idx.size(); ++i )
+    {
+        vertexTextureCoordinates[ i ] = uv[ idx[ i ] ];
+    }
 }
 
-void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeBox( const Box3f& box,
+void writeWireframe( const Box3f& box,
     Array1DView< Vector4f > vertexPositions )
 {
-    float x = box.origin.x;
-    float y = box.origin.y;
-    float z = box.origin.z;
-    float width = box.size.x;
-    float height = box.size.y;
-    float depth = box.size.z;
-
-    // front
-    vertexPositions[  0 ] = Vector4f( x, y, z, 1 );
-    vertexPositions[  1 ] = Vector4f( x + width, y, z, 1 );
-
-    vertexPositions[  2 ] = vertexPositions[  1 ];
-    vertexPositions[  3 ] = Vector4f( x + width, y + height, z, 1 );
-
-    vertexPositions[  4 ] = vertexPositions[  3 ];
-    vertexPositions[  5 ] = Vector4f( x, y + height, z, 1 );
-
-    // right
-    vertexPositions[  6 ] = Vector4f( x + width, y, z, 1 );
-    vertexPositions[  7 ] = Vector4f( x + width, y, z + depth, 1 );
-
-    vertexPositions[  8 ] = vertexPositions[  7 ];
-    vertexPositions[  9 ] = Vector4f( x + width, y + height, z + depth, 1 );
-
-    vertexPositions[ 10 ] = vertexPositions[  9 ];
-    vertexPositions[ 11 ] = Vector4f( x + width, y + height, z, 1 );
-
-    // back
-    vertexPositions[ 12 ] = Vector4f( x + width, y, z + depth, 1 );
-    vertexPositions[ 13 ] = Vector4f( x, y, z + depth, 1 );
-
-    vertexPositions[ 14 ] = vertexPositions[ 13 ];
-    vertexPositions[ 15 ] = Vector4f( x, y + height, z + depth, 1 );
-
-    vertexPositions[ 16 ] = vertexPositions[ 15 ];
-    vertexPositions[ 17 ] = Vector4f( x + width, y + height, z + depth, 1 );
-
-    // left
-    vertexPositions[ 18 ] = Vector4f( x, y, z + depth, 1 );
-    vertexPositions[ 19 ] = Vector4f( x, y, z, 1 );
-
-    vertexPositions[ 20 ] = vertexPositions[ 19 ];
-    vertexPositions[ 21 ] = Vector4f( x, y + height, z, 1 );
-
-    vertexPositions[ 22 ] = vertexPositions[ 21 ];
-    vertexPositions[ 23 ] = Vector4f( x, y + height, z + depth, 1 );
+    writeWireframe( box, Matrix4f::identity(), vertexPositions );
 }
 
-void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
-    const Box3f& box, const Vector3i& resolution,
+void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
     Array1DView< Vector4f > vertexPositions )
+{
+    // Hypercube corners.
+    Array1D< Vector4f > pos = corners( box );
+    Array1D< int > idx = wireframeLineListIndices();
+
+    for( int i = 0; i < idx.size(); ++i )
+    {
+        vertexPositions[ i ] = worldFromBox * pos[ idx[ i ] ];
+    }
+}
+
+void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
+    Array1DView< Vector4f > vertexPositions )
+{
+    writeWireframeGrid( box, resolution, Matrix4f::identity(),
+        vertexPositions );
+}
+
+void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
+    const Matrix4f& worldFromBox, Array1DView< Vector4f > vertexPositions )
 {
     Vector3f delta = box.size / resolution;
     Vector3f dx( 1, 0, 0 );
@@ -181,8 +89,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int y = 0; y < resolution.y + 1; ++y )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin + y * delta.y * dy + z * delta.z * dz, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + box.size.x * dx + y * delta.y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k ] = worldFromBox * Vector4f( box.origin + y * delta.y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k + 1 ] = worldFromBox * Vector4f( box.origin + box.size.x * dx + y * delta.y * dy + z * delta.z * dz, 1 );
 
             ++k;
         }
@@ -192,8 +100,8 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int x = 0; x < resolution.x + 1; ++x )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin + x * delta.x * dx + z * delta.z * dz, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + x * delta.x * dx + box.size.y * dy + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k ] = worldFromBox * Vector4f( box.origin + x * delta.x * dx + z * delta.z * dz, 1 );
+            vertexPositions[ 2 * k + 1 ] = worldFromBox * Vector4f( box.origin + x * delta.x * dx + box.size.y * dy + z * delta.z * dz, 1 );
 
             ++k;
         }
@@ -203,52 +111,102 @@ void libcgt::core::geometry::boxutils::writeAxisAlignedWireframeGrid(
     {
         for( int x = 0; x < resolution.x + 1; ++x )
         {
-            vertexPositions[ 2 * k ] = Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy, 1 );
-            vertexPositions[ 2 * k + 1 ] = Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy + box.size.z * dz, 1 );
+            vertexPositions[ 2 * k ] = worldFromBox * Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy, 1 );
+            vertexPositions[ 2 * k + 1 ] = worldFromBox * Vector4f( box.origin + x * delta.x * dx + y * delta.y * dy + box.size.z * dz, 1 );
 
             ++k;
         }
     }
 }
 
-Box3f libcgt::core::geometry::boxutils::makeCube( const Vector3f& center, float sideLength )
+Box3f makeCube( const Vector3f& center, float sideLength )
 {
     Vector3f side{ sideLength };
     return{ center - 0.5f * side, side };
 }
 
-std::vector< Vector3f > libcgt::core::geometry::boxutils::corners( const Box3f& b )
+Array1D< Vector4f > corners( const Box3f& b )
 {
-    std::vector< Vector3f > out( 8 );
+    Array1D< Vector4f > out( 8 );
 
     for( int i = 0; i < 8; ++i )
     {
         out[ i ] =
-            Vector3f
-            (
-                ( i & 1 ) ? b.minimum().x : b.maximum().x,
-                ( i & 2 ) ? b.minimum().y : b.maximum().y,
-                ( i & 4 ) ? b.minimum().z : b.maximum().z
-            );
+        {
+            ( i & 1 ) ? b.minimum().x : b.maximum().x,
+            ( i & 2 ) ? b.minimum().y : b.maximum().y,
+            ( i & 4 ) ? b.minimum().z : b.maximum().z,
+            1.0f
+        };
     }
 
     return out;
 }
 
-std::vector< Vector3i > libcgt::core::geometry::boxutils::corners( const Box3i& b )
+Array1D< Vector3i > corners( const Box3i& b )
 {
-    std::vector< Vector3i > out( 8 );
+    Array1D< Vector3i > out( 8 );
 
     for( int i = 0; i < 8; ++i )
     {
         out[ i ] =
-            Vector3i
-            {
-                ( i & 1 ) ? b.minimum().x : b.maximum().x,
-                ( i & 2 ) ? b.minimum().y : b.maximum().y,
-                ( i & 4 ) ? b.minimum().z : b.maximum().z
-            };
+        {
+            ( i & 1 ) ? b.minimum().x : b.maximum().x,
+            ( i & 2 ) ? b.minimum().y : b.maximum().y,
+            ( i & 4 ) ? b.minimum().z : b.maximum().z
+        };
     }
 
     return out;
 }
+
+Array1D< int > solidTriangleListIndices()
+{
+    return Array1D< int >
+    {
+        // front
+        4, 5, 6,
+        6, 5, 7,
+
+        // right
+        5, 1, 7,
+        7, 1, 3,
+
+        // back
+        1, 0, 2,
+        2, 0, 3,
+
+        // left
+        0, 4, 6,
+        6, 4, 2,
+
+        // bottom
+        0, 1, 4,
+        4, 1, 5,
+
+        // top
+        6, 7, 2,
+        2, 7, 3
+    };
+}
+
+Array1D< int > wireframeLineListIndices()
+{
+    return Array1D< int >
+    {
+        0, 1,
+        2, 3,
+        4, 5,
+        6, 7,
+        1, 3,
+        5, 7,
+        0, 2,
+        4, 6,
+        0, 4,
+        2, 6,
+        1, 5,
+        3, 7
+    };
+}
+
+} } } } // boxutils, geometry, core, libcgt

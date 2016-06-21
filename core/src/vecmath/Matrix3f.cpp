@@ -1,6 +1,7 @@
 #include "vecmath/Matrix3f.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -409,10 +410,6 @@ Matrix3f Matrix3f::scaleTranslate( const Vector2f& srcOrigin, const Vector2f& sr
     return t1 * s * t0;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
-
 Matrix3f operator + ( const Matrix3f& x, const Matrix3f& y )
 {
     Matrix3f sum;
@@ -464,6 +461,11 @@ Matrix3f operator * ( float f, const Matrix3f& m )
 Matrix3f operator * ( const Matrix3f& m, float f )
 {
     return f * m;
+}
+
+Matrix3f operator / ( const Matrix3f& m, float f )
+{
+    return ( 1.0f / f ) * m;
 }
 
 Vector3f operator * ( const Matrix3f& m, const Vector3f& v )

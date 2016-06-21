@@ -137,43 +137,43 @@ bool Box3f::isStandard() const
 
 Box3f Box3f::standardized() const
 {
-    Vector3f origin;
-    Vector3f size;
+    Vector3f origin2;
+    Vector3f size2;
 
     if( size.x > 0 )
     {
-        origin.x = origin.x;
-        size.x = size.x;
+        origin2.x = origin.x;
+        size2.x = size.x;
     }
     else
     {
-        origin.x = origin.x + size.x;
-        size.x = -size.x;
+        origin2.x = origin.x + size.x;
+        size2.x = -size.x;
     }
 
     if( size.y > 0 )
     {
-        origin.y = origin.y;
-        size.y = size.y;
+        origin2.y = origin.y;
+        size2.y = size.y;
     }
     else
     {
-        origin.y = origin.y + size.y;
-        size.y = -size.y;
+        origin2.y = origin.y + size.y;
+        size2.y = -size.y;
     }
 
     if( size.z > 0 )
     {
-        origin.z = origin.z;
-        size.z = size.z;
+        origin2.z = origin.z;
+        size2.z = size.z;
     }
     else
     {
-        origin.z = origin.z + size.z;
-        size.z = -size.z;
+        origin2.z = origin.z + size.z;
+        size2.z = -size.z;
     }
 
-    return Box3f{ origin, size };
+    return{ origin, size };
 }
 
 std::string Box3f::toString() const

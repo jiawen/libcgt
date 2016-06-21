@@ -19,10 +19,8 @@ public:
 
     DeviceArray3D() = default;
     DeviceArray3D( const Vector3i& size );
-    DeviceArray3D( Array3DView< const T > src );
     DeviceArray3D( const DeviceArray3D< T >& copy );
     DeviceArray3D( DeviceArray3D< T >&& move );
-    DeviceArray3D< T >& operator = ( Array3DView< const T > src );
     DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
     DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
     virtual ~DeviceArray3D();
@@ -36,7 +34,7 @@ public:
     Vector3i size() const;
     int numElements() const;
 
-    // The number of bytes between rows within any slice
+    // The number of bytes between rows within any slice.
     size_t rowPitch() const;
 
     // The number of bytes between slices
@@ -60,17 +58,15 @@ public:
 
     // Get an element of the array from the device.
     // WARNING: probably slow as it incurs a call to cudaMemcpy().
-    T get( int x, int y, int z ) const;
-    T get( const Vector3i& subscript ) const;
+    T get( const Vector3i& xyz ) const;
 
     // Get an element of the array from the device.
     // WARNING: probably slow as it incurs a call to cudaMemcpy().
-    T operator () ( int x, int y, int z ) const;
-    T operator [] ( const Vector3i& subscript ) const;
+    T operator [] ( const Vector3i& xyz ) const;
 
     // Set an element of the array with data from the host.
     // WARNING: probably slow as it incurs a call to cudaMemcpy().
-    void set( int x, int y, int z, const T& value );
+    void set( const Vector3i& xyz, const T& value );
 
     // TODO(jiawen): move these into utility functions.
     // Copy from another DeviceArray3D to this
@@ -88,13 +84,10 @@ public:
     KernelArray3D< T > kernelArray() const;
 
     void load( const char* filename );
-    void save( const char* filename ) const;
 
 private:
 
     Vector3i m_size;
-
-    size_t m_sizeInBytes = 0;
 
     // We allocate memory by first making a cudaExtent, which expects:
     // width in *bytes*, height and depth in elements.

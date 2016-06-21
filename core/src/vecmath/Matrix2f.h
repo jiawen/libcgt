@@ -68,12 +68,15 @@ public:
 
 Matrix2f operator + ( const Matrix2f& x, const Matrix2f& y );
 Matrix2f operator - ( const Matrix2f& x, const Matrix2f& y );
-// negate
+// Negate.
 Matrix2f operator - ( const Matrix2f& x );
 
-// Matrix-Scalar multiplication
+// Multiply matrix by scalar.
 Matrix2f operator * ( float f, const Matrix2f& m );
 Matrix2f operator * ( const Matrix2f& m, float f );
+
+// Divide matrix by scalar.
+Matrix2f operator / ( const Matrix2f& m, float f );
 
 // Matrix-Vector multiplication
 // 2x2 * 2x1 ==> 2x1

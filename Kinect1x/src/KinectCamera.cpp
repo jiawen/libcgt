@@ -1,21 +1,28 @@
-#include "QKinect.h"
+#include "KinectCamera.h"
 
+#if KINECT1X_ENABLE_SPEECH
 // For string IO and manipulation.
 #include <strsafe.h>
 #include <conio.h>
+#endif
 
 #include <common/ArrayUtils.h>
 #include <imageproc/Swizzle.h>
 
 #include "KinectUtils.h"
 
-// static
-std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > QKinect::s_jointIndicesForBones;
-// static
-std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int > QKinect::s_boneIndicesForJoints;
+using libcgt::core::arrayutils::componentView;
+using libcgt::core::arrayutils::copy;
+using libcgt::core::cameras::Intrinsics;
+using libcgt::core::vecmath::EuclideanTransform;
 
 // static
-int QKinect::numDevices()
+std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > KinectCamera::s_jointIndicesForBones;
+// static
+std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int > KinectCamera::s_boneIndicesForJoints;
+
+// static
+int KinectCamera::numDevices()
 {
     int nDevices;
     NuiGetSensorCount( &nDevices );
@@ -24,19 +31,126 @@ int QKinect::numDevices()
 }
 
 // static
-QKinect* QKinect::create
-(
-    int deviceIndex,
-    DWORD nuiFlags,
-    NUI_IMAGE_RESOLUTION colorResolution,
-    NUI_IMAGE_RESOLUTION depthResolution,
-    bool usingExtendedDepth,
-    QVector< QString > recognizedPhrases
-)
+uint16_t KinectCamera::minimumDepthMillimeters()
 {
-    QKinect* pKinect = new QKinect( deviceIndex );
+    return NUI_IMAGE_DEPTH_MINIMUM >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
+}
 
-    HRESULT hr = pKinect->initialize( nuiFlags, colorResolution, depthResolution, usingExtendedDepth, recognizedPhrases );
+// static
+uint16_t KinectCamera::maximumDepthMillimeters()
+{
+    return NUI_IMAGE_DEPTH_MAXIMUM >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
+}
+
+// static
+Range1f KinectCamera::depthRangeMeters()
+{
+    return Range1f::fromMinMax
+    (
+        minimumDepthMillimeters() * 0.001f,
+        maximumDepthMillimeters() * 0.001f
+    );
+}
+
+// static
+uint16_t KinectCamera::nearModeMinimumDepthMillimeters()
+{
+    return NUI_IMAGE_DEPTH_MINIMUM_NEAR_MODE >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
+}
+
+// static
+uint16_t KinectCamera::nearModeMaximumDepthMillimeters()
+{
+    return NUI_IMAGE_DEPTH_MAXIMUM_NEAR_MODE >> NUI_IMAGE_PLAYER_INDEX_SHIFT;
+}
+
+// static
+Range1f KinectCamera::nearModeDepthRangeMeters()
+{
+    return Range1f::fromMinMax
+    (
+        nearModeMinimumDepthMillimeters() * 0.001f,
+        nearModeMaximumDepthMillimeters() * 0.001f
+    );
+}
+
+// static
+Intrinsics KinectCamera::colorIntrinsics(
+    NUI_IMAGE_RESOLUTION resolution )
+{
+    // #define is on a 640x480 image.
+    Vector2f fl{ NUI_CAMERA_COLOR_NOMINAL_FOCAL_LENGTH_IN_PIXELS };
+    Vector2f pp{ 320, 240 };
+
+    switch( resolution )
+    {
+    case NUI_IMAGE_RESOLUTION_80x60:
+        fl *= 0.125f;
+        pp *= 0.125f;
+        break;
+    case NUI_IMAGE_RESOLUTION_320x240:
+        fl *= 0.5f;
+        pp *= 0.5f;
+        break;
+    case NUI_IMAGE_RESOLUTION_640x480:
+        break;
+    case NUI_IMAGE_RESOLUTION_1280x960:
+        fl *= 2;
+        pp *= 2;
+        break;
+    default:
+        fl = Vector2f{ 0, 0 };
+        pp = Vector2f{ 0.0f, 0.0f };
+        break;
+    }
+
+    return Intrinsics{ fl, pp };
+}
+
+// static
+Intrinsics KinectCamera::depthIntrinsics(
+    NUI_IMAGE_RESOLUTION resolution )
+{
+    // #define is on a 320x240 image.
+    Vector2f fl{ NUI_CAMERA_DEPTH_NOMINAL_FOCAL_LENGTH_IN_PIXELS };
+    Vector2f pp{ 160, 120 };
+
+    switch( resolution )
+    {
+    case NUI_IMAGE_RESOLUTION_320x240:
+        break;
+    case NUI_IMAGE_RESOLUTION_640x480:
+        fl *= 2;
+        pp *= 2;
+        break;
+    default:
+        fl = Vector2f{ 0, 0 };
+        pp = Vector2f{ 0.0f, 0.0f };
+        break;
+    }
+
+    return Intrinsics{ fl, pp };
+}
+
+// static
+EuclideanTransform KinectCamera::colorFromDepthExtrinsics()
+{
+    return
+    {
+        Matrix3f::identity(),
+        { -25.4f, -0.13f, -2.18f }
+    };
+}
+
+// static
+KinectCamera* KinectCamera::create( int deviceIndex, DWORD nuiFlags,
+    NUI_IMAGE_RESOLUTION colorResolution,
+    NUI_IMAGE_RESOLUTION depthResolution )
+{
+    KinectCamera* pKinect = new KinectCamera( deviceIndex );
+
+    HRESULT hr = pKinect->initialize( nuiFlags,
+        colorResolution, depthResolution );
     if( SUCCEEDED( hr ) )
     {
         return pKinect;
@@ -51,9 +165,9 @@ QKinect* QKinect::create
 }
 
 // static
-const std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > >& QKinect::jointIndicesForBones()
+const std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > >& KinectCamera::jointIndicesForBones()
 {
-    if( QKinect::s_jointIndicesForBones.size() == 0 )
+    if( KinectCamera::s_jointIndicesForBones.size() == 0 )
     {
         s_jointIndicesForBones.push_back( std::make_pair( NUI_SKELETON_POSITION_HIP_CENTER, NUI_SKELETON_POSITION_SPINE ) );
         s_jointIndicesForBones.push_back( std::make_pair( NUI_SKELETON_POSITION_SPINE, NUI_SKELETON_POSITION_SHOULDER_CENTER ) );
@@ -80,7 +194,7 @@ const std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION
 }
 
 // static
-const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& QKinect::boneIndicesForJoints()
+const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& KinectCamera::boneIndicesForJoints()
 {
     if( s_boneIndicesForJoints.size() == 0 )
     {
@@ -96,8 +210,9 @@ const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_IN
 }
 
 // virtual
-QKinect::~QKinect()
+KinectCamera::~KinectCamera()
 {
+#if KINECT1X_ENABLE_SPEECH
     if( m_pKS != nullptr )
     {
         m_pKS->StopCapture();
@@ -112,6 +227,7 @@ QKinect::~QKinect()
     SAFE_RELEASE( m_pGrammar );
     SAFE_RELEASE( m_pPS );
     SAFE_RELEASE( m_pDMO );
+#endif
 
     // no need to delete the streams, they are released per frame
     if( m_hNextDepthFrameEvent != NULL &&
@@ -141,53 +257,65 @@ QKinect::~QKinect()
     }
 }
 
-int QKinect::elevationAngle() const
+int KinectCamera::elevationAngle() const
 {
     LONG degrees;
     m_pSensor->NuiCameraElevationGetAngle( &degrees );
     return static_cast< int >( degrees );
 }
 
-bool QKinect::setElevationAngle( int degrees )
+bool KinectCamera::setElevationAngle( int degrees )
 {
     HRESULT hr = m_pSensor->NuiCameraElevationSetAngle( degrees );
     return SUCCEEDED( hr );
 }
 
-bool QKinect::isNearModeEnabled() const
+bool KinectCamera::isNearModeEnabled() const
 {
     return( ( m_depthStreamFlags & NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE ) != 0 );
 }
 
-bool QKinect::setNearModeEnabled( bool b )
+bool KinectCamera::setNearModeEnabled( bool b )
 {
-    if( b )
+    // Only do something if the new state is different.
+    if( b ^ isNearModeEnabled() )
     {
-        m_depthStreamFlags |= NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        // NuiImageStreamSetImageFrameFlags will fail with E_INVALID_ARG if
+        // depth was not enabled.
+        DWORD flags =
+            m_depthStreamFlags | NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        HRESULT hr = NuiImageStreamSetImageFrameFlags(
+            m_hDepthStreamHandle, m_depthStreamFlags );
+        if( SUCCEEDED( hr ) )
+        {
+            m_depthStreamFlags = flags;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     else
     {
-        m_depthStreamFlags &= ~NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        return true;
     }
-
-    HRESULT hr = NuiImageStreamSetImageFrameFlags( m_hDepthStreamHandle, m_depthStreamFlags );
-    return SUCCEEDED( hr );
 }
 
-bool QKinect::setInfraredEmitterEnabled( bool b )
+bool KinectCamera::setInfraredEmitterEnabled( bool b )
 {
     HRESULT hr = m_pSensor->NuiSetForceInfraredEmitterOff( b );
     return SUCCEEDED( hr );
 }
 
-bool QKinect::rawAccelerometerReading( Vector4f& reading ) const
+bool KinectCamera::rawAccelerometerReading( Vector4f& reading ) const
 {
     Vector4* pReading = reinterpret_cast<Vector4*>( &reading );
     HRESULT hr = m_pSensor->NuiAccelerometerGetCurrentReading( pReading );
     return SUCCEEDED( hr );
 }
 
-Vector3f QKinect::upVectorFromAccelerometer() const
+Vector3f KinectCamera::upVectorFromAccelerometer() const
 {
     Vector4f reading;
     Vector4* pReading = reinterpret_cast< Vector4* >( &reading );
@@ -195,31 +323,163 @@ Vector3f QKinect::upVectorFromAccelerometer() const
     return -reading.xyz.normalized();
 }
 
-QKinect::Event QKinect::pollColor( Array2DView< uint8x4 > bgra, int waitIntervalMilliseconds )
+Intrinsics KinectCamera::colorIntrinsics() const
+{
+    return KinectCamera::colorIntrinsics( m_colorResolution );
+}
+
+Intrinsics KinectCamera::depthIntrinsics() const
+{
+    return KinectCamera::depthIntrinsics( m_depthResolution );
+}
+
+KinectCamera::Event KinectCamera::poll( NUI_SKELETON_FRAME& skeleton,
+    Array2DView< uint8x4 > bgra,
+    int64_t& bgraTimestamp, int& bgraFrameNumber,
+    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
+    int64_t& depthTimestamp, int& depthFrameNumber,
+    bool& depthCapturedWithNearMode,
+    int waitIntervalMilliseconds )
+{
+    const int NUM_EVENTS = 3;
+    HANDLE eventHandles[ NUM_EVENTS ] =
+    {
+        m_hNextSkeletonEvent,
+        m_hNextColorFrameEvent,
+        m_hNextDepthFrameEvent
+    };
+    KinectCamera::Event eventEnums[ NUM_EVENTS ] =
+    {
+        KinectCamera::Event::SKELETON,
+        KinectCamera::Event::COLOR,
+        KinectCamera::Event::DEPTH
+    };
+
+    DWORD waitMultipleResult = WaitForMultipleObjects( NUM_EVENTS,
+        eventHandles, FALSE, waitIntervalMilliseconds );
+    if( waitMultipleResult == WAIT_TIMEOUT )
+    {
+        return KinectCamera::Event::TIMEOUT;
+    }
+
+    int eventIndex = waitMultipleResult - WAIT_OBJECT_0;
+    if( eventIndex >= NUM_EVENTS )
+    {
+        return KinectCamera::Event::TIMEOUT;
+    }
+    KinectCamera::Event e = eventEnums[ eventIndex ];
+    switch( e )
+    {
+        case KinectCamera::Event::SKELETON:
+        {
+            if( handleGetSkeletonFrame( skeleton ) )
+            {
+                return e;
+            }
+        }
+        case KinectCamera::Event::COLOR:
+        {
+            if( handleGetColorFrame( bgra, bgraTimestamp, bgraFrameNumber ) )
+            {
+                return e;
+            }
+        }
+        case KinectCamera::Event::DEPTH:
+        {
+            if( handleGetExtendedDepthFrame( depth, playerIndex,
+                depthTimestamp, depthFrameNumber, depthCapturedWithNearMode ) )
+            {
+                return e;
+            }
+        }
+        default:
+            return KinectCamera::Event::FAILED;
+    }
+}
+
+KinectCamera::Event KinectCamera::pollColorAndExtendedDepth( Array2DView< uint8x4 > bgra,
+    int64_t& bgraTimestamp, int& bgraFrameNumber,
+    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
+    int64_t& depthTimestamp, int& depthFrameNumber,
+    bool& depthCapturedWithNearMode,
+    int waitIntervalMilliseconds )
+{
+    HANDLE eventHandles[] = { m_hNextColorFrameEvent, m_hNextDepthFrameEvent };
+    DWORD waitMultipleResult = WaitForMultipleObjects( 2, eventHandles, TRUE,
+        waitIntervalMilliseconds );
+    if( waitMultipleResult == WAIT_TIMEOUT )
+    {
+        return KinectCamera::Event::TIMEOUT;
+    }
+
+    // Succeeded in waiting on all of them.
+    if( waitMultipleResult >= WAIT_OBJECT_0 &&
+        waitMultipleResult < WAIT_OBJECT_0 + 2 )
+    {
+        bool rgbSucceeded = handleGetColorFrame( bgra, bgraTimestamp,
+            bgraFrameNumber );
+        bool depthSucceeded = handleGetExtendedDepthFrame( depth, playerIndex,
+            depthTimestamp, depthFrameNumber, depthCapturedWithNearMode );
+        if( rgbSucceeded && depthSucceeded )
+        {
+            return KinectCamera::Event::RGBD;
+        }
+    }
+    return KinectCamera::Event::FAILED;
+}
+
+KinectCamera::Event KinectCamera::pollColor( Array2DView< uint8x4 > bgra,
+    int64_t& timestamp, int& frameNumber,
+    int waitIntervalMilliseconds )
 {
     DWORD waitResult = WaitForSingleObject( m_hNextColorFrameEvent,
         waitIntervalMilliseconds );
 
     if( waitResult == WAIT_OBJECT_0 )
     {
-        bool succeeded = handleGetColorFrame( bgra );
+        bool succeeded = handleGetColorFrame( bgra, timestamp, frameNumber );
         if( succeeded )
         {
-            return QKinect::Event::COLOR;
+            return KinectCamera::Event::COLOR;
         }
         else
         {
-            return QKinect::Event::FAILED;
+            return KinectCamera::Event::FAILED;
         }
     }
     else
     {
-        return QKinect::Event::TIMEOUT;
+        return KinectCamera::Event::TIMEOUT;
     }
 }
 
-QKinect::Event QKinect::pollDepth( Array2DView< uint16_t > depth,
+KinectCamera::Event KinectCamera::pollExtendedDepth( Array2DView< uint16_t > depth,
     Array2DView< uint16_t > playerIndex,
+    int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode,
+    int waitIntervalMilliseconds )
+{
+    DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent,
+        waitIntervalMilliseconds );
+    if( waitResult == WAIT_OBJECT_0 )
+    {
+        bool succeeded = handleGetExtendedDepthFrame( depth, playerIndex,
+            timestamp, frameNumber, capturedWithNearMode );
+        if( succeeded )
+        {
+            return KinectCamera::Event::DEPTH;
+        }
+        else
+        {
+            return KinectCamera::Event::FAILED;
+        }
+    }
+    else
+    {
+        return KinectCamera::Event::TIMEOUT;
+    }
+}
+
+KinectCamera::Event KinectCamera::pollPackedDepth( Array2DView< uint16_t > packedDepth,
     int waitIntervalMilliseconds )
 {
     DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent,
@@ -227,75 +487,24 @@ QKinect::Event QKinect::pollDepth( Array2DView< uint16_t > depth,
 
     if( waitResult == WAIT_OBJECT_0 )
     {
-        bool succeeded = handleGetDepthFrame( depth, playerIndex );
+        bool succeeded = handleGetPackedDepthFrame( packedDepth );
         if( succeeded )
         {
-            return QKinect::Event::DEPTH;
+            return KinectCamera::Event::DEPTH;
         }
         else
         {
-            return QKinect::Event::FAILED;
+            return KinectCamera::Event::FAILED;
         }
     }
     else
     {
-        return QKinect::Event::TIMEOUT;
+        return KinectCamera::Event::TIMEOUT;
     }
 }
 
-QKinect::Event QKinect::poll( NUI_SKELETON_FRAME& skeleton,
-    Array2DView< uint8x4 > bgra,
-    Array2DView< uint16_t > depth,
-    Array2DView< uint16_t > playerIndex,
-    int waitIntervalMilliseconds )
-{
-    DWORD nEvents = static_cast< DWORD >( m_eventHandles.size() );
-    DWORD waitMultipleResult = WaitForMultipleObjects( nEvents, m_eventHandles.data(), FALSE, waitIntervalMilliseconds );
-
-    if( waitMultipleResult == WAIT_TIMEOUT )
-    {
-        return QKinect::Event::TIMEOUT;
-    }
-
-    int eventIndex = waitMultipleResult - WAIT_OBJECT_0;
-    if( eventIndex >= static_cast< int >( nEvents ) )
-    {
-        return QKinect::Event::TIMEOUT;
-    }
-
-    bool succeeded = false;
-
-    QKinect::Event e = m_eventEnums[ eventIndex ];
-    switch( e )
-    {
-    case QKinect::Event::SKELETON:
-        {
-            succeeded = handleGetSkeletonFrame( skeleton );
-            break;
-        }
-    case QKinect::Event::COLOR:
-        {
-            succeeded = handleGetColorFrame( bgra );
-            break;
-        }
-    case QKinect::Event::DEPTH:
-        {
-            succeeded = handleGetDepthFrame( depth, playerIndex );
-            break;
-        }
-    }
-
-    if( succeeded )
-    {
-        return e;
-    }
-    else
-    {
-        return QKinect::Event::FAILED;
-    }
-}
-
-bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
+#if KINECT1X_ENABLE_SPEECH
+bool KinectCamera::pollSpeech( QString& phrase, float& confidence, int waitInterval )
 {
     HRESULT hr = E_FAIL;
     SPEVENT curEvent;
@@ -347,56 +556,37 @@ bool QKinect::pollSpeech( QString& phrase, float& confidence, int waitInterval )
 
     return SUCCEEDED( hr );
 }
+#endif
 
-bool QKinect::isUsingDepth() const
+bool KinectCamera::isUsingColor() const
+{
+    return m_usingColor;
+}
+
+bool KinectCamera::isUsingDepth() const
 {
     return m_usingDepth;
 }
 
-bool QKinect::isUsingPlayerIndex() const
+bool KinectCamera::isUsingPlayerIndex() const
 {
     return m_usingPlayerIndex;
 }
 
-bool QKinect::isUsingExtendedDepth() const
+bool KinectCamera::isUsingSkeleton() const
 {
-    return m_usingExtendedDepth;
+    return m_usingSkeleton;
 }
 
-QKinect::QKinect( int deviceIndex ) :
-
-    m_deviceIndex( deviceIndex ),
-    m_pSensor( nullptr ),
-
-    m_hNextSkeletonEvent( NULL ),
-    m_hNextColorFrameEvent( NULL ),
-    m_hNextDepthFrameEvent( NULL ),
-
-    m_hColorStreamHandle( NULL ),
-    m_hDepthStreamHandle( NULL ),
-
-    m_pDMO( nullptr ),
-    m_pPS( nullptr ),
-    m_pContext( nullptr ),
-    m_pKS( nullptr ),
-    m_pStream( nullptr ),
-    m_pRecognizer( nullptr ),
-    m_pSpStream( nullptr ),
-    m_pEngineToken( nullptr ),
-    m_pGrammar( nullptr )
-
+KinectCamera::KinectCamera( int deviceIndex ) :
+    m_deviceIndex( deviceIndex )
 {
 
 }
 
-HRESULT QKinect::initialize
-(
-    DWORD nuiFlags,
+HRESULT KinectCamera::initialize( DWORD nuiFlags,
     NUI_IMAGE_RESOLUTION colorResolution,
-    NUI_IMAGE_RESOLUTION depthResolution,
-    bool usingExtendedDepth,
-    QVector< QString > recognizedPhrases
-)
+    NUI_IMAGE_RESOLUTION depthResolution )
 {
     // create an instance
     INuiSensor* pSensor;
@@ -408,22 +598,26 @@ HRESULT QKinect::initialize
         {
             m_pSensor = pSensor;
 
-            m_usingColor = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR );
+            m_usingColor = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR ) != 0;
 
-            m_usingDepth = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
-                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX );
+            m_usingDepth =
+            (
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX )
+            ) != 0;
 
-            m_usingSkeleton = nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON;
-            m_usingPlayerIndex = nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX;
+            m_usingSkeleton =
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON ) != 0;
+            m_usingPlayerIndex =
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX )
+                != 0;
             if( m_usingPlayerIndex && !m_usingSkeleton )
             {
                 fprintf( stderr, "Warning: player index is requested but skeleton tracking is not enabled: enabling...\n" );
                 m_usingSkeleton = true;
             }
 
-            m_usingExtendedDepth = usingExtendedDepth;
-
-            m_usingAudio = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO );
+            m_usingAudio = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO ) != 0;
 
             if( SUCCEEDED( hr ) && m_usingColor )
             {
@@ -432,7 +626,8 @@ HRESULT QKinect::initialize
 
             if( SUCCEEDED( hr ) && m_usingDepth )
             {
-                hr = initializeDepthStream( m_usingPlayerIndex, depthResolution, usingExtendedDepth );
+                hr = initializeDepthStream( depthResolution,
+                    m_usingPlayerIndex );
             }
 
             // if depth is enabled, initialize skeleton tracking
@@ -441,47 +636,38 @@ HRESULT QKinect::initialize
                 hr = initializeSkeletonTracking();
             }
 
+#if KINECT1X_ENABLE_SPEECH
             if( SUCCEEDED( hr ) && m_usingAudio )
             {
                 hr = initializeSpeechRecognition( recognizedPhrases );
             }
+#endif
         }
     }
 
     return hr;
 }
 
-HRESULT QKinect::initializeSkeletonTracking()
+HRESULT KinectCamera::initializeSkeletonTracking()
 {
-    // Enable skeleton tracking
+    const DWORD flags = 0; // Currently ignored by API.
+
+    // Enable skeleton tracking.
     m_hNextSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-
-    DWORD flags; // image frame flags
-
-    flags = 0; // currently ignored by API
-    HRESULT hr = m_pSensor->NuiSkeletonTrackingEnable( m_hNextSkeletonEvent, flags );
-    if( SUCCEEDED( hr ) )
-    {
-        m_eventHandles.push_back( m_hNextSkeletonEvent );
-        m_eventEnums.push_back( QKinect::Event::SKELETON );
-    }
-
-    return hr;
+    return m_pSensor->NuiSkeletonTrackingEnable( m_hNextSkeletonEvent, flags );
 }
 
-HRESULT QKinect::initializeColorStream( NUI_IMAGE_RESOLUTION resolution )
+HRESULT KinectCamera::initializeColorStream( NUI_IMAGE_RESOLUTION resolution )
 {
-    const DWORD flags = 0; // currently ignored by the API
-    const DWORD frameLimit = 2; // how many frames to buffer
+    const DWORD flags = 0; // Currently ignored by the API.
+    const DWORD frameLimit = 2; // How many frames to buffer.
 
     m_colorResolution = resolution;
     m_colorResolutionPixels = KinectUtils::toVector2i( resolution );
 
+    // Enable color stream.
     m_hNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    m_hColorStreamHandle = NULL;
-
-    // Enable color stream
-    HRESULT hr = m_pSensor->NuiImageStreamOpen
+    return m_pSensor->NuiImageStreamOpen
     (
         NUI_IMAGE_TYPE_COLOR,
         resolution,
@@ -490,38 +676,23 @@ HRESULT QKinect::initializeColorStream( NUI_IMAGE_RESOLUTION resolution )
         m_hNextColorFrameEvent,
         &m_hColorStreamHandle
     );
-
-    if( SUCCEEDED( hr ) )
-    {
-        m_eventHandles.push_back( m_hNextColorFrameEvent );
-        m_eventEnums.push_back( QKinect::Event::COLOR );
-    }
-
-    return hr;
 }
 
-HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex, NUI_IMAGE_RESOLUTION resolution, bool usingExtendedDepth )
+HRESULT KinectCamera::initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
+    bool trackPlayerIndex )
 {
-    NUI_IMAGE_TYPE imageType;
-
-    if( trackPlayerIndex )
-    {
-        imageType = NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX;
-    }
-    else
-    {
+    NUI_IMAGE_TYPE imageType = trackPlayerIndex ?
+        NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX :
         imageType = NUI_IMAGE_TYPE_DEPTH;
-    }
 
     m_depthResolution = resolution;
     m_depthResolutionPixels = KinectUtils::toVector2i( resolution );
 
-    const DWORD flags = 0; // currently ignored by the API
-    const DWORD frameLimit = 2; // how many frames to buffer
+    const DWORD flags = 0; // Currently ignored by the API.
+    const DWORD frameLimit = 2; // How many frames to buffer.
 
     m_hNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
     m_hDepthStreamHandle = NULL;
-
     HRESULT hr = m_pSensor->NuiImageStreamOpen
     (
         imageType,
@@ -534,18 +705,15 @@ HRESULT QKinect::initializeDepthStream( bool trackPlayerIndex, NUI_IMAGE_RESOLUT
 
     if( SUCCEEDED( hr ) )
     {
-        hr = NuiImageStreamGetImageFrameFlags( m_hDepthStreamHandle, &m_depthStreamFlags );
-        if( SUCCEEDED( hr ) )
-        {
-            m_eventHandles.push_back( m_hNextDepthFrameEvent );
-            m_eventEnums.push_back( QKinect::Event::DEPTH );
-        }
+        hr = NuiImageStreamGetImageFrameFlags( m_hDepthStreamHandle,
+            &m_depthStreamFlags );
     }
 
     return hr;
 }
 
-HRESULT QKinect::initializeSpeechRecognition( QVector< QString > recognizedPhrases )
+#if KINECT1X_ENABLE_SPEECH
+HRESULT KinectCamera::initializeSpeechRecognition( QVector< QString > recognizedPhrases )
 {
     CoInitialize( NULL );
     HRESULT hr = initializeAudio();
@@ -555,7 +723,7 @@ HRESULT QKinect::initializeSpeechRecognition( QVector< QString > recognizedPhras
         DMO_MEDIA_TYPE mt = { 0 };
 
         // Set DMO output format
-        hr = MoInitMediaType(&mt, sizeof( WAVEFORMATEX ) );
+        hr = MoInitMediaType( &mt, sizeof( WAVEFORMATEX ) );
         if( SUCCEEDED( hr ) )
         {
             mt.majortype = MEDIATYPE_Audio;
@@ -629,7 +797,7 @@ HRESULT QKinect::initializeSpeechRecognition( QVector< QString > recognizedPhras
     return hr;
 }
 
-HRESULT QKinect::initializePhrases( QVector< QString > recognizedPhrases )
+HRESULT KinectCamera::initializePhrases( QVector< QString > recognizedPhrases )
 {
     if( recognizedPhrases.count() < 1 )
     {
@@ -672,7 +840,7 @@ HRESULT QKinect::initializePhrases( QVector< QString > recognizedPhrases )
     return hr;
 }
 
-HRESULT QKinect::initializeAudio()
+HRESULT KinectCamera::initializeAudio()
 {
     //LPCWSTR szOutputFile = L"AECout.wav";
     //TCHAR szOutfileFullName[ MAX_PATH ];
@@ -727,8 +895,9 @@ HRESULT QKinect::initializeAudio()
 
     return hr;
 }
+#endif
 
-bool QKinect::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
+bool KinectCamera::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
 {
     bool foundSkeleton = false;
 
@@ -747,6 +916,7 @@ bool QKinect::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
     if( foundSkeleton )
     {
         // smooth data
+// TODO(jiawen): allow this
 #if 0
         NUI_TRANSFORM_SMOOTH_PARAMETERS smooth;
         smooth.fSmoothing = 1.0f; // max smoothing
@@ -764,7 +934,8 @@ bool QKinect::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
     return foundSkeleton;
 }
 
-bool QKinect::handleGetColorFrame( Array2DView< uint8x4 > bgra )
+bool KinectCamera::handleGetColorFrame( Array2DView< uint8x4 > bgra,
+    int64_t& timestamp, int& frameNumber )
 {
     if( bgra.isNull() )
     {
@@ -776,7 +947,6 @@ bool QKinect::handleGetColorFrame( Array2DView< uint8x4 > bgra )
     }
 
     NUI_IMAGE_FRAME imageFrame;
-
     HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
     (
         m_hColorStreamHandle,
@@ -788,45 +958,41 @@ bool QKinect::handleGetColorFrame( Array2DView< uint8x4 > bgra )
         return false;
     }
 
-    INuiFrameTexture* pTexture = imageFrame.pFrameTexture;
     NUI_LOCKED_RECT lockedRect;
-    pTexture->LockRect( 0, &lockedRect, NULL, 0 );
-
-    bool valid = ( lockedRect.Pitch != 0 );
+    hr = imageFrame.pFrameTexture->LockRect( 0, &lockedRect, NULL, 0 );
+    bool valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
     if( valid )
     {
         // Input is BGRA, with A = 0
         Array2DView< const uint8x4 > srcBGR0( lockedRect.pBits,
             m_colorResolutionPixels,
             { sizeof( uint8x4 ), lockedRect.Pitch } );
+        copy( srcBGR0, bgra );
 
-        ArrayUtils::copy( srcBGR0, bgra );
+        timestamp = imageFrame.liTimeStamp.QuadPart;
+        frameNumber = imageFrame.dwFrameNumber;
     }
-    pTexture->UnlockRect( 0 );
+    imageFrame.pFrameTexture->UnlockRect( 0 );
     m_pSensor->NuiImageStreamReleaseFrame( m_hColorStreamHandle, &imageFrame );
 
     return valid;
 }
 
-bool QKinect::handleGetDepthFrame( Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex )
+bool KinectCamera::handleGetPackedDepthFrame( Array2DView< uint16_t > packedDepth )
 {
-    // If both are null, then do nothing.
-    if( depth.isNull() && playerIndex.isNull() )
+    // If depth is null, do nothing.
+    if( packedDepth.isNull() )
     {
         return false;
     }
     // Check that sizes match.
-    if( depth.notNull() && depth.size() != m_depthResolutionPixels )
-    {
-        return false;
-    }
-    if( playerIndex.notNull() && playerIndex.size() != m_depthResolutionPixels )
+    if( packedDepth.notNull() &&
+        packedDepth.size() != m_depthResolutionPixels )
     {
         return false;
     }
 
     NUI_IMAGE_FRAME imageFrame;
-    INuiFrameTexture* pTexture;
     NUI_LOCKED_RECT lockedRect;
     bool valid;
 
@@ -841,70 +1007,111 @@ bool QKinect::handleGetDepthFrame( Array2DView< uint16_t > depth, Array2DView< u
         return false;
     }
 
-    if( isUsingExtendedDepth() )
+    if( packedDepth.notNull() )
     {
-        BOOL capturedUsingNearMode;
-        hr = m_pSensor->NuiImageFrameGetDepthImagePixelFrameTexture
-        (
-            m_hDepthStreamHandle,
-            &imageFrame,
-            &capturedUsingNearMode,
-            &pTexture
-        );
-
-        if( FAILED( hr ) )
-        {
-            m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
-            return false;
-        }
-
-        pTexture->LockRect( 0, &lockedRect, NULL, 0 );
-        valid = ( lockedRect.Pitch != 0 );
+        hr = imageFrame.pFrameTexture->LockRect( 0, &lockedRect, NULL, 0 );
+        valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
         if( valid )
         {
-            Array2DView< NUI_DEPTH_IMAGE_PIXEL > srcView(
+            Array2DView< const uint16_t > src
+            (
                 lockedRect.pBits,
                 m_depthResolutionPixels,
-                { sizeof( NUI_DEPTH_IMAGE_PIXEL ), lockedRect.Pitch } );
-
-            if( depth.notNull() )
-            {
-                Array2DView< const uint16_t > srcDepthView =
-                    ArrayUtils::componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
-                       ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, depth ) );
-                ArrayUtils::copy( srcDepthView, depth );
-            }
-
-            if( isUsingPlayerIndex() && playerIndex.notNull() )
-            {
-                Array2DView< const uint16_t > srcPlayerIndexView =
-                    ArrayUtils::componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
-                    ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, playerIndex ) );
-                ArrayUtils::copy( srcPlayerIndexView, playerIndex );
-            }
+                { sizeof( uint16_t ), lockedRect.Pitch }
+            );
+            copy( src, packedDepth );
         }
-        pTexture->UnlockRect( 0 );
-        m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
+        imageFrame.pFrameTexture->UnlockRect( 0 );
+        m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle,
+            &imageFrame );
     }
-    else
+
+    return valid;
+}
+
+bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
+    Array2DView< uint16_t > playerIndex,
+    int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode )
+{
+    // If both are null, then do nothing.
+    if( depth.isNull() && playerIndex.isNull() )
     {
+        return false;
+    }
+    // If you ask for a buffer but its size does not match, return false.
+    if( depth.notNull() && depth.size() != m_depthResolutionPixels )
+    {
+        return false;
+    }
+    if( playerIndex.notNull() &&
+        playerIndex.size() != m_depthResolutionPixels )
+    {
+        return false;
+    }
+
+    NUI_IMAGE_FRAME imageFrame;
+    HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
+    (
+        m_hDepthStreamHandle,
+        0,
+        &imageFrame
+    );
+    if( FAILED( hr ) )
+    {
+        return false;
+    }
+
+    INuiFrameTexture* pTexture;
+    BOOL nearMode;
+    hr = m_pSensor->NuiImageFrameGetDepthImagePixelFrameTexture
+    (
+        m_hDepthStreamHandle,
+        &imageFrame,
+        &nearMode,
+        &pTexture
+    );
+
+    if( FAILED( hr ) )
+    {
+        m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle,
+            &imageFrame );
+        return false;
+    }
+
+    NUI_LOCKED_RECT lockedRect;
+    hr = pTexture->LockRect( 0, &lockedRect, NULL, 0 );
+    bool valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
+    if( valid )
+    {
+        Array2DView< NUI_DEPTH_IMAGE_PIXEL > srcView
+        (
+            lockedRect.pBits,
+            m_depthResolutionPixels,
+            { sizeof( NUI_DEPTH_IMAGE_PIXEL ), lockedRect.Pitch }
+        );
+
         if( depth.notNull() )
         {
-            pTexture = imageFrame.pFrameTexture;
-            pTexture->LockRect( 0, &lockedRect, NULL, 0 );
-            valid = ( lockedRect.Pitch != 0 );
-            if( valid )
-            {
-                Array2DView< const uint16_t > srcDepthView(
-                    lockedRect.pBits,
-                    m_depthResolutionPixels,
-                    { 2, lockedRect.Pitch } );
-                ArrayUtils::copy( srcDepthView, depth );
-            }
-            pTexture->UnlockRect( 0 );
-            m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
+            Array2DView< const uint16_t > srcDepthView =
+                componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
+                ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, depth ) );
+            copy( srcDepthView, depth );
         }
+
+        if( isUsingPlayerIndex() && playerIndex.notNull() )
+        {
+            Array2DView< const uint16_t > srcPlayerIndexView =
+                componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
+                ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, playerIndex ) );
+            copy( srcPlayerIndexView, playerIndex );
+        }
+
+        timestamp = imageFrame.liTimeStamp.QuadPart;
+        frameNumber = imageFrame.dwFrameNumber;
+        capturedWithNearMode = ( nearMode != 0 );
     }
+    pTexture->UnlockRect( 0 );
+    m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle, &imageFrame );
 
     return valid;
 }

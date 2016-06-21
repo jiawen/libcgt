@@ -1,6 +1,7 @@
 #include "vecmath/Matrix2f.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -265,6 +266,11 @@ Matrix2f operator * ( float f, const Matrix2f& m )
 Matrix2f operator * ( const Matrix2f& m, float f )
 {
     return f * m;
+}
+
+Matrix2f operator / ( const Matrix2f& m, float f )
+{
+    return ( 1.0f / f ) * m;
 }
 
 Vector2f operator * ( const Matrix2f& m, const Vector2f& v )

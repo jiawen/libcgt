@@ -1,6 +1,7 @@
 #include "vecmath/Matrix4f.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -300,36 +301,6 @@ Matrix4f Matrix4f::normalMatrix4x4() const
     return n4;
 }
 
-void Matrix4f::decomposeRotationTranslation( Quat4f& rotation, Vector3f& translation ) const
-{
-    Matrix3f r;
-    decomposeRotationTranslation( r, translation );
-    rotation = Quat4f::fromRotationMatrix( r );
-}
-
-void Matrix4f::decomposeRotationTranslation( Matrix3f& rotation, Vector3f& translation ) const
-{
-    rotation = getSubmatrix3x3();
-    translation = getCol( 3 ).xyz;
-}
-
-void Matrix4f::decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const
-{
-    Matrix3f r = getSubmatrix3x3();
-
-    scaling.x = r.getRow( 0 ).norm();
-    scaling.y = r.getRow( 1 ).norm();
-    scaling.z = r.getRow( 2 ).norm();
-
-    r.m00 /= scaling.x;
-    r.m11 /= scaling.y;
-    r.m22 /= scaling.z;
-
-    translation = getCol( 3 ).xyz;
-
-    rotation = Quat4f::fromRotationMatrix( r );
-}
-
 Matrix4f::operator const float* () const
 {
     return m_elements;
@@ -387,18 +358,6 @@ Matrix4f Matrix4f::identity()
     m( 3, 3 ) = 1;
 
     return m;
-}
-
-// static
-Matrix4f Matrix4f::translation( float x, float y, float z )
-{
-    return Matrix4f
-    (
-        1, 0, 0, x,
-        0, 1, 0, y,
-        0, 0, 1, z,
-        0, 0, 0, 1
-    );
 }
 
 // static
@@ -485,21 +444,15 @@ Matrix4f Matrix4f::rotation( const Vector3f& axis, float radians )
 }
 
 // static
-Matrix4f Matrix4f::scaling( float sx, float sy, float sz )
+Matrix4f Matrix4f::scaling( const Vector3f& xyz )
 {
     return Matrix4f
     (
-        sx, 0, 0, 0,
-        0, sy, 0, 0,
-        0, 0, sz, 0,
+        xyz.x, 0, 0, 0,
+        0, xyz.y, 0, 0,
+        0, 0, xyz.z, 0,
         0, 0, 0, 1
     );
-}
-
-// static
-Matrix4f Matrix4f::scaling( const Vector3f& xyz )
-{
-    return Matrix4f::scaling( xyz.x, xyz.y, xyz.z );
 }
 
 // static
@@ -522,7 +475,10 @@ Matrix4f Matrix4f::scaleTranslate( const Vector3f& srcOrigin, const Vector3f& sr
     Matrix4f t0 = Matrix4f::translation( -srcOrigin );
 
     // scale it to [0,1]^2, then to [0,dstSize]
-    Matrix4f s = Matrix4f::scaling( dstSize.x / srcSize.x, dstSize.y / srcSize.y, dstSize.z / srcSize.z );
+    Matrix4f s = Matrix4f::scaling
+    (
+        { dstSize.x / srcSize.x, dstSize.y / srcSize.y, dstSize.z / srcSize.z }
+    );
 
     // translate rectangle to dstOrigin
     Matrix4f t1 = Matrix4f::translation( dstOrigin );
@@ -823,10 +779,6 @@ Matrix4f Matrix4f::fromQuat( const Quat4f& q )
         );
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
-
 Matrix4f operator + ( const Matrix4f& x, const Matrix4f& y )
 {
     Matrix4f sum;
@@ -878,6 +830,11 @@ Matrix4f operator * ( float f, const Matrix4f& m )
 Matrix4f operator * ( const Matrix4f& m, float f )
 {
     return f * m;
+}
+
+Matrix4f operator / ( const Matrix4f& m, float f )
+{
+    return ( 1.0f / f ) * m;
 }
 
 Vector4f operator * ( const Matrix4f& m, const Vector4f& v )

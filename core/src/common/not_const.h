@@ -2,12 +2,7 @@
 
 #include <type_traits>
 
-namespace libcgt
-{
-namespace core
-{
-namespace common
-{
+namespace libcgt { namespace core {
 
 template< class T >
 struct not_const : std::true_type
@@ -21,6 +16,4 @@ struct not_const< const T > : std::false_type
 
 };
 
-}; // namespace common
-}; // namespace core
-}; // namespace libcgt
+} } // core, libcgt

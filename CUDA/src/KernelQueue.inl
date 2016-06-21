@@ -10,7 +10,8 @@ KernelQueue< T >::KernelQueue() :
 
 template< typename T >
 __inline__ __host__ __device__
-KernelQueue< T >::KernelQueue( uint2* d_pHeadTailAbsoluteIndices, KernelVector< T > ringBuffer ) :
+KernelQueue< T >::KernelQueue( uint2* d_pHeadTailAbsoluteIndices,
+    KernelArray1D< T > ringBuffer ) :
 
     md_pHeadTailAbsoluteIndices( d_pHeadTailAbsoluteIndices ),
     md_ringBuffer( ringBuffer )
@@ -105,7 +106,7 @@ bool KernelQueue< T >::isFull()
 
 template< typename T >
 __inline__ __device__
-KernelVector< T >& KernelQueue< T >::ringBuffer()
+KernelArray1D< T >& KernelQueue< T >::ringBuffer()
 {
     return md_ringBuffer;
 }

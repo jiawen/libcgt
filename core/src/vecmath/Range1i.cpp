@@ -1,5 +1,6 @@
 #include "vecmath/Range1i.h"
 
+#define _USE_MATH_DEFINES
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -59,21 +60,14 @@ bool Range1i::isStandard() const
 
 Range1i Range1i::standardized() const
 {
-    int origin;
-    int size;
-
     if( size > 0 )
     {
-        origin = origin;
-        size = size;
+        return{ origin, size };
     }
     else
     {
-        origin = origin + size;
-        size = -size;
+        return{ origin + size, -size };
     }
-
-    return{ origin, size };
 }
 
 std::string Range1i::toString() const
@@ -103,7 +97,7 @@ bool Range1i::contains( int x )
 // static
 Range1i Range1i::united( const Range1i& r0, const Range1i& r1 )
 {
-    assert( isStandard() );
+    assert( r0.isStandard() && r1.isStandard() );
 
     int r0Min = r0.left();
     int r0Max = r0.right();

@@ -1,6 +1,7 @@
 #include "FPSControls.h"
 
 #include <cassert>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cameras/PerspectiveCamera.h>
 #include <geometry/GeometryUtils.h>

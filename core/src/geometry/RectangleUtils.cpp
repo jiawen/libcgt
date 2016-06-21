@@ -3,11 +3,14 @@
 #include <algorithm>
 #include <cassert>
 
-// static
-Rect2i RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2i& window )
+namespace libcgt { namespace core { namespace geometry { namespace rectangleutils {
+
+Rect2i bestFitKeepAR( float imageAspectRatio, const Rect2i& window )
 {
-    int w = std::min( window.width(), static_cast< int >( window.height() * imageAspectRatio ) );
-    int h = std::min( static_cast< int >( window.width() / imageAspectRatio ), window.height() );
+    int w = std::min( window.width(),
+        static_cast< int >( window.height() * imageAspectRatio ) );
+    int h = std::min( static_cast< int >( window.width() / imageAspectRatio ),
+        window.height() );
 
     int x = window.left() + ( window.width() - w ) / 2;
     int y = window.bottom() + ( window.height() - h ) / 2;
@@ -15,14 +18,13 @@ Rect2i RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2i& wind
     return{ { x, y }, { w, h } };
 }
 
-// static
-Rect2i RectangleUtils::bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window )
+Rect2i bestFitKeepAR( const Vector2i& imageSize, const Rect2i& window )
 {
-    return bestFitKeepAR( static_cast< float >( imageSize.x ) / imageSize.y, window );
+    return bestFitKeepAR(
+        static_cast< float >( imageSize.x ) / imageSize.y, window );
 }
 
-// static
-Rect2f RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2f& window )
+Rect2f bestFitKeepAR( float imageAspectRatio, const Rect2f& window )
 {
     float w = std::min( window.width(), window.height() * imageAspectRatio );
     float h = std::min( window.width() / imageAspectRatio, window.height() );
@@ -33,14 +35,12 @@ Rect2f RectangleUtils::bestFitKeepAR( float imageAspectRatio, const Rect2f& wind
     return{ { x, y }, { w, h } };
 }
 
-// static
-Rect2f RectangleUtils::bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window )
+Rect2f bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window )
 {
     return bestFitKeepAR( imageSize.x / imageSize.y, window );
 }
 
-// static
-Matrix4f RectangleUtils::transformBetween( const Rect2f& from, const Rect2f& to )
+Matrix4f transformBetween( const Rect2f& from, const Rect2f& to )
 {
     // Given a point p:
     // 0. p0 = p - from.origin
@@ -48,23 +48,22 @@ Matrix4f RectangleUtils::transformBetween( const Rect2f& from, const Rect2f& to 
     // 2. p2 = p1 * to.size
     // 3. p3 = p2 + to.origin
 
-    return Matrix4f::translation( to.origin.x, to.origin.y, 0 ) *
-        Matrix4f::scaling( to.size.x, to.size.y, 1 ) *
-        Matrix4f::scaling( 1.0f / from.size.x, 1.0f / from.size.y, 1 ) *
-        Matrix4f::translation( -from.origin.x, -from.origin.y, 0 );
+    return Matrix4f::translation( { to.origin.x, to.origin.y, 0.0f } ) *
+        Matrix4f::scaling( { to.size.x, to.size.y, 1.0f } ) *
+        Matrix4f::scaling( { 1.0f / from.size.x, 1.0f / from.size.y, 1.0f } ) *
+        Matrix4f::translation( { -from.origin.x, -from.origin.y, 0.0f } );
 }
 
-// static
-Vector2f RectangleUtils::normalizedCoordinatesWithinRectangle( const Vector2f& p,
+Vector2f normalizedCoordinatesWithinRectangle( const Vector2f& p,
     const Rect2f& r )
 {
     return ( p - r.origin ) / r.size;
 }
 
-// static
-Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
+Rect2f flipX( const Rect2f& r, float width )
 {
-    assert( r.isStandardized() );
+    assert( r.isStandard() );
+
     Vector2f origin;
     origin.x = width - r.right();
     origin.y = r.origin.y;
@@ -72,10 +71,10 @@ Rect2f RectangleUtils::flipX( const Rect2f& r, float width )
     return{ origin, r.size };
 }
 
-// static
-Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
+Rect2i flipX( const Rect2i& r, int width )
 {
-    assert( r.isStandardized() );
+    assert( r.isStandard() );
+
     Vector2i origin;
     origin.x = width - r.right();
     origin.y = r.origin.y;
@@ -83,10 +82,10 @@ Rect2i RectangleUtils::flipX( const Rect2i& r, int width )
     return{ origin, r.size };
 }
 
-// static
-Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
+Rect2f flipY( const Rect2f& r, float height )
 {
-    assert( r.isStandardized() );
+    assert( r.isStandard() );
+
     Vector2f origin;
     origin.x = r.origin.x;
     origin.y = height - r.top();
@@ -94,10 +93,10 @@ Rect2f RectangleUtils::flipY( const Rect2f& r, float height )
     return{ origin, r.size };
 }
 
-// static
-Rect2i RectangleUtils::flipY( const Rect2i& r, int height )
+Rect2i flipY( const Rect2i& r, int height )
 {
-    assert( r.isStandardized() );
+    assert( r.isStandard() );
+
     Vector2i origin;
     origin.x = r.origin.x;
     origin.y = height - r.top();
@@ -105,8 +104,7 @@ Rect2i RectangleUtils::flipY( const Rect2i& r, int height )
     return{ origin, r.size };
 }
 
-// static
-Rect2f RectangleUtils::flipStandardizationX( const Rect2f& rect )
+Rect2f flipStandardizationX( const Rect2f& rect )
 {
     Rect2f output = rect;
     output.origin.x = output.origin.x + output.size.x;
@@ -114,8 +112,7 @@ Rect2f RectangleUtils::flipStandardizationX( const Rect2f& rect )
     return output;
 }
 
-// static
-Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
+Rect2f flipStandardizationY( const Rect2f& rect )
 {
     Rect2f output = rect;
     output.origin.y = output.origin.y + output.size.y;
@@ -123,13 +120,12 @@ Rect2f RectangleUtils::flipStandardizationY( const Rect2f& rect )
     return output;
 }
 
-// static
-void RectangleUtils::writeScreenAlignedTriangleStrip(
-        Array1DView< Vector4f > positions,
-        Array1DView< Vector2f > textureCoordinates,
-        const Rect2f& positionRectangle,
-        float z, float w,
-        const Rect2f& textureRectangle )
+void writeScreenAlignedTriangleStrip(
+    Array1DView< Vector4f > positions,
+    Array1DView< Vector2f > textureCoordinates,
+    const Rect2f& positionRectangle,
+    float z, float w,
+    const Rect2f& textureRectangle )
 {
     writeScreenAlignedTriangleStripPositions(
         positions, positionRectangle, z, w );
@@ -137,22 +133,24 @@ void RectangleUtils::writeScreenAlignedTriangleStrip(
         textureCoordinates, textureRectangle );
 }
 
-// static
-void RectangleUtils::writeScreenAlignedTriangleStripPositions(
-        Array1DView< Vector4f > positions,
-        const Rect2f& rect,
-        float z, float w )
+void writeScreenAlignedTriangleStripPositions(
+    Array1DView< Vector4f > positions,
+    const Rect2f& rect,
+    float z, float w )
 {
-    positions[ 0 ] = Vector4f( rect.leftBottom(), z, w );
-    positions[ 1 ] = Vector4f( rect.rightBottom(), z, w );
-    positions[ 2 ] = Vector4f( rect.leftTop(), z, w );
-    positions[ 3 ] = Vector4f( rect.rightTop(), z, w );
+    Array1D< Vector4f > pos = corners( rect, z, w );
+    Array1D< int > idx = solidTriangleStripIndices();
+
+    for( int i = 0; i < idx.size(); ++i )
+    {
+        positions[ i ] = pos[ idx[ i ] ];
+    }
 }
 
 //  static
-void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
-        Array1DView< Vector2f > textureCoordinates,
-        const Rect2f& rect )
+void writeScreenAlignedTriangleStripTextureCoordinates(
+    Array1DView< Vector2f > textureCoordinates,
+    const Rect2f& rect )
 {
     textureCoordinates[ 0 ] = rect.leftBottom();
     textureCoordinates[ 1 ] = rect.rightBottom();
@@ -160,34 +158,54 @@ void RectangleUtils::writeScreenAlignedTriangleStripTextureCoordinates(
     textureCoordinates[ 3 ] = rect.rightTop();
 }
 
-// static
-Rect2f RectangleUtils::makeSquare( const Vector2f& center, float sideLength )
+Rect2f makeSquare( const Vector2f& center, float sideLength )
 {
-    return Rect2f( center - 0.5f * Vector2f( sideLength ), Vector2f( sideLength ) );
-}
-
-// static
-std::vector< Vector2f > RectangleUtils::corners( const Rect2f& r )
-{
-    assert( r.isStandardized() );
     return
     {
-        r.leftBottom(),
-        r.rightBottom(),
-        r.rightTop(),
-        r.leftTop()
+        center - 0.5f * Vector2f( sideLength ),
+        Vector2f( sideLength )
     };
 }
 
-// static
-std::vector< Vector2i > RectangleUtils::corners( const Rect2i& r )
+Array1D< Vector4f > corners( const Rect2f& r, float z, float w )
 {
-    assert( r.isStandardized() );
+    assert( r.isStandard() );
+
     return
     {
-        r.leftBottom(),
-        r.rightBottom(),
-        r.rightTop(),
-        r.leftTop()
+        Vector4f{ r.leftBottom(), z, w },
+        Vector4f{ r.rightBottom(), z, w },
+        Vector4f{ r.rightTop(), z, w },
+        Vector4f{ r.leftTop(), z, w }
     };
 }
+
+Array1D< Vector4i > corners( const Rect2i& r, int z, int w )
+{
+    assert( r.isStandard() );
+
+    return
+    {
+        Vector4i{ r.leftBottom(), z, w },
+        Vector4i{ r.rightBottom(), z, w },
+        Vector4i{ r.rightTop(), z, w },
+        Vector4i{ r.leftTop(), z, w }
+    };
+}
+
+Array1D< int > solidTriangleListIndices()
+{
+    return{ 0, 1, 3, 3, 1, 2 };
+}
+
+Array1D< int > solidTriangleStripIndices()
+{
+    return{ 0, 1, 3, 2 };
+}
+
+Array1D< int > wireframeLineListIndices()
+{
+    return{ 0, 1, 1, 2, 2, 3, 3, 1 };
+}
+
+} } } } // rectangleutils, geometry, core, libcgt

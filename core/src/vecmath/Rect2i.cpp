@@ -117,32 +117,32 @@ bool Rect2i::isStandard() const
 
 Rect2i Rect2i::standardized() const
 {
-    Vector2i origin;
-    Vector2i size;
+    Vector2i origin2;
+    Vector2i size2;
 
     if( size.x > 0 )
     {
-        origin.x = origin.x;
-        size.x = size.x;
+        origin2.x = origin.x;
+        size2.x = size.x;
     }
     else
     {
-        origin.x = origin.x + size.x;
-        size.x = -size.x;
+        origin2.x = origin.x + size.x;
+        size2.x = -size.x;
     }
 
     if( size.y > 0 )
     {
-        origin.y = origin.y;
-        size.y = size.y;
+        origin2.y = origin.y;
+        size2.y = size.y;
     }
     else
     {
-        origin.y = origin.y + size.y;
-        size.y = -size.y;
+        origin2.y = origin.y + size.y;
+        size2.y = -size.y;
     }
 
-    return Rect2i( origin, size );
+    return{ origin2, size2 };
 }
 
 std::string Rect2i::toString() const

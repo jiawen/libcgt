@@ -1,5 +1,6 @@
 #include "KinectUtils.h"
 
+#include <common/ArrayUtils.h>
 #include <geometry/Plane3f.h>
 
 // static
@@ -34,27 +35,25 @@ Matrix4f KinectUtils::worldToKinect( const NUI_SKELETON_FRAME& frame )
 }
 
 // static
-void KinectUtils::rawDepthMapToMeters( const Array2D< uint16_t >& rawDepth,
+void KinectUtils::rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
     Array2DView< float > outputMeters, bool flipLeftRight, int rightShft )
 {
     int w = static_cast< int >( rawDepth.width() );
     int h = static_cast< int >( rawDepth.height() );
 
+    Array2DView< const uint16_t > src = flipLeftRight ?
+        libcgt::core::arrayutils::flipLeftRight( rawDepth ) :
+        rawDepth;
+
     for( int y = 0; y < h; ++y )
     {
         for( int x = 0; x < w; ++x )
         {
-            int xx = x;
-            if( flipLeftRight )
-            {
-                xx = w - x - 1;
-            }
-
-            uint16_t d = rawDepth[ { x, y } ];
+            uint16_t d = src[ { x, y } ];
             d >>= rightShft;
 
             float z = 0.001f * d;
-            outputMeters[ { xx, y } ] = z;
+            outputMeters[ { x, y } ] = z;
         }
     }
 }

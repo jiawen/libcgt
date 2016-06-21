@@ -729,6 +729,7 @@ int product( const int3& v )
 }
 
 #if 0
+// TODO(jiawen): fix this
 int roundUpToNearestPowerOfTwo( int x )
 {
     if( x < 1 )

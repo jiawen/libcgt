@@ -72,7 +72,7 @@ void DevicePool::resize( int capacity, int elementSizeBytes )
 
 void DevicePool::clear()
 {
-    int* pDevicePointer = md_freeList.ringBuffer().devicePointer();
+    int* pDevicePointer = md_freeList.ringBuffer().pointer();
     thrust::device_ptr< int > pBegin = thrust::device_pointer_cast( pDevicePointer );
     thrust::device_ptr< int > pEnd = thrust::device_pointer_cast( pDevicePointer + m_capacity );
 
@@ -102,6 +102,6 @@ KernelPool DevicePool::kernelPool()
         m_capacity,
         m_elementSizeBytes,
         md_freeList.kernelQueue(),
-        md_backingStore.kernelVector()
+        md_backingStore.kernelArray1D()
     );
 }

@@ -2,11 +2,41 @@
 
 namespace libcgt { namespace core { namespace vecmath {
 
+EuclideanTransform::EuclideanTransform( const Matrix3f& r ) :
+    rotation( r )
+{
+
+}
+
+EuclideanTransform::EuclideanTransform( const Vector3f& t ) :
+    translation( t )
+{
+
+}
+
+EuclideanTransform::EuclideanTransform( const Matrix3f& r,
+    const Vector3f& t ) :
+    rotation( r ),
+    translation( t )
+{
+
+}
+
+// static
+EuclideanTransform EuclideanTransform::fromMatrix( const Matrix4f& m )
+{
+    return
+    {
+        m.getSubmatrix3x3(),
+        m.getCol( 3 ).xyz
+    };
+}
+
 EuclideanTransform::operator Matrix4f() const
 {
     Matrix4f m;
     m.setSubmatrix3x3( 0, 0, rotation );
-    m.setCol(3, { translation, 1 } );
+    m.setCol( 3, { translation, 1 } );
     return m;
 }
 
@@ -28,19 +58,12 @@ EuclideanTransform compose( const EuclideanTransform& second,
 
 EuclideanTransform inverse( const EuclideanTransform& et )
 {
-    return
-    {
-        et.rotation.transposed(),
-        et.rotation.transposed() * ( -et.translation )
-    };
-}
+    Matrix3f ir = et.rotation.transposed();
 
-EuclideanTransform makeIdentity()
-{
     return
     {
-        Matrix3f::identity(),
-        Vector3f()
+        ir,
+        ir * ( -et.translation )
     };
 }
 
@@ -57,12 +80,13 @@ Vector3f transformVector( const EuclideanTransform& et, const Vector3f& v )
 EuclideanTransform glFromCV( const EuclideanTransform& cv )
 {
     Matrix4f rx = Matrix4f::ROTATE_X_180;
-    Matrix4f glMatrix = rx * cv * rx;
-    return
-    {
-        glMatrix.getSubmatrix3x3(),
-        glMatrix.getCol(3).xyz
-    };
+    return EuclideanTransform::fromMatrix( rx * cv * rx );
+}
+
+EuclideanTransform cvFromGL( const EuclideanTransform& gl )
+{
+    // The conversion back and forth is exactly the same.
+    return glFromCV( gl );
 }
 
 } } } // vecmath, core, libcgt

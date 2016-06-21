@@ -1,5 +1,6 @@
 #include "geometry/Spline2f.h"
 
+#define _USE_MATH_DEFINES
 #include <cfloat>
 #include <cmath>
 

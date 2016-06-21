@@ -15,14 +15,7 @@ class DirectionalLight
 {
 public:
 
-    // The default directional light,
-    // with lightDirection (0,0,1)
-    DirectionalLight();
-
-    DirectionalLight( const Vector3f& direction );
-
-    Vector3f direction() const;
-    void setDirection( const Vector3f& direction );
+    Vector3f m_direction{ 0, 0, 1 };
 
     // Returns the basis matrix for this light
     // such that each *row* is a direction
@@ -33,9 +26,4 @@ public:
     // Returns the world -> light matrix
     // encompassing both the camera and the scene
     Matrix4f lightMatrix( const Camera& camera, const Box3f& sceneBoundingBox );
-
-private:
-
-    Vector3f m_direction;
-
 };

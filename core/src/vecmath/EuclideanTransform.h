@@ -8,12 +8,30 @@ namespace libcgt { namespace core { namespace vecmath {
 
 // TODO(jiawen): templatize this for floats and doubles.
 // TODO(jiawen): store a quaternion
+// A Euclidean (rigid-body) transformation, represented as a rotation followed
+// by a translation.
+//
+// Note that the rotation is applied first, then the translation.
+// q = e.rotation * p + e.translation.
+//
+// EuclideanTransform defaults to an identity transformation.
 class EuclideanTransform
 {
 public:
 
-    Matrix3f rotation;
-    Vector3f translation;
+    Matrix3f rotation = Matrix3f::identity();
+    Vector3f translation = Vector3f{ 0.0f };
+
+    EuclideanTransform() = default;
+    // Rotation only.
+    EuclideanTransform( const Matrix3f& r );
+    // Translation only.
+    EuclideanTransform( const Vector3f& t );
+    EuclideanTransform( const Matrix3f& r, const Vector3f& t );
+
+    // Assuming m is a composition of a rotation and a translation, constructs
+    // the equivalent Euclidean transformation.
+    static EuclideanTransform fromMatrix( const Matrix4f& m );
 
     // User-defined conversion to Matrix4f.
     operator Matrix4f() const;
@@ -39,9 +57,6 @@ EuclideanTransform compose( const EuclideanTransform& second,
 // tInv = R^T * (-t)
 EuclideanTransform inverse( const EuclideanTransform& et );
 
-// Construct the identity transformation.
-EuclideanTransform makeIdentity();
-
 // Apply the transformation et to the point p: q = R p + t.
 Vector3f transformPoint( const EuclideanTransform& et, const Vector3f& p );
 
@@ -58,7 +73,18 @@ Vector3f transformVector( const EuclideanTransform& et, const Vector3f& v );
 // Given an OpenCV transformation A_cv_4x4 = (R_cv, t_cv), the OpenGL
 // transformation is A_gl_4x4 = rx * A_cv_4x4 * rx, where rx is a rotation by
 // 180 degrees around the x axis.
-//
 EuclideanTransform glFromCV( const EuclideanTransform& cv );
+
+// Convert a Euclidean transformation (R,t) from OpenGL conventions to OpenCV
+// conventions.
+//
+// OpenCV conventions are right handed: x: right, y: down, z: into the screen.
+// OpenGL conventions are right handed: x: right, y: up, z: out of the screen.
+// In both conventions, R is applied first, then t: q = R * p + t.
+//
+// Given an OpenGL transformation A_gl_4x4 = (R_gl, t_gl), the OpenCV
+// transformation is A_cv_4x4 = rx * A_gl_4x4 * rx, where rx is a rotation by
+// 180 degrees around the x axis.
+EuclideanTransform cvFromGL( const EuclideanTransform& gl );
 
 } } } // vecmath, core, libcgt

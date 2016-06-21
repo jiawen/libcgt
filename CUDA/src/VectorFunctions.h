@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdint>
 

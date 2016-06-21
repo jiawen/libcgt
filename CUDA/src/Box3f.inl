@@ -12,6 +12,20 @@ Box3f::Box3f( const int3& size ) :
 
 }
 
+Box3f::Box3f( const float3& origin, const float3& size ) :
+    m_origin( origin ),
+    m_size( size )
+{
+
+}
+
+Box3f::Box3f( const int3& origin, const int3& size ) :
+    m_origin( make_float3( origin.x, origin.y, origin.z ) ),
+    m_size( make_float3( size.x, size.y, size.z ) )
+{
+
+}
+
 float Box3f::left() const
 {
     return m_origin.x;
@@ -110,6 +124,32 @@ bool Box3f::intersect( const Box3f& r0, const Box3f& r1, Box3f& intersection )
         return true;
     }
     return false;
+}
+
+__inline__ __host__ __device__
+bool intersectLine( const float3& origin, const float3& direction,
+    const Box3f& box,
+    float& tNear, float& tFar )
+{
+    // Compute t to each face.
+    float3 rcpDir = 1.0f / direction;
+
+    // Intersect the three "bottom" faces (min of the box).
+    float3 tBottom = rcpDir * (box.minimum() - origin);
+    // Intersect the three "top" faces (max of the box).
+    float3 tTop = rcpDir * (box.maximum() - origin);
+
+    // Find the smallest and largest distances along each axis.
+    float3 tMin = fminf( tBottom, tTop );
+    float3 tMax = fmaxf( tBottom, tTop );
+
+    // tNear is the largest tMin
+    tNear = libcgt::cuda::math::maximum(tMin);
+
+    // tFar is the smallest tMax
+    tFar = libcgt::cuda::math::minimum(tMax);
+
+    return tFar > tNear;
 }
 
 } } // cuda, libcgt

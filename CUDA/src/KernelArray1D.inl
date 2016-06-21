@@ -1,35 +1,31 @@
 template< typename T >
 __inline__ __host__ __device__
-KernelVector< T >::KernelVector() :
-
+KernelArray1D< T >::KernelArray1D() :
     pointer( nullptr ),
-    length( -1 )
-
+    length( 0 )
 {
 
 }
 
 template< typename T >
 __inline__ __host__ __device__
-KernelVector< T >::KernelVector( T* _pointer, int _length ) :
-
-pointer( _pointer ),
+KernelArray1D< T >::KernelArray1D( T* _pointer, int _length ) :
+    pointer( _pointer ),
     length( _length )
-
 {
 
 }
 
 template< typename T >
 __inline__ __device__
-const T& KernelVector< T >::operator [] ( int i ) const
+const T& KernelArray1D< T >::operator [] ( int i ) const
 {
     return pointer[ i ];
 }
 
 template< typename T >
 __inline__ __device__
-T& KernelVector< T >::operator [] ( int i )
+T& KernelArray1D< T >::operator [] ( int i )
 {
     return pointer[ i ];
 }

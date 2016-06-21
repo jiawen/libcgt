@@ -10,7 +10,6 @@
 
 namespace libcgt { namespace cuda { namespace arrayutils {
 
-// static
 bool saveTXT( Array1DView< const int3 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -34,7 +33,6 @@ bool saveTXT( Array1DView< const int3 > array, const char* filename )
     return true;
 }
 
-// static
 bool saveTXT( Array2DView< const float2 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -63,7 +61,6 @@ bool saveTXT( Array2DView< const float2 > array, const char* filename )
     return true;
 }
 
-// static
 bool saveTXT( Array2DView< const float4 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -92,7 +89,6 @@ bool saveTXT( Array2DView< const float4 > array, const char* filename )
     return true;
 }
 
-// static
 bool saveTXT( Array2DView< const uchar4 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -121,7 +117,49 @@ bool saveTXT( Array2DView< const uchar4 > array, const char* filename )
     return true;
 }
 
-// static
+bool saveTXT( Array3DView< const ushort2 > array, const char* filename )
+{
+    FILE* fp = fopen( filename, "w" );
+    if( fp == NULL )
+    {
+        return false;
+    }
+
+    int retVal;
+
+    retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
+    if( retVal < 0 )
+    {
+        return false;
+    }
+
+    retVal = fprintf( fp, "Format: ushort2\n" );
+    if( retVal < 0 )
+    {
+        return false;
+    }
+
+    int w = array.width();
+    int h = array.height();
+    int d = array.depth();
+
+    for( int z = 0; z < d; ++z )
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            for( int x = 0; x < w; ++x )
+            {
+                int index = z * w * h + y * w + x;
+                ushort2 v = array[ { x, y, z } ];
+                fprintf( fp, "[%d] (%d %d %d): %d %d\n", index, x, y, z, v.x, v.y );
+            }
+        }
+    }
+
+    retVal = fclose( fp );
+    return( retVal == 0 );
+}
+
 bool saveTXT( Array3DView< const int2 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -165,7 +203,6 @@ bool saveTXT( Array3DView< const int2 > array, const char* filename )
     return( retVal == 0 );
 }
 
-// static
 bool saveTXT( Array3DView< const int3 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -209,7 +246,6 @@ bool saveTXT( Array3DView< const int3 > array, const char* filename )
     return( retVal == 0 );
 }
 
-// static
 bool saveTXT( Array3DView< const int4 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
@@ -253,7 +289,6 @@ bool saveTXT( Array3DView< const int4 > array, const char* filename )
     return( retVal == 0 );
 }
 
-// static
 bool saveTXT( const DeviceArray1D< int3 >& array, const char* filename )
 {
     Array1D< int3 > h_array( array.length() );
@@ -261,52 +296,52 @@ bool saveTXT( const DeviceArray1D< int3 >& array, const char* filename )
     return saveTXT( h_array, filename );
 }
 
-
-// static
 bool saveTXT( const DeviceArray2D< float >& array, const char* filename )
 {
-    Array2D< float > h_array;
-    array.copyToHost( h_array );
+    Array2D< float > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return ArrayUtils::saveTXT( h_array, filename );
 }
 
-// static
 bool saveTXT( const DeviceArray2D< float2 >& array, const char* filename )
 {
-    Array2D< float2 > h_array;
-    array.copyToHost( h_array );
+    Array2D< float2 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-// static
 bool saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
 {
-    Array2D< float4 > h_array;
-    array.copyToHost( h_array );
+    Array2D< float4 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-// static
 bool saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename )
 {
-    Array2D< uchar4 > h_array;
-    array.copyToHost( h_array );
+    Array2D< uchar4 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-// static
+bool saveTXT( const DeviceArray3D< ushort2 >& array, const char* filename )
+{
+    Array3D< ushort2 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
+    return saveTXT( h_array, filename );
+}
+
 bool saveTXT( const DeviceArray3D< int2 >& array, const char* filename )
 {
-    Array3D< int2 > h_array;
-    array.copyToHost( h_array );
+    Array3D< int2 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-// static
 bool saveTXT( const DeviceArray3D< int3 >& array, const char* filename )
 {
-    Array3D< int3 > h_array;
-    array.copyToHost( h_array );
+    Array3D< int3 > h_array( array.size() );
+    array.copyToHost( h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 

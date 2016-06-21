@@ -7,31 +7,7 @@
 #include <vecmath/Box3f.h>
 #include <vecmath/Vector4f.h>
 
-DirectionalLight::DirectionalLight() :
-
-    m_direction( 0, 0, 1 )
-
-{
-
-}
-
-DirectionalLight::DirectionalLight( const Vector3f& direction ) :
-
-    m_direction( direction )
-
-{
-
-}
-
-Vector3f DirectionalLight::direction() const
-{
-    return m_direction;
-}
-
-void DirectionalLight::setDirection( const Vector3f& direction )
-{
-    m_direction = direction;
-}
+using libcgt::core::geometry::boxutils::corners;
 
 // virtual
 Matrix3f DirectionalLight::lightBasis() const
@@ -62,19 +38,20 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& scene
 
     // TODO: check for intersection
 
-    std::vector< Vector3f > sceneCorners = libcgt::core::geometry::boxutils::corners( sceneBoundingBox );
-    std::vector< Vector3f > sceneAndFrustumCorners = libcgt::core::geometry::boxutils::corners( sceneAndFrustum );
+    Array1D< Vector4f > sceneCorners = corners( sceneBoundingBox );
+    Array1D< Vector4f > sceneAndFrustumCorners = corners( sceneAndFrustum );
 
     for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
     {
-        sceneAndFrustumCorners[ i ] = lightLinear * ( sceneAndFrustumCorners[ i ] - eye );
-        sceneCorners[ i ] = lightLinear * ( sceneCorners[ i ] - eye );
+        sceneAndFrustumCorners[ i ].xyz =
+            lightLinear * ( sceneAndFrustumCorners[ i ].xyz - eye );
+        sceneCorners[ i ].xyz = lightLinear * ( sceneCorners[ i ].xyz - eye );
     }
 
     Box3f inLightCoordinates;
     for( int i = 0; i < sceneAndFrustumCorners.size(); ++i )
     {
-        inLightCoordinates.enlargeToContain( sceneAndFrustumCorners[ i ] );
+        inLightCoordinates.enlargeToContain( sceneAndFrustumCorners[ i ].xyz );
     }
 
     Vector3f maxCorner = inLightCoordinates.maximum();

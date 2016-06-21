@@ -4,7 +4,7 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-#include <common/Array2D.h>
+#include <common/Array2DView.h>
 
 #include "KernelArray2D.h"
 
@@ -17,10 +17,8 @@ public:
 
     DeviceArray2D() = default;
     DeviceArray2D( const Vector2i& size );
-    DeviceArray2D( Array2DView< const T > src );
     DeviceArray2D( const DeviceArray2D< T >& copy );
     DeviceArray2D( DeviceArray2D< T >&& move );
-    DeviceArray2D< T >& operator = ( Array2DView< const T > src );
     DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
     DeviceArray2D< T >& operator = ( DeviceArray2D< T >&& move );
     virtual ~DeviceArray2D();
@@ -33,8 +31,14 @@ public:
     Vector2i size() const; // (width, height)
     int numElements() const;
 
-    // The number of bytes between rows
-    size_t pitch() const;
+    // The space between the start of elements in bytes.
+    size_t elementStrideBytes() const;
+
+    // The space between the start of rows in bytes.
+    size_t rowStrideBytes() const;
+
+    // { elementStride, rowStride } in bytes.
+    Vector2i stride() const;
 
     // Total size of the data in bytes (counting alignment)
     size_t sizeInBytes() const;
@@ -51,15 +55,15 @@ public:
 
     // get an element of the array from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T get( const Vector2i& subscript ) const;
+    T get( const Vector2i& xy ) const;
 
     // get an element of the array from the device
     // WARNING: probably slow as it incurs a cudaMemcpy
-    T operator [] ( const Vector2i& subscript ) const;
+    T operator [] ( const Vector2i& xy ) const;
 
     // sets an element of the array from the host
     // WARNING: probably slow as it incurs a cudaMemcpy
-    void set( const Vector2i& subscript, const T& value );
+    void set( const Vector2i& xy, const T& value );
 
     // copy from another DeviceArray2D to this
     // this is automatically resized
@@ -71,7 +75,7 @@ public:
 
     // copy from this to host array dst
     // dst is automatically resized
-    void copyToHost( Array2D< T >& dst ) const;
+    bool copyToHost( Array2DView< T > dst ) const;
 
     // copy from cudaArray src to this
     void copyFromArray( cudaArray* src );
@@ -79,20 +83,25 @@ public:
     // copy from this to cudaArray dst
     void copyToArray( cudaArray* dst ) const;
 
-    const T* devicePointer() const;
-    T* devicePointer();
+    const T* pointer() const;
+    T* pointer();
 
-    KernelArray2D< T > kernelArray() const;
+    const T* elementPointer( const Vector2i& xy ) const;
+    T* elementPointer( const Vector2i& xy );
+
+    const T* rowPointer( size_t y ) const;
+    T* rowPointer( size_t y );
+
+    KernelArray2D< T > kernelArray();
 
     void load( const char* filename );
-    void save( const char* filename ) const;
 
 private:
 
     Vector2i m_size;
-    size_t m_pitch = 0;
-    T* m_devicePointer = nullptr;
-    size_t m_sizeInBytes = 0;
+    Vector2i m_stride; // TODO(jiawen): stride should be a Vector2<uint64_t>.
+
+    uint8_t* m_devicePointer = nullptr;
 
     // frees the memory if this is not null
     void destroy();

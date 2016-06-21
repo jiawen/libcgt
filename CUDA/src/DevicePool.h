@@ -21,7 +21,7 @@ struct KernelPool
         int elementSizeBytes,
 
         KernelQueue< int > freeList,
-        KernelVector< uint8_t > backingStore
+        KernelArray1D< uint8_t > backingStore
     );
 
     // allocates an element and gives you back an index
@@ -45,7 +45,7 @@ struct KernelPool
     int m_elementSizeBytes;
 
     KernelQueue< int > m_freeList;
-    KernelVector< uint8_t > m_backingStore;
+    KernelArray1D< uint8_t > m_backingStore;
 };
 
 __inline__ __host__ __device__
@@ -61,7 +61,7 @@ KernelPool::KernelPool
     int elementSizeBytes,
 
     KernelQueue< int > freeList,
-    KernelVector< uint8_t > backingStore
+    KernelArray1D< uint8_t > backingStore
 ) :
 
     m_capacity( capacity ),

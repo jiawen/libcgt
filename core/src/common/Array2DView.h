@@ -40,14 +40,14 @@ public:
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator const T* () const;
 
     operator T* ();
 
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     const T* pointer() const;
 
     T* pointer();
@@ -91,7 +91,7 @@ public:
     // the libcgt namespace.
     template< typename U = T,
         typename = typename std::enable_if
-            < libcgt::core::common::not_const< U >::value >::type >
+            < libcgt::core::not_const< U >::value >::type >
     operator Array2DView< const T >() const;
 
     // Extract row y from this Array2DView as an Array1DView.
