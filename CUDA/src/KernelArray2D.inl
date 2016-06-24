@@ -1,74 +1,62 @@
 template< typename T >
 __inline__  __device__
-KernelArray2D< T >::KernelArray2D() :
-
-    md_pPitchedPointer( nullptr ),
-    m_width( -1 ),
-    m_height( -1 ),
-    m_pitch( 0 )
-
+KernelArray2D< T >::KernelArray2D(
+typename KernelArray2D< T >::VoidPointer pointer, const int2& size ) :
+    md_pointer( reinterpret_cast< typename KernelArray2D< T >::UInt8Pointer >(
+        pointer ) ),
+    m_size( size ),
+    m_pitch( size.x * sizeof( T ) )
 {
 
 }
-
 template< typename T >
 __inline__  __device__
-KernelArray2D< T >::KernelArray2D( T* d_pPitchedPointer, int width, int height, size_t pitch ) :
-
-    md_pPitchedPointer( d_pPitchedPointer ),
-    m_width( width ),
-    m_height( height ),
+KernelArray2D< T >::KernelArray2D(
+    typename KernelArray2D< T >::VoidPointer pointer, const int2& size,
+    size_t pitch ) :
+    md_pointer( reinterpret_cast< typename KernelArray2D< T >::UInt8Pointer >(
+         pointer ) ),
+    m_size( size ),
     m_pitch( pitch )
-
 {
 
 }
 
 template< typename T >
 __inline__  __device__
-KernelArray2D< T >::KernelArray2D( T* d_pPitchedPointer, int width, int height ) :
-
-    md_pPitchedPointer( d_pPitchedPointer ),
-    m_width( width ),
-    m_height( height ),
-    m_pitch( width * sizeof( T ) )
-
+T* KernelArray2D< T >::pointer() const
 {
-
+    return reinterpret_cast< T* >( md_pointer );
 }
 
 template< typename T >
 __inline__  __device__
-const T* KernelArray2D< T >::rowPointer( int y ) const
+T* KernelArray2D< T >::elementPointer( const int2& xy ) const
 {
-    const uint8_t* p = reinterpret_cast< const uint8_t* >( md_pPitchedPointer );
-
-    // TODO: switch pointer arithmetic to array indexing?
-    return reinterpret_cast< const T* >( p + y * m_pitch );
+    const int elementStride = sizeof( T );
+    return reinterpret_cast< T* >( md_pointer +
+        xy.y * m_pitch + xy.x * elementStride );
 }
 
 template< typename T >
 __inline__  __device__
-T* KernelArray2D< T >::rowPointer( int y )
+T* KernelArray2D< T >::rowPointer( int y ) const
 {
-    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
-
-    // TODO: switch pointer arithmetic to array indexing?
-    return reinterpret_cast< T* >( p + y * m_pitch );
+    return reinterpret_cast< T* >( md_pointer + y * m_pitch );
 }
 
 template< typename T >
 __inline__  __device__
 int KernelArray2D< T >::width() const
 {
-    return m_width;
+    return m_size.x;
 }
 
 template< typename T >
 __inline__  __device__
 int KernelArray2D< T >::height() const
 {
-    return m_height;
+    return m_size.y;
 }
 
 template< typename T >
@@ -82,33 +70,12 @@ template< typename T >
 __inline__  __device__
 int2 KernelArray2D< T >::size() const
 {
-    return make_int2( m_width, m_height );
+    return m_size;
 }
 
 template< typename T >
 __inline__  __device__
-const T& KernelArray2D< T >::operator () ( int x, int y ) const
+T& KernelArray2D< T >::operator [] ( const int2& xy ) const
 {
-    return rowPointer( y )[ x ];
-}
-
-template< typename T >
-__inline__  __device__
-T& KernelArray2D< T >::operator () ( int x, int y )
-{
-    return rowPointer( y )[ x ];
-}
-
-template< typename T >
-__inline__  __device__
-const T& KernelArray2D< T >::operator [] ( const int2& xy ) const
-{
-    return rowPointer( xy.y )[ xy.x ];
-}
-
-template< typename T >
-__inline__  __device__
-T& KernelArray2D< T >::operator [] ( const int2& xy )
-{
-    return rowPointer( xy.y )[ xy.x ];
+    return *elementPointer( xy );
 }

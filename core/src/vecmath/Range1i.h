@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Vector2i.h"
+
 // A 1D range at integer coordinates, represented as an origin and a size.
 //
 // All functions treat a range as a *half-open* interval [x, x + width), and
@@ -20,6 +22,9 @@ public:
     explicit Range1i( int size ); // (0, size)
     Range1i( int origin, int size );
 
+    static Range1i fromMinMax( int min, int max );
+    static Range1i fromMinMax( const Vector2i& minMax );
+
     // ------------------------------------------------------------------------
     // These functions only make sense if the range is in standard form.
     // ------------------------------------------------------------------------
@@ -28,6 +33,7 @@ public:
 
     int left() const; // origin.x
     int right() const; // origin.x + size
+    Vector2i leftRight() const; // ( left(), right() )
 
     // ------------------------------------------------------------------------
     // minimum, maximum, and center are well defined even if the box is not in

@@ -31,6 +31,12 @@ Range1f Range1f::fromMinMax( float min, float max )
     return Range1f( min, max - min );
 }
 
+// static
+Range1f Range1f::fromMinMax( const Vector2f& minMax )
+{
+    return Range1f( minMax.x, minMax.y - minMax.x );
+}
+
 float Range1f::width() const
 {
     return size;
@@ -44,6 +50,11 @@ float Range1f::left() const
 float Range1f::right() const
 {
     return origin + size;
+}
+
+Vector2f Range1f::leftRight() const
+{
+    return{ left(), right() };
 }
 
 float Range1f::minimum() const

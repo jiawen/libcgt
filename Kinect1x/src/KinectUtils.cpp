@@ -3,21 +3,23 @@
 #include <common/ArrayUtils.h>
 #include <geometry/Plane3f.h>
 
-// static
-Matrix4f KinectUtils::kinectToWorld( const NUI_SKELETON_FRAME& frame )
+namespace libcgt { namespace kinect1x { namespace kinectutils {
+
+Matrix4f kinectToWorld( const NUI_SKELETON_FRAME& frame )
 {
     return worldToKinect( frame ).inverse();
 }
 
-// static
-Matrix4f KinectUtils::worldToKinect( const NUI_SKELETON_FRAME& frame )
+Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame )
 {
-    Plane3f plane( frame.vFloorClipPlane.x, frame.vFloorClipPlane.y, frame.vFloorClipPlane.z, frame.vFloorClipPlane.w );
+    Plane3f plane( frame.vFloorClipPlane.x, frame.vFloorClipPlane.y,
+        frame.vFloorClipPlane.z, frame.vFloorClipPlane.w );
 
-    // x axis is the same
+    // The x axis is the same.
     Vector3f xKinect( 1, 0, 0 );
-    // in the Kinect's frame, y is not (0,0,1)
-    Vector3f yKinect( frame.vFloorClipPlane.x, frame.vFloorClipPlane.y, frame.vFloorClipPlane.z );
+    // In the Kinect's frame, y is not (0,0,1).
+    Vector3f yKinect( frame.vFloorClipPlane.x, frame.vFloorClipPlane.y,
+        frame.vFloorClipPlane.z );
     Vector3f zKinect = Vector3f::cross( xKinect, yKinect );
 
     // build a world to Kinect matrix
@@ -28,29 +30,36 @@ Matrix4f KinectUtils::worldToKinect( const NUI_SKELETON_FRAME& frame )
     // z axis is cross product
     worldToKinect.setCol( 2, Vector4f( zKinect, 0 ) );
 
-    // in the world, the Kinect is at the point on the plane closest to the origin
+    // In the world, the Kinect is at the point on the plane closest to the
+    // origin.
     worldToKinect.setCol( 3, Vector4f( ( plane.pointOnPlane() ), 1 ) );
 
     return worldToKinect;
 }
 
-// static
-void KinectUtils::rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
-    Array2DView< float > outputMeters, bool flipLeftRight, int rightShft )
+void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
+    Array2DView< float > outputMeters, bool flipX, bool flipY,
+    int rightShift )
 {
     int w = static_cast< int >( rawDepth.width() );
     int h = static_cast< int >( rawDepth.height() );
 
-    Array2DView< const uint16_t > src = flipLeftRight ?
-        libcgt::core::arrayutils::flipLeftRight( rawDepth ) :
-        rawDepth;
+    Array2DView< const uint16_t > src = rawDepth;
+    if( flipX )
+    {
+        src = libcgt::core::arrayutils::flipX( src );
+    }
+    if( flipY )
+    {
+        src = libcgt::core::arrayutils::flipY( src );
+    }
 
     for( int y = 0; y < h; ++y )
     {
         for( int x = 0; x < w; ++x )
         {
             uint16_t d = src[ { x, y } ];
-            d >>= rightShft;
+            d >>= rightShift;
 
             float z = 0.001f * d;
             outputMeters[ { x, y } ] = z;
@@ -58,8 +67,7 @@ void KinectUtils::rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
     }
 }
 
-// static
-Vector2i KinectUtils::toVector2i( NUI_IMAGE_RESOLUTION resolution )
+Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution )
 {
     switch( resolution )
     {
@@ -80,3 +88,5 @@ Vector2i KinectUtils::toVector2i( NUI_IMAGE_RESOLUTION resolution )
         return{ 0, 0 };
     }
 }
+
+} } } // kinectutils, kinect1x, libcgt

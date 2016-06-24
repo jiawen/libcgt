@@ -1,32 +1,35 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#include <common/WrapConstPointerT.h>
 
 template< typename T >
-struct KernelArray2D
+class KernelArray2D
 {
-    T* md_pPitchedPointer;
-    int m_width;
-    int m_height;
-    size_t m_pitch;
+public:
+
+    // T --> void*. const T --> const void*.
+    using VoidPointer = typename WrapConstPointerT< T, void >::pointer;
+    // T --> uint8_t*. const T --> const uint8_t*.
+    using UInt8Pointer = typename WrapConstPointerT< T, uint8_t >::pointer;
 
     __inline__ __device__ __host__
-    KernelArray2D();
+    KernelArray2D() = default;
 
     __inline__ __device__ __host__
-    KernelArray2D( T* d_pPitchedPointer, int width, int height, size_t pitch );
+    KernelArray2D( VoidPointer pointer, const int2& size );
 
-    // wraps a KernelArray2D around linear device memory
-    // (assumes that the memory pointed to by d_pLinearPointer is tightly packed,
-    // if it's not, then the caller should construct using the constructor with pitch)
     __inline__ __device__ __host__
-    KernelArray2D( T* d_pLinearPointer, int width, int height );
+    KernelArray2D( VoidPointer pointer, const int2& size, size_t pitch );
 
     __inline__ __device__
-    const T* rowPointer( int y ) const;
+    T* pointer() const;
 
     __inline__ __device__
-    T* rowPointer( int y );
+    T* elementPointer( const int2& xy ) const;
+
+    __inline__ __device__
+    T* rowPointer( int y ) const;
 
     __inline__ __device__
     int width() const;
@@ -41,16 +44,13 @@ struct KernelArray2D
     int2 size() const;
 
     __inline__ __device__
-    const T& operator () ( int x, int y ) const;
+    T& operator [] ( const int2& xy ) const;
 
-    __inline__ __device__
-    T& operator () ( int x, int y );
+private:
 
-    __inline__ __device__
-    const T& operator [] ( const int2& xy ) const;
-
-    __inline__ __device__
-    T& operator [] ( const int2& xy );
+    UInt8Pointer md_pointer = nullptr;
+    int2 m_size = int2{ 0 };
+    size_t m_pitch = 0;
 };
 
 #include "KernelArray2D.inl"

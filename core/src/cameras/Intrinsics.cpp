@@ -16,4 +16,11 @@ Intrinsics::operator Matrix3f() const
     return k;
 }
 
+Intrinsics flipY( const Intrinsics& intrinsics, float height )
+{
+    Intrinsics output = intrinsics;
+    output.principalPoint.y = height - output.principalPoint.y;
+    return output;
+}
+
 } } } // cameras, core, libcgt

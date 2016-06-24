@@ -337,9 +337,16 @@ T* DeviceArray2D< T >::rowPointer( size_t y )
 }
 
 template< typename T >
-KernelArray2D< T > DeviceArray2D< T >::kernelArray()
+KernelArray2D< const T > DeviceArray2D< T >::readView()
 {
-    return KernelArray2D< T >( pointer(), m_size.x, m_size.y, m_stride.y );
+    return KernelArray2D< const T >(
+        pointer(), { m_size.x, m_size.y }, m_stride.y );
+}
+
+template< typename T >
+KernelArray2D< T > DeviceArray2D< T >::writeView()
+{
+    return KernelArray2D< T >( pointer(), { m_size.x, m_size.y }, m_stride.y );
 }
 
 template< typename T >

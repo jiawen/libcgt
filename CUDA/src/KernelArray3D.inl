@@ -1,10 +1,3 @@
-template< typename T >
-__inline__ __device__ __host__
-KernelArray3D< T >::KernelArray3D()
-{
-
-}
-
 // A cudaPitchedPtr contains
 // width: logical width of the array in elements
 // xsize = elementSize * width, in bytes
@@ -12,98 +5,92 @@ KernelArray3D< T >::KernelArray3D()
 // pitch = roundUpToAlignment( xsize ), in bytes
 template< typename T >
 __inline__ __device__ __host__
-KernelArray3D< T >::KernelArray3D( cudaPitchedPtr d_pitchedPointer, int depth ) :
-
-    md_pPitchedPointer( reinterpret_cast< T* >( d_pitchedPointer.ptr ) ),
-    m_width( static_cast< int >( d_pitchedPointer.xsize / sizeof( T ) ) ),
-    m_height( static_cast< int >( d_pitchedPointer.ysize ) ),
-    m_depth( depth ),
+KernelArray3D< T >::KernelArray3D(
+    cudaPitchedPtr d_pitchedPointer, int depth ) :
+    md_pointer( reinterpret_cast< typename KernelArray3D::UInt8Pointer >(
+        d_pitchedPointer.ptr ) ),
     m_rowPitch( d_pitchedPointer.pitch )
-
 {
-
+    m_size.x = static_cast< int >( d_pitchedPointer.xsize / sizeof( T ) );
+    m_size.y = static_cast< int >( d_pitchedPointer.ysize );
+    m_size.z = depth;
 }
 
 template< typename T >
 __inline__ __device__ __host__
-KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, int width, int height, int depth ) :
-
-    md_pPitchedPointer( d_pLinearPointer ),
-    m_width( width ),
-    m_height( height ),
-    m_depth( depth ),
-    m_rowPitch( width * sizeof( T ) )
-
-{
-
-}
-
-template< typename T >
-__inline__ __device__ __host__
-KernelArray3D< T >::KernelArray3D( T* d_pLinearPointer, const int3& size ) :
-
-    md_pPitchedPointer( d_pLinearPointer ),
-    m_width( size.x ),
-    m_height( size.y ),
-    m_depth( size.z ),
+KernelArray3D< T >::KernelArray3D(
+    typename KernelArray3D< T >::VoidPointer d_linearPointer,
+    const int3& size ) :
+    md_pointer( reinterpret_cast< typename KernelArray3D::UInt8Pointer >(
+        d_linearPointer ) ),
+    m_size( size ),
     m_rowPitch( size.x * sizeof( T ) )
-
 {
 
 }
 
 template< typename T >
-__inline__ __device__
-T* KernelArray3D< T >::rowPointer( int y, int z )
+__inline__  __device__
+T* KernelArray3D< T >::pointer() const
 {
-    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
-    uint8_t* pSlice = p + z * slicePitch();
-    return reinterpret_cast< T* >( pSlice + y * m_rowPitch );
+    return reinterpret_cast< T* >( md_pointer );
 }
 
 template< typename T >
 __inline__ __device__
-const T* KernelArray3D< T >::rowPointer( int y, int z ) const
+T* KernelArray3D< T >::elementPointer( const int3& xyz ) const
 {
-    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
-    uint8_t* pSlice = p + z * slicePitch();
-    return reinterpret_cast< T* >( pSlice + y * m_rowPitch );
+    const int elementStride = sizeof( T );
+    uint8_t* p = md_pointer +
+        xyz.x * elementStride + xyz.y * m_rowPitch + xyz.z * slicePitch();
+    return reinterpret_cast< T* >( p );
 }
 
 template< typename T >
 __inline__ __device__
-T* KernelArray3D< T >::slicePointer( int z )
+T* KernelArray3D< T >::rowPointer( const int2& yz ) const
 {
-    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
-    return reinterpret_cast< T* >( p + z * slicePitch() );
+    int y = yz.x;
+    int z = yz.y;
+
+    uint8_t* p = md_pointer + y * m_rowPitch + z * slicePitch();
+    return reinterpret_cast< T* >( p );
+}
+
+template< typename T >
+__inline__ __device__
+T* KernelArray3D< T >::slicePointer( int z ) const
+{
+    uint8_t* p = md_pointer + z * slicePitch();
+    return reinterpret_cast< T* >( p );
 }
 
 template< typename T >
 __inline__ __device__
 int KernelArray3D< T >::width() const
 {
-    return m_width;
+    return m_size.x;
 }
 
 template< typename T >
 __inline__ __device__
 int KernelArray3D< T >::height() const
 {
-    return m_height;
+    return m_size.y;
 }
 
 template< typename T >
 __inline__ __device__
 int KernelArray3D< T >::depth() const
 {
-    return m_depth;
+    return m_size.z;
 }
 
 template< typename T >
 __inline__ __device__
 int3 KernelArray3D< T >::size() const
 {
-    return make_int3( width(), height(), depth() );
+    return m_size;
 }
 
 template< typename T >
@@ -117,60 +104,12 @@ template< typename T >
 __inline__ __device__
 size_t KernelArray3D< T >::slicePitch() const
 {
-    return m_rowPitch * m_height;
+    return m_rowPitch * m_size.y;
 }
 
 template< typename T >
 __inline__ __device__
-const T* KernelArray3D< T >::slicePointer( int z ) const
+T& KernelArray3D< T >::operator [] ( const int3& xyz ) const
 {
-    uint8_t* p = reinterpret_cast< uint8_t* >( md_pPitchedPointer );
-    return reinterpret_cast< T* >( p + z * slicePitch() );
-}
-
-template< typename T >
-__inline__ __device__
-const T& KernelArray3D< T >::operator () ( int x, int y, int z ) const
-{
-    return rowPointer( y, z )[ x ];
-}
-
-template< typename T >
-__inline__ __device__
-T& KernelArray3D< T >::operator () ( int x, int y, int z )
-{
-    return rowPointer( y, z )[ x ];
-}
-
-template< typename T >
-__inline__ __device__
-T& KernelArray3D< T >::operator [] ( const int3& xyz )
-{
-    return rowPointer( xyz.y, xyz.z )[ xyz.x ];
-}
-
-template< typename T >
-__inline__ __device__
-const T& KernelArray3D< T >::operator [] ( const int3& xyz ) const
-{
-    return rowPointer( xyz.y, xyz.z )[ xyz.x ];
-}
-
-template< typename T >
-template< typename S >
-__inline__ __device__ __host__
-KernelArray3D< S > KernelArray3D< T >::reinterpretAs( int outputWidth, int outputHeight, int outputDepth )
-{
-    return KernelArray3D< S >
-    (
-        reinterpret_cast< S* >( md_pPitchedPointer ), outputWidth, outputHeight, outputDepth
-    );
-}
-
-template< typename T >
-template< typename S >
-__inline__ __device__ __host__
-KernelArray3D< S > KernelArray3D< T >::reinterpretAs( const int3& outputSize )
-{
-    return reinterpretAs< S >( outputSize.x, outputSize.y, outputSize.z );
+    return *elementPointer( xyz );
 }

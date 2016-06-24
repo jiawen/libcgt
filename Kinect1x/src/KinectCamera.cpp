@@ -16,6 +16,8 @@ using libcgt::core::arrayutils::copy;
 using libcgt::core::cameras::Intrinsics;
 using libcgt::core::vecmath::EuclideanTransform;
 
+namespace libcgt { namespace kinect1x {
+
 // static
 std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > KinectCamera::s_jointIndicesForBones;
 // static
@@ -133,13 +135,21 @@ Intrinsics KinectCamera::depthIntrinsics(
 }
 
 // static
-EuclideanTransform KinectCamera::colorFromDepthExtrinsics()
+EuclideanTransform KinectCamera::colorFromDepthExtrinsicsMillimeters()
 {
     return
     {
         Matrix3f::identity(),
         { -25.4f, -0.13f, -2.18f }
     };
+}
+
+// static
+EuclideanTransform KinectCamera::colorFromDepthExtrinsicsMeters()
+{
+    auto output = colorFromDepthExtrinsicsMillimeters();
+    output.translation *= 0.001f;
+    return output;
 }
 
 // static
@@ -663,7 +673,7 @@ HRESULT KinectCamera::initializeColorStream( NUI_IMAGE_RESOLUTION resolution )
     const DWORD frameLimit = 2; // How many frames to buffer.
 
     m_colorResolution = resolution;
-    m_colorResolutionPixels = KinectUtils::toVector2i( resolution );
+    m_colorResolutionPixels = kinectutils::toVector2i( resolution );
 
     // Enable color stream.
     m_hNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
@@ -686,7 +696,7 @@ HRESULT KinectCamera::initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
         imageType = NUI_IMAGE_TYPE_DEPTH;
 
     m_depthResolution = resolution;
-    m_depthResolutionPixels = KinectUtils::toVector2i( resolution );
+    m_depthResolutionPixels = kinectutils::toVector2i( resolution );
 
     const DWORD flags = 0; // Currently ignored by the API.
     const DWORD frameLimit = 2; // How many frames to buffer.
@@ -1115,3 +1125,5 @@ bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
 
     return valid;
 }
+
+} } // kinect1x, libcgt

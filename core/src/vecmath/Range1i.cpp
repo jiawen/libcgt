@@ -18,6 +18,18 @@ Range1i::Range1i( int origin, int size ) :
 
 }
 
+// static
+Range1i Range1i::fromMinMax( int min, int max )
+{
+    return Range1i( min, max - min );
+}
+
+// static
+Range1i Range1i::fromMinMax( const Vector2i& minMax )
+{
+    return Range1i( minMax.x, minMax.y - minMax.x );
+}
+
 int Range1i::width() const
 {
     return size;
@@ -31,6 +43,11 @@ int Range1i::left() const
 int Range1i::right() const
 {
     return origin + size;
+}
+
+Vector2i Range1i::leftRight() const
+{
+    return{ left(), right() };
 }
 
 int Range1i::minimum() const

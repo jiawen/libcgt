@@ -1,38 +1,41 @@
 #pragma once
 
 #include <common/BasicTypes.h>
+#include <common/WrapConstPointerT.h>
 
 template< typename T >
-struct KernelArray3D
+class KernelArray3D
 {
 public:
 
+    // T --> void*. const T --> const void*.
+    using VoidPointer = typename WrapConstPointerT< T, void >::pointer;
+    // T --> uint8_t*. const T --> const uint8_t*.
+    using UInt8Pointer = typename WrapConstPointerT< T, uint8_t >::pointer;
+
     __inline__ __device__ __host__
-    KernelArray3D();
+    KernelArray3D() = default;
 
     __inline__ __device__ __host__
     KernelArray3D( cudaPitchedPtr d_pitchedPointer, int depth );
 
     // wraps a KernelArray3D (with pitchedPointer) around linear device memory
-    // (assumes that the memory pointed to by d_pLinearPointer is tightly packed,
+    // (assumes that the memory pointed to by d_linearPointer is tightly packed,
     // if it's not, then the caller should construct a cudaPitchedPtr directly)
     __inline__ __device__ __host__
-    KernelArray3D( T* d_pLinearPointer, int width, int height, int depth );
-
-    __inline__ __device__ __host__
-    KernelArray3D( T* d_pLinearPointer, const int3& size );
+    KernelArray3D( VoidPointer d_linearPointer, const int3& size );
 
     __inline__ __device__
-    const T* rowPointer( int y, int z ) const;
+    T* pointer() const;
 
     __inline__ __device__
-    T* rowPointer( int y, int z );
+    T* elementPointer( const int3& xyz ) const;
 
     __inline__ __device__
-    const T* slicePointer( int z ) const;
+    T* rowPointer( const int2& yz ) const;
 
     __inline__ __device__
-    T* slicePointer( int z );
+    T* slicePointer( int z ) const;
 
     __inline__ __device__
     int width() const;
@@ -53,31 +56,12 @@ public:
     size_t slicePitch() const;
 
     __inline__ __device__
-    const T& operator () ( int x, int y, int z ) const;
-
-    __inline__ __device__
-    T& operator () ( int x, int y, int z );
-
-    __inline__ __device__
-    const T& operator [] ( const int3& xyz ) const;
-
-    __inline__ __device__
-    T& operator [] ( const int3& xyz );
-
-    template< typename S >
-    __inline__ __device__ __host__
-    KernelArray3D< S > reinterpretAs( int outputWidth, int outputHeight, int outputDepth );
-
-    template< typename S >
-    __inline__ __device__ __host__
-    KernelArray3D< S > reinterpretAs( const int3& outputSize );
+    T& operator [] ( const int3& xyz ) const;
 
 private:
 
-    T* md_pPitchedPointer;
-    int m_width;
-    int m_height;
-    int m_depth;
+    UInt8Pointer md_pointer = nullptr;
+    int3 m_size = int3{ 0 };
     size_t m_rowPitch;
 
 };

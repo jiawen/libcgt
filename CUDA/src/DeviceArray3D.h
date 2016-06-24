@@ -81,7 +81,8 @@ public:
     const cudaPitchedPtr pitchedPointer() const;
     cudaPitchedPtr pitchedPointer();
 
-    KernelArray3D< T > kernelArray() const;
+    KernelArray3D< const T > readView() const;
+    KernelArray3D< T > writeView() const;
 
     void load( const char* filename );
 

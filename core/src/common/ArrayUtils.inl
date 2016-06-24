@@ -201,7 +201,7 @@ bool fill( Array2DView< T > view, const T& value )
 }
 
 template< typename T >
-Array1DView< T > flipLeftRight( Array1DView< T > src )
+Array1DView< T > flipX( Array1DView< T > src )
 {
     return Array1DView< T >
     (
@@ -212,27 +212,88 @@ Array1DView< T > flipLeftRight( Array1DView< T > src )
 }
 
 template< typename T >
-Array2DView< T > flipLeftRight( Array2DView< T > src )
+Array2DView< T > flipX( Array2DView< T > src )
 {
+    Vector2i stride = src.stride();
+    stride.x = -stride.x;
+
     return Array2DView< T >
     (
         src.elementPointer( { src.width() - 1, 0 } ),
         src.size(),
-        { -src.elementStrideBytes(), src.rowStrideBytes() }
+        stride
     );
 }
 
 template< typename T >
-Array2DView< T > flipUpDown( Array2DView< T > src )
+Array2DView< T > flipY( Array2DView< T > src )
 {
+    Vector2i stride = src.stride();
+    stride.y = -stride.y;
+
     return Array2DView< T >
     (
         src.rowPointer( src.height() - 1 ),
         src.size(),
-        { src.elementStrideBytes(), -src.rowStrideBytes() }
+        stride
     );
 }
 
+template< typename T >
+Array2DView< T > transpose( Array2DView< T > src )
+{
+    Vector2i size = src.size().yx();
+    Vector2i stride = src.stride().yx();
+
+    return Array2DView< T >
+    (
+        src.pointer(),
+        size,
+        stride
+    );
+}
+
+template< typename T >
+Array3DView< T > flipX( Array3DView< T > src )
+{
+    Vector3i stride = src.stride();
+    stride.x = -stride.x;
+
+    return Array3DView< T >
+    (
+        src.elementPointer( { src.width() - 1, 0 } ),
+        src.size(),
+        stride
+    );
+}
+
+template< typename T >
+Array3DView< T > flipY( Array3DView< T > src )
+{
+    Vector3i stride = src.stride();
+    stride.y = -stride.y;
+
+    return Array3DView< T >
+    (
+        src.rowPointer( src.height() - 1 ),
+        src.size(),
+        stride
+    );
+}
+
+template< typename T >
+Array3DView< T > flipZ( Array3DView< T > src )
+{
+    Vector3i stride = src.stride();
+    stride.z = -stride.z;
+
+    return Array2DView< T >
+    (
+        src.slicePointer( src.depth() - 1 ),
+        src.size(),
+        stride
+    );
+}
 
 #if 0
 template< typename TSrc, typename TDst >

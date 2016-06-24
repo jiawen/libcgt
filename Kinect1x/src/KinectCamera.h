@@ -47,10 +47,15 @@
 #include "KinectStream.h"
 #endif
 
+namespace libcgt { namespace kinect1x {
+
 // TODO: Replace pointer with RAII.
 // TODO: expose infrared stream
 class KinectCamera
 {
+    using Intrinsics = libcgt::core::cameras::Intrinsics;
+    using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
+
 public:
 
     static int numDevices();
@@ -73,27 +78,23 @@ public:
     // 0.4m - 3m.
     static Range1f nearModeDepthRangeMeters();
 
-    // 0.4 meters.
-    static float nearModeMinimumDepthMeters();
-
-    // 3 meters.
-    static float nearModeMaximumDepthMeters();
-
     // The typical factory-calibrated intrinsics of the Kinect color camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
-    static libcgt::core::cameras::Intrinsics colorIntrinsics(
-        NUI_IMAGE_RESOLUTION resolution );
+    static Intrinsics colorIntrinsics( NUI_IMAGE_RESOLUTION resolution );
 
     // The typical factory-calibrated intrinsics of the Kinect depth camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
-    static libcgt::core::cameras::Intrinsics depthIntrinsics(
-        NUI_IMAGE_RESOLUTION resolution );
+    static Intrinsics depthIntrinsics( NUI_IMAGE_RESOLUTION resolution );
 
     // Get the transformation mapping: color_coord <-- depth_coord.
     // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
     // Translation has units of millimeters.
-    static libcgt::core::vecmath::EuclideanTransform
-        colorFromDepthExtrinsics();
+    static EuclideanTransform colorFromDepthExtrinsicsMillimeters();
+
+    // Get the transformation mapping: color_coord <-- depth_coord.
+    // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
+    // Translation has units of millimeters.
+    static EuclideanTransform colorFromDepthExtrinsicsMeters();
 
     // Creates a Kinect device
     // deviceIndex should be between [0, numDevices()),
@@ -348,3 +349,5 @@ private:
     static std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > s_jointIndicesForBones;
     static std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int > s_boneIndicesForJoints;
 };
+
+} } // kinect1x, libcgt

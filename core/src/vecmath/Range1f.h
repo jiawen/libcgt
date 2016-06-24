@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Vector2f.h"
+
 class Range1i;
 
 // A 1D range represented as an origin and a size.
@@ -22,6 +24,7 @@ public:
     Range1f( float origin, float size );
 
     static Range1f fromMinMax( float min, float max );
+    static Range1f fromMinMax( const Vector2f& minMax );
 
     // ------------------------------------------------------------------------
     // These functions only make sense if the range is in standard form.
@@ -31,6 +34,7 @@ public:
 
     float left() const; // origin.x
     float right() const; // origin.x + size
+    Vector2f leftRight() const; // ( left(), right() )
 
     // ------------------------------------------------------------------------
     // minimum, maximum, and center are well defined even if the box is not in

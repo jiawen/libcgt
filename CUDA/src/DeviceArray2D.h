@@ -92,7 +92,8 @@ public:
     const T* rowPointer( size_t y ) const;
     T* rowPointer( size_t y );
 
-    KernelArray2D< T > kernelArray();
+    KernelArray2D< const T > readView();
+    KernelArray2D< T > writeView();
 
     void load( const char* filename );
 

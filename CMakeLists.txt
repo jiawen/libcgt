@@ -31,9 +31,18 @@ elseif( WIN32 )
     endif()
 endif()
 
+if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+	message(STATUS "baz: if")
+else()
+	message(STATUS "baz: else")
+endif()
+
+message(STATUS "foo ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT}")
+message(STATUS "bar ${CMAKE_INSTALL_PREFIX}")
+
 # Set CMAKE_INSTALL_PREFIX on Windows.
 if( WIN32 )
-    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
         # CACHE means set cache variable instead of internal.
         # PATH means use a directory chooser widget.
         # The next argument is a docstring.

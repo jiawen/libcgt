@@ -2,9 +2,11 @@ template< typename T >
 Array2DView< T >::Array2DView( typename Array2DView< T >::VoidPointer pointer,
     const Vector2i& size ) :
     m_size( size ),
-    m_stride( Vector2i{
+    m_stride
+    (
         static_cast< int >( sizeof( T ) ),
-        static_cast< int >( size.x * sizeof( T ) ) } ),
+        static_cast< int >( size.x * sizeof( T ) )
+    ),
     m_pointer( reinterpret_cast< typename Array2DView< T >::UInt8Pointer >(
         pointer ) )
 {

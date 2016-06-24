@@ -21,4 +21,9 @@ public:
     operator Matrix3f() const;
 };
 
+// Computes the same camera intrinsics if the image had its y axis flipped.
+// Focal length and the x component of the principal point remains the same.
+// The y component of the principal point is set to height - y.
+Intrinsics flipY( const Intrinsics& intrinsics, float height );
+
 } } } // cameras, core, libcgt

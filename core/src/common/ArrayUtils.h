@@ -94,19 +94,37 @@ bool fill( Array2DView< T > view, const T& value );
 // Create a view that is flipped left <--> right from src.
 // Flipping twice is the identity.
 template< typename T >
-Array1DView< T > flipLeftRight(Array1DView< T > src);
+Array1DView< T > flipX( Array1DView< T > src );
 
 // Create a view that is flipped left <--> right from src.
 // Flipping twice is the identity.
 template< typename T >
-Array2DView< T > flipLeftRight( Array2DView< T > src );
+Array2DView< T > flipX( Array2DView< T > src );
+
+// Create a view that is flipped up <--> down from src.
+// Flipping twice is the identity.
+template< typename T >
+Array2DView< T > flipY( Array2DView< T > src );
+
+// Create a view that swaps x and y.
+// Transposing twice is the identity.
+template< typename T >
+Array2DView< T > transpose( Array2DView< T > src );
 
 // Create a view that is flipped left <--> right from src.
 // Flipping twice is the identity.
 template< typename T >
-Array2DView< T > flipUpDown( Array2DView< T > src );
+Array3DView< T > flipX( Array3DView< T > src );
 
-// TODO(jiawen): tranpose on 2D.
+// Create a view that is flipped up <--> down from src.
+// Flipping twice is the identity.
+template< typename T >
+Array3DView< T > flipY( Array3DView< T > src );
+
+// Create a view that is flipped front <--> back from src.
+// Flipping twice is the identity.
+template< typename T >
+Array3DView< T > flipZ( Array3DView< T > src );
 
 // Classical "map" function: dst[ i ] = f( src[ i ] )
 #if 0
