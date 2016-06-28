@@ -38,7 +38,6 @@ public:
     std::string toString() const;
 
     static int dot( const Vector2i& v0, const Vector2i& v1 );
-
     static Vector3i cross( const Vector2i& v0, const Vector2i& v1 );
 
     inline Vector2i& operator += ( const Vector2i& v );

@@ -73,10 +73,6 @@ public:
     // inverse transpose of top left 3x3 submatrix on top left, 0 elsewhere
     Matrix4f normalMatrix4x4() const;
 
-    // *assuming* this matrix is a composition of a rotation, a scaling, and a translation
-    // decomposes it into its components
-    void decomposeRotationScalingTranslation( Quat4f& rotation, Vector3f& scaling, Vector3f& translation ) const;
-
     // ---- Utility ----
     // implicit cast to pointer
     operator const float* () const;

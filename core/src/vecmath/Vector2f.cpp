@@ -10,10 +10,6 @@
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 Vector2f::Vector2f( const Vector2d& v ) :
     x( static_cast< float >( v.x ) ),
     y( static_cast< float >( v.y ) )
@@ -62,10 +58,4 @@ Vector3f Vector2f::cross( const Vector2f& v0, const Vector2f& v1 )
             0,
             v0.x * v1.y - v0.y * v1.x
         );
-}
-
-// static
-Vector2f Vector2f::lerp( const Vector2f& v0, const Vector2f& v1, float alpha )
-{
-    return alpha * ( v1 - v0 ) + v0;
 }

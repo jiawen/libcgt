@@ -3,12 +3,28 @@
 #include <common/BasicTypes.h>
 #include <helper_math.h>
 
+#include "Rect2i.h"
 #include "VectorFunctions.h"
 
 #define MAX_UNSIGNED_SHORT ( 1 << 16 )
 #define SUB2IND( x, y, w ) ( ( y ) * ( w ) + ( x ) )
 
 namespace libcgt { namespace cuda { namespace math {
+
+__inline__ __host__ __device__
+int2 incrementX( const int2& xy );
+
+__inline__ __host__ __device__
+int2 incrementY( const int2& xy );
+
+__inline__ __host__ __device__
+int3 incrementX( const int3& xyz );
+
+__inline__ __host__ __device__
+int3 incrementY( const int3& xyz );
+
+__inline__ __host__ __device__
+int3 incrementZ( const int3& xyz );
 
 __inline__ __host__ __device__
 int sign( int x );
@@ -38,7 +54,7 @@ __inline__ __host__ __device__
 int3 mod( const int3& v0, const int3& v1 );
 
 __inline__ __host__ __device__
-int flipUD( int y, int height );
+int flipY( int y, int height );
 
 __inline__ __host__ __device__
 float log2Float( float x );
@@ -100,25 +116,8 @@ dim3 numBins3D( const int3& inputSize, const int3& binSize );
 __inline__ __host__ __device__
 int numElementsInBin( int binIndex, int binSize, int n );
 
-// returns true if x < width && y < height
 __inline__ __host__ __device__
-bool inRectangle( int x, int y, int width, int height );
-
-// returns true if x >= x0 && x < x0 + width && y >= y0 && y < y0 + height
-__inline__ __host__ __device__
-bool inRectangle( int x, int y, int x0, int y0, int width, int height );
-
-__inline__ __host__ __device__
-bool inRectangle( const int2& xy, int width, int height );
-
-__inline__ __host__ __device__
-bool inRectangle( const int2& xy, int x0, int y0, int width, int height );
-
-__inline__ __host__ __device__
-bool inRectangle( const int2& xy, const int2& size );
-
-__inline__ __host__ __device__
-bool inRectangle( const int2& xy, const int2& origin, const int2& size );
+bool inRectangle( const int2& xy, const Rect2i& r );
 
 __inline__ __host__ __device__
 bool inBox( int x, int y, int z, int width, int height, int depth );

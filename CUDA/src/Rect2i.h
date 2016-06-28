@@ -4,65 +4,61 @@
 #include <vector_functions.h>
 #include <helper_math.h>
 
-namespace libcgt
+namespace libcgt { namespace cuda {
+
+class Rect2i
 {
-    namespace cuda
-    {
-        class Rect2i
-        {
-        public:
+public:
 
-            __inline__ __device__ __host__
-            Rect2i();
+    int2 origin = int2{ 0, 0 };
+    int2 size = int2{ 0, 0 };
 
-            __inline__ __device__ __host__
-            Rect2i( int left, int bottom, int width, int height );
+    __inline__ __device__ __host__
+    Rect2i() = default;
 
-            __inline__ __device__ __host__
-            Rect2i( const int2& origin, const int2& size );
+    __inline__ __device__ __host__
+    Rect2i( const int2& _size );
 
-            __inline__ __device__ __host__
-            int left() const;
+    __inline__ __device__ __host__
+    Rect2i( const int2& _origin, const int2& _size );
 
-            __inline__ __device__ __host__
-            int right() const;
+    __inline__ __device__ __host__
+    int left() const;
 
-            __inline__ __device__ __host__
-            int bottom() const;
+    __inline__ __device__ __host__
+    int right() const;
 
-            __inline__ __device__ __host__
-            int top() const;
+    __inline__ __device__ __host__
+    int bottom() const;
 
-            __inline__ __device__ __host__
-            int2 bottomLeft() const;
+    __inline__ __device__ __host__
+    int top() const;
 
-            __inline__ __device__ __host__
-            int2 bottomRight() const;
+    __inline__ __device__ __host__
+    int2 bottomLeft() const;
 
-            __inline__ __device__ __host__
-            int2 topLeft() const;
+    __inline__ __device__ __host__
+    int2 bottomRight() const;
 
-            __inline__ __device__ __host__
-            int2 topRight() const;
+    __inline__ __device__ __host__
+    int2 topLeft() const;
 
-            __inline__ __device__ __host__
-            int2 origin() const;
+    __inline__ __device__ __host__
+    int2 topRight() const;
 
-            __inline__ __device__ __host__
-            int2 size() const;
+    __inline__ __device__ __host__
+    int area() const;
 
-            __inline__ __device__ __host__
-            int area() const;
+};
 
-            __inline__ __device__ __host__
-            Rect2i flippedUD( int height ) const;
+__inline__ __device__ __host__
+Rect2i flipY( const Rect2i& r, int height );
 
-        private:
+// Shrink a rectangle by xy.x from both left and right, and xy.y from both
+// bottom and top.
+__inline__ __device__ __host__
+Rect2i inset( const Rect2i& r, const int2& xy );
 
-            int2 m_origin;
-            int2 m_size;
-        };
-    }
-}
+} } // cuda, libcgt
 
 #include "Rect2i.inl"

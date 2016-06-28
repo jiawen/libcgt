@@ -1,5 +1,35 @@
 namespace libcgt { namespace cuda { namespace math {
 
+__inline__ __host__ __device__
+int2 incrementX( const int2& xy )
+{
+    return{ xy.x + 1, xy.y };
+}
+
+__inline__ __host__ __device__
+int2 incrementY( const int2& xy )
+{
+    return{ xy.x, xy.y + 1 };
+}
+
+__inline__ __host__ __device__
+int3 incrementX( const int3& xyz )
+{
+    return{ xyz.x + 1, xyz.y, xyz.z };
+}
+
+__inline__ __host__ __device__
+int3 incrementY( const int3& xyz )
+{
+    return{ xyz.x, xyz.y + 1, xyz.z };
+}
+
+__inline__ __host__ __device__
+int3 incrementZ( const int3& xyz )
+{
+    return{ xyz.x, xyz.y, xyz.z + 1 };
+}
+
 int sign( int x )
 {
     if( x < 0 )
@@ -84,7 +114,7 @@ int3 mod( const int3& v0, const int3& v1 )
     );
 }
 
-int flipUD( int y, int height )
+int flipY( int y, int height )
 {
     return( height - y - 1 );
 }
@@ -214,34 +244,13 @@ int numElementsInBin( int binIndex, int binSize, int n )
     ( n % binSize ) : binSize;
 }
 
-bool inRectangle( int x, int y, int width, int height )
+bool inRectangle( const int2& xy, const Rect2i& r )
 {
-    return inRectangle( x, y, 0, 0, width, height );
-}
-
-bool inRectangle( int x, int y, int x0, int y0, int width, int height )
-{
-    return( x >= x0 && x < x0 + width && y >= y0 && y < y0 + height );
-}
-
-bool inRectangle( const int2& xy, int width, int height )
-{
-    return inRectangle( xy.x, xy.y, width, height );
-}
-
-bool inRectangle( const int2& xy, int x0, int y0, int width, int height )
-{
-    return inRectangle( xy.x, xy.y, x0, y0, width, height );
-}
-
-bool inRectangle( const int2& xy, const int2& size )
-{
-    return inRectangle( xy.x, xy.y, 0, 0, size.x, size.y );
-}
-
-bool inRectangle( const int2& xy, const int2& origin, const int2& size )
-{
-    return inRectangle( xy.x, xy.y, origin.x, origin.y, size.x, size.y );
+    return
+    (
+        xy.x >= r.left() && xy.x < r.right() &&
+        xy.y >= r.bottom() && xy.y < r.top()
+    );
 }
 
 bool inBox( int x, int y, int z, int width, int height, int depth )

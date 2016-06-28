@@ -124,16 +124,6 @@ Vector3d Vector2d::cross( const Vector2d& v0, const Vector2d& v1 )
         );
 }
 
-// static
-Vector2d Vector2d::lerp( const Vector2d& v0, const Vector2d& v1, double alpha )
-{
-    return alpha * ( v1 - v0 ) + v0;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
-
 Vector2d operator + ( const Vector2d& v0, const Vector2d& v1 )
 {
     return Vector2d( v0.x + v1.x, v0.y + v1.y );

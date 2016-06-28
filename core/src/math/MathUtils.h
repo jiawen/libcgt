@@ -26,24 +26,27 @@ extern const float HALF_PI;
 extern const float QUARTER_PI;
 extern const float TWO_PI;
 
-extern const float PHI; // golden ratio ( 1 + sqrt( 5 ) ) / 2
+extern const float PHI; // The golden ratio ( 1 + sqrt( 5 ) ) / 2.
 
 extern const float NEGATIVE_INFINITY;
 extern const float POSITIVE_INFINITY;
 
 // ----- Numbers -----
 
-// returns true if x is not NaN
+// Returns true if x is not NaN.
 // -inf and +inf *are* considered numbers
 bool isNumber( float x );
 
-// returns true if x is not one of: {NaN, -inf, +inf}
+// Returns true if x is *not* one of: {NaN, -inf, +inf}.
 bool isFinite( float x );
 
 // ----- Trigonometry -----
 
+float asinh( float x );
+double asinh( double x );
+
 float cot( float x );
-float asinh(float x);
+double cot( double x );
 
 float degreesToRadians( float degrees );
 double degreesToRadians( double degrees );
@@ -66,18 +69,12 @@ template< typename T >
 T clampToRange( const T& x, const T& lo, const T& hi );
 
 // clamps v to rect (exclusive)
-Vector2i clampToRectangleExclusive( int x, int y, int left, int bottom, int width, int height );
-Vector2i clampToRectangleExclusive( const Vector2i& v, const Vector2i& origin, const Vector2i& size );
-Vector2i clampToRectangleExclusive( const Vector2i& v, const Vector2i& size );
 Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect );
 
 // clamps v to rect (inclusive)
 Vector2f clampToRectangle( const Vector2f& v, const Rect2f& rect );
 
 // clamps v to box (exclusive)
-Vector3i clampToBoxExclusive( int x, int y, int z, int left, int bottom, int back, int width, int height, int depth );
-Vector3i clampToBoxExclusive( const Vector3i& v, const Vector3i& origin, const Vector3i& size );
-Vector3i clampToBoxExclusive( const Vector3i& v, const Vector3i& size );
 Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box );
 
 // clamps v to box (inclusive)
@@ -140,12 +137,19 @@ Vector4i maximum( const Vector4i& v0, const Vector4i& v1 );
 template< typename T >
 T lerp( const T& x, const T& y, float t );
 
+Vector2f lerp( const Vector2i& v0, const Vector2i& v1, float alpha );
+Vector3f lerp( const Vector3i& v0, const Vector3i& v1, float alpha );
+Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
+
+// TODO(jiawen): Move this into RangeUtils.
+
 // given an input range [inputMin, inputMax]
 // and an output range [outputMin, outputMax]
 //
-// returns the parameters scale and offset such that
+// Computes the parameters scale and offset such that:
 // for x \in [inputMin, inputMax]
-// scale * x + offset is in the range [outputMin,outputMax]
+// scale * x + offset is in the range [outputMin, outputMax].
+// Call this transformBetween() just like for Rect2f.
 void rescaleRangeToScaleOffset( float inputMin, float inputMax,
     float outputMin, float outputMax,
     float& scale, float& offset );
@@ -182,7 +186,8 @@ T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t 
 
 float distanceSquared( float x0, float y0, float x1, float y1 );
 
-// evaluates a continuous normal distribution with mean u and standard deviation sigma
+// Evaluates a continuous normal distribution with mean u and standard
+// deviation sigma.
 float gaussian( float x, float u, float sigma );
 
 // 1/x, returns 0 if x=0

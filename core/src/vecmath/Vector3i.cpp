@@ -152,16 +152,6 @@ Vector3i Vector3i::cross( const Vector3i& v0, const Vector3i& v1 )
     };
 }
 
-// static
-Vector3f Vector3i::lerp( const Vector3i& v0, const Vector3i& v1, float alpha )
-{
-    return alpha * ( v1 - v0 ) + Vector3f( v0 );
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
-
 bool operator == ( const Vector3i& v0, const Vector3i& v1 )
 {
     return

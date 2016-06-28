@@ -60,6 +60,20 @@ Vector2f normalizedCoordinatesWithinRectangle( const Vector2f& p,
     return ( p - r.origin ) / r.size;
 }
 
+Rect2f translate( const Rect2f& r, const Vector2f& delta )
+{
+    Rect2f r2 = r;
+    r2.origin += delta;
+    return r2;
+}
+
+Rect2i translate( const Rect2i& r, const Vector2i& delta )
+{
+    Rect2i r2 = r;
+    r2.origin += delta;
+    return r2;
+}
+
 Rect2f flipX( const Rect2f& r, float width )
 {
     assert( r.isStandard() );

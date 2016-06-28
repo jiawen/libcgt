@@ -44,9 +44,6 @@ public:
 
     static Vector3d cross( const Vector3d& v0, const Vector3d& v1 );
 
-    // returns v0 * ( 1 - alpha ) * v1 * alpha
-    static Vector3d lerp( const Vector3d& v0, const Vector3d& v1, double alpha );
-
     union
     {
         struct

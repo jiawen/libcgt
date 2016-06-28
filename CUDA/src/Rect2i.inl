@@ -1,90 +1,80 @@
-libcgt::cuda::Rect2i::Rect2i() :
+namespace libcgt { namespace cuda {
 
-    m_origin( make_int2( 0, 0 ) ),
-    m_size( make_int2( 0, 0 ) )
-
+Rect2i::Rect2i( const int2& _size ) :
+    size( _size )
 {
 
 }
 
-libcgt::cuda::Rect2i::Rect2i( int left, int bottom, int width, int height ) :
-
-    m_origin( make_int2( left, bottom ) ),
-    m_size( make_int2( width, height ) )
-
+Rect2i::Rect2i( const int2& _origin, const int2& _size ) :
+    origin( _origin ),
+    size( _size )
 {
 
 }
 
-libcgt::cuda::Rect2i::Rect2i( const int2& origin, const int2& size ) :
-
-    m_origin( origin ),
-    m_size( size )
-
+int Rect2i::left() const
 {
-
+    return origin.x;
 }
 
-int libcgt::cuda::Rect2i::left() const
+int Rect2i::right() const
 {
-    return m_origin.x;
+    return origin.x + size.x;
 }
 
-int libcgt::cuda::Rect2i::right() const
+int Rect2i::bottom() const
 {
-    return m_origin.x + m_size.x;
+    return origin.y;
 }
 
-int libcgt::cuda::Rect2i::bottom() const
+int Rect2i::top() const
 {
-    return m_origin.y;
+    return origin.y + size.y;
 }
 
-int libcgt::cuda::Rect2i::top() const
+int2 Rect2i::bottomLeft() const
 {
-    return m_origin.y + m_size.y;
+    return origin;
 }
 
-int2 libcgt::cuda::Rect2i::bottomLeft() const
+int2 Rect2i::bottomRight() const
 {
-    return m_origin;
+    return make_int2( right(), origin.y );
 }
 
-int2 libcgt::cuda::Rect2i::bottomRight() const
+int2 Rect2i::topLeft() const
 {
-    return make_int2( right(), m_origin.y );
+    return make_int2( origin.x, top() );
 }
 
-int2 libcgt::cuda::Rect2i::topLeft() const
+int2 Rect2i::topRight() const
 {
-    return make_int2( m_origin.x, top() );
+    return origin + size;
 }
 
-int2 libcgt::cuda::Rect2i::topRight() const
+int Rect2i::area() const
 {
-    return m_origin + m_size;
+    return size.x * size.y;
 }
 
-int2 libcgt::cuda::Rect2i::origin() const
-{
-    return m_origin;
-}
-
-int2 libcgt::cuda::Rect2i::size() const
-{
-    return m_size;
-}
-
-int libcgt::cuda::Rect2i::area() const
-{
-    return m_size.x * m_size.y;
-}
-
-libcgt::cuda::Rect2i libcgt::cuda::Rect2i::flippedUD( int height ) const
+Rect2i flipY( const Rect2i& r, int height )
 {
     int2 origin;
-    origin.x = m_origin.x;
-    origin.y = height - topLeft().y;
+    origin.x = r.origin.x;
+    origin.y = height - r.topLeft().y;
 
-    return Rect2i( origin, m_size );
+    return Rect2i( origin, r.size );
 }
+
+__inline__ __device__ __host__
+Rect2i inset( const Rect2i& r, const int2& xy )
+{
+    return
+    {
+        r.origin + xy,
+        r.size - 2 * xy
+    };
+}
+
+} } // cuda, libcgt

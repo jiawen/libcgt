@@ -17,9 +17,9 @@ class Array3DView
 public:
 
     // T --> void*. const T --> const void*.
-    typedef typename WrapConstPointerT< T, void >::pointer VoidPointer;
+    using VoidPointer = typename WrapConstPointerT< T, void >::pointer;
     // T --> uint8_t*. const T --> const uint8_t*.
-    typedef typename WrapConstPointerT< T, uint8_t >::pointer UInt8Pointer;
+    using UInt8Pointer = typename WrapConstPointerT< T, uint8_t >::pointer;
 
     // The null Array2DView:
     // pointer = nullptr, width = height = depth = 0.

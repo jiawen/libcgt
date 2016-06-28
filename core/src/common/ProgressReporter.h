@@ -37,8 +37,8 @@ public:
 
 private:
 
-    typedef std::chrono::high_resolution_clock Clock;
-    typedef std::chrono::time_point< Clock > TimePoint;
+    using Clock = std::chrono::high_resolution_clock;
+    using TimePoint = Clock::time_point;
 
     void initialize( const std::string& prefix, int nTasks,
                     float reportRatePercent );

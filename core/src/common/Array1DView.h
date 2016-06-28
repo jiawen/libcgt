@@ -12,9 +12,9 @@ class Array1DView
 public:
 
     // T --> void*. const T --> const void*.
-    typedef typename WrapConstPointerT< T, void >::pointer VoidPointer;
+    using VoidPointer = typename WrapConstPointerT< T, void >::pointer;
     // T --> uint8_t*. const T --> const uint8_t*.
-    typedef typename WrapConstPointerT< T, uint8_t >::pointer UInt8Pointer;
+    using UInt8Pointer = typename WrapConstPointerT< T, uint8_t >::pointer;
 
     // The null Array2DView:
     // pointer = nullptr, width = 0.
@@ -46,7 +46,6 @@ public:
 
     T* elementPointer( size_t x );
 
-    T& operator [] ( int k );
     T& operator [] ( size_t k );
 
     // The logical size of the array view
@@ -66,7 +65,9 @@ public:
     bool elementsArePacked() const;
     bool packed() const;
 
-    // Implicit conversion operator from Array2DView< T > to Array2DView< const T >.
+    // Implicit conversion operator from Array2DView< T > to
+    // Array2DView< const T >.
+    //
     // Enabled only if T is not const.
     template< typename U = T,
         typename = typename std::enable_if

@@ -48,8 +48,6 @@ public:
 
     static Vector3i cross( const Vector3i& v0, const Vector3i& v1 );
 
-    static Vector3f lerp( const Vector3i& v0, const Vector3i& v1, float alpha );
-
     union
     {
         struct

@@ -32,8 +32,8 @@ public:
 
 private:
 
-    typedef std::chrono::high_resolution_clock Clock;
-    typedef std::chrono::duration< float, std::milli > FloatDurationMS;
+    using Clock = std::chrono::high_resolution_clock;
+    using FloatDurationMS = std::chrono::duration< float, std::milli >;
 
     // In nanoseconds.
     std::unordered_map< std::string, Clock::time_point > m_eventStartTime;

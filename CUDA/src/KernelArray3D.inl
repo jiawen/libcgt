@@ -41,7 +41,7 @@ __inline__ __device__
 T* KernelArray3D< T >::elementPointer( const int3& xyz ) const
 {
     const int elementStride = sizeof( T );
-    uint8_t* p = md_pointer +
+    auto p = md_pointer +
         xyz.x * elementStride + xyz.y * m_rowPitch + xyz.z * slicePitch();
     return reinterpret_cast< T* >( p );
 }
@@ -53,7 +53,7 @@ T* KernelArray3D< T >::rowPointer( const int2& yz ) const
     int y = yz.x;
     int z = yz.y;
 
-    uint8_t* p = md_pointer + y * m_rowPitch + z * slicePitch();
+    auto p = md_pointer + y * m_rowPitch + z * slicePitch();
     return reinterpret_cast< T* >( p );
 }
 
@@ -61,7 +61,7 @@ template< typename T >
 __inline__ __device__
 T* KernelArray3D< T >::slicePointer( int z ) const
 {
-    uint8_t* p = md_pointer + z * slicePitch();
+    auto p = md_pointer + z * slicePitch();
     return reinterpret_cast< T* >( p );
 }
 

@@ -59,7 +59,6 @@ public:
     void print() const;
 
     static double dot( const Vector4d& v0, const Vector4d& v1 );
-    static Vector4d lerp( const Vector4d& v0, const Vector4d& v1, double alpha );
 
     union
     {

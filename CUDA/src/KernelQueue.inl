@@ -71,7 +71,7 @@ template< typename T >
 __inline__ __device__
 int KernelQueue< T >::capacity() const
 {
-    return md_ringBuffer.length;
+    return md_ringBuffer.size();
 }
 
 template< typename T >

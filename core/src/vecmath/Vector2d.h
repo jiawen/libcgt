@@ -37,9 +37,6 @@ public:
 
     static Vector3d cross( const Vector2d& v0, const Vector2d& v1 );
 
-    // returns v0 * ( 1 - alpha ) * v1 * alpha
-    static Vector2d lerp( const Vector2d& v0, const Vector2d& v1, double alpha );
-
     union
     {
         struct

@@ -64,7 +64,6 @@ public:
     Vector4i& operator /= ( int i );
 
     static int dot( const Vector4i& v0, const Vector4i& v1 );
-    static Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
 
     union
     {

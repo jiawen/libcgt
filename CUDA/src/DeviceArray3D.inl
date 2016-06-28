@@ -302,7 +302,7 @@ cudaPitchedPtr DeviceArray3D< T >::pitchedPointer()
 template< typename T >
 KernelArray3D< const T > DeviceArray3D< T >::readView() const
 {
-    return KernelArray3D< T >( m_pitchedPointer, m_size.z );
+    return KernelArray3D< const T >( m_pitchedPointer, m_size.z );
 }
 
 template< typename T >

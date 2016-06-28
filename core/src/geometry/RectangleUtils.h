@@ -8,6 +8,7 @@
 #include <vecmath/Rect2f.h>
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector2f.h>
+#include <vecmath/Vector2i.h>
 #include <vecmath/Vector4f.h>
 #include <vecmath/Vector4i.h>
 
@@ -38,6 +39,12 @@ Vector2f normalizedCoordinatesWithinRectangle( const Vector2f& p,
 // from.origin --> to.origin
 // from.limit --> to.limit
 Matrix4f transformBetween( const Rect2f& from, const Rect2f& to );
+
+// Translate (moves) r: r.origin += delta.
+Rect2f translate( const Rect2f& r, const Vector2f& delta );
+
+// Translate (moves) r: r.origin += delta.
+Rect2i translate( const Rect2i& r, const Vector2i& delta );
 
 // [Requires a standard rectangle].
 // Returns the exact same rectangle as r, but in a coordinate system

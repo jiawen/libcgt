@@ -110,7 +110,7 @@ int Vector2i::dot( const Vector2i& v0, const Vector2i& v1 )
     return v0.x * v1.x + v0.y * v1.y;
 }
 
-//static
+// static
 Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
 {
     return
@@ -120,10 +120,6 @@ Vector3i Vector2i::cross( const Vector2i& v0, const Vector2i& v1 )
         v0.x * v1.y - v0.y * v1.x
     };
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 )
 {

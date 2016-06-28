@@ -48,13 +48,15 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst );
 // same stride, but with elements of type S where S is a component of T,
 // and is at offset "componentOffsetBytes" within T.
 template< typename S, typename T >
-Array1DView< S > componentView( Array1DView< T > src, int componentOffsetBytes );
+Array1DView< S > componentView( Array1DView< T > src,
+    int componentOffsetBytes );
 
 // Given an existing Array2DView< T >, returns a Array2DView< S > with the
 // same stride, but with elements of type S where S is a component of T,
 // and is at offset "componentOffsetBytes" within T.
 template< typename S, typename T >
-Array2DView< S > componentView( Array2DView< T > src, int componentOffsetBytes );
+Array2DView< S > componentView( Array2DView< T > src,
+    int componentOffsetBytes );
 
 // Get a linear subset of an Array1DView, starting at x.
 template< typename T >
@@ -130,7 +132,7 @@ Array3DView< T > flipZ( Array3DView< T > src );
 #if 0
 // TODO(MSVC_2015): the following should work but does not in VS2013.
 template< typename TSrc, typename TDst >
-static bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
+bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
     std::function< TDst( TSrc ) > f );
 #else
 // f should be a function object that mapping TSrc -> TDst

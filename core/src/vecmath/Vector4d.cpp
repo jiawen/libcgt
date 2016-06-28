@@ -254,16 +254,6 @@ double Vector4d::dot( const Vector4d& v0, const Vector4d& v1 )
     return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z + v0.w * v1.w;
 }
 
-// static
-Vector4d Vector4d::lerp( const Vector4d& v0, const Vector4d& v1, double alpha )
-{
-    return alpha * ( v1 - v0 ) + v0;
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
-
 Vector4d operator + ( const Vector4d& v0, const Vector4d& v1 )
 {
     return Vector4d( v0.x + v1.x, v0.y + v1.y, v0.z + v1.z, v0.w + v1.w );

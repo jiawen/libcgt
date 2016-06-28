@@ -16,7 +16,8 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
         return false;
     }
 
-    int nCharsWritten = fprintf( fp, "P6\n%d %d\n255\n", image.width(), image.height() );
+    int nCharsWritten =
+        fprintf( fp, "P6\n%d %d\n255\n", image.width(), image.height() );
     if( nCharsWritten < 0 )
     {
         fclose( fp );
@@ -25,7 +26,8 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
 
     if( image.packed() )
     {
-        int nWritten = fwrite( image.rowPointer( 0 ), sizeof( uint8x3 ), image.numElements(), fp );
+        size_t nWritten = fwrite( image.rowPointer( 0 ), sizeof( uint8x3 ),
+            image.numElements(), fp );
         if( nWritten != image.numElements() )
         {
             fclose( fp );
@@ -36,7 +38,8 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
     {
         for( int y = 0; y < image.height(); ++y )
         {
-            int nWritten = fwrite( image.rowPointer( y ), sizeof( uint8x3 ), image.width(), fp );
+            size_t nWritten = fwrite( image.rowPointer( y ), sizeof( uint8x3 ),
+                image.width(), fp );
             if( nWritten != image.width() )
             {
                 fclose( fp );
@@ -50,7 +53,8 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
         {
             for( int x = 0; x < image.width(); ++x )
             {
-                int nWritten = fwrite( image.elementPointer( { x, y } ), sizeof( uint8x3 ), 1, fp );
+                size_t nWritten = fwrite( image.elementPointer( { x, y } ),
+                    sizeof( uint8x3 ), 1, fp );
                 if( nWritten != 1 )
                 {
                     fclose( fp );
@@ -65,7 +69,8 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
 }
 
 // static
-bool PortablePixelMapIO::writeRGBText( const std::string& filename, Array2DView< const uint8x3 > image )
+bool PortablePixelMapIO::writeRGBText( const std::string& filename,
+    Array2DView< const uint8x3 > image )
 {
     FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == nullptr )
@@ -75,7 +80,8 @@ bool PortablePixelMapIO::writeRGBText( const std::string& filename, Array2DView<
 
     int nCharsWritten = 0;
 
-    nCharsWritten = fprintf( fp, "P3\n%d %d\n255\n", image.width(), image.height() );
+    nCharsWritten =
+        fprintf( fp, "P3\n%d %d\n255\n", image.width(), image.height() );
     if( nCharsWritten < 0 )
     {
         fclose( fp );

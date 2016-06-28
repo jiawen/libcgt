@@ -73,13 +73,6 @@ T* Array1DView< T >::elementPointer( size_t x )
 }
 
 template< typename T >
-T& Array1DView< T >::operator [] ( int k )
-{
-    T* q = reinterpret_cast< T* >( m_pointer + k * m_stride );
-    return *q;
-}
-
-template< typename T >
 T& Array1DView< T >::operator [] ( size_t k )
 {
     T* q = reinterpret_cast< T* >( m_pointer + k * m_stride );
