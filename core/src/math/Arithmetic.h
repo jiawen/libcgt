@@ -113,6 +113,8 @@ bool isPerfectSquare( int x, int& sqrtOut );
 
 int integerSquareRoot( int x );
 
+// TODO(jiawen): Move this into RangeUtils.
+
 // returns true if lo <= x < hi
 bool inRangeExclusive( float x, float lo, float hi );
 

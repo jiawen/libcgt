@@ -1,5 +1,29 @@
 namespace libcgt { namespace core { namespace arrayutils {
 
+template< typename S, typename T >
+Array1DView< T > cast( Array1DView< S > src )
+{
+    static_assert( sizeof( S ) == sizeof( T ),
+        "S and T must have the same size" );
+    return Array1DView< T >( src.pointer(), src.size(), src.stride() );
+}
+
+template< typename S, typename T >
+Array2DView< T > cast( Array2DView< S > src )
+{
+    static_assert( sizeof( S ) == sizeof( T ),
+        "S and T must have the same size" );
+    return Array2DView< T >( src.pointer(), src.size(), src.stride() );
+}
+
+template< typename S, typename T >
+Array3DView< T > cast( Array3DView< S > src )
+{
+    static_assert( sizeof( S ) == sizeof( T ),
+        "S and T must have the same size" );
+    return Array3DView< T >( src.pointer(), src.size(), src.stride() );
+}
+
 template< typename T >
 bool copy( Array1DView< const T > src, Array1DView< T > dst )
 {
@@ -90,20 +114,39 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst )
     return true;
 }
 
+#include <common/WrapConstPointerT.h>
+
 template< typename S, typename T >
 Array1DView< S > componentView( Array1DView< T > src, int componentOffsetBytes )
 {
-    // TODO: wrap const pointer correctly
-    return Array1DView< S >( reinterpret_cast< uint8_t* >( src.pointer() ) + componentOffsetBytes,
-        src.size(), src.stride() );
+    return Array1DView< S >
+    (
+        reinterpret_cast< typename Array1DView< T >::UInt8Pointer >
+            ( src.pointer() ) + componentOffsetBytes,
+        src.size(), src.stride()
+    );
 }
 
 template< typename S, typename T >
 Array2DView< S > componentView( Array2DView< T > src, int componentOffsetBytes )
 {
-    // TODO: wrap const pointer correctly
-    return Array2DView< S >( reinterpret_cast< uint8_t* >( src.pointer() ) + componentOffsetBytes,
-        src.size(), src.stride() );
+    return Array2DView< S >
+    (
+        reinterpret_cast< typename Array2DView< T >::UInt8Pointer >
+            ( src.pointer() ) + componentOffsetBytes,
+        src.size(), src.stride()
+    );
+}
+
+template< typename S, typename T >
+Array3DView< S > componentView( Array3DView< T > src, int componentOffsetBytes )
+{
+    return Array3DView< S >
+    (
+        reinterpret_cast< typename Array3DView< T >::UInt8Pointer >
+            ( src.pointer() ) + componentOffsetBytes,
+        src.size(), src.stride()
+    );
 }
 
 template< typename T >

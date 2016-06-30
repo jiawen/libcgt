@@ -7,7 +7,7 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
-using libcgt::core::math::clampToRange;
+using libcgt::core::math::clampToRangeInclusive;
 using libcgt::core::math::clampToRangeExclusive;
 using libcgt::core::math::floorToInt;
 using libcgt::core::math::lerp;
@@ -16,12 +16,14 @@ using libcgt::core::math::lerp;
 template< typename T >
 T bilerp( Array2DView< T > view, float x, float y )
 {
+    // TODO(jiawen): check this math, it can be simplified.
+    // Use rect and 2d math.
     x = x - 0.5f;
     y = y - 0.5f;
 
     // clamp to edge
-    x = clampToRange( x, 0.f, static_cast< float >( view.width() ) );
-    y = clampToRange( y, 0.f, static_cast< float >( view.height() ) );
+    x = clampToRangeInclusive( x, 0.f, static_cast< float >( view.width() ) );
+    y = clampToRangeInclusive( y, 0.f, static_cast< float >( view.height() ) );
 
     int x0 = clampToRangeExclusive( floorToInt( x ), 0, view.width() );
     int x1 = clampToRangeExclusive( x0 + 1, 0, view.width() );

@@ -1,8 +1,41 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
+#include <vecmath/Range1f.h>
+#include <vecmath/Range1i.h>
 
 namespace libcgt { namespace core { namespace math {
+
+int clampToRangeExclusive( int x, int lo, int hi )
+{
+    assert( lo < hi );
+    return std::max( lo, std::min( x, hi - 1 ) );
+}
+
+float clampToRangeInclusive( float x, float lo, float hi )
+{
+    assert( lo <= hi );
+    return std::max( lo, std::min( x, hi ) );
+}
+
+double clampToRangeInclusive( double x, double lo, double hi )
+{
+    assert( lo <= hi );
+    return std::max( lo, std::min( x, hi ) );
+}
+
+int clamp( int x, const Range1i& range )
+{
+    assert( range.isStandard() );
+    return std::max( range.left(), std::min( x, range.right() ) );
+}
+
+float clamp( float x, const Range1f& range )
+{
+    assert( range.isStandard() );
+    return std::max( range.left(), std::min( x, range.right() ) );
+}
 
 template< typename T >
 T lerp( const T& x, const T& y, float t )
@@ -11,13 +44,20 @@ T lerp( const T& x, const T& y, float t )
 }
 
 template< typename T >
-T clampToRange( const T& x, const T& lo, const T& hi )
+T lerp( const T& x, const T& y, double t )
 {
-    return std::max( lo, std::min( x, hi ) );
+    return( x + t * ( y - x ) );
+}
+
+float lerp( const Range1f& range, float t )
+{
+    assert( range.isStandard() );
+    return( range.origin + t * range.size );
 }
 
 template< typename T >
-T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t )
+T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3,
+    float t )
 {
     // geometric construction:
     //            t
@@ -35,6 +75,23 @@ T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t 
 
     // top level
     return lerp( p0p1_p1p2, p1p2_p2p3, t );
+}
+
+float fraction( float x, const Range1f& range )
+{
+    assert( range.isStandard() );
+    assert( !range.isEmpty() );
+    return ( x - range.origin ) / ( range.size );
+}
+
+float rescale( float x, const Range1f& src, const Range1f& dst )
+{
+    assert( src.isStandard() );
+    assert( !src.isEmpty() );
+    assert( dst.isStandard() );
+    assert( !dst.isEmpty() );
+
+    return lerp( dst, fraction( x, src ) );
 }
 
 float oo_0( float x )

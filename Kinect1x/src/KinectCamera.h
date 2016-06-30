@@ -190,11 +190,11 @@ public:
 
     // The typical factory-calibrated intrinsics of the Kinect color camera.
     // Returns {{0, 0}, {0, 0}} if not configured.
-    libcgt::core::cameras::Intrinsics colorIntrinsics() const;
+    Intrinsics colorIntrinsics() const;
 
     // The typical factory-calibrated intrinsics of the Kinect depth camera.
     // Returns {{0, 0}, {0, 0}} if not configured.
-    libcgt::core::cameras::Intrinsics depthIntrinsics() const;
+    Intrinsics depthIntrinsics() const;
 
     // Block until one of the input channels is available. This function blocks
     // for up to waitIntervalMilliseconds for data to be available. If

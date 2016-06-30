@@ -6,6 +6,7 @@
 #include <common/Array1DView.h>
 #include <common/Array2DView.h>
 #include <common/Array3DView.h>
+#include <vecmath/Vector4f.h>
 
 #include "DeviceArray1D.h"
 #include "DeviceArray2D.h"

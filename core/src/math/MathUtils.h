@@ -2,20 +2,20 @@
 
 #include "common/BasicTypes.h"
 
-// TODO: turn into pure functions
 // TODO: merge with Arithmetic
 
+class Box3f;
+class Box3i;
+class Range1f;
+class Range1i;
+class Rect2f;
+class Rect2i;
 class Vector2f;
 class Vector3f;
 class Vector4f;
 class Vector2i;
 class Vector3i;
 class Vector4i;
-
-class Rect2f;
-class Rect2i;
-class Box3f;
-class Box3i;
 
 namespace libcgt { namespace core { namespace math {
 
@@ -56,29 +56,32 @@ double radiansToDegrees( double radians );
 
 // ----- Clamping -----
 
-// TODO: these need to be changed to [origin, size) as well
-// clampToRectangleExclusive and clampToBoxExclusive depends on these
-// clamps x to [lo, hi)
-int clampToRangeExclusive( int x, int lo, int hi );
+// Clamps x to [lo, hi).
+inline int clampToRangeExclusive( int x, int lo, int hi );
 
-// clamps x to [lo, hi]
-int clampToRangeInclusive( int x, int lo, int hi );
+// Clamps x to [lo, hi].
+inline float clampToRangeInclusive( float x, float lo, float hi );
 
-// clamps x to between min (inclusive) and max (inclusive)
-template< typename T >
-T clampToRange( const T& x, const T& lo, const T& hi );
+// Clamps x to [lo, hi].
+inline double clampToRangeInclusive( double x, double lo, double hi );
 
-// clamps v to rect (exclusive)
-Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect );
+// Clamp x to range (inclusive).
+inline int clamp( int x, const Range1i& range );
 
-// clamps v to rect (inclusive)
-Vector2f clampToRectangle( const Vector2f& v, const Rect2f& rect );
+// Clamp x to range (inclusive).
+inline float clamp( float x, const Range1f& range );
 
-// clamps v to box (exclusive)
-Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box );
+// Clamps v to rect (exclusive).
+Vector2i clamp( const Vector2i& v, const Rect2i& rect );
 
-// clamps v to box (inclusive)
-Vector3f clampToBox( const Vector3f& v, const Box3f& box );
+// Clamps v to rect (inclusive).
+Vector2f clamp( const Vector2f& v, const Rect2f& rect );
+
+// Clamps v to box (exclusive).
+Vector3i clamp( const Vector3i& v, const Box3i& box );
+
+// Clamps v to box (inclusive).
+Vector3f clamp( const Vector3f& v, const Box3f& box );
 
 // ----- Absolute value of all components of a short vector -----
 Vector2f abs( const Vector2f& v );
@@ -133,13 +136,20 @@ Vector3i maximum( const Vector3i& v0, const Vector3i& v1 );
 Vector4i maximum( const Vector4i& v0, const Vector4i& v1 );
 
 // ----- Linear interpolation -----
-
 template< typename T >
 T lerp( const T& x, const T& y, float t );
 
-Vector2f lerp( const Vector2i& v0, const Vector2i& v1, float alpha );
-Vector3f lerp( const Vector3i& v0, const Vector3i& v1, float alpha );
-Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha );
+template< typename T >
+T lerp( const T& x, const T& y, double t );
+
+// Lerp between range.left() and range.right() by t.
+inline float lerp( const Range1f& range, float t );
+
+// Returns what fraction of the way x is between range.left() and
+// range.right(). Equal to (x - range.left()) / range.size. If x is in the
+// range, then returns a value in [0, 1]. x outside the range will not be
+// clamped.
+inline float fraction( float x, const Range1f& range );
 
 // TODO(jiawen): Move this into RangeUtils.
 
@@ -154,9 +164,7 @@ void rescaleRangeToScaleOffset( float inputMin, float inputMax,
     float outputMin, float outputMax,
     float& scale, float& offset );
 
-float rescaleFloatToFloat( float x,
-    float inputMin, float inputMax,
-    float outputMin, float outputMax );
+inline float rescale( float x, const Range1f& src, const Range1f& dst );
 
 // rescales a float range to an int range, with rounding
 // iMax is inclusive
@@ -180,7 +188,8 @@ int rescaleIntToInt( int x,
 // TODO: this is Catmull-Rom?
 // Look at 6.839 notes.
 template< typename T >
-T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3, float t );
+T cubicInterpolate( const T& p0, const T& p1, const T& p2, const T& p3,
+    float t );
 
 // ----- Misc -----
 

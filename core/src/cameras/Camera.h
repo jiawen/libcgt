@@ -19,12 +19,16 @@ class Camera
 {
 public:
 
+    using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
+    using GLFrustum = libcgt::core::cameras::GLFrustum;
+    using Intrinsics = libcgt::core::cameras::Intrinsics;
+
     // TODO(jiawen): remove this.
     bool isDirectX() const;
 
     // ---------------- Intrinsics ----------------
 
-    const libcgt::core::cameras::GLFrustum& frustum() const;
+    const GLFrustum& frustum() const;
 
     // The image aspect ratio (width divided by height).
     float aspectRatio() const;
@@ -56,20 +60,20 @@ public:
 
     // ---------------- Extrinsics ----------------
 
-    libcgt::core::vecmath::EuclideanTransform cameraFromWorld() const;
-    void setCameraFromWorld( const libcgt::core::vecmath::EuclideanTransform& cfw );
+    EuclideanTransform cameraFromWorld() const;
+    void setCameraFromWorld( const EuclideanTransform& cfw );
 
     // Set the camera from world (view) matrix directly.
     // This function assumes that cfw is a Euclidean transformation.
     void setCameraFromWorldMatrix(const Matrix4f& cfw);
 
-    libcgt::core::vecmath::EuclideanTransform worldFromCamera() const;
-    void setWorldFromCamera( const libcgt::core::vecmath::EuclideanTransform& wfc );
+    EuclideanTransform worldFromCamera() const;
+    void setWorldFromCamera( const EuclideanTransform& wfc );
 
     // Set the world from camera (inverse view) matrix directly
     // (this is not common).
     // This function assumes that wfc is a Euclidean transformation.
-    void setWorldFromCameraMatrix(const Matrix4f& wfc);
+    void setWorldFromCameraMatrix( const Matrix4f& wfc );
 
     // Sets the camera pose with an OpenGL-style gluLookAt().
     // eye is a point, center is a point towards which the camera is pointing.
@@ -126,7 +130,7 @@ public:
     //
     // These intrinsics retain OpenGL-convention right-handed coordinates,
     // with x-right, y-up, z-towards-viewer.
-    libcgt::core::cameras::Intrinsics intrinsics( const Vector2f& screenSize ) const;
+    Intrinsics intrinsics( const Vector2f& screenSize ) const;
 
     // ----- projection: world --> eye --> clip --> NDC --> screen -----
 
@@ -218,15 +222,15 @@ public:
 
 protected:
 
-    void setFrustum( const libcgt::core::cameras::GLFrustum& frustum );
+    void setFrustum( const GLFrustum& frustum );
 
     // TODO(jiawen): remove this.
     void setDirectX( bool directX );
 
 private:
 
-    libcgt::core::vecmath::EuclideanTransform m_cameraFromWorld;
-    libcgt::core::cameras::GLFrustum m_frustum; // TODO(jiawen): rename class to Frustum?
+    EuclideanTransform m_cameraFromWorld;
+    GLFrustum m_frustum; // TODO(jiawen): rename class to Frustum?
 
     // if the projection matrix is for DirectX or OpenGL
     // the view matrix is always right handed

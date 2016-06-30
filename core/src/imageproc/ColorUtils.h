@@ -19,14 +19,14 @@ const float LOG_LUMINANCE_EPSILON = 0.001f;
 // the value is ( 1 / 256 ) * ( 100 / 256 );
 const float LOG_LAB_EPSILON = 10.0f;
 
-// Divides each component by 255 and returns them as floats.
+// Divide each component by 255 and return a float.
 float toFloat( uint8_t x );
 Vector2f toFloat( const uint8x2& v );
 Vector3f toFloat( const uint8x3& v );
 Vector4f toFloat( const uint8x4& v );
 
 // Converts f in [0,1] to an unsigned byte.
-// Call saturate() first if x is not in [0,1].
+// Behavior for f outside [0,1] is undefined.
 uint8_t toUInt8( float x );
 uint8x2 toUInt8( const Vector2f& v );
 uint8x3 toUInt8( const Vector3f& v );
@@ -39,7 +39,7 @@ Vector2f toFloat( const int8x2& v );
 Vector3f toFloat( const int8x3& v );
 Vector4f toFloat( const int8x4& v );
 
-// Converts x in [-1,1] to a signed byte in [-127,127].
+// Converts a float in [-1,1] to a signed byte in [-127,127].
 // Behavior for f outside [-1,1] is undefined.
 int8_t toSInt8( float x );
 int8x2 toSInt8( const Vector2f& v );
@@ -70,7 +70,8 @@ Vector3f hsv2rgb( const Vector3f& hsv );
 // alpha is preserved
 Vector4f hsva2rgba( const Vector4f& hsva );
 
-// given x in [0,1], returns an RGBA color like MATLAB's "jet" colormap
+// Given x in [0,1], returns an RGBA color like MATLAB's "jet" colormap.
+// Values outside of [0,1] are undefined.
 Vector4f colorMapJet( float x );
 
 // returns the logarithm of the L channel of an Lab image

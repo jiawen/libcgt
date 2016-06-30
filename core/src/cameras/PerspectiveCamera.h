@@ -9,6 +9,10 @@ class PerspectiveCamera : public Camera
 {
 public:
 
+    using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
+    using GLFrustum = libcgt::core::cameras::GLFrustum;
+    using Intrinsics = libcgt::core::cameras::Intrinsics;
+
     // camera at origin
     // x points right, y points up, z towards viewer
     // 90 degree field of view, 1:1 aspect ratio
@@ -34,13 +38,13 @@ public:
     // TODO(jiawen): provide more constructors.
 
     PerspectiveCamera(
-        const libcgt::core::vecmath::EuclideanTransform& cameraFromWorld,
-        const libcgt::core::cameras::GLFrustum& frustum,
+        const EuclideanTransform& cameraFromWorld,
+        const GLFrustum& frustum,
         bool isDirectX = false );
 
     PerspectiveCamera(
         const Vector3f& eye, const Vector3f& center, const Vector3f& up,
-        const libcgt::core::cameras::GLFrustum& frustum,
+        const GLFrustum& frustum,
         bool isDirectX = false );
 
     PerspectiveCamera(
@@ -52,11 +56,11 @@ public:
         float zNear = 1.0f, float zFar = 100.0f,
         bool isDirectX = false );
 
-    void setFrustum( const libcgt::core::cameras::GLFrustum& frustum );
+    void setFrustum( const GLFrustum& frustum );
 
     // Same as below, but uses existing zNear and zFar.
     void setFrustumFromIntrinsics(
-        const libcgt::core::cameras::Intrinsics& intrinsics,
+        const Intrinsics& intrinsics,
         const Vector2f& imageSize );
 
     // Sets this camera's GL-style frustum parameters from camera intrinsics.
@@ -64,7 +68,7 @@ public:
     // The principal point has the y-axis pointing *up* on the image:
     // this is opposite the usual computer-vision convension.
     void setFrustumFromIntrinsics(
-        const libcgt::core::cameras::Intrinsics& intrinsics,
+        const Intrinsics& intrinsics,
         const Vector2f& imageSize, float zNear, float zFar );
 
     // Returns the OpenGL / Direct3D style projection matrix,

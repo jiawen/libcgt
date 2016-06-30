@@ -239,7 +239,6 @@ Vector4f Camera::worldToScreen( const Vector4f& world, const Vector2f& screenSiz
     return eyeToScreen( eye, screenSize );
 }
 
-
 // virtual
 Vector4f Camera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
 {

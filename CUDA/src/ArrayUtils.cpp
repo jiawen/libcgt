@@ -5,7 +5,6 @@
 #include <common/Array3D.h>
 #include <common/ArrayUtils.h>
 
-// TODO: std::vector<int3> --> Array1DView<int3>
 // TODO: Array2D<float2> --> Array2DView<Vector2f>
 
 namespace libcgt { namespace cuda { namespace arrayutils {

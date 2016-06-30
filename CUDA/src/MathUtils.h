@@ -117,9 +117,6 @@ __inline__ __host__ __device__
 int numElementsInBin( int binIndex, int binSize, int n );
 
 __inline__ __host__ __device__
-bool inRectangle( const int2& xy, const Rect2i& r );
-
-__inline__ __host__ __device__
 bool inBox( int x, int y, int z, int width, int height, int depth );
 
 __inline__ __host__ __device__

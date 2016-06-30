@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <algorithm>
+#include <cassert>
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
@@ -83,36 +84,9 @@ double radiansToDegrees( double radians )
     return( radians * 180.0 / PI );
 }
 
-int clampToRangeExclusive( int x, int lo, int hi )
+Vector2i clamp( const Vector2i& v, const Rect2i& rect )
 {
-    if( x >= hi )
-    {
-        x = hi - 1;
-    }
-    if( x < lo )
-    {
-        x = lo;
-    }
-
-    return x;
-}
-
-int clampToRangeInclusive( int x, int lo, int hi )
-{
-    if( x > hi )
-    {
-        x = hi;
-    }
-    if( x < lo )
-    {
-        x = lo;
-    }
-
-    return x;
-}
-
-Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect )
-{
+    assert( rect.isStandard() );
     return
     {
         clampToRangeExclusive( v.x, rect.left(), rect.right() ),
@@ -120,17 +94,19 @@ Vector2i clampToRectangleExclusive( const Vector2i& v, const Rect2i& rect )
     };
 }
 
-Vector2f clampToRectangle( const Vector2f& v, const Rect2f& rect )
+Vector2f clamp( const Vector2f& v, const Rect2f& rect )
 {
+    assert( rect.isStandard() );
     return
     {
-        clampToRange( v.x, rect.left(), rect.right() ),
-        clampToRange( v.y, rect.bottom(), rect.top() )
+        clampToRangeInclusive( v.x, rect.left(), rect.right() ),
+        clampToRangeInclusive( v.y, rect.bottom(), rect.top() )
     };
 }
 
-Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box )
+Vector3i clamp( const Vector3i& v, const Box3i& box )
 {
+    assert( box.isStandard() );
     return
     {
         clampToRangeExclusive( v.x, box.left(), box.right() ),
@@ -139,12 +115,15 @@ Vector3i clampToBoxExclusive( const Vector3i& v, const Box3i& box )
     };
 }
 
-Vector3f clampToBox( const Vector3f& v, const Box3f& box )
+Vector3f clamp( const Vector3f& v, const Box3f& box )
 {
-    float x = clampToRange( v.x, box.left(), box.right() );
-    float y = clampToRange( v.y, box.bottom(), box.top() );
-    float z = clampToRange( v.z, box.back(), box.front() );
-    return Vector3f( x, y, z );
+    assert( box.isStandard() );
+    return
+    {
+        clampToRangeInclusive( v.x, box.left(), box.right() ),
+        clampToRangeInclusive( v.y, box.bottom(), box.top() ),
+        clampToRangeInclusive( v.z, box.back(), box.front() )
+    };
 }
 
 Vector2f abs( const Vector2f& v )
@@ -357,21 +336,6 @@ Vector4i maximum( const Vector4i& v0, const Vector4i& v1 )
     return{ std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) };
 }
 
-Vector2f lerp( const Vector2i& v0, const Vector2i& v1, float alpha )
-{
-    return alpha * ( v1 - v0 ) + Vector2f( v0 );
-}
-
-Vector3f lerp( const Vector3i& v0, const Vector3i& v1, float alpha )
-{
-    return alpha * ( v1 - v0 ) + Vector3f( v0 );
-}
-
-Vector4f lerp( const Vector4i& v0, const Vector4i& v1, float alpha )
-{
-    return alpha * ( v1 - v0 ) + Vector4f( v0 );
-}
-
 void rescaleRangeToScaleOffset( float inputMin, float inputMax,
     float outputMin, float outputMax,
     float& scale, float& offset )
@@ -389,18 +353,6 @@ void rescaleRangeToScaleOffset( float inputMin, float inputMax,
 
     scale = outputRange / inputRange;
     offset = outputMin - inputMin * scale;
-}
-
-float rescaleFloatToFloat( float x,
-    float inputMin, float inputMax,
-    float outputMin, float outputMax )
-{
-    float inputRange = inputMax - inputMin;
-    float outputRange = outputMax - outputMin;
-
-    float fraction = ( x - inputMin ) / inputRange;
-
-    return( outputMin + fraction * outputRange );
 }
 
 int rescaleFloatToInt( float x,

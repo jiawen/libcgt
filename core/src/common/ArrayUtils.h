@@ -20,6 +20,21 @@
 
 namespace libcgt { namespace core { namespace arrayutils {
 
+// Cast from Array1DView< S > --> Array1DView< T >. sizeof( S ) must be equal
+// sizeof( T ).
+template< typename S, typename T >
+Array1DView< T > cast( Array1DView< S > src );
+
+// Cast from Array2DView< S > --> Array2DView< T >. sizeof( S ) must be equal
+// sizeof( T ).
+template< typename S, typename T >
+Array2DView< T > cast( Array2DView< S > src );
+
+// Cast from Array3DView< S > --> Array3DView< T >. sizeof( S ) must be equal
+// sizeof( T ).
+template< typename S, typename T >
+Array3DView< T > cast( Array3DView< S > src );
+
 // Copy between two Array1DViews, with potentially varying stride.
 // If both are packed(), uses memcpy to do a single fast copy.
 // Otherwise, copies element by element.
@@ -56,6 +71,13 @@ Array1DView< S > componentView( Array1DView< T > src,
 // and is at offset "componentOffsetBytes" within T.
 template< typename S, typename T >
 Array2DView< S > componentView( Array2DView< T > src,
+    int componentOffsetBytes );
+
+// Given an existing Array3DView< T >, returns a Array3DView< S > with the
+// same stride, but with elements of type S where S is a component of T,
+// and is at offset "componentOffsetBytes" within T.
+template< typename S, typename T >
+Array3DView< S > componentView( Array3DView< T > src,
     int componentOffsetBytes );
 
 // Get a linear subset of an Array1DView, starting at x.

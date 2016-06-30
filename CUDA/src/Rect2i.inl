@@ -58,6 +58,15 @@ int Rect2i::area() const
     return size.x * size.y;
 }
 
+Rect2i flipX( const Rect2i& r, int width )
+{
+    int2 origin;
+    origin.x = width - r.bottomRight().x;
+    origin.y = r.origin.y;
+
+    return Rect2i( origin, r.size );
+}
+
 Rect2i flipY( const Rect2i& r, int height )
 {
     int2 origin;
@@ -68,6 +77,12 @@ Rect2i flipY( const Rect2i& r, int height )
 }
 
 __inline__ __device__ __host__
+Rect2i inset( const Rect2i& r, int delta )
+{
+    return inset( r, { delta, delta } );
+}
+
+__inline__ __device__ __host__
 Rect2i inset( const Rect2i& r, const int2& xy )
 {
     return
@@ -75,6 +90,16 @@ Rect2i inset( const Rect2i& r, const int2& xy )
         r.origin + xy,
         r.size - 2 * xy
     };
+}
+
+__inline__ __device__ __host__
+bool contains( const Rect2i& r, const int2& p )
+{
+    return
+    (
+        p.x >= r.left() && p.x < r.right() &&
+        p.y >= r.bottom() && p.y < r.top()
+    );
 }
 
 } } // cuda, libcgt

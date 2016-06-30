@@ -244,15 +244,6 @@ int numElementsInBin( int binIndex, int binSize, int n )
     ( n % binSize ) : binSize;
 }
 
-bool inRectangle( const int2& xy, const Rect2i& r )
-{
-    return
-    (
-        xy.x >= r.left() && xy.x < r.right() &&
-        xy.y >= r.bottom() && xy.y < r.top()
-    );
-}
-
 bool inBox( int x, int y, int z, int width, int height, int depth )
 {
     return inBox( x, y, z, 0, 0, 0, width, height, depth );

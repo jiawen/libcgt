@@ -5,7 +5,7 @@
 #include <math/MathUtils.h>
 
 using std::abs;
-using libcgt::core::math::clampToRange;
+using libcgt::core::math::clampToRangeInclusive;
 
 int OpenNaturalCubicSpline::numControlPoints() const
 {
@@ -73,7 +73,7 @@ float OpenNaturalCubicSpline::evaluateAt( float t ) const
     // spacing between control points
     float delta = 1.0f / static_cast< float >( m_vControlPoints.size() - 1 );
     // clamp t
-    float ct = clampToRange( t, 0.0f, 1.0f );
+    float ct = clampToRangeInclusive( t, 0.0f, 1.0f );
 
     // find the 4 nearest control points
     int n;
@@ -104,7 +104,7 @@ float OpenNaturalCubicSpline::derivativeAt( float t ) const
     // spacing between control points
     float delta = 1.0f / static_cast< float >( m_vControlPoints.size() - 1 );
     // clamp t
-    float ct = libcgt::core::math::clampToRange(t, 0.0f, 1.0f);
+    float ct = clampToRangeInclusive( t, 0.0f, 1.0f );
 
     // find the 3 nearest control points
     int n;
@@ -154,10 +154,6 @@ float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon,
 
     return result;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
 
 void OpenNaturalCubicSpline::computeCoefficients()
 {

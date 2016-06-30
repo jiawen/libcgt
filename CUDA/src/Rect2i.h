@@ -52,12 +52,23 @@ public:
 };
 
 __inline__ __device__ __host__
+Rect2i flipX( const Rect2i& r, int width );
+
+__inline__ __device__ __host__
 Rect2i flipY( const Rect2i& r, int height );
+
+// Shrink a rectangle by delta on all four sides.
+__inline__ __device__ __host__
+Rect2i inset( const Rect2i& r, int delta );
 
 // Shrink a rectangle by xy.x from both left and right, and xy.y from both
 // bottom and top.
 __inline__ __device__ __host__
 Rect2i inset( const Rect2i& r, const int2& xy );
+
+// Returns true if the rectangle "r" contains the point "p".
+__inline__ __device__ __host__
+bool contains( const Rect2i& r, const int2& p );
 
 } } // cuda, libcgt
 

@@ -7,94 +7,98 @@
 #include <math/Arithmetic.h>
 #include <common/Iterators.h>
 
+namespace libcgt { namespace core { namespace imageproc { namespace colorutils {
+
 using libcgt::core::math::floorToInt;
 
-float libcgt::core::imageproc::colorutils::toFloat( uint8_t x )
+// TODO(jiawen): Check over the rounding.
+
+float toFloat( uint8_t x )
 {
     return x / 255.f;
 }
 
-Vector2f libcgt::core::imageproc::colorutils::toFloat( const uint8x2& v )
-{
-    return Vector2f{ toFloat( v.x ), toFloat( v.y ) };
-}
-
-Vector3f libcgt::core::imageproc::colorutils::toFloat( const uint8x3& v )
-{
-    return Vector3f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) );
-}
-
-Vector4f libcgt::core::imageproc::colorutils::toFloat( const uint8x4& v )
-{
-    return Vector4f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) );
-}
-
-uint8_t libcgt::core::imageproc::colorutils::toUInt8( float x )
-{
-    return static_cast< uint8_t >( 255.0f * x );
-}
-
-uint8x2 libcgt::core::imageproc::colorutils::toUInt8( const Vector2f& v )
-{
-    return{ toUInt8( v.x ), toUInt8( v.y ) };
-}
-
-uint8x3 libcgt::core::imageproc::colorutils::toUInt8( const Vector3f& v )
-{
-    return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ) };
-}
-
-uint8x4 libcgt::core::imageproc::colorutils::toUInt8( const Vector4f& v )
-{
-    return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ), toUInt8( v.w ) };
-}
-
-float libcgt::core::imageproc::colorutils::toFloat( int8_t x )
-{
-    return std::max( x / 127.0f, -1.0f );
-}
-
-Vector2f libcgt::core::imageproc::colorutils::toFloat( const int8x2& v )
+Vector2f toFloat( const uint8x2& v )
 {
     return{ toFloat( v.x ), toFloat( v.y ) };
 }
 
-Vector3f libcgt::core::imageproc::colorutils::toFloat( const int8x3& v )
+Vector3f toFloat( const uint8x3& v )
+{
+    return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) };
+}
+
+Vector4f toFloat( const uint8x4& v )
+{
+    return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) };
+}
+
+uint8_t toUInt8( float x )
+{
+    return static_cast< uint8_t >( 255.0f * x );
+}
+
+uint8x2 toUInt8( const Vector2f& v )
+{
+    return{ toUInt8( v.x ), toUInt8( v.y ) };
+}
+
+uint8x3 toUInt8( const Vector3f& v )
+{
+    return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ) };
+}
+
+uint8x4 toUInt8( const Vector4f& v )
+{
+    return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ), toUInt8( v.w ) };
+}
+
+float toFloat( int8_t x )
+{
+    return std::max( x / 127.0f, -1.0f );
+}
+
+Vector2f toFloat( const int8x2& v )
+{
+    return{ toFloat( v.x ), toFloat( v.y ) };
+}
+
+Vector3f toFloat( const int8x3& v )
 {
     return Vector3f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) );
 }
 
-Vector4f libcgt::core::imageproc::colorutils::toFloat( const int8x4& v )
+Vector4f toFloat( const int8x4& v )
 {
     return Vector4f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) );
 }
 
-int8_t libcgt::core::imageproc::colorutils::toSInt8( float x )
+int8_t toSInt8( float x )
 {
     return static_cast< int8_t >( x * 127.0f );
 }
 
-int8x2 libcgt::core::imageproc::colorutils::toSInt8( const Vector2f& v )
+int8x2 toSInt8( const Vector2f& v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ) };
 }
 
-int8x3 libcgt::core::imageproc::colorutils::toSInt8( const Vector3f& v )
+int8x3 toSInt8( const Vector3f& v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ), toSInt8( v.z ) };
 }
 
-int8x4 libcgt::core::imageproc::colorutils::toSInt8( const Vector4f& v )
+int8x4 toSInt8( const Vector4f& v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ), toSInt8( v.z ), toSInt8( v.w ) };
 }
 
-float libcgt::core::imageproc::colorutils::rgbToLuminance( const Vector3f& rgb )
+float rgbToLuminance( const Vector3f& rgb )
 {
     return( 0.3279f * rgb.x + 0.6557f * rgb.y + 0.0164f * rgb.z );
 }
 
-float libcgt::core::imageproc::colorutils::rgbToLuminance( uint8x3 rgb )
+float rgbToLuminance( uint8x3 rgb )
 {
     return
     (
@@ -104,7 +108,7 @@ float libcgt::core::imageproc::colorutils::rgbToLuminance( uint8x3 rgb )
     );
 }
 
-Vector3f libcgt::core::imageproc::colorutils::rgb2xyz( const Vector3f& rgb )
+Vector3f rgb2xyz( const Vector3f& rgb )
 {
     float rOut = ( rgb.x > 0.04045f ) ?
         pow( ( rgb.x + 0.055f ) / 1.055f, 2.4f ) :
@@ -126,7 +130,7 @@ Vector3f libcgt::core::imageproc::colorutils::rgb2xyz( const Vector3f& rgb )
     );
 }
 
-Vector3f libcgt::core::imageproc::colorutils::xyz2lab( const Vector3f& xyz,
+Vector3f xyz2lab( const Vector3f& xyz,
                              const Vector3f& xyzRef,
                              float epsilon,
                              float kappa )
@@ -151,12 +155,12 @@ Vector3f libcgt::core::imageproc::colorutils::xyz2lab( const Vector3f& xyz,
     );
 }
 
-Vector3f libcgt::core::imageproc::colorutils::rgb2lab( const Vector3f& rgb )
+Vector3f rgb2lab( const Vector3f& rgb )
 {
-    return libcgt::core::imageproc::colorutils::xyz2lab( libcgt::core::imageproc::colorutils::rgb2xyz( rgb ) );
+    return xyz2lab( rgb2xyz( rgb ) );
 }
 
-Vector3f libcgt::core::imageproc::colorutils::hsv2rgb( const Vector3f& hsv )
+Vector3f hsv2rgb( const Vector3f& hsv )
 {
     float h = hsv.x;
     float s = hsv.y;
@@ -198,12 +202,12 @@ Vector3f libcgt::core::imageproc::colorutils::hsv2rgb( const Vector3f& hsv )
     }
 }
 
-Vector4f libcgt::core::imageproc::colorutils::hsva2rgba( const Vector4f& hsva )
+Vector4f hsva2rgba( const Vector4f& hsva )
 {
     return Vector4f( hsv2rgb( hsva.xyz ), hsva.w );
 }
 
-Vector4f libcgt::core::imageproc::colorutils::colorMapJet( float x )
+Vector4f colorMapJet( float x )
 {
     float fourX = 4 * x;
     float r = std::min( fourX - 1.5f, -fourX + 4.5f );
@@ -213,7 +217,7 @@ Vector4f libcgt::core::imageproc::colorutils::colorMapJet( float x )
     return saturate( Vector4f( r, g, b, 1 ) );
 }
 
-float libcgt::core::imageproc::colorutils::logL( float l )
+float logL( float l )
 {
     const float logMin = log( LOG_LAB_EPSILON );
     const float logRange = log( 100 + LOG_LAB_EPSILON ) - logMin;
@@ -227,7 +231,7 @@ float libcgt::core::imageproc::colorutils::logL( float l )
     return 100.f * logL_ZO;
 }
 
-float libcgt::core::imageproc::colorutils::expL( float ll )
+float expL( float ll )
 {
     const float logMin = log( LOG_LAB_EPSILON );
     const float logRange = log( 100 + LOG_LAB_EPSILON ) - logMin;
@@ -241,45 +245,48 @@ float libcgt::core::imageproc::colorutils::expL( float ll )
     return exp( logL ) - LOG_LAB_EPSILON;
 }
 
-float libcgt::core::imageproc::colorutils::saturate( float x )
+// TODO(jiawen): inline
+float saturate( float x )
 {
     if( x < 0 )
     {
         x = 0;
     }
-    if( x > 1 )
+    else if( x > 1 )
     {
         x = 1;
     }
     return x;
 }
 
-Vector2f libcgt::core::imageproc::colorutils::saturate( const Vector2f& v )
+Vector2f saturate( const Vector2f& v )
 {
     return
     {
-        libcgt::core::imageproc::colorutils::saturate( v[ 0 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 1 ] )
+        saturate( v[ 0 ] ),
+        saturate( v[ 1 ] )
     };
 }
 
-Vector3f libcgt::core::imageproc::colorutils::saturate( const Vector3f& v )
+Vector3f saturate( const Vector3f& v )
 {
-    return Vector3f
-    (
-        libcgt::core::imageproc::colorutils::saturate( v[ 0 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 1 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 2 ] )
-    );
+    return
+    {
+        saturate( v[ 0 ] ),
+        saturate( v[ 1 ] ),
+        saturate( v[ 2 ] )
+    };
 }
 
-Vector4f libcgt::core::imageproc::colorutils::saturate( const Vector4f& v )
+Vector4f saturate( const Vector4f& v )
 {
     return Vector4f
-    (
-        libcgt::core::imageproc::colorutils::saturate( v[ 0 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 1 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 2 ] ),
-        libcgt::core::imageproc::colorutils::saturate( v[ 3 ] )
-    );
+    {
+        saturate( v[ 0 ] ),
+        saturate( v[ 1 ] ),
+        saturate( v[ 2 ] ),
+        saturate( v[ 3 ] )
+    };
 }
+
+} } } } // colorutils, imageproc, core, libcgt
