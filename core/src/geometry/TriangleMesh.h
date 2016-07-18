@@ -5,6 +5,7 @@
 #include <map>
 #include <list>
 
+#include <common/Array1DView.h>
 #include <common/Comparators.h>
 
 #include "io/OBJData.h"
@@ -19,15 +20,14 @@ class TriangleMesh
 {
 public:
 
-    // make an empty triangle mesh
-    TriangleMesh();
+    TriangleMesh() = default;
 
-    // construct a triangle mesh out of a list of positions, normals
-    // and a list of triplets indexing into positions/normals
-    // positions and normals must have the same size
-    TriangleMesh( const std::vector< Vector3f >& positions,
-        const std::vector< Vector3f >& normals,
-        const std::vector< Vector3i >& faces );
+    // Construct a triangle mesh out of a list of positions, normals
+    // and a list of triplets indexing into positions and normals.
+    // "positions" and "normals" must have the same size.
+    TriangleMesh( Array1DView< const Vector3f > positions,
+        Array1DView< const Vector3f > normals,
+        Array1DView< const Vector3i > faces );
 
     // make a triangle mesh out of data from an OBJ file
     // all groups are merged such that:
@@ -42,7 +42,7 @@ public:
     // (one particular group)
     // TODO: also triangulate face
     TriangleMesh( const OBJData& data, int groupIndex,
-                 bool generatePerFaceNormalsIfNonExistent = true );
+        bool generatePerFaceNormalsIfNonExistent = true );
 
     int numVertices() const;
     int numFaces() const;
@@ -143,8 +143,10 @@ public:
 
 private:
 
-    bool m_adjacencyIsDirty; // marks whether the cached adjacency data structures are dirty
+    // Marks whether the cached adjacency data structures are dirty.
+    bool m_adjacencyIsDirty = true;
 
+    // TODO(jiawen): make this a pure function, not a method.
     // the input data might have different number of normals vs vertices
     // if the input has *more* normals,
     //   then some of them are clearly unused and can be pruned

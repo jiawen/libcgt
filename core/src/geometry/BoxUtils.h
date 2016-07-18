@@ -12,21 +12,28 @@
 
 namespace libcgt { namespace core { namespace geometry { namespace boxutils {
 
+// TODO(jiawen): return an error if the buffer isn't big enough?
 // Writes a triangle list tesselation of the 6 faces of the box into
 // "vertexPositions".
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 vertices.
 // This function is equivalent to combining corners() and
 // solidTriangleListIndices().
-void writeSolid( const Box3f& box,
-    Array1DView< Vector4f > vertexPositions );
+void writeTriangleListPositions( const Box3f& box,
+    Array1DView< Vector4f > positions );
 
 // Writes a triangle list tesselation of the 6 faces of the box, transformed by
 // "worldFromBox", into "vertexPositions".
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 vertices.
 // This function is equivalent to combining corners() and
 // solidTriangleListIndices().
-void writeSolid( const Box3f& box, const Matrix4f& worldFromBox,
-    Array1DView< Vector4f > vertexPositions );
+void writeTriangleListPositions( const Box3f& box, const Matrix4f& worldFromBox,
+    Array1DView< Vector4f > positions );
+
+void writeTriangleListNormals( const Box3f& box,
+    Array1DView< Vector3f > normals );
+
+void writeTriangleListNormals( const Box3f& box,
+    const Matrix4f& worldFromBox, Array1DView< Vector3f > normals );
 
 // Assign somewhat arbitrary texture coordinates to each face of a cube.
 // Each face is assigned the same [0,1]^2 domain. The front, right, back, and
@@ -86,6 +93,11 @@ Array1D< Vector4f > corners( const Box3f& b );
 // Returns the 8 corners of the box in hypercube order:
 // x changes most frequently, y next, then z least frequently.
 Array1D< Vector3i > corners( const Box3i& b );
+
+// Returns the "diagonal" normals of the 8 corners of the box (pointing
+// diagonally out from the center) in hypercube order:
+// x changes most frequently, y next, then z least frequently.
+Array1D< Vector3f > cornerNormalsDiagonal( const Box3f& b );
 
 // Returns the indices in corners() of a solid box with triangle list topology.
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 indices.

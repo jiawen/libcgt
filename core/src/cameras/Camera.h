@@ -138,11 +138,14 @@ public:
 
     // Given a point in world coordinates, transforms it into eye coordinates
     // by computing viewMatrix() * world.
-    Vector4f worldToEye( const Vector4f& world ) const;
+    Vector4f worldToEye( const Vector4f& worldPoint ) const;
 
     // Given a point in eye coordinates, transforms it into clip coordinates
     // by computing projectionMatrix() * eye.
-    Vector4f eyeToClip( const Vector4f& eye ) const;
+    //
+    // Recall that clipPoint.w = -eyePoint.z: it is the orthogonal depth from
+    // the camera center, where positive depth points into the screen.
+    Vector4f eyeToClip( const Vector4f& eyePoint ) const;
 
     // Given a point in clip coordinates, transforms it into normalized device
     // coordinates by computing:
@@ -150,7 +153,7 @@ public:
     // In OpenGL: ndc.xyz \in [-1,1]^3.
     // In DirectX: ndc.xy \in [-1,1]^2, ndc.z \in [0,1].
     // ndc.w is the orthogonal depth from the eye (not along ray).
-    Vector4f clipToNDC( const Vector4f& clip ) const;
+    Vector4f clipToNDC( const Vector4f& clipPoint ) const;
 
     // Rescales normalized device coordinates NDC to screen coordinates (pixels),
     // given the screen size.
@@ -172,15 +175,12 @@ public:
 
     // ----- unprojection: screen --> eye --> world -----
 
-    // TODO: PerspectiveCamera::pixelToEye() might be the same thing
-    //   may be able to remove and get rid of virtual
-
     // given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
     // and an actual depth value (\in [0, +inf)), not distance along ray,
     // returns its eye space coordinates (right handed, output z will be negative), output.w = 1
     // (integer versions are at the center of pixel)
-    virtual Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
-    virtual Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+    Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
+    Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
 
     // given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
     // and an actual depth value (\in [0, +inf)), not distance along ray,
@@ -199,13 +199,11 @@ public:
     // to a 3D ray direction.
     Vector3f screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const;
 
-    // Converts a 2D pixel (x,y) on a screen of size "screenSize"
-    // to a 3D ray direction.
-    // The integer pixel coordinates (xy) places the point at the center of the pixel.
+    // Converts a 2D pixel (x,y) on grid of size "screenSize" into a 3D ray
+    // direction.
+    // The integer pixel coordinates (xy) places the point at the center of the
+    // pixel.
     Vector3f screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
-
-    // xy and viewport are in pixel coordinates
-    Vector3f screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const;
 
     virtual std::string toString() const = 0;
 

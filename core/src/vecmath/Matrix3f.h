@@ -4,6 +4,7 @@ class Matrix2f;
 class Quat4f;
 class Vector2f;
 
+#include <string>
 #include "Vector3f.h"
 
 // 3x3 Matrix, stored in column major order (FORTRAN / OpenGL style)
@@ -11,8 +12,10 @@ class Matrix3f
 {
 public:
 
-    // 3x3 matrix defaults to zero
-    Matrix3f( float fill = 0 );
+    // Default is the zero matrix.
+    Matrix3f();
+
+    explicit Matrix3f( float fill );
 
     // Construct 3x3 matrix directly from elements
     // elements are written in row-major order for human-readability
@@ -59,7 +62,8 @@ public:
     // implicit cast to pointer
     operator const float* () const;
     operator float* ();
-    void print() const;
+
+    std::string toString() const;
 
     // uses this to transform a point p (appends a homogeneous coordinate 1, transforms, then extracts xy)
     Vector2f transformPoint( const Vector2f& p ) const;

@@ -150,6 +150,16 @@ Array3DView< T > flipY( Array3DView< T > src );
 template< typename T >
 Array3DView< T > flipZ( Array3DView< T > src );
 
+// Get a view of the first n elements of src.
+// Returns null if src has less than n elements.
+template< typename T >
+Array1DView< T > head( Array1DView< T > src, size_t n );
+
+// Get a view of the last n elements of src.
+// Returns null if src has less than n elements.
+template< typename T >
+Array1DView< T > tail( Array1DView< T > src, size_t n );
+
 // Classical "map" function: dst[ i ] = f( src[ i ] )
 #if 0
 // TODO(MSVC_2015): the following should work but does not in VS2013.

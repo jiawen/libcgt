@@ -32,7 +32,7 @@ EuclideanTransform EuclideanTransform::fromMatrix( const Matrix4f& m )
     };
 }
 
-EuclideanTransform::operator Matrix4f() const
+Matrix4f EuclideanTransform::asMatrix() const
 {
     Matrix4f m;
     m.setSubmatrix3x3( 0, 0, rotation );
@@ -80,7 +80,7 @@ Vector3f transformVector( const EuclideanTransform& et, const Vector3f& v )
 EuclideanTransform glFromCV( const EuclideanTransform& cv )
 {
     Matrix4f rx = Matrix4f::ROTATE_X_180;
-    return EuclideanTransform::fromMatrix( rx * cv * rx );
+    return EuclideanTransform::fromMatrix( rx * cv.asMatrix() * rx );
 }
 
 EuclideanTransform cvFromGL( const EuclideanTransform& gl )

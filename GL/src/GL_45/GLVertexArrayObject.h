@@ -93,7 +93,7 @@ public:
 
     // Set the format of an attribute.
     // nComponents: the number of components per elements (1, 2, 3, or 4).
-    // type: the type of data: unsigned or singed byte, short, int, etc.
+    // type: the type of data: unsigned or signed byte, short, int, etc.
     // relativeOffsetBytes: the number of bytes from the beginning of
     //   each vertex to look for this attribute. This is useful for interleaved
     //   formats.

@@ -65,8 +65,8 @@ public:
     bool elementsArePacked() const;
     bool packed() const;
 
-    // Implicit conversion operator from Array2DView< T > to
-    // Array2DView< const T >.
+    // Implicit conversion operator from Array1DView< T > to
+    // Array1DView< const T >.
     //
     // Enabled only if T is not const.
     template< typename U = T,

@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
 
 #include <math/MathUtils.h>
 
@@ -13,6 +15,12 @@
 #include "vecmath/Vector2f.h"
 
 using std::abs;
+
+Matrix3f::Matrix3f() :
+    Matrix3f( 0.0f )
+{
+
+}
 
 Matrix3f::Matrix3f( float fill )
 {
@@ -218,12 +226,26 @@ Matrix3f::operator float* ()
     return m_elements;
 }
 
-void Matrix3f::print() const
+std::string Matrix3f::toString() const
 {
-    printf( "[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n[ %.2f %.2f %.2f ]\n",
-        m00, m01, m02,
-        m10, m11, m12,
-        m20, m21, m22 );
+    const int kFieldWidth = 8;
+    const int kPrecision = 4;
+
+    std::ostringstream sstream;
+    sstream << std::fixed << std::setprecision( kPrecision ) <<
+        std::setiosflags( std::ios::right );
+    sstream << std::endl;
+
+    for( int i = 0; i < 3; ++i )
+    {
+        sstream << "[ ";
+        for( int j = 0; j < 3; ++j )
+        {
+            sstream << std::setw( kFieldWidth ) << ( *this )( i, j ) << " ";
+        }
+        sstream << "]" << std::endl;
+    }
+    return sstream.str();
 }
 
 Vector2f Matrix3f::transformPoint( const Vector2f& p ) const

@@ -7,12 +7,18 @@
 
 #include "common/Iterators.h"
 
+#include "geometry/Plane3f.h"
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
+#include "vecmath/Box3f.h"
+#include "vecmath/Matrix2f.h"
+#include "vecmath/Matrix3f.h"
+#include "vecmath/Matrix4f.h"
 #include "vecmath/Rect2f.h"
 #include "vecmath/Rect2i.h"
-#include "vecmath/Box3f.h"
+#include "vecmath/Vector2i.h"
 #include "vecmath/Vector3f.h"
+#include "vecmath/Vector4f.h"
 
 using std::abs;
 using std::max;
@@ -20,7 +26,7 @@ using std::min;
 using std::swap;
 
 // static
-float GeometryUtils::EPSILON = 0.0001f;
+const float GeometryUtils::EPSILON = 0.0001f;
 
 // static
 Box3f GeometryUtils::boundingBoxForPoints( const std::vector< Vector3f >& points )
@@ -135,7 +141,8 @@ float GeometryUtils::edgeTestConservative( const Vector2f& edgeNormal, const Vec
 }
 
 // static
-std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative(
+    const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
     // set up edges
     Vector2f edge01 = v1 - v0;
@@ -187,7 +194,7 @@ bool GeometryUtils::pointsOnSameSide( const Vector2f& p0, const Vector2f& p1,
 
 // static
 bool GeometryUtils::pointInTriangle( const Vector2f& point,
-                                    const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+    const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
     bool edge0 = pointsOnSameSide( point, v0, v1, v2 );
     bool edge1 = pointsOnSameSide( point, v1, v2, v0 );
@@ -198,7 +205,7 @@ bool GeometryUtils::pointInTriangle( const Vector2f& point,
 
 // static
 Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
-                                               const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+    const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
     // r = l0 v0 + l1 v1 + l2 v2
     // this yields the linear system
@@ -228,7 +235,7 @@ Vector3f GeometryUtils::euclideanToBarycentric( const Vector2f& p,
 
 // static
 Vector2f GeometryUtils::barycentricToEuclidean( const Vector3f& b,
-                                               const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
+    const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 )
 {
     return( b.x * v0 + b.y * v1 + b.z * v2 );
 }
@@ -371,8 +378,6 @@ Vector2f GeometryUtils::closestPointOnTriangle( const Vector2f& p, const Vector2
     float d1Squared = ( closest1 - p ).normSquared();
     float d2Squared = ( closest2 - p ).normSquared();
 
-    // yuck
-
     if( d0Squared < d1Squared )
     {
         if( d0Squared < d2Squared )
@@ -398,7 +403,6 @@ Vector2f GeometryUtils::closestPointOnTriangle( const Vector2f& p, const Vector2
 }
 
 // static
-// dir1 and dir2 should be normalized
 bool GeometryUtils::rayRayIntersection( const Vector2f& p1, const Vector2f& dir1,
                                         const Vector2f& p2, const Vector2f& dir2, Vector2f& outIntersection )
 {
@@ -418,8 +422,7 @@ bool GeometryUtils::rayRayIntersection( const Vector2f& p1, const Vector2f& dir1
     return Vector2f::dot( outIntersection - p1, dir1 ) >= 0.f;
 }
 
-//static
-//dir should be normalized
+// static
 bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector2f& dir,
                                                  const Vector2f& p1, const Vector2f& p2, Vector2f &outIntersection)
 {
@@ -443,28 +446,23 @@ bool GeometryUtils::lineLineSegmentIntersection( const Vector2f& p, const Vector
 }
 
 // static
-bool GeometryUtils::rayPlaneIntersection( const Vector3f& crRayOrigin,
-                                         const Vector3f& crRayDirection,
-                                         const Vector4f& crPlane,
-                                         Vector3f& rIntersectionPoint )
+bool GeometryUtils::rayPlaneIntersection( const Vector3f& rayOrigin,
+                                         const Vector3f& rayDirection,
+                                         const Plane3f& plane,
+                                         float& t )
 {
-    Vector3f planeNormal = crPlane.xyz;
-    float planeD = crPlane.w;
-
-    float Vd = Vector3f::dot( planeNormal, crRayDirection );
+    // ray: P = O + tD
+    // plane: P dot N + d = 0
+    // (O + tD) dot N + d = 0
+    // --> t = -(O dot N + d
+    float den = Vector3f::dot( rayDirection, plane.normal() );
 
     // TODO: epsilon
-    if( abs( Vd ) > EPSILON )
+    if( abs( den ) > EPSILON )
     {
-        float V0 = -Vector3f::dot( planeNormal, crRayOrigin ) + planeD; // TODO: negative? weird
-        float t = V0 / Vd;
-        if( t > 0 )
-        {
-            Vector3f scaledDirection( t * crRayDirection.normalized() );
-            rIntersectionPoint = crRayOrigin + scaledDirection;
-            return true;
-        }
-        return false;
+        float num = -Vector3f::dot( rayOrigin, plane.normal() ) - plane.d;
+        t = num / den;
+        return ( t > 0 );
     }
     return false;
 }
@@ -477,8 +475,8 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
                                             const Vector3f& v2,
                                             float& t, Vector3f& barycentrics )
 {
+    Vector3f edge0;
     Vector3f edge1;
-    Vector3f edge2;
     Vector3f tvec;
     Vector3f pvec;
     Vector3f qvec;
@@ -489,23 +487,31 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
     float inv_det;
 
     // find vectors for two edges sharing vert0
-    edge1 = v1 - v0;
-    edge2 = v2 - v0;
+    edge0 = v1 - v0;
+    edge1 = v2 - v0;
 
-    // begin calculating determinant - also used to calculate U parameter
-    pvec = Vector3f::cross( rayDirection, edge2 );
-    det = Vector3f::dot( edge1, pvec );
+    // begin calculating determinant - also used to calculate u parameter
+    pvec = Vector3f::cross( rayDirection, edge1 );
+    det = Vector3f::dot( edge0, pvec );
 
 #if 1
+    // Intersect front faces only.
     if( det < EPSILON )
     {
         return false;
     }
+#else
+    // Allow intersection with back faces.
+    if( abs( det ) < EPSILON )
+    {
+        return false;
+    }
+#endif
 
-    // calculate distance from vert0 to ray origin
+    // Calculate distance from vert0 to ray origin.
     tvec = rayOrigin - v0;
 
-    // calculate U parameter and test bounds
+    // Calculate u parameter and test bounds.
     u = Vector3f::dot( tvec, pvec );
     if( u < 0.0f || u > det )
     {
@@ -513,7 +519,7 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
     }
 
     // prepare to test V parameter
-    qvec = Vector3f::cross( tvec, edge1 );
+    qvec = Vector3f::cross( tvec, edge0 );
 
     // calculate V parameter and test bounds
     v = Vector3f::dot( rayDirection, qvec );
@@ -523,47 +529,13 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
     }
 
     // calculate t, scale parameters, ray intersects triangle
-    t = Vector3f::dot( edge2, qvec );
+    t = Vector3f::dot( edge1, qvec );
     inv_det = 1.0f / det;
     t *= inv_det;
     u *= inv_det;
     v *= inv_det;
 
     barycentrics = Vector3f( 1 - u - v, u, v );
-
-#else
-    // if determinant is near zero, ray lies in plane of triangle
-    if( det > -EPSILON && det < EPSILON )
-    {
-        return false;
-    }
-    inv_det = 1.0f / det;
-
-    // calculate distance from vert0 to ray origin
-    Vector3f::subtract( pvRayOrigin, pV0, &tvec );
-
-    // calculate U parameter and test bounds
-    *u = inv_det * Vector3f::dot( &tvec, &pvec );
-    if( *u < 0.0f || *u > 1.0f )
-    {
-        return false;
-    }
-
-    // prepare to test V parameter
-    Vector3f::cross( &tvec, &edge1, &qvec );
-
-    // calculate V parameter and test bounds
-    *v = inv_det * Vector3f::dot( pvRayDirection, &qvec );
-    if( *v < 0.0f || ( *u + *v > 1.0f ) )
-    {
-        return false;
-    }
-
-    // calculate t, ray intersects triangle
-    *t = inv_det * Vector3f::dot( &edge2, &qvec );
-
-    barycentrics = Vector3f( 1 - u - v, u, v );
-#endif
     return true;
 }
 
@@ -704,13 +676,6 @@ bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f*
     return 1;   /* box and triangle overlaps */
 }
 #endif
-
-// static
-float GeometryUtils::triangleInterpolation( float interpolant0, float interpolant1, float interpolant2,
-                                           float u, float v )
-{
-    return interpolant0 + u * ( interpolant1 - interpolant0 ) + v * ( interpolant2 - interpolant0 );
-}
 
 // static
 float GeometryUtils::pointToPlaneDistance( const Vector3f& point, const Vector4f& plane )

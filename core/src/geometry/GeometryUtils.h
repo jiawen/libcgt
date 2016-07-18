@@ -1,26 +1,25 @@
 #pragma once
 
-class Vector3f;
-
 #include <vector>
 
-#include "math/Random.h"
-#include "vecmath/Matrix2f.h"
-#include "vecmath/Matrix3f.h"
-#include "vecmath/Matrix4f.h"
-#include "vecmath/Vector2i.h"
-#include "vecmath/Vector4f.h"
-
-class Rect2f;
 class Box3f;
+class Matrix2f;
+class Matrix3f;
+class Matrix4f;
+class Plane3f;
+class Rect2f;
+class Vector2f;
+class Vector3f;
+class Vector3i;
+class Vector4f;
 
+// TODO(jiawen): convert to pure functions
 class GeometryUtils
 {
 public:
 
-    // TODO: static const float epsilon
-    // have most functions take in an optional epsilon
-    static float EPSILON;
+    // TODO: call it DEFAULT_EPSILON
+    static const float EPSILON;
 
     static Box3f boundingBoxForPoints( const std::vector< Vector3f >& points );
 
@@ -29,20 +28,24 @@ public:
     static Vector2f triangleCentroid( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
     // pixels are centered at half-integer coordinates
-    static std::vector< Vector2f > pixelsInTriangle( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
+    static std::vector< Vector2f > pixelsInTriangle( const Vector2f& v0,
+        const Vector2f& v1, const Vector2f& v2 );
 
     // given normal n, origin p, and point to be tested s
     // return n dot ( s - p )
-    static float edgeTest( const Vector2f& edgeNormal, const Vector2f& edgeOrigin, const Vector2f& point );
+    static float edgeTest( const Vector2f& edgeNormal,
+        const Vector2f& edgeOrigin, const Vector2f& point );
 
     // given normal n, origin p, and point to be tested s
     // returns the *conservative* edge test of s
-    static float edgeTestConservative( const Vector2f& edgeNormal, const Vector2f& edgeOrigin, const Vector2f& point );
+    static float edgeTestConservative( const Vector2f& edgeNormal,
+        const Vector2f& edgeOrigin, const Vector2f& point );
 
-    // conservative rasterization
+    // Conservative rasterization:
     // v0, v1, v2 must be counterclockwise oriented
     // pixel centers are at half-integer coordinates
-    static std::vector< Vector2f > pixelsInTriangleConservative( const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
+    static std::vector< Vector2f > pixelsInTriangleConservative(
+        const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
     // returns true if two points (p0, p1) are on the same side of
     // the line determined by (v0, v1)
@@ -91,7 +94,7 @@ public:
     // y' = cross( z', x' )
     static Matrix3f getRightHandedBasisWithPreferredUp( const Vector3f& z, const Vector3f& preferredY );
 
-    // returns true if p is inside sphere
+    // Returns true if p is inside the sphere defined by a center and radius.
     static bool pointInsideSphere( const Vector3f& p,
         const Vector3f& sphereCenter, float sphereRadius );
 
@@ -106,25 +109,29 @@ public:
     // TODO: do these work??
     static Vector2f closestPointOnTriangle( const Vector2f& p, const Vector2f& v0, const Vector2f& v1, const Vector2f& v2 );
 
-    //dir1 and dir2 should be normalized
+    // dir1 and dir2 should be normalized
     static bool rayRayIntersection( const Vector2f& p1, const Vector2f& dir1,
-                                    const Vector2f& p2, const Vector2f& dir2, Vector2f &outIntersection);
+                                    const Vector2f& p2, const Vector2f& dir2,
+                                    Vector2f& outIntersection);
 
-    //dir should be normalized
+    // dir should be normalized
     static bool lineLineSegmentIntersection( const Vector2f& p, const Vector2f& dir,
                                              const Vector2f& p1, const Vector2f& p2, Vector2f &outIntersection);
 
-    // plane is defined by dot( plane.xyz, X ) = plane.w
-    static bool rayPlaneIntersection( const Vector3f& crRayOrigin, const Vector3f& crRayDirection,
-        const Vector4f& crPlane,
-        Vector3f& rIntersectionPoint );
+    // Ray-plane intersection.
+    // If the ray intersects the (infinite) plane, returns true and the
+    //   distance along the ray in the parameter t.
+    // Otherwise, returns false.
+    static bool rayPlaneIntersection( const Vector3f& rayOrigin,
+        const Vector3f& rayDirection, const Plane3f& plane,
+        float& t );
 
-    // ray triangle intersection
-    // if the ray intersects the triangle,
-    //   returns true, along with the parameter t along the ray, and barycentric coordinates a, b, c
-    //   such that intersection point = a * v0 + b * v1 + c * v2
-    //
-    // otherwise, returns false
+    // Ray-triangle intersection (front-facing only).
+    // If the ray intersects the triangle:
+    //   Returns true, along with the parameter t along the ray, and
+    //   barycentric coordinates a, b, c such that:
+    //     intersection point = a * v0 + b * v1 + c * v2
+    // Otherwise, returns false.
     static bool rayTriangleIntersection( const Vector3f& rayOrigin, const Vector3f& rayDirection,
         const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
         float& t, Vector3f& barycentrics );
@@ -132,12 +139,6 @@ public:
     // NOT IMPLEMENTED
     //static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
     //  BoundingBox3f* pBox );
-
-    // given u along edge 0 -> 1 and v along edge 0 -> 2
-    // and the interpolants on the vertices
-    // returns the interpolated value
-    static float triangleInterpolation( float interpolant0, float interpolant1, float interpolant2,
-        float u, float v );
 
     // plane is defined by dot( plane.xyz, X ) = plane.w
     static float pointToPlaneDistance( const Vector3f& point, const Vector4f& plane );
@@ -172,6 +173,8 @@ public:
         Vector3f* intersect1 );
 #endif
 
+    // --> move to Sampling
+
     // (not random)
     static std::vector< Vector2f > uniformSampleLineSegment( const Vector2f& p0, const Vector2f& p1, int nSamples );
 
@@ -181,7 +184,5 @@ public:
     // (not random)
     static std::vector< Vector2f > uniformSampleBoxAroundLineSegment( const Vector2f& p0, const Vector2f& p1,
         float width, int nSamplesWidth, int nSamplesLength );
-
-private:
 
 };

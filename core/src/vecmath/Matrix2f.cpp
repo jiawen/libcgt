@@ -5,8 +5,16 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
 
 using std::abs;
+
+Matrix2f::Matrix2f() :
+    Matrix2f( 0.0f )
+{
+
+}
 
 Matrix2f::Matrix2f( float fill )
 {
@@ -37,20 +45,6 @@ Matrix2f::Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns )
         setRow( 0, v0 );
         setRow( 1, v1 );
     }
-}
-
-Matrix2f::Matrix2f( const Matrix2f& rm )
-{
-    memcpy( m_elements, rm.m_elements, 4 * sizeof( float ) );
-}
-
-Matrix2f& Matrix2f::operator = ( const Matrix2f& rm )
-{
-    if( this != &rm )
-    {
-        memcpy( m_elements, rm.m_elements, 4 * sizeof( float ) );
-    }
-    return *this;
 }
 
 const float& Matrix2f::operator () ( int i, int j ) const
@@ -161,11 +155,26 @@ Matrix2f::operator float* ()
     return m_elements;
 }
 
-void Matrix2f::print() const
+std::string Matrix2f::toString() const
 {
-    printf( "[ %.2f %.2f ]\n[ %.2f %.2f ]\n",
-        m_elements[ 0 ], m_elements[ 2 ],
-        m_elements[ 1 ], m_elements[ 3 ] );
+    const int kFieldWidth = 8;
+    const int kPrecision = 4;
+
+    std::ostringstream sstream;
+    sstream << std::fixed << std::setprecision( kPrecision ) <<
+        std::setiosflags( std::ios::right );
+    sstream << std::endl;
+
+    for( int i = 0; i < 2; ++i )
+    {
+        sstream << "[ ";
+        for( int j = 0; j < 2; ++j )
+        {
+            sstream << std::setw( kFieldWidth ) << ( *this )( i, j ) << " ";
+        }
+        sstream << "]" << std::endl;
+    }
+    return sstream.str();
 }
 
 // static

@@ -65,7 +65,7 @@ SimilarityTransform SimilarityTransform::fromMatrix( const Matrix4f& m )
     };
 }
 
-SimilarityTransform::operator Matrix4f() const
+Matrix4f SimilarityTransform::asMatrix() const
 {
     Matrix4f m;
     m.setSubmatrix3x3( 0, 0, scale * euclidean.rotation );
@@ -140,7 +140,7 @@ Vector3f transformVector( const SimilarityTransform& st, const Vector3f& v )
 SimilarityTransform glFromCV( const SimilarityTransform& cv )
 {
     Matrix4f rx = Matrix4f::ROTATE_X_180;
-    return SimilarityTransform::fromMatrix( rx * cv * rx );
+    return SimilarityTransform::fromMatrix( rx * cv.asMatrix() * rx );
 }
 
 SimilarityTransform cvFromGL( const SimilarityTransform& gl )

@@ -27,14 +27,15 @@ public:
     EuclideanTransform( const Matrix3f& r );
     // Translation only.
     EuclideanTransform( const Vector3f& t );
+    // Rotation followed by translation.
     EuclideanTransform( const Matrix3f& r, const Vector3f& t );
 
     // Assuming m is a composition of a rotation and a translation, constructs
     // the equivalent Euclidean transformation.
     static EuclideanTransform fromMatrix( const Matrix4f& m );
 
-    // User-defined conversion to Matrix4f.
-    operator Matrix4f() const;
+    // Matrix4f representation of this EuclideanTransform.
+    Matrix4f asMatrix() const;
 };
 
 // Same as compose().
@@ -57,10 +58,10 @@ EuclideanTransform compose( const EuclideanTransform& second,
 // tInv = R^T * (-t)
 EuclideanTransform inverse( const EuclideanTransform& et );
 
-// Apply the transformation et to the point p: q = R p + t.
+// Apply the transformation "et" to the point "p": q = R p + t.
 Vector3f transformPoint( const EuclideanTransform& et, const Vector3f& p );
 
-// Apply the transformation et to the vector v: w = R v.
+// Apply the transformation "et" to the vector "v": w = R v.
 Vector3f transformVector( const EuclideanTransform& et, const Vector3f& v );
 
 // Convert a Euclidean transformation (R,t) from OpenCV conventions to OpenGL

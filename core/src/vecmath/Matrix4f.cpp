@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
 
 #include <math/MathUtils.h>
 
@@ -43,6 +45,11 @@ Matrix4f Matrix4f::ROTATE_Z_180 = Matrix4f
     0, 0, 1, 0,
     0, 0, 0, 1
 );
+
+Matrix4f::Matrix4f() :
+    Matrix4f( 0.0f )
+{
+}
 
 Matrix4f::Matrix4f( float fill )
 {
@@ -311,13 +318,26 @@ Matrix4f::operator float* ()
     return m_elements;
 }
 
-void Matrix4f::print() const
+std::string Matrix4f::toString() const
 {
-    printf( "[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n[ %.4f %.4f %.4f %.4f ]\n",
-        m00, m01, m02, m03,
-        m10, m11, m12, m13,
-        m20, m21, m22, m23,
-        m30, m31, m32, m33 );
+    const int kFieldWidth = 8;
+    const int kPrecision = 4;
+
+    std::ostringstream sstream;
+    sstream << std::fixed << std::setprecision( kPrecision ) <<
+        std::setiosflags( std::ios::right );
+    sstream << std::endl;
+
+    for( int i = 0; i < 4; ++i )
+    {
+        sstream << "[ ";
+        for( int j = 0; j < 4; ++j )
+        {
+            sstream << std::setw( kFieldWidth ) << ( *this )( i, j ) << " ";
+        }
+        sstream << "]" << std::endl;
+    }
+    return sstream.str();
 }
 
 Vector3f Matrix4f::transformPoint( const Vector3f& p ) const

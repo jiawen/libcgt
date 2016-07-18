@@ -20,49 +20,13 @@ Plane3f Plane3f::ZX()
     return Plane3f( 0, 1, 0, 0 );
 }
 
-Plane3f::Plane3f() :
-
-    a( 0 ),
-    b( 0 ),
-    c( 0 ),
-    d( 0 )
-
-{
-
-}
-
 Plane3f::Plane3f( float _a, float _b, float _c, float _d ) :
-
     a( _a ),
     b( _b ),
     c( _c ),
     d( _d )
-
 {
 
-}
-
-Plane3f::Plane3f( const Plane3f& p ) :
-
-    a( p.a ),
-    b( p.b ),
-    c( p.c ),
-    d( p.d )
-
-{
-
-}
-
-Plane3f& Plane3f::operator = ( const Plane3f& p )
-{
-    if( this != &p )
-    {
-        a = p.a;
-        b = p.b;
-        c = p.c;
-        d = p.d;
-    }
-    return *this;
 }
 
 Plane3f::Plane3f( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2 )
@@ -148,24 +112,6 @@ Plane3f Plane3f::flipped() const
 Plane3f Plane3f::offset( float z ) const
 {
     return Plane3f( a, b, c, d - z * ( a + b + c ) );
-}
-
-bool Plane3f::intersectRay( const Vector3f& origin, const Vector3f& direction,
-    float& tIntersect, float directionDotProductEpsilon )
-{
-    Vector3f u = unitNormal();
-    float vd = Vector3f::dot( u, direction );
-
-    // ray is parallel to plane
-    if( std::abs( vd ) < directionDotProductEpsilon )
-    {
-        return false;
-    }
-
-    float v0 = -( Vector3f::dot( u, origin ) + d );
-    tIntersect = v0 / vd;
-
-    return( tIntersect > 0 );
 }
 
 // static

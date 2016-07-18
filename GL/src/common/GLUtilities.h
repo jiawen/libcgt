@@ -37,6 +37,7 @@ public:
 
     // Gets the 2D rectangular viewport, as { 0, 0, width, height }.
     static Rect2i getViewport();
+
     // Gets the 3D box viewport, which is the 2D viewport
     // and depth range: as { 0, 0, zNear, width, height, zFar - zNear }.
     static Box3f getViewport3D();
@@ -52,6 +53,7 @@ public:
     // Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
     // ARB_depth_buffer_float is still clamped.
     static void setDepthRange( GLdouble zNear, GLdouble zFar );
+
     // NV_depth_buffer_float is unclamped and takes doubles
     // (The default is still [0,1])
     static void setDepthRangeNV( double zNear, double zFar );

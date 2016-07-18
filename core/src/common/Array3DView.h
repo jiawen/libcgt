@@ -96,7 +96,9 @@ public:
     // also known as "linear".
     bool packed() const;
 
-    // Implicit conversion operator from Array2DView< T > to Array2DView< const T >.
+    // Implicit conversion operator from Array3DView< T > to
+    // Array3DView< const T >.
+    //
     // Enabled only if T is not const.
     template< typename U = T,
         typename = typename std::enable_if

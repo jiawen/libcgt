@@ -134,6 +134,20 @@ Rect2f flipStandardizationY( const Rect2f& rect )
     return output;
 }
 
+Rect2i inset( const Rect2i& r, int delta )
+{
+    return inset( r, { delta, delta } );
+}
+
+Rect2i inset( const Rect2i& r, const Vector2i& xy )
+{
+    return
+    {
+        r.origin + xy,
+        r.size - 2 * xy
+    };
+}
+
 void writeScreenAlignedTriangleStrip(
     Array1DView< Vector4f > positions,
     Array1DView< Vector2f > textureCoordinates,

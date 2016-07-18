@@ -2,7 +2,7 @@
 
 namespace libcgt { namespace core { namespace cameras {
 
-Intrinsics::operator Matrix3f() const
+Matrix3f Intrinsics::asMatrix() const
 {
     Matrix3f k;
 

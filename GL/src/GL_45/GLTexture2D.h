@@ -124,8 +124,8 @@ public:
         float z = 0,
         const Rect2f& texCoords = Rect2f{ { 1, 1 } });
 
-    // Using NV_draw_texture, draw this texture to the screen
-    // to the rectangle windowCoords.
+    // Using NV_draw_texture, draw this texture on screen scaled to the
+    // rectangle windowCoords.
     //
     // The window will be mapped to have texCoords.
     // The default mapping draws right side up, OpenGL style.

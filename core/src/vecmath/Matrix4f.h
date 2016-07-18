@@ -6,6 +6,7 @@ class Quat4f;
 class Vector3f;
 class Rect2f;
 
+#include <string>
 #include "Vector4f.h"
 
 // 4x4 matrix, stored in column major order (FORTRAN / OpenGL style)
@@ -18,8 +19,10 @@ public:
     static Matrix4f ROTATE_Y_180;
     static Matrix4f ROTATE_Z_180;
 
-    // 4x4 matrix defaults to zero
-    Matrix4f( float fill = 0 );
+    // Default is the zero matrix.
+    Matrix4f();
+
+    explicit Matrix4f( float fill );
 
     // Construct 4x4 matrix directly from elements
     // elements are written in row-major order for human-readability
@@ -77,7 +80,8 @@ public:
     // implicit cast to pointer
     operator const float* () const;
     operator float* ();
-    void print() const;
+
+    std::string Matrix4f::toString() const;
 
     // uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
     Vector3f transformPoint( const Vector3f& p ) const;

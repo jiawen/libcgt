@@ -9,33 +9,38 @@ class Plane3f
 {
 public:
 
-    /// The XY plane, with the normal pointing up (0,0,1)
+    float a = 0;
+    float b = 0;
+    float c = 0;
+    float d = 0;
+
+    // The XY plane, with the normal pointing up (0,0,1)
     static Plane3f XY();
 
-    /// The YZ plane, with the normal pointing out of the page (1,0,0)
+    // The YZ plane, with the normal pointing out of the page (1,0,0)
     static Plane3f YZ();
 
-    /// The ZX plane, with the normal pointing right (0,1,0)
+    // The ZX plane, with the normal pointing right (0,1,0)
     static Plane3f ZX();
 
-    // an invalid plane that's all 0s
-    Plane3f();
+    Plane3f() = default;
 
     // Construct a plane directly from its coefficients
     Plane3f( float a, float b, float c, float d );
-    Plane3f( const Plane3f& p );
-    Plane3f& operator = ( const Plane3f& p );
+    Plane3f( const Plane3f& p ) = default;
+    Plane3f& operator = ( const Plane3f& p ) = default;
 
-    // Construct a plane given 3 points
+    // Construct the plane defined by 3 (distinct) points.
     Plane3f( const Vector3f& p0, const Vector3f& p1, const Vector3f& p2 );
 
-    // Construct a plane given a point on the plane and its [not necessarily unit length] normal
+    // Construct a plane given a point on the plane and its (not necessarily
+    // unit length) normal. It will be normalized.
     Plane3f( const Vector3f& p, const Vector3f& normal );
 
-    // return (a,b,c)
+    // Return (a,b,c).
     Vector3f normal() const;
 
-    // returns normal().normalized()
+    // Returns normal().normalized()
     Vector3f unitNormal() const;
 
     // Projects the point p to the point q closest to p on the plane.
@@ -55,28 +60,16 @@ public:
     // Returns the matrix [ u v n ]
     Matrix3f basis( const Vector3f& u ) const;
 
-    // Returns an orthonormal basis u, v, n on the plane
-    // Returns the matrix [ u v n ]
+    // Returns an orthonormal basis u, v, n on the plane as the matrix
+    // [ u v n ].
     Matrix3f basis() const;
 
     // Returns the same plane, but with its normal flipped
     Plane3f flipped() const;
 
-    // Returns a plane parallel this this at distance z in the direction of the normal
+    // Returns a plane parallel this this at distance z in the direction of the
+    // normal.
     Plane3f offset( float z ) const;
 
-    // Given a ray defined by origin + t * direction
-    // (direction need not be normalized)
-    // Returns:
-    //    true if the ray hits the plane for some positive t
-    //    false otherwise
-    bool intersectRay( const Vector3f& origin, const Vector3f& direction,
-        float& tIntersect, float directionDotProductEpsilon = 0.0f );
-
     static float cosineDihedralAngle( const Plane3f& p0, const Plane3f& p1 );
-
-    float a;
-    float b;
-    float c;
-    float d;
 };

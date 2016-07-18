@@ -12,11 +12,11 @@ class Icosahedron
 {
 public:
 
-    // make an icosahedron centered at center
-    // with edge length of 2
-    // (all vertices are distance sqrt( 1 + phi^2 ) from the origin,
-    // set scale to 1 / sqrt( 1 + phi^2 ) to get "radius" 1
-    Icosahedron( float scale = 1.0f, const Vector3f& center = Vector3f( 0, 0, 0 ) );
+    // Make an icosahedron centered at center with edge length of 2.
+    // All vertices are at a distance sqrt( 1 + phi^2 ) from the origin.
+    // To get a "radius" of 1, set scale to 1 / sqrt( 1 + phi^2 ).
+    Icosahedron( float scale = 1.0f,
+        const Vector3f& center = Vector3f( 0, 0, 0 ) );
 
     const std::vector< Vector3f >& positions() const;
     const std::vector< Vector3f >& normals() const;

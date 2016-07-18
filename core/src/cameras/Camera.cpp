@@ -168,7 +168,7 @@ Vector3f Camera::forward() const
 
 Matrix4f Camera::viewMatrix() const
 {
-    return m_cameraFromWorld;
+    return m_cameraFromWorld.asMatrix();
 }
 
 Matrix4f Camera::inverseViewMatrix() const
@@ -296,31 +296,22 @@ Vector4f Camera::screenToWorld( const Vector2f& xy, float depth, const Vector2f&
     return inverseViewMatrix() * eye;
 }
 
-Vector3f Camera::screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const
+Vector3f Camera::screenToDirection( const Vector2i& xy,
+    const Vector2f& screenSize ) const
 {
     return screenToDirection
     (
         Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        Rect2f( screenSize )
+        screenSize
     );
 }
 
-Vector3f Camera::screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const
-{
-    return screenToDirection
-    (
-        xy,
-        Rect2f( screenSize )
-    );
-}
-
-Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport ) const
+Vector3f Camera::screenToDirection( const Vector2f& xy,
+    const Vector2f& screenSize ) const
 {
     // Convert from screen coordinates to NDC.
-    float ndcX = 2 * ( xy.x - viewport.left() ) / viewport.width() - 1;
-    float ndcY = 2 * ( xy.y - viewport.bottom() ) / viewport.height() - 1;
-
-    Vector4f clipPoint( ndcX, ndcY, 0, 1 );
+    Vector2f ndc = screenToNDC( xy, screenSize );
+    Vector4f clipPoint( ndc, 0, 1 );
     Vector4f eyePoint = inverseProjectionMatrix() * clipPoint;
     Vector4f worldPoint = inverseViewMatrix() * eyePoint;
 
@@ -334,11 +325,7 @@ Vector3f Camera::screenToDirection( const Vector2f& xy, const Rect2f& viewport )
 // static
 Vector2f Camera::screenToNDC( const Vector2f& xy, const Vector2f& screenSize )
 {
-    // convert from screen coordinates to NDC
-    float ndcX = 2 * xy.x / screenSize.x - 1;
-    float ndcY = 2 * xy.y / screenSize.y - 1;
-
-    return{ ndcX, ndcY };
+    return 2 * xy / screenSize - Vector2f{ 1 };
 }
 
 // static

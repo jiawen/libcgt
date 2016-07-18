@@ -114,8 +114,6 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst )
     return true;
 }
 
-#include <common/WrapConstPointerT.h>
-
 template< typename S, typename T >
 Array1DView< S > componentView( Array1DView< T > src, int componentOffsetBytes )
 {
@@ -159,7 +157,7 @@ template< typename T >
 Array1DView< T > crop( Array1DView< T > view, const Range1i& range )
 {
     T* cornerPointer = view.elementPointer( range.origin );
-    return Array2DView< T >( cornerPointer, range.size, view.stride() );
+    return Array1DView< T >( cornerPointer, range.size, view.stride() );
 }
 
 template< typename T >
@@ -336,6 +334,29 @@ Array3DView< T > flipZ( Array3DView< T > src )
         src.size(),
         stride
     );
+}
+
+template< typename T >
+Array1DView< T > head( Array1DView< T > src, size_t n )
+{
+    if( src.size() < n )
+    {
+        return Array1DView< T >();
+    }
+
+    return Array1DView< T >( src.pointer(), n, src.stride() );
+}
+
+template< typename T >
+Array1DView< T > tail( Array1DView< T > src, size_t n )
+{
+    if( src.size() < n )
+    {
+        return Array1DView< T >();
+    }
+
+    T* p = src.elementPointer( src.size() - n );
+    return Array1DView< T >( p, n, src.stride() );
 }
 
 #if 0

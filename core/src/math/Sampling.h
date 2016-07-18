@@ -6,13 +6,13 @@ class SamplingPatternND;
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3f.h"
 
+// TODO(jiawen): convert to pure functions
 class Sampling
 {
 public:
 
-    // TODO: fix this, and sampling pattern
-    // the interface sucks!
-
+    // TODO(VS2015): return an Array1DView< Vector< float, dim > > or
+    // something.
     // populates pPattern with a latin hypercube sampling pattern
     static void latinHypercubeSampling( Random& random, SamplingPatternND* pPattern );
 

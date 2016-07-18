@@ -6,35 +6,29 @@
 #include <numeric>
 #include <stack>
 
+#include "common/ArrayUtils.h"
 #include "common/ProgressReporter.h"
 #include "geometry/GeometryUtils.h"
 #include "math/MathUtils.h"
 
-TriangleMesh::TriangleMesh() :
+using libcgt::core::arrayutils::copy;
+using libcgt::core::arrayutils::writeViewOf;
 
-    m_adjacencyIsDirty( true )
+TriangleMesh::TriangleMesh( Array1DView< const Vector3f > positions,
+    Array1DView< const Vector3f > normals,
+    Array1DView< const Vector3i > faces ) :
+    m_positions( positions.size() ),
+    m_normals( normals.size() ),
+    m_faces( faces.size() )
 {
+    assert( positions.size() == normals.size() );
 
+    copy( positions, writeViewOf( m_positions ) );
+    copy( normals, writeViewOf( m_normals ) );
+    copy( faces, writeViewOf( m_faces ) );
 }
 
-TriangleMesh::TriangleMesh( const std::vector< Vector3f >& positions,
-    const std::vector< Vector3f >& normals,
-    const std::vector< Vector3i >& faces ) :
-
-    m_positions( positions ),
-    m_normals( normals ),
-    m_faces( faces ),
-
-    m_adjacencyIsDirty( true )
-
-{
-
-}
-
-TriangleMesh::TriangleMesh( const OBJData& data ) :
-
-    m_adjacencyIsDirty( true )
-
+TriangleMesh::TriangleMesh( const OBJData& data )
 {
     m_positions = data.positions();
 
@@ -274,8 +268,7 @@ bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& directi
         faceHit = GeometryUtils::rayTriangleIntersection( origin, direction,
             v0, v1, v2,
             faceT, lambda );
-        if( faceHit &&
-            faceT > tMin )
+        if( faceHit && faceT > tMin && faceT < t )
         {
             hit = true;
             t = faceT;
@@ -287,7 +280,8 @@ bool TriangleMesh::intersectRay( const Vector3f& origin, const Vector3f& directi
     return hit;
 }
 
-Vector3f TriangleMesh::barycentricInterpolatePosition( int faceIndex, const Vector3f& barycentrics ) const
+Vector3f TriangleMesh::barycentricInterpolatePosition( int faceIndex,
+    const Vector3f& barycentrics ) const
 {
     Vector3i vertexIndices = m_faces[ faceIndex ];
     Vector3f p0 = m_positions[ vertexIndices[ 0 ] ];
@@ -302,7 +296,8 @@ Vector3f TriangleMesh::barycentricInterpolatePosition( int faceIndex, const Vect
     return p;
 }
 
-Vector3f TriangleMesh::barycentricInterpolateNormal( int faceIndex, const Vector3f& barycentrics ) const
+Vector3f TriangleMesh::barycentricInterpolateNormal( int faceIndex,
+    const Vector3f& barycentrics ) const
 {
     Vector3i vertexIndices = m_faces[ faceIndex ];
     Vector3f n0 = m_normals[ vertexIndices[ 0 ] ];

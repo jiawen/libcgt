@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "Vector2f.h"
 
 // 2x2 Matrix, stored in column major order (OpenGL style)
@@ -7,7 +8,11 @@ class Matrix2f
 {
 public:
 
-    Matrix2f( float fill = 0.0f );
+    // Default is the zero matrix.
+    Matrix2f();
+
+    explicit Matrix2f( float fill );
+
     Matrix2f( float m00, float m01,
         float m10, float m11 );
 
@@ -15,9 +20,8 @@ public:
     // otherwise, sets the rows
     Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns = true );
 
-    Matrix2f( const Matrix2f& rm ); // copy constructor
-    Matrix2f& operator = ( const Matrix2f& rm ); // assignment operator
-    // no destructor necessary
+    Matrix2f( const Matrix2f& copy ) = default;
+    Matrix2f& operator = ( const Matrix2f& rm ) = default;
 
     const float& operator () ( int i, int j ) const;
     float& operator () ( int i, int j );
@@ -38,7 +42,8 @@ public:
     // implicit cast
     operator const float* () const;
     operator float* ();
-    void print() const; // TODO: toString()?
+
+    std::string toString() const;
 
     static float determinant2x2( float m00, float m01,
         float m10, float m11 );

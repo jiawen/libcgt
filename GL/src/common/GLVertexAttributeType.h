@@ -29,13 +29,16 @@ enum class GLVertexAttributeType
     HALF_FLOAT = GL_HALF_FLOAT,
     FLOAT = GL_FLOAT,
 
-    // 4 signed integers packed into a single 32-bit quantity.
+    // 4 signed integers packed into a single 32-bit GLint.
     INT_2_10_10_10_REV = GL_INT_2_10_10_10_REV,
 
-    // 4 unsigned integers packed intoa single 32-bit quantity.
+    // 4 unsigned integers packed into a single 32-bit GLuint.
     UNSIGNED_INT_2_10_10_10_REV = GL_INT_2_10_10_10_REV,
 
 #ifdef GL_PLATFORM_45
+    // 3 floats packed into a single GLuint.
+    UNSIGNED_INT_10F_11F_11F_REV = GL_UNSIGNED_INT_10F_11F_11F_REV,
+
     // For glVertexAttribLFormat() exclusively.
     // glVertexAttribLFormat() can't use a different format.
     DOUBLE = GL_DOUBLE

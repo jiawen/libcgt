@@ -18,7 +18,7 @@ public:
 
     // TODO(jiawen): support skew.
 
-    operator Matrix3f() const;
+    Matrix3f asMatrix() const;
 };
 
 // Computes the same camera intrinsics if the image had its y axis flipped.

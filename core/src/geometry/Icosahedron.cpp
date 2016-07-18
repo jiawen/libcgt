@@ -2,55 +2,40 @@
 
 #include "math/MathUtils.h"
 
-using libcgt::core::math::PHI;
+// TODO(jiawen): once symbols are properly exported, switch to using the
+// symbol.
+//using libcgt::core::math::PHI;
 
-// TODO: initializer_list
-Vector3f Icosahedron::s_defaultPositions[12] =
-{
-    Vector3f(    0,    1, -PHI ),
-    Vector3f(    1,  PHI,    0 ),
-    Vector3f(    1,  PHI,    0 ),
-    Vector3f(    0,    1,  PHI ),
-    Vector3f(    0,   -1,  PHI ),
-    Vector3f( -PHI,    0,    1 ),
-    Vector3f(    0,   -1, -PHI ),
-    Vector3f(  PHI,    0,   -1 ),
-    Vector3f(  PHI,    0,    1 ),
-    Vector3f( -PHI,    0,   -1 ),
-    Vector3f(    1, -PHI,    0 ),
-    Vector3f(   -1, -PHI,    0 )
-};
+#define PHI 1.61803398875f
 
 Vector3i Icosahedron::s_faces[20] =
 {
-    {  0,  1,  2 },
-    {  3,  2,  1 },
-    {  3,  4,  5 },
-    {  3,  8,  4 },
-    {  0,  6,  7 },
-    {  0,  9,  6 },
-    {  4, 10, 11 },
-    {  6, 11, 10 },
-    {  2,  5,  9 },
-    { 11,  9,  5 },
-    {  1,  7,  8 },
-    { 10,  8,  7 },
-    {  3,  5,  2 },
-    {  3,  1,  8 },
-    {  0,  2,  9 },
-    {  0,  7,  1 },
-    {  6,  9, 11 },
-    {  6, 10,  7 },
-    {  4, 11,  5 },
-    {  4,  8, 10 }
+    {  0,  8,  4 },
+    {  0,  5, 10 },
+    {  2,  4,  9 },
+    {  2,  11, 5 },
+    {  1,  6,  8 },
+    {  1, 10,  7 },
+    {  3,  9,  6 },
+    {  3,  7, 11 },
+    {  0, 10,  8 },
+    {  1,  8, 10 },
+    {  2,  9, 11 },
+    {  3,  9, 11 },
+    {  4,  2,  0 },
+    {  5,  0,  2 },
+    {  6,  1,  3 },
+    {  7,  3,  1 },
+    {  8,  6,  4 },
+    {  9,  4,  6 },
+    { 10,  5,  7 },
+    { 11,  7,  5 }
 };
 
 Icosahedron::Icosahedron( float scale, const Vector3f& center ) :
-
     m_positions( 12 ),
     m_normals( 12 ),
     m_faces( s_faces, s_faces + 20 )
-
 {
     for( int i = 0; i < 12; ++i )
     {

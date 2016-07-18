@@ -37,8 +37,8 @@ public:
     // constructs the equivalent SimilarityTransform.
     static SimilarityTransform fromMatrix( const Matrix4f& m );
 
-    // User-defined conversion to Matrix4f.
-    operator Matrix4f() const;
+    // Matrix4f representation of this SimilarityTransform.
+    Matrix4f asMatrix() const;
 
     const Matrix3f& rotation() const;
     Matrix3f& rotation();

@@ -4,13 +4,14 @@
 
 namespace libcgt { namespace core { namespace geometry { namespace boxutils {
 
-void writeSolid( const Box3f& box, Array1DView< Vector4f > vertexPositions )
+void writeTriangleListPositions( const Box3f& box,
+    Array1DView< Vector4f > positions )
 {
-    writeSolid( box, Matrix4f::identity(), vertexPositions );
+    writeTriangleListPositions( box, Matrix4f::identity(), positions );
 }
 
-void writeSolid( const Box3f& box, const Matrix4f& worldFromBox,
-    Array1DView< Vector4f > vertexPositions )
+void writeTriangleListPositions( const Box3f& box,
+    const Matrix4f& worldFromBox, Array1DView< Vector4f > positions )
 {
     // Hypercube corners.
     Array1D< Vector4f > pos = corners( box );
@@ -18,7 +19,31 @@ void writeSolid( const Box3f& box, const Matrix4f& worldFromBox,
 
     for( int i = 0; i < idx.size(); ++i )
     {
-        vertexPositions[ i ] = worldFromBox * pos[ idx[ i ] ];
+        positions[ i ] = worldFromBox * pos[ idx[ i ] ];
+    }
+}
+
+void writeTriangleListNormals( const Box3f& box,
+    Array1DView< Vector3f > normals )
+{
+    writeTriangleListNormals( box, Matrix4f::identity(), normals );
+}
+
+void writeTriangleListNormals( const Box3f& box,
+    const Matrix4f& worldFromBox, Array1DView< Vector3f > normals )
+{
+    Array1D< Vector4f > positions( 36 );
+    writeTriangleListPositions( box, worldFromBox, positions );
+
+    for( int f = 0; f < 12; ++f )
+    {
+        Vector3f p0 = positions[ 3 * f ].xyz;
+        Vector3f p1 = positions[ 3 * f + 1 ].xyz;
+        Vector3f p2 = positions[ 3 * f + 2 ].xyz;
+        Vector3f n = Vector3f::cross( p1 - p0, p2 - p0 ).normalized();
+        normals[ 3 * f ] = n;
+        normals[ 3 * f + 1 ] = n;
+        normals[ 3 * f + 1 ] = n;
     }
 }
 
@@ -133,9 +158,9 @@ Array1D< Vector4f > corners( const Box3f& b )
     {
         out[ i ] =
         {
-            ( i & 1 ) ? b.minimum().x : b.maximum().x,
-            ( i & 2 ) ? b.minimum().y : b.maximum().y,
-            ( i & 4 ) ? b.minimum().z : b.maximum().z,
+            ( i & 1 ) ? b.maximum().x : b.minimum().x,
+            ( i & 2 ) ? b.maximum().y : b.minimum().y,
+            ( i & 4 ) ? b.maximum().z : b.minimum().z,
             1.0f
         };
     }
@@ -151,10 +176,24 @@ Array1D< Vector3i > corners( const Box3i& b )
     {
         out[ i ] =
         {
-            ( i & 1 ) ? b.minimum().x : b.maximum().x,
-            ( i & 2 ) ? b.minimum().y : b.maximum().y,
-            ( i & 4 ) ? b.minimum().z : b.maximum().z
+            ( i & 1 ) ? b.maximum().x : b.minimum().x,
+            ( i & 2 ) ? b.maximum().y : b.minimum().y,
+            ( i & 4 ) ? b.maximum().z : b.minimum().z
         };
+    }
+
+    return out;
+}
+
+Array1D< Vector3f > cornerNormalsDiagonal( const Box3f& b )
+{
+    Vector3f center = b.center();
+    Array1D< Vector4f > positions = corners( b );
+    Array1D< Vector3f > out( 8 );
+
+    for( int i = 0; i < 8; ++i )
+    {
+        out[ i ] = ( positions[ i ].xyz - center ).normalized();
     }
 
     return out;
@@ -173,12 +212,12 @@ Array1D< int > solidTriangleListIndices()
         7, 1, 3,
 
         // back
-        1, 0, 2,
-        2, 0, 3,
+        1, 0, 3,
+        3, 0, 2,
 
         // left
-        0, 4, 6,
-        6, 4, 2,
+        0, 4, 2,
+        2, 4, 6,
 
         // bottom
         0, 1, 4,

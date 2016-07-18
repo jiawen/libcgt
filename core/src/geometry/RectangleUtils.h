@@ -100,6 +100,13 @@ Rect2f flipStandardizationX( const Rect2f& rect );
 // Calling it twice flips it back.
 Rect2f flipStandardizationY( const Rect2f& rect );
 
+// Shrink a rectangle by delta on all four sides.
+Rect2i inset( const Rect2i& r, int delta );
+
+// Shrink a rectangle by xy.x from both left and right, and xy.y from both
+// bottom and top.
+Rect2i inset( const Rect2i& r, const Vector2i& xy );
+
 void writeScreenAlignedTriangleStrip(
     Array1DView< Vector4f > positions,
     Array1DView< Vector2f > textureCoordinates,
