@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/BasicTypes.h"
+#include "math/Arithmetic.h"
 
 // TODO: merge with Arithmetic
 
@@ -65,7 +66,7 @@ inline float clampToRangeInclusive( float x, float lo, float hi );
 // Clamps x to [lo, hi].
 inline double clampToRangeInclusive( double x, double lo, double hi );
 
-// Clamp x to range (inclusive).
+// Clamp x to range (exclusive).
 inline int clamp( int x, const Range1i& range );
 
 // Clamp x to range (inclusive).
@@ -145,11 +146,22 @@ T lerp( const T& x, const T& y, double t );
 // Lerp between range.left() and range.right() by t.
 inline float lerp( const Range1f& range, float t );
 
+// Lerp between range.left() and range.right() by t.
+inline float lerp( const Range1i& range, float t );
+
+// TODO(jiawen): can make fraction templatized on output and input:
+// fraction<double>( T x, Range< T > range );
 // Returns what fraction of the way x is between range.left() and
 // range.right(). Equal to (x - range.left()) / range.size. If x is in the
-// range, then returns a value in [0, 1]. x outside the range will not be
+// range, then returns a value in [0, 1]. x outside the range will *not* be
 // clamped.
 inline float fraction( float x, const Range1f& range );
+
+// Returns what fraction of the way x is between range.left() and
+// range.right(). Equal to (x - range.left()) / range.size. If x is in the
+// range, then returns a value in [0, 1]. x outside the range will *not* be
+// clamped.
+inline float fraction( int x, const Range1i& range );
 
 // TODO(jiawen): Move this into RangeUtils.
 
@@ -166,22 +178,11 @@ void rescaleRangeToScaleOffset( float inputMin, float inputMax,
 
 inline float rescale( float x, const Range1f& src, const Range1f& dst );
 
-// rescales a float range to an int range, with rounding
-// iMax is inclusive
-int rescaleFloatToInt( float x,
-    float fMin, float fMax,
-    int iMin, int iMax );
+inline int rescale( float x, const Range1f& src, const Range1i& dst );
 
-// iMax is inclusive
-float rescaleIntToFloat( int x,
-    int iMin, int iMax,
-    float fMin, float fMax );
+inline float rescale( int x, const Range1i& src, const Range1f& dst );
 
-// rescale an int range with rounding,
-// inMax and outMax are inclusive
-int rescaleIntToInt( int x,
-    int inMin, int inMax,
-    int outMin, int outMax );
+inline int rescale( int x, const Range1i& src, const Range1i& dst );
 
 // ----- Cubic spline interpolation -----
 

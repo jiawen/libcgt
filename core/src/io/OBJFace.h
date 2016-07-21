@@ -6,8 +6,7 @@ class OBJFace
 {
 public:
 
-    OBJFace();
-    OBJFace( bool hasTextureCoordinates, bool hasNormals );
+    OBJFace( bool hasTextureCoordinates = false, bool hasNormals = false );
 
     bool hasTextureCoordinates() const;
     bool hasNormals() const;

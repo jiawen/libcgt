@@ -1,4 +1,4 @@
-namespace libcgt { namespace opencv_interop { namespace arrayutils {
+namespace libcgt { namespace opencv_interop {
 
 template< typename S >
 Array2DView< S > cvMatAsArray2DView( const cv::Mat& a )
@@ -28,4 +28,4 @@ Array2DView< S > cvMatAsArray2DView( const cv::Mat_< T >& a )
     return Array2DView< S >( a.data, size, stride );
 }
 
-} } } // arrayutils, opencv_interop, libcgt
+} } // opencv_interop, libcgt

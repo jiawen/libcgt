@@ -82,9 +82,8 @@ public:
     static Matrix3f rotateY( float radians );
     static Matrix3f rotateZ( float radians );
     static Matrix3f rotation( const Vector3f& axis, float radians );
-    static Matrix3f scaling( float sx, float sy, float sz );
+    static Matrix3f scaling( const Vector3f& xyz );
     static Matrix3f uniformScaling( float s );
-    static Matrix3f translation( float x, float y );
     static Matrix3f translation( const Vector2f& xy );
     // Returns an 2D affine scale-and-translation matrix mapping the rectangle
     // [srcOrigin, srcOrigin + srcSize] --> [dstOrigin, dstOrigin + dstSize]

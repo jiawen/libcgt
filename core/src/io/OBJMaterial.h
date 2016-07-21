@@ -16,7 +16,8 @@ public:
         DIFFUSE_AND_SPECULAR = 2
     };
 
-    OBJMaterial( const std::string& name = "" );
+    OBJMaterial( const std::string& name = "",
+        IlluminationModel illum = IlluminationModel::NONE );
 
     const std::string& name() const;
     void setName( const std::string& name );
@@ -47,17 +48,18 @@ public:
 
 private:
 
-    // required
+    // Required
     std::string m_name;
     IlluminationModel m_illuminationModel;
 
-    Vector3f m_ka;
-    Vector3f m_kd;
-    Vector3f m_ks;
+    // Optional.
+    Vector3f m_ka = Vector3f{ 0.2f };
+    Vector3f m_kd = Vector3f{ 0.8f };
+    Vector3f m_ks = Vector3f{ 1.0f };
 
-    float m_d; // alpha
+    float m_d = 1.0f; // alpha
     // float m_tr; // 1 - alpha
-    float m_ns; // shininess
+    float m_ns = 0.0f; // shininess
 
     std::string m_mapKa; // ambient texture
     std::string m_mapKd; // diffuse texture

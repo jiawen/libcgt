@@ -8,6 +8,24 @@
 
 #define PHI 1.61803398875f
 
+// Source:
+// https://www.classes.cs.uchicago.edu/archive/2003/fall/23700/docs/handout-04.pdf
+Vector3f Icosahedron::s_defaultPositions[12] =
+{
+    {  PHI,    1,    0 },
+    { -PHI,    1,    0 },
+    {  PHI,   -1,    0 },
+    { -PHI,   -1,    0 },
+    {    1,    0,  PHI },
+    {    1,    0, -PHI },
+    {   -1,    0,  PHI },
+    {   -1,    0, -PHI },
+    {    0,  PHI,    1 },
+    {    0, -PHI,    1 },
+    {    0,  PHI,   -1 },
+    {    0, -PHI,   -1 }
+};
+
 Vector3i Icosahedron::s_faces[20] =
 {
     {  0,  8,  4 },

@@ -79,7 +79,7 @@ float OpenNaturalCubicSpline::evaluateAt( float t ) const
     int n;
     if( ct == 1.0f )
     {
-        n = m_vCoefficients.size() - 1;
+        n = static_cast< int >( m_vCoefficients.size() ) - 1;
     }
     else
     {
@@ -110,7 +110,7 @@ float OpenNaturalCubicSpline::derivativeAt( float t ) const
     int n;
     if( ct == 1.0f )
     {
-        n = m_vCoefficients.size() - 1;
+        n = static_cast< int >( m_vCoefficients.size() ) - 1;
     }
     else
     {
@@ -157,7 +157,7 @@ float OpenNaturalCubicSpline::inverse( float x, float tGuess, float epsilon,
 
 void OpenNaturalCubicSpline::computeCoefficients()
 {
-    int nPoints = m_vControlPoints.size();
+    int nPoints = static_cast< int >( m_vControlPoints.size() );
 
     std::vector< float > gamma( nPoints );
     std::vector< float > delta( nPoints );

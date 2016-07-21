@@ -27,6 +27,18 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
 void normalsToRGBA( Array2DView< const Vector4f > src,
     Array2DView< Vector4f > dst );
 
+// Linearly remap every pixel in src from srcRange to dstRange, clamp to
+// [0, 255], then convert to a luminance value in dst.
+void linearRemapToLuminance( Array2DView< const uint16_t > src,
+    const Range1i& srcRange, const Range1i& dstRange,
+    Array2DView< uint8x3 > dst );
+
+// Linearly remap every pixel in src from srcRange to dstRange, clamp to
+// [0, 255], then convert to a luminance value in dst.
+void linearRemapToLuminance( Array2DView< const uint16_t > src,
+    const Range1i& srcRange, const Range1i& dstRange,
+    uint8_t dstAlpha, Array2DView< uint8x4 > dst );
+
 // Linearly remap every pixel in src from srcRange to dstRange, clamp to [0,1],
 // then convert to a luminance value in dst.
 void linearRemapToLuminance( Array2DView< const float > src,

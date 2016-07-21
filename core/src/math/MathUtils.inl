@@ -28,7 +28,7 @@ double clampToRangeInclusive( double x, double lo, double hi )
 int clamp( int x, const Range1i& range )
 {
     assert( range.isStandard() );
-    return std::max( range.left(), std::min( x, range.right() ) );
+    return std::max( range.left(), std::min( x, range.right() - 1 ) );
 }
 
 float clamp( float x, const Range1f& range )
@@ -50,6 +50,12 @@ T lerp( const T& x, const T& y, double t )
 }
 
 float lerp( const Range1f& range, float t )
+{
+    assert( range.isStandard() );
+    return( range.origin + t * range.size );
+}
+
+float lerp( const Range1i& range, float t )
 {
     assert( range.isStandard() );
     return( range.origin + t * range.size );
@@ -84,6 +90,13 @@ float fraction( float x, const Range1f& range )
     return ( x - range.origin ) / ( range.size );
 }
 
+float fraction( int x, const Range1i& range )
+{
+    assert( range.isStandard() );
+    assert( !range.isEmpty() );
+    return static_cast< float >( x - range.origin ) / ( range.size );
+}
+
 float rescale( float x, const Range1f& src, const Range1f& dst )
 {
     assert( src.isStandard() );
@@ -92,6 +105,36 @@ float rescale( float x, const Range1f& src, const Range1f& dst )
     assert( !dst.isEmpty() );
 
     return lerp( dst, fraction( x, src ) );
+}
+
+int rescale( float x, const Range1f& src, const Range1i& dst )
+{
+    assert( src.isStandard() );
+    assert( !src.isEmpty() );
+    assert( dst.isStandard() );
+    assert( !dst.isEmpty() );
+
+    return roundToInt( lerp( dst, fraction( x, src ) ) );
+}
+
+float rescale( int x, const Range1i& src, const Range1f& dst )
+{
+    assert( src.isStandard() );
+    assert( !src.isEmpty() );
+    assert( dst.isStandard() );
+    assert( !dst.isEmpty() );
+
+    return lerp( dst, fraction( x, src ) );
+}
+
+int rescale( int x, const Range1i& src, const Range1i& dst )
+{
+    assert( src.isStandard() );
+    assert( !src.isEmpty() );
+    assert( dst.isStandard() );
+    assert( !dst.isEmpty() );
+
+    return roundToInt( lerp( dst, fraction( x, src ) ) );
 }
 
 float oo_0( float x )

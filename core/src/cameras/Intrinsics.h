@@ -13,11 +13,12 @@ class Intrinsics
 {
 public:
 
+    static Intrinsics fromMatrix( const Matrix3f& k );
+
     Vector2f focalLength;
     Vector2f principalPoint;
 
     // TODO(jiawen): support skew.
-
     Matrix3f asMatrix() const;
 };
 

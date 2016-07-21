@@ -20,20 +20,20 @@
 
 namespace libcgt { namespace core { namespace arrayutils {
 
-// Cast from Array1DView< S > --> Array1DView< T >. sizeof( S ) must be equal
-// sizeof( T ).
-template< typename S, typename T >
-Array1DView< T > cast( Array1DView< S > src );
+// Cast from Array1DView< TIn > --> Array1DView< TOut >.
+// sizeof( TIn ) must be equal sizeof( TOut ).
+template< typename TOut, typename TIn >
+Array1DView< TOut > cast( Array1DView< TIn > src );
 
-// Cast from Array2DView< S > --> Array2DView< T >. sizeof( S ) must be equal
-// sizeof( T ).
-template< typename S, typename T >
-Array2DView< T > cast( Array2DView< S > src );
+// Cast from Array2DView< TIn > --> Array2DView< TOut >.
+// sizeof( TIn ) must be equal sizeof( TOut ).
+template< typename TOut, typename TIn >
+Array2DView< TOut > cast( Array2DView< TIn > src );
 
-// Cast from Array3DView< S > --> Array3DView< T >. sizeof( S ) must be equal
-// sizeof( T ).
-template< typename S, typename T >
-Array3DView< T > cast( Array3DView< S > src );
+// Cast from Array3DView< TIn > --> Array3DView< TOut >.
+// sizeof( TIn ) must be equal sizeof( TOut ).
+template< typename TOut, typename TIn >
+Array3DView< TOut > cast( Array3DView< TIn > src );
 
 // Copy between two Array1DViews, with potentially varying stride.
 // If both are packed(), uses memcpy to do a single fast copy.
@@ -59,25 +59,25 @@ template< typename T >
 bool copy( Array3DView< const T > src, Array3DView< T > dst );
 
 // TODO: rename this to sliceChannel()?
-// Given an existing Array1DView< T >, returns a Array1DView< S > with the
-// same stride, but with elements of type S where S is a component of T,
-// and is at offset "componentOffsetBytes" within T.
-template< typename S, typename T >
-Array1DView< S > componentView( Array1DView< T > src,
+// Given an existing Array1DView< TIn >, returns a Array1DView< TOut > with the
+// same stride, but with elements of type TOut where TOut is a component of
+// TIn and is at offset "componentOffsetBytes" within TIn.
+template< typename TOut, typename TIn >
+Array1DView< TOut > componentView( Array1DView< TIn > src,
     int componentOffsetBytes );
 
-// Given an existing Array2DView< T >, returns a Array2DView< S > with the
-// same stride, but with elements of type S where S is a component of T,
-// and is at offset "componentOffsetBytes" within T.
-template< typename S, typename T >
-Array2DView< S > componentView( Array2DView< T > src,
+// Given an existing Array2DView< TIn >, returns a Array2DView< TOut > with the
+// same stride, but with elements of type TOut where TOut is a component of
+// TIn and is at offset "componentOffsetBytes" within TIn.
+template< typename TOut, typename TIn >
+Array2DView< TOut > componentView( Array2DView< TIn > src,
     int componentOffsetBytes );
 
-// Given an existing Array3DView< T >, returns a Array3DView< S > with the
-// same stride, but with elements of type S where S is a component of T,
-// and is at offset "componentOffsetBytes" within T.
-template< typename S, typename T >
-Array3DView< S > componentView( Array3DView< T > src,
+// Given an existing Array3DView< TIn >, returns a Array3DView< TOut > with the
+// same stride, but with elements of type TOut where TOut is a component of
+// TIn and is at offset "componentOffsetBytes" within TIn.
+template< typename TOut, typename TIn >
+Array3DView< TOut > componentView( Array3DView< TIn > src,
     int componentOffsetBytes );
 
 // Get a linear subset of an Array1DView, starting at x.

@@ -40,9 +40,15 @@ public:
     // Matrix4f representation of this SimilarityTransform.
     Matrix4f asMatrix() const;
 
+    // Returns the Matrix3f that transforms normals (as opposed to points or
+    // vectors) as this SimilarityTransform does with transformNormal().
+    Matrix3f normalMatrix() const;
+
+    // The rotation part of this SimilarityTransform.
     const Matrix3f& rotation() const;
     Matrix3f& rotation();
 
+    // The translation part of this SimilarityTransform.
     const Vector3f& translation() const;
     Vector3f& translation();
 };
@@ -70,10 +76,13 @@ SimilarityTransform compose( const SimilarityTransform& second,
 // tInv = (1/s) * R^T * (-t)
 SimilarityTransform inverse( const SimilarityTransform& st );
 
-// Apply the transformation et to the point p: q = s R p + t.
+// Apply the transformation st to the point p: q = s R p + t.
 Vector3f transformPoint( const SimilarityTransform& st, const Vector3f& p );
 
-// Apply the transformation et to the vector v: w = s R v.
+// Apply the transformation st to the normal n: m = (R / s) n.
+Vector3f transformNormal( const SimilarityTransform& st, const Vector3f& n );
+
+// Apply the transformation st to the vector v: w = s R v.
 Vector3f transformVector( const SimilarityTransform& st, const Vector3f& v );
 
 // Convert a Similarity transformation (s, R, t) from OpenCV conventions to

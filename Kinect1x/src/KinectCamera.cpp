@@ -80,7 +80,8 @@ Range1f KinectCamera::nearModeDepthRangeMeters()
 Intrinsics KinectCamera::colorIntrinsics(
     NUI_IMAGE_RESOLUTION resolution )
 {
-    // #define is on a 640x480 image.
+    // NUI_CAMERA_COLOR_NOMINAL_FOCAL_LENGTH_IN_PIXELS is #defined for a
+    // 640x480 image.
     Vector2f fl{ NUI_CAMERA_COLOR_NOMINAL_FOCAL_LENGTH_IN_PIXELS };
     Vector2f pp{ 320, 240 };
 
@@ -113,7 +114,8 @@ Intrinsics KinectCamera::colorIntrinsics(
 Intrinsics KinectCamera::depthIntrinsics(
     NUI_IMAGE_RESOLUTION resolution )
 {
-    // #define is on a 320x240 image.
+    // NUI_CAMERA_COLOR_NOMINAL_FOCAL_LENGTH_IN_PIXELS is #defined for a
+    // 640x480 image.
     Vector2f fl{ NUI_CAMERA_DEPTH_NOMINAL_FOCAL_LENGTH_IN_PIXELS };
     Vector2f pp{ 160, 120 };
 
@@ -150,28 +152,6 @@ EuclideanTransform KinectCamera::colorFromDepthExtrinsicsMeters()
     auto output = colorFromDepthExtrinsicsMillimeters();
     output.translation *= 0.001f;
     return output;
-}
-
-// static
-KinectCamera* KinectCamera::create( int deviceIndex, DWORD nuiFlags,
-    NUI_IMAGE_RESOLUTION colorResolution,
-    NUI_IMAGE_RESOLUTION depthResolution )
-{
-    KinectCamera* pKinect = new KinectCamera( deviceIndex );
-
-    HRESULT hr = pKinect->initialize( nuiFlags,
-        colorResolution, depthResolution );
-    if( SUCCEEDED( hr ) )
-    {
-        return pKinect;
-    }
-    else
-    {
-        delete pKinect;
-        pKinect = nullptr;
-    }
-
-    return pKinect;
 }
 
 // static
@@ -222,49 +202,12 @@ const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_IN
 // virtual
 KinectCamera::~KinectCamera()
 {
-#if KINECT1X_ENABLE_SPEECH
-    if( m_pKS != nullptr )
-    {
-        m_pKS->StopCapture();
-    }
+    close();
+}
 
-    SAFE_RELEASE( m_pKS );
-    SAFE_RELEASE( m_pStream );
-    SAFE_RELEASE( m_pRecognizer );
-    SAFE_RELEASE( m_pSpStream );
-    SAFE_RELEASE( m_pEngineToken );
-    SAFE_RELEASE( m_pContext );
-    SAFE_RELEASE( m_pGrammar );
-    SAFE_RELEASE( m_pPS );
-    SAFE_RELEASE( m_pDMO );
-#endif
-
-    // no need to delete the streams, they are released per frame
-    if( m_hNextDepthFrameEvent != NULL &&
-        m_hNextDepthFrameEvent != INVALID_HANDLE_VALUE )
-    {
-        CloseHandle( m_hNextDepthFrameEvent );
-        m_hNextDepthFrameEvent = NULL;
-    }
-
-    if( m_hNextColorFrameEvent != NULL &&
-        m_hNextColorFrameEvent != INVALID_HANDLE_VALUE )
-    {
-        CloseHandle( m_hNextColorFrameEvent );
-        m_hNextColorFrameEvent = NULL;
-    }
-
-    if( m_hNextSkeletonEvent != NULL &&
-        m_hNextSkeletonEvent != INVALID_HANDLE_VALUE )
-    {
-        CloseHandle( m_hNextSkeletonEvent );
-        m_hNextSkeletonEvent = NULL;
-    }
-
-    if( m_pSensor != nullptr )
-    {
-        m_pSensor->NuiShutdown();
-    }
+bool KinectCamera::isValid() const
+{
+    return m_deviceIndex != -1;
 }
 
 int KinectCamera::elevationAngle() const
@@ -292,10 +235,20 @@ bool KinectCamera::setNearModeEnabled( bool b )
     {
         // NuiImageStreamSetImageFrameFlags will fail with E_INVALID_ARG if
         // depth was not enabled.
-        DWORD flags =
-            m_depthStreamFlags | NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        DWORD flags;
+        if( b )
+        {
+            flags = m_depthStreamFlags |
+                NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        }
+        else
+        {
+            flags = m_depthStreamFlags &
+                ~NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE;
+        }
+
         HRESULT hr = NuiImageStreamSetImageFrameFlags(
-            m_hDepthStreamHandle, m_depthStreamFlags );
+            m_hDepthStreamHandle, flags );
         if( SUCCEEDED( hr ) )
         {
             m_depthStreamFlags = flags;
@@ -314,13 +267,13 @@ bool KinectCamera::setNearModeEnabled( bool b )
 
 bool KinectCamera::setInfraredEmitterEnabled( bool b )
 {
-    HRESULT hr = m_pSensor->NuiSetForceInfraredEmitterOff( b );
+    HRESULT hr = m_pSensor->NuiSetForceInfraredEmitterOff( !b );
     return SUCCEEDED( hr );
 }
 
 bool KinectCamera::rawAccelerometerReading( Vector4f& reading ) const
 {
-    Vector4* pReading = reinterpret_cast<Vector4*>( &reading );
+    Vector4* pReading = reinterpret_cast< Vector4*> ( &reading );
     HRESULT hr = m_pSensor->NuiAccelerometerGetCurrentReading( pReading );
     return SUCCEEDED( hr );
 }
@@ -333,9 +286,19 @@ Vector3f KinectCamera::upVectorFromAccelerometer() const
     return -reading.xyz.normalized();
 }
 
+Vector2i KinectCamera::colorResolution() const
+{
+    return m_colorResolutionPixels;
+}
+
 Intrinsics KinectCamera::colorIntrinsics() const
 {
     return KinectCamera::colorIntrinsics( m_colorResolution );
+}
+
+Vector2i KinectCamera::depthResolution() const
+{
+    return m_depthResolutionPixels;
 }
 
 Intrinsics KinectCamera::depthIntrinsics() const
@@ -343,79 +306,48 @@ Intrinsics KinectCamera::depthIntrinsics() const
     return KinectCamera::depthIntrinsics( m_depthResolution );
 }
 
-KinectCamera::Event KinectCamera::poll( NUI_SKELETON_FRAME& skeleton,
-    Array2DView< uint8x4 > bgra,
-    int64_t& bgraTimestamp, int& bgraFrameNumber,
-    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
-    int64_t& depthTimestamp, int& depthFrameNumber,
-    bool& depthCapturedWithNearMode,
-    int waitIntervalMilliseconds )
+KinectCamera::Event KinectCamera::pollOne( Frame& frame,
+    bool useExtendedDepth, int waitIntervalMilliseconds )
 {
-    const int NUM_EVENTS = 3;
-    HANDLE eventHandles[ NUM_EVENTS ] =
-    {
-        m_hNextSkeletonEvent,
-        m_hNextColorFrameEvent,
-        m_hNextDepthFrameEvent
-    };
-    KinectCamera::Event eventEnums[ NUM_EVENTS ] =
-    {
-        KinectCamera::Event::SKELETON,
-        KinectCamera::Event::COLOR,
-        KinectCamera::Event::DEPTH
-    };
+    frame.colorUpdated = false;
+    frame.depthUpdated = false;
+    frame.skeletonUpdated = false;
 
-    DWORD waitMultipleResult = WaitForMultipleObjects( NUM_EVENTS,
-        eventHandles, FALSE, waitIntervalMilliseconds );
+    DWORD nHandles = static_cast< DWORD >( m_events.size() );
+    DWORD waitMultipleResult = WaitForMultipleObjects(
+        nHandles, m_events.data(), FALSE,
+        waitIntervalMilliseconds );
     if( waitMultipleResult == WAIT_TIMEOUT )
     {
         return KinectCamera::Event::TIMEOUT;
     }
 
     int eventIndex = waitMultipleResult - WAIT_OBJECT_0;
-    if( eventIndex >= NUM_EVENTS )
+    if( eventIndex >= static_cast< int >( nHandles ) )
     {
         return KinectCamera::Event::TIMEOUT;
     }
-    KinectCamera::Event e = eventEnums[ eventIndex ];
-    switch( e )
+
+    if( handleEvent( frame, useExtendedDepth, eventIndex ) )
     {
-        case KinectCamera::Event::SKELETON:
-        {
-            if( handleGetSkeletonFrame( skeleton ) )
-            {
-                return e;
-            }
-        }
-        case KinectCamera::Event::COLOR:
-        {
-            if( handleGetColorFrame( bgra, bgraTimestamp, bgraFrameNumber ) )
-            {
-                return e;
-            }
-        }
-        case KinectCamera::Event::DEPTH:
-        {
-            if( handleGetExtendedDepthFrame( depth, playerIndex,
-                depthTimestamp, depthFrameNumber, depthCapturedWithNearMode ) )
-            {
-                return e;
-            }
-        }
-        default:
-            return KinectCamera::Event::FAILED;
+        return KinectCamera::Event::OK;
+    }
+    else
+    {
+        return KinectCamera::Event::FAILED;
     }
 }
 
-KinectCamera::Event KinectCamera::pollColorAndExtendedDepth( Array2DView< uint8x4 > bgra,
-    int64_t& bgraTimestamp, int& bgraFrameNumber,
-    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
-    int64_t& depthTimestamp, int& depthFrameNumber,
-    bool& depthCapturedWithNearMode,
-    int waitIntervalMilliseconds )
+KinectCamera::Event KinectCamera::pollAll( Frame& frame,
+    bool useExtendedDepth, int waitIntervalMilliseconds )
 {
-    HANDLE eventHandles[] = { m_hNextColorFrameEvent, m_hNextDepthFrameEvent };
-    DWORD waitMultipleResult = WaitForMultipleObjects( 2, eventHandles, TRUE,
+    frame.colorUpdated = false;
+    frame.depthUpdated = false;
+    frame.skeletonUpdated = false;
+
+    DWORD nHandles = static_cast< DWORD >( m_events.size() );
+    DWORD waitMultipleResult = WaitForMultipleObjects(
+        nHandles, m_events.data(), TRUE,
         waitIntervalMilliseconds );
     if( waitMultipleResult == WAIT_TIMEOUT )
     {
@@ -424,93 +356,60 @@ KinectCamera::Event KinectCamera::pollColorAndExtendedDepth( Array2DView< uint8x
 
     // Succeeded in waiting on all of them.
     if( waitMultipleResult >= WAIT_OBJECT_0 &&
-        waitMultipleResult < WAIT_OBJECT_0 + 2 )
+        waitMultipleResult < WAIT_OBJECT_0 + nHandles )
     {
-        bool rgbSucceeded = handleGetColorFrame( bgra, bgraTimestamp,
-            bgraFrameNumber );
-        bool depthSucceeded = handleGetExtendedDepthFrame( depth, playerIndex,
-            depthTimestamp, depthFrameNumber, depthCapturedWithNearMode );
-        if( rgbSucceeded && depthSucceeded )
+        // Loop over the handles and call the appropriate method to grab the
+        // data.
+        for( DWORD i = 0; i < nHandles; ++i )
         {
-            return KinectCamera::Event::RGBD;
+            handleEvent( frame, useExtendedDepth, i );
         }
+        return KinectCamera::Event::OK;
     }
     return KinectCamera::Event::FAILED;
 }
 
-KinectCamera::Event KinectCamera::pollColor( Array2DView< uint8x4 > bgra,
-    int64_t& timestamp, int& frameNumber,
-    int waitIntervalMilliseconds )
+bool KinectCamera::handleEvent( Frame& frame, bool useExtendedDepth,
+    DWORD eventIndex )
 {
-    DWORD waitResult = WaitForSingleObject( m_hNextColorFrameEvent,
-        waitIntervalMilliseconds );
-
-    if( waitResult == WAIT_OBJECT_0 )
+    if( m_events[ eventIndex ] == m_hNextColorFrameEvent )
     {
-        bool succeeded = handleGetColorFrame( bgra, timestamp, frameNumber );
-        if( succeeded )
+        if( colorFormat() == NUI_IMAGE_TYPE_COLOR )
         {
-            return KinectCamera::Event::COLOR;
+            frame.colorUpdated = handleGetColorFrame( frame.bgra,
+                frame.colorTimestamp, frame.colorFrameNumber );
+        }
+        else if( colorFormat() == NUI_IMAGE_TYPE_COLOR_INFRARED )
+        {
+            frame.colorUpdated = handleGetInfraredFrame( frame.infrared,
+                frame.colorTimestamp, frame.colorFrameNumber );
+        }
+        return frame.colorUpdated;
+    }
+    if( m_events[ eventIndex ] == m_hNextDepthFrameEvent )
+    {
+        if( useExtendedDepth )
+        {
+            frame.depthUpdated = handleGetExtendedDepthFrame(
+                frame.extendedDepth, frame.playerIndex,
+                frame.depthTimestamp, frame.depthFrameNumber,
+                frame.depthCapturedWithNearMode );
         }
         else
         {
-            return KinectCamera::Event::FAILED;
+            frame.depthUpdated = handleGetPackedDepthFrame(
+                frame.packedDepth,
+                frame.depthTimestamp, frame.depthFrameNumber );
         }
+        return frame.depthUpdated;
     }
-    else
+    if( m_events[ eventIndex ] == m_hNextSkeletonEvent )
     {
-        return KinectCamera::Event::TIMEOUT;
+        frame.skeletonUpdated = handleGetSkeletonFrame(
+            frame.skeleton );
+        return frame.skeletonUpdated;
     }
-}
-
-KinectCamera::Event KinectCamera::pollExtendedDepth( Array2DView< uint16_t > depth,
-    Array2DView< uint16_t > playerIndex,
-    int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode,
-    int waitIntervalMilliseconds )
-{
-    DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent,
-        waitIntervalMilliseconds );
-    if( waitResult == WAIT_OBJECT_0 )
-    {
-        bool succeeded = handleGetExtendedDepthFrame( depth, playerIndex,
-            timestamp, frameNumber, capturedWithNearMode );
-        if( succeeded )
-        {
-            return KinectCamera::Event::DEPTH;
-        }
-        else
-        {
-            return KinectCamera::Event::FAILED;
-        }
-    }
-    else
-    {
-        return KinectCamera::Event::TIMEOUT;
-    }
-}
-
-KinectCamera::Event KinectCamera::pollPackedDepth( Array2DView< uint16_t > packedDepth,
-    int waitIntervalMilliseconds )
-{
-    DWORD waitResult = WaitForSingleObject( m_hNextDepthFrameEvent,
-        waitIntervalMilliseconds );
-
-    if( waitResult == WAIT_OBJECT_0 )
-    {
-        bool succeeded = handleGetPackedDepthFrame( packedDepth );
-        if( succeeded )
-        {
-            return KinectCamera::Event::DEPTH;
-        }
-        else
-        {
-            return KinectCamera::Event::FAILED;
-        }
-    }
-    else
-    {
-        return KinectCamera::Event::TIMEOUT;
-    }
+    return false;
 }
 
 #if KINECT1X_ENABLE_SPEECH
@@ -570,12 +469,17 @@ bool KinectCamera::pollSpeech( QString& phrase, float& confidence, int waitInter
 
 bool KinectCamera::isUsingColor() const
 {
-    return m_usingColor;
+    return m_hNextColorFrameEvent != NULL;
+}
+
+NUI_IMAGE_TYPE KinectCamera::colorFormat() const
+{
+    return m_colorFormat;
 }
 
 bool KinectCamera::isUsingDepth() const
 {
-    return m_usingDepth;
+    return m_hNextDepthFrameEvent != NULL;
 }
 
 bool KinectCamera::isUsingPlayerIndex() const
@@ -585,63 +489,63 @@ bool KinectCamera::isUsingPlayerIndex() const
 
 bool KinectCamera::isUsingSkeleton() const
 {
-    return m_usingSkeleton;
+    return m_hNextSkeletonEvent != NULL;
 }
 
-KinectCamera::KinectCamera( int deviceIndex ) :
+KinectCamera::KinectCamera( int deviceIndex, DWORD nuiFlags,
+    NUI_IMAGE_TYPE colorFormat, NUI_IMAGE_RESOLUTION colorResolution,
+    NUI_IMAGE_RESOLUTION depthResolution ) :
     m_deviceIndex( deviceIndex )
 {
+    assert( deviceIndex != -1 );
+    assert( deviceIndex < numDevices() );
 
-}
-
-HRESULT KinectCamera::initialize( DWORD nuiFlags,
-    NUI_IMAGE_RESOLUTION colorResolution,
-    NUI_IMAGE_RESOLUTION depthResolution )
-{
-    // create an instance
-    INuiSensor* pSensor;
-    HRESULT hr = NuiCreateSensorByIndex( m_deviceIndex, &pSensor );
+    HRESULT hr = NuiCreateSensorByIndex( m_deviceIndex, &m_pSensor );
     if( SUCCEEDED( hr ) )
     {
-        hr = pSensor->NuiInitialize( nuiFlags );
+        hr = m_pSensor->NuiInitialize( nuiFlags );
         if( SUCCEEDED( hr ) )
         {
-            m_pSensor = pSensor;
-
-            m_usingColor = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR ) != 0;
-
-            m_usingDepth =
+            bool usingColor =
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_COLOR ) != 0;
+            bool usingDepth =
             (
                 ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH ) ||
                 ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX )
             ) != 0;
 
-            m_usingSkeleton =
-                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON ) != 0;
             m_usingPlayerIndex =
                 ( nuiFlags & NUI_INITIALIZE_FLAG_USES_DEPTH_AND_PLAYER_INDEX )
                 != 0;
-            if( m_usingPlayerIndex && !m_usingSkeleton )
+
+            bool usingSkeleton =
+                ( nuiFlags & NUI_INITIALIZE_FLAG_USES_SKELETON ) != 0;
+
+            if( m_usingPlayerIndex && !usingSkeleton )
             {
-                fprintf( stderr, "Warning: player index is requested but skeleton tracking is not enabled: enabling...\n" );
-                m_usingSkeleton = true;
+                fprintf( stderr, "Warning: player index is requested but "
+                    "skeleton tracking is not enabled: enabling...\n" );
+                usingSkeleton = true;
             }
 
+#if KINECT1X_ENABLE_SPEECH
             m_usingAudio = ( nuiFlags & NUI_INITIALIZE_FLAG_USES_AUDIO ) != 0;
+#endif
 
-            if( SUCCEEDED( hr ) && m_usingColor )
+            if( SUCCEEDED( hr ) && usingColor )
             {
-                hr = initializeColorStream( colorResolution );
+                hr = initializeColorStream( colorFormat, colorResolution );
             }
 
-            if( SUCCEEDED( hr ) && m_usingDepth )
+            if( SUCCEEDED( hr ) && usingDepth )
             {
                 hr = initializeDepthStream( depthResolution,
                     m_usingPlayerIndex );
             }
 
-            // if depth is enabled, initialize skeleton tracking
-            if( SUCCEEDED( hr ) && m_usingDepth && m_usingSkeleton )
+            // If depth stream initialization succeeded, initialize skeleton
+            // tracking if it's enabled.
+            if( SUCCEEDED( hr ) && usingDepth && usingSkeleton )
             {
                 hr = initializeSkeletonTracking();
             }
@@ -655,37 +559,45 @@ HRESULT KinectCamera::initialize( DWORD nuiFlags,
         }
     }
 
-    return hr;
+    if( FAILED( hr ) )
+    {
+        close();
+    }
 }
 
-HRESULT KinectCamera::initializeSkeletonTracking()
-{
-    const DWORD flags = 0; // Currently ignored by API.
-
-    // Enable skeleton tracking.
-    m_hNextSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    return m_pSensor->NuiSkeletonTrackingEnable( m_hNextSkeletonEvent, flags );
-}
-
-HRESULT KinectCamera::initializeColorStream( NUI_IMAGE_RESOLUTION resolution )
+HRESULT KinectCamera::initializeColorStream( NUI_IMAGE_TYPE format,
+    NUI_IMAGE_RESOLUTION resolution )
 {
     const DWORD flags = 0; // Currently ignored by the API.
     const DWORD frameLimit = 2; // How many frames to buffer.
 
+    m_colorFormat = format;
     m_colorResolution = resolution;
-    m_colorResolutionPixels = kinectutils::toVector2i( resolution );
+    m_colorResolutionPixels = toVector2i( resolution );
 
     // Enable color stream.
     m_hNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    return m_pSensor->NuiImageStreamOpen
+    HRESULT hr = m_pSensor->NuiImageStreamOpen
     (
-        NUI_IMAGE_TYPE_COLOR,
+        format,
         resolution,
         flags,
         frameLimit,
         m_hNextColorFrameEvent,
         &m_hColorStreamHandle
     );
+
+    if( SUCCEEDED( hr ) )
+    {
+        m_events.push_back( m_hNextColorFrameEvent );
+    }
+    else
+    {
+        CloseHandle( m_hNextColorFrameEvent );
+        m_hNextColorFrameEvent = NULL;
+    }
+
+    return hr;
 }
 
 HRESULT KinectCamera::initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
@@ -696,13 +608,12 @@ HRESULT KinectCamera::initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
         imageType = NUI_IMAGE_TYPE_DEPTH;
 
     m_depthResolution = resolution;
-    m_depthResolutionPixels = kinectutils::toVector2i( resolution );
+    m_depthResolutionPixels = toVector2i( resolution );
 
     const DWORD flags = 0; // Currently ignored by the API.
     const DWORD frameLimit = 2; // How many frames to buffer.
 
     m_hNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    m_hDepthStreamHandle = NULL;
     HRESULT hr = m_pSensor->NuiImageStreamOpen
     (
         imageType,
@@ -717,6 +628,38 @@ HRESULT KinectCamera::initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
     {
         hr = NuiImageStreamGetImageFrameFlags( m_hDepthStreamHandle,
             &m_depthStreamFlags );
+    }
+
+    if( SUCCEEDED( hr ) )
+    {
+        m_events.push_back( m_hNextDepthFrameEvent );
+    }
+    else
+    {
+        CloseHandle( m_hNextDepthFrameEvent );
+        m_hNextDepthFrameEvent = NULL;
+    }
+
+    return hr;
+}
+
+HRESULT KinectCamera::initializeSkeletonTracking()
+{
+    const DWORD flags = 0; // Currently ignored by API.
+
+    // Enable skeleton tracking.
+    m_hNextSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+    HRESULT hr = m_pSensor->NuiSkeletonTrackingEnable( m_hNextSkeletonEvent,
+        flags );
+
+    if( SUCCEEDED( hr ) )
+    {
+        m_events.push_back( m_hNextSkeletonEvent );
+    }
+    else
+    {
+        CloseHandle( m_hNextSkeletonEvent );
+        m_hNextSkeletonEvent = NULL;
     }
 
     return hr;
@@ -907,6 +850,65 @@ HRESULT KinectCamera::initializeAudio()
 }
 #endif
 
+void KinectCamera::close()
+{
+#if KINECT1X_ENABLE_SPEECH
+    if( m_pKS != nullptr )
+    {
+        m_pKS->StopCapture();
+    }
+
+    SAFE_RELEASE( m_pKS );
+    SAFE_RELEASE( m_pStream );
+    SAFE_RELEASE( m_pRecognizer );
+    SAFE_RELEASE( m_pSpStream );
+    SAFE_RELEASE( m_pEngineToken );
+    SAFE_RELEASE( m_pContext );
+    SAFE_RELEASE( m_pGrammar );
+    SAFE_RELEASE( m_pPS );
+    SAFE_RELEASE( m_pDMO );
+#endif
+
+    m_events.clear();
+
+    // No need to close the stream handles, they are released per frame.
+    m_depthStreamFlags = 0;
+    if( m_hNextDepthFrameEvent != NULL &&
+        m_hNextDepthFrameEvent != INVALID_HANDLE_VALUE )
+    {
+        CloseHandle( m_hNextDepthFrameEvent );
+        m_hNextDepthFrameEvent = NULL;
+    }
+    m_hDepthStreamHandle = NULL;
+
+    if( m_hNextColorFrameEvent != NULL &&
+        m_hNextColorFrameEvent != INVALID_HANDLE_VALUE )
+    {
+        CloseHandle( m_hNextColorFrameEvent );
+        m_hNextColorFrameEvent = NULL;
+    }
+    m_hColorStreamHandle = NULL;
+
+    if( m_hNextSkeletonEvent != NULL &&
+        m_hNextSkeletonEvent != INVALID_HANDLE_VALUE )
+    {
+        CloseHandle( m_hNextSkeletonEvent );
+        m_hNextSkeletonEvent = NULL;
+    }
+
+    m_depthResolution = NUI_IMAGE_RESOLUTION_INVALID;
+    m_colorResolution = NUI_IMAGE_RESOLUTION_INVALID;
+    m_usingPlayerIndex = false;
+
+    if( m_pSensor != nullptr )
+    {
+        m_pSensor->NuiShutdown();
+        m_pSensor = nullptr;
+    }
+
+    m_deviceIndex = -1;
+}
+
 bool KinectCamera::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
 {
     bool foundSkeleton = false;
@@ -916,7 +918,8 @@ bool KinectCamera::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
     {
         for( int i = 0; i < NUI_SKELETON_COUNT; i++ )
         {
-            if( skeleton.SkeletonData[i].eTrackingState == NUI_SKELETON_TRACKED )
+            if( skeleton.SkeletonData[i].eTrackingState ==
+                NUI_SKELETON_TRACKED )
             {
                 foundSkeleton = true;
             }
@@ -926,7 +929,7 @@ bool KinectCamera::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
     if( foundSkeleton )
     {
         // smooth data
-// TODO(jiawen): allow this
+// TODO(jiawen): just make this a separate function.
 #if 0
         NUI_TRANSFORM_SMOOTH_PARAMETERS smooth;
         smooth.fSmoothing = 1.0f; // max smoothing
@@ -988,7 +991,53 @@ bool KinectCamera::handleGetColorFrame( Array2DView< uint8x4 > bgra,
     return valid;
 }
 
-bool KinectCamera::handleGetPackedDepthFrame( Array2DView< uint16_t > packedDepth )
+bool KinectCamera::handleGetInfraredFrame( Array2DView< uint16_t > ir,
+    int64_t& timestamp, int& frameNumber )
+{
+    if( ir.isNull() )
+    {
+        return false;
+    }
+    if( ir.size() != m_colorResolutionPixels )
+    {
+        return false;
+    }
+
+    NUI_IMAGE_FRAME imageFrame;
+    HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
+    (
+        m_hColorStreamHandle,
+        0,
+        &imageFrame
+    );
+    if( FAILED( hr ) )
+    {
+        return false;
+    }
+
+    NUI_LOCKED_RECT lockedRect;
+    hr = imageFrame.pFrameTexture->LockRect( 0, &lockedRect, NULL, 0 );
+    bool valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
+    if( valid )
+    {
+        // Input is BGRA, with A = 0
+        Array2DView< const uint16_t > src( lockedRect.pBits,
+            m_colorResolutionPixels,
+            { sizeof( uint16_t ), lockedRect.Pitch } );
+        copy( src, ir );
+
+        timestamp = imageFrame.liTimeStamp.QuadPart;
+        frameNumber = imageFrame.dwFrameNumber;
+    }
+    imageFrame.pFrameTexture->UnlockRect( 0 );
+    m_pSensor->NuiImageStreamReleaseFrame( m_hColorStreamHandle, &imageFrame );
+
+    return valid;
+}
+
+bool KinectCamera::handleGetPackedDepthFrame(
+    Array2DView< uint16_t > packedDepth,
+    int64_t& timestamp, int& frameNumber )
 {
     // If depth is null, do nothing.
     if( packedDepth.isNull() )
@@ -1030,6 +1079,9 @@ bool KinectCamera::handleGetPackedDepthFrame( Array2DView< uint16_t > packedDept
                 { sizeof( uint16_t ), lockedRect.Pitch }
             );
             copy( src, packedDepth );
+
+            timestamp = imageFrame.liTimeStamp.QuadPart;
+            frameNumber = imageFrame.dwFrameNumber;
         }
         imageFrame.pFrameTexture->UnlockRect( 0 );
         m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle,
@@ -1103,7 +1155,7 @@ bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
         if( depth.notNull() )
         {
             Array2DView< const uint16_t > srcDepthView =
-                componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
+                componentView< const uint16_t >
                 ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, depth ) );
             copy( srcDepthView, depth );
         }
@@ -1111,7 +1163,7 @@ bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
         if( isUsingPlayerIndex() && playerIndex.notNull() )
         {
             Array2DView< const uint16_t > srcPlayerIndexView =
-                componentView< const uint16_t, NUI_DEPTH_IMAGE_PIXEL >
+                componentView< const uint16_t >
                 ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, playerIndex ) );
             copy( srcPlayerIndexView, playerIndex );
         }

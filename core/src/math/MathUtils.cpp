@@ -355,36 +355,6 @@ void rescaleRangeToScaleOffset( float inputMin, float inputMax,
     offset = outputMin - inputMin * scale;
 }
 
-int rescaleFloatToInt( float x,
-    float fMin, float fMax,
-    int iMin, int iMax )
-{
-    float fraction = ( x - fMin ) / ( fMax - fMin );
-    return( iMin + roundToInt( fraction * ( iMax - iMin ) ) );
-}
-
-float rescaleIntToFloat( int x,
-    int iMin, int iMax,
-    float fMin, float fMax )
-{
-    int inputRange = iMax - iMin;
-    float outputRange = fMax - fMin;
-
-    float fraction = static_cast< float >( x - iMin ) / inputRange;
-    return( fMin + fraction * outputRange );
-}
-
-int rescaleIntToInt( int x,
-    int inMin, int inMax,
-    int outMin, int outMax )
-{
-    int inputRange = inMax - inMin;
-    int outputRange = outMax - outMin;
-
-    float fraction = static_cast< float >( x - inMin )  / inputRange;
-    return roundToInt( outMin + fraction * outputRange );
-}
-
 float distanceSquared( float x0, float y0, float x1, float y1 )
 {
     float dx = x1 - x0;

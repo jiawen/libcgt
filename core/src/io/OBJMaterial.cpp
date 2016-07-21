@@ -1,17 +1,9 @@
 #include "io/OBJMaterial.h"
 
-OBJMaterial::OBJMaterial( const std::string& name ) :
-
+OBJMaterial::OBJMaterial( const std::string& name,
+    IlluminationModel illum ) :
     m_name( name ),
-    m_illuminationModel( OBJMaterial::IlluminationModel::NONE ),
-
-    m_ka( 0.2f, 0.2f, 0.2f ),
-    m_kd( 0.8f, 0.8f, 0.8f ),
-    m_ks( 1.0f, 1.0f, 1.0f ),
-
-    m_d( 1 ),
-    m_ns( 0 )
-
+    m_illuminationModel( illum )
 {
 
 }

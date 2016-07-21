@@ -8,6 +8,7 @@ using libcgt::core::arrayutils::map;
 using libcgt::core::imageproc::colorutils::colorMapJet;
 using libcgt::core::imageproc::colorutils::saturate;
 using libcgt::core::imageproc::colorutils::toUInt8;
+using libcgt::core::math::clamp;
 using libcgt::core::math::fraction;
 using libcgt::core::math::rescale;
 
@@ -80,6 +81,36 @@ void linearRemapToLuminance( Array2DView< const float > src,
         {
             float luma = saturate( rescale( z, srcRange, dstRange ) );
             return toUInt8( luma );
+        }
+    );
+}
+
+void linearRemapToLuminance( Array2DView< const uint16_t > src,
+    const Range1i& srcRange, const Range1i& dstRange,
+    Array2DView< uint8x3 > dst )
+{
+    float srcSize = static_cast< float >( srcRange.size );
+    map< uint16_t, uint8x3 >(src, dst,
+        [&] ( uint16_t z )
+        {
+            uint8_t luma = static_cast< uint8_t >(
+                clamp( rescale( z, srcRange, dstRange ), Range1i( 256 ) ) );
+            return uint8x3{ luma, luma, luma };
+        }
+    );
+}
+
+void linearRemapToLuminance( Array2DView< const uint16_t > src,
+    const Range1i& srcRange, const Range1i& dstRange,
+    uint8_t dstAlpha, Array2DView< uint8x4 > dst )
+{
+    float srcSize = static_cast< float >( srcRange.size );
+    map< uint16_t, uint8x4 >( src, dst,
+        [&] ( uint16_t z )
+        {
+            uint8_t luma = static_cast< uint8_t >(
+                clamp( rescale( z, srcRange, dstRange ), Range1i( 256 ) ) );
+            return uint8x4{ luma, luma, luma, dstAlpha };
         }
     );
 }

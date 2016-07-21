@@ -73,6 +73,11 @@ Matrix4f SimilarityTransform::asMatrix() const
     return m;
 }
 
+Matrix3f SimilarityTransform::normalMatrix() const
+{
+    return Matrix3f::uniformScaling( 1.0f / scale ) * ( euclidean.rotation );
+}
+
 const Matrix3f& SimilarityTransform::rotation() const
 {
     return euclidean.rotation;
@@ -130,6 +135,11 @@ SimilarityTransform inverse( const SimilarityTransform& st )
 Vector3f transformPoint( const SimilarityTransform& st, const Vector3f& p )
 {
     return st.scale * st.rotation() * p + st.translation();
+}
+
+Vector3f transformNormal( const SimilarityTransform& st, const Vector3f& n )
+{
+    return ( st.rotation() * n ) / st.scale;
 }
 
 Vector3f transformVector( const SimilarityTransform& st, const Vector3f& v )

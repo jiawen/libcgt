@@ -5,7 +5,7 @@
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 
-namespace libcgt { namespace opencv_interop { namespace vecmathutils {
+namespace libcgt { namespace opencv_interop {
 
 cv::Point2f toCV( const Vector2f& v )
 {
@@ -93,4 +93,4 @@ Matrix4f fromCV4x4( const cv::Mat_< float >& a, int i0, int j0 )
     return output;
 }
 
-} } } // vecmath, opencv_interop, libcgt
+} } // opencv_interop, libcgt

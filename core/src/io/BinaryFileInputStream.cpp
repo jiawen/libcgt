@@ -1,21 +1,8 @@
 #include "io/BinaryFileInputStream.h"
 
-// ==============================================================
-// Public
-// ==============================================================
-
-// static
-BinaryFileInputStream* BinaryFileInputStream::open( const char* filename )
+BinaryFileInputStream::BinaryFileInputStream( const char* filename )
 {
-    FILE* fp = fopen( filename, "rb" );
-    if( fp != NULL )
-    {
-        return new BinaryFileInputStream( fp );
-    }
-    else
-    {
-        return NULL;
-    }
+    m_fp = fopen( filename, "rb" );
 }
 
 // virtual
@@ -24,41 +11,19 @@ BinaryFileInputStream::~BinaryFileInputStream()
     close();
 }
 
-void BinaryFileInputStream::close()
+bool BinaryFileInputStream::isOpen() const
 {
-    fclose( m_pFilePointer );
+    return( m_fp != nullptr );
 }
 
-bool BinaryFileInputStream::readInt( int* i )
+bool BinaryFileInputStream::close()
 {
-    size_t itemsRead = fread( i, sizeof( int ), 1, m_pFilePointer );
-    return( itemsRead == 1 );
-}
-
-bool BinaryFileInputStream::readIntArray( int i[], int nCount )
-{
-    size_t itemsRead = fread( i, sizeof( int ), nCount, m_pFilePointer );
-    return( itemsRead == nCount );
-}
-
-bool BinaryFileInputStream::readFloat( float* f )
-{
-    size_t itemsRead = fread( f, sizeof( float ), 1, m_pFilePointer );
-    return( itemsRead == 1 );
-}
-
-bool BinaryFileInputStream::readFloatArray( float f[], int nCount )
-{
-    size_t itemsRead = fread( f, sizeof( float ), nCount, m_pFilePointer );
-    return( itemsRead == nCount );
-}
-
-// ==============================================================
-// Private
-// ==============================================================
-
-BinaryFileInputStream::BinaryFileInputStream( FILE* pFilePointer ) :
-    m_pFilePointer( pFilePointer )
-{
-
+    if( m_fp != nullptr )
+    {
+        // fclose() returns 0 on success, EOF otherwise.
+        int status = fclose( m_fp );
+        m_fp = nullptr;
+        return( status == 0 );
+    }
+    return false;
 }

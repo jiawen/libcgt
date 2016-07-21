@@ -2,6 +2,16 @@
 
 namespace libcgt { namespace core { namespace cameras {
 
+// static
+Intrinsics Intrinsics::fromMatrix( const Matrix3f& k )
+{
+    return
+    {
+        { k( 0, 0 ), k( 1, 1 ) },
+        { k( 0, 2 ), k( 1, 2 ) }
+    };
+}
+
 Matrix3f Intrinsics::asMatrix() const
 {
     Matrix3f k;

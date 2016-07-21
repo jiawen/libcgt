@@ -1,21 +1,35 @@
 #include "io/BinaryFileOutputStream.h"
 
-// ==============================================================
-// Public
-// ==============================================================
-
-// static
-BinaryFileOutputStream* BinaryFileOutputStream::open( const char* filename )
+BinaryFileOutputStream::BinaryFileOutputStream( const char* filename,
+    bool append )
 {
-    FILE* fp = fopen( filename, "wb" );
-    if( fp != NULL )
+    if( append )
     {
-        return new BinaryFileOutputStream( fp );
+        m_fp = fopen( filename, "wb" );
     }
     else
     {
-        return NULL;
+        m_fp = fopen( filename, "ab" );
     }
+}
+
+BinaryFileOutputStream::BinaryFileOutputStream( BinaryFileOutputStream&& move )
+{
+    close();
+    m_fp = move.m_fp;
+    move.m_fp = nullptr;
+}
+
+BinaryFileOutputStream& BinaryFileOutputStream::operator = (
+    BinaryFileOutputStream&& move )
+{
+    if( this != &move )
+    {
+        close();
+        m_fp = move.m_fp;
+        move.m_fp = nullptr;
+    }
+    return *this;
 }
 
 // virtual
@@ -24,35 +38,19 @@ BinaryFileOutputStream::~BinaryFileOutputStream()
     close();
 }
 
-void BinaryFileOutputStream::close()
+bool BinaryFileOutputStream::isOpen() const
 {
-    fclose( m_pFilePointer );
+    return( m_fp != nullptr );
 }
 
-bool BinaryFileOutputStream::writeInt( int i )
+bool BinaryFileOutputStream::close()
 {
-    size_t itemsWritten = fwrite( &i, sizeof( int ), 1, m_pFilePointer );
-    return( itemsWritten == 1 );
-}
-
-bool BinaryFileOutputStream::writeFloat( float f )
-{
-    size_t itemsWritten = fwrite( &f, sizeof( float ), 1, m_pFilePointer );
-    return( itemsWritten == 1 );
-}
-
-bool BinaryFileOutputStream::writeFloatArray( float f[], int nCount )
-{
-    size_t itemsWritten = fwrite( f, sizeof( float ), nCount, m_pFilePointer );
-    return( itemsWritten == nCount );
-}
-
-// ==============================================================
-// Private
-// ==============================================================
-
-BinaryFileOutputStream::BinaryFileOutputStream( FILE* pFilePointer ) :
-    m_pFilePointer( pFilePointer )
-{
-
+    if( m_fp != nullptr )
+    {
+        // fclose() returns 0 on success, EOF otherwise.
+        int status = fclose( m_fp );
+        m_fp = nullptr;
+        return( status == 0 );
+    }
+    return false;
 }

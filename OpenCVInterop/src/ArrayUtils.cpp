@@ -1,6 +1,6 @@
 #include "ArrayUtils.h"
 
-namespace libcgt { namespace opencv_interop { namespace arrayutils {
+namespace libcgt { namespace opencv_interop {
 
 const cv::Mat array2DViewAsCvMat( Array2DView< const uint8x3 > view )
 {
@@ -21,4 +21,4 @@ cv::Mat array2DViewAsCvMat( Array2DView< uint8x3 > view )
     );
 }
 
-} } } // arrayutils, opencv_interop, libcgt
+} } // opencv_interop, libcgt

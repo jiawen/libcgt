@@ -378,13 +378,13 @@ Matrix3f Matrix3f::rotateZ( float radians )
 }
 
 // static
-Matrix3f Matrix3f::scaling( float sx, float sy, float sz )
+Matrix3f Matrix3f::scaling( const Vector3f& xyz )
 {
     return Matrix3f
     (
-        sx, 0, 0,
-        0, sy, 0,
-        0, 0, sz
+        xyz.x, 0, 0,
+        0, xyz.y, 0,
+        0, 0, xyz.z
     );
 }
 
@@ -400,20 +400,14 @@ Matrix3f Matrix3f::uniformScaling( float s )
 }
 
 // static
-Matrix3f Matrix3f::translation( float x, float y )
+Matrix3f Matrix3f::translation( const Vector2f& xy )
 {
     return Matrix3f
     (
-        1, 0, x,
-        0, 1, y,
+        1, 0, xy.x,
+        0, 1, xy.y,
         0, 0, 1
     );
-}
-
-// static
-Matrix3f Matrix3f::translation( const Vector2f& xy )
-{
-    return Matrix3f::translation( xy.x, xy.y );
 }
 
 // static
@@ -424,7 +418,7 @@ Matrix3f Matrix3f::scaleTranslate( const Vector2f& srcOrigin, const Vector2f& sr
     Matrix3f t0 = Matrix3f::translation( -srcOrigin );
 
     // scale it to [0,1]^2, then to [0,dstSize]
-    Matrix3f s = Matrix3f::scaling( dstSize.x / srcSize.x, dstSize.y / srcSize.y, 1 );
+    Matrix3f s = Matrix3f::scaling( { dstSize.x / srcSize.x, dstSize.y / srcSize.y, 1 } );
 
     // translate rectangle to dstOrigin
     Matrix3f t1 = Matrix3f::translation( dstOrigin );

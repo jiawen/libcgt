@@ -1,14 +1,17 @@
 #include "VecmathConversions.h"
 
 #include <cstring>
+
+#include <vector_functions.h>
+
+#include <vecmath/Matrix3f.h>
+#include <vecmath/Matrix4f.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 #include <vecmath/Vector2i.h>
 #include <vecmath/Vector3i.h>
 #include <vecmath/Vector4i.h>
-#include <vecmath/Matrix4f.h>
-#include <vector_functions.h>
 
 __host__
 Vector2f from_float2( const float2& v )
@@ -47,10 +50,10 @@ float4 make_float4( const Vector4f& v )
 }
 
 __host__
-Matrix4f from_float4x4( const float4x4& m )
+float3x3 make_float3x3( const Matrix3f& m )
 {
-    Matrix4f output;
-    memcpy( &output, m.m_elements, 16 * sizeof( float ) );
+    float3x3 output;
+    memcpy( &output, m, 9 * sizeof( float ) );
     return output;
 }
 
@@ -59,6 +62,22 @@ float4x4 make_float4x4( const Matrix4f& m )
 {
     float4x4 output;
     memcpy( &output, m, 16 * sizeof( float ) );
+    return output;
+}
+
+__host__
+Matrix3f from_float3x3( const float3x3& m )
+{
+    Matrix3f output;
+    memcpy( &output, m.m_elements, 9 * sizeof( float ) );
+    return output;
+}
+
+__host__
+Matrix4f from_float4x4( const float4x4& m )
+{
+    Matrix4f output;
+    memcpy( &output, m.m_elements, 16 * sizeof( float ) );
     return output;
 }
 

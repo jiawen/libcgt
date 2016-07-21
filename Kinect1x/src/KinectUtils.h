@@ -8,7 +8,7 @@
 #include <common/Array2DView.h>
 #include <vecmath/Matrix4f.h>
 
-namespace libcgt { namespace kinect1x { namespace kinectutils {
+namespace libcgt { namespace kinect1x {
 
 // Given a frame (in particular, its estimate of the ground plane)
 // Returns a matrix mapping points in the Kinect's frame (such as skeleton joints)
@@ -51,4 +51,4 @@ void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
 // Returns (0, 0) on NUI_IMAGE_RESOLUTION_INVALID.
 Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution );
 
-} } } // kinectutils, kinect1x, libcgt
+} } // kinect1x, libcgt

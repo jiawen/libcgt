@@ -3,7 +3,7 @@
 #include <common/ArrayUtils.h>
 #include <geometry/Plane3f.h>
 
-namespace libcgt { namespace kinect1x { namespace kinectutils {
+namespace libcgt { namespace kinect1x {
 
 Matrix4f kinectToWorld( const NUI_SKELETON_FRAME& frame )
 {
@@ -89,4 +89,4 @@ Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution )
     }
 }
 
-} } } // kinectutils, kinect1x, libcgt
+} } // kinect1x, libcgt

@@ -2,22 +2,70 @@
 
 #include <cstdio>
 
+#include <common/Array1DView.h>
+
 class BinaryFileOutputStream
 {
 public:
 
-    static BinaryFileOutputStream* open( const char* filename );
+    BinaryFileOutputStream() = default;
+    BinaryFileOutputStream( const char* filename, bool append = false );
     virtual ~BinaryFileOutputStream();
 
-    void close();
+    BinaryFileOutputStream( const BinaryFileOutputStream& copy ) = delete;
+    BinaryFileOutputStream( BinaryFileOutputStream&& move );
+    BinaryFileOutputStream& operator = (
+        const BinaryFileOutputStream& copy ) = delete;
 
-    bool writeInt( int i );
-    bool writeFloat( float f );
-    bool writeFloatArray( float f[], int nCount );
+    // TODO(VS2015): default
+    BinaryFileOutputStream& operator = ( BinaryFileOutputStream&& move );
+
+    // Returns true if the file was properly opened.
+    bool isOpen() const;
+
+    // Returns true if the file was properly closed.
+    bool close();
+
+    // Flush the last write operation.
+    bool flush() const;
+
+    template< typename T >
+    bool write( const T& x ) const;
+
+    template< typename T >
+    bool writeArray( Array1DView< const T > data ) const;
 
 private:
 
-    BinaryFileOutputStream( FILE* pFilePointer );
-
-    FILE* m_pFilePointer;
+    FILE* m_fp = nullptr;
 };
+
+template< typename T >
+bool BinaryFileOutputStream::write( const T& x ) const
+{
+    size_t itemsWritten = fwrite( &x, sizeof( T ), 1, m_fp );
+    return( itemsWritten == 1 );
+}
+
+template< typename T >
+bool BinaryFileOutputStream::writeArray( Array1DView< const T > data ) const
+{
+    if( data.packed() )
+    {
+        size_t itemsWritten = fwrite(
+            data.pointer(), sizeof( T ), data.size(), m_fp );
+        return( itemsWritten == data.size() );
+    }
+    else
+    {
+        for( size_t i = 0; i < data.size(); ++i )
+        {
+            bool b = write< T >( data[ i ] );
+            if( !b )
+            {
+                return b;
+            }
+        }
+        return true;
+    }
+}

@@ -6,7 +6,7 @@
 #include <common/Array2DView.h>
 #include <common/BasicTypes.h>
 
-namespace libcgt { namespace opencv_interop { namespace arrayutils {
+namespace libcgt { namespace opencv_interop {
 
 // Interpret "view" as a 3-channel const cv::Mat.
 const cv::Mat array2DViewAsCvMat( Array2DView< const uint8x3 > view );
@@ -28,6 +28,6 @@ Array2DView< S > cvMatAsArray2DView( const cv::Mat& a );
 template< typename S, typename T >
 Array2DView< S > cvMatAsArray2DView( const cv::Mat_< T >& a );
 
-} } } // arrayutils, opencv_interop, libcgt
+} } // opencv_interop, libcgt
 
 #include "ArrayUtils.inl"

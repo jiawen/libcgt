@@ -7,7 +7,7 @@ class Matrix4f;
 class Vector2f;
 class Vector3f;
 
-namespace libcgt { namespace opencv_interop { namespace vecmathutils {
+namespace libcgt { namespace opencv_interop {
 
 cv::Point2f toCV( const Vector2f& v );
 
@@ -29,4 +29,4 @@ Matrix3f fromCV3x3( const cv::Mat_< float >& a, int i0 = 0, int j0 = 0 );
 
 Matrix4f fromCV4x4( const cv::Mat_< float >& a, int i0 = 0, int j0 = 0 );
 
-} } } // vecmath, opencv_interop, libcgt
+} } // opencv_interop, libcgt

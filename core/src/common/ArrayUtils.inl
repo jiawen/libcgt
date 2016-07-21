@@ -1,27 +1,27 @@
 namespace libcgt { namespace core { namespace arrayutils {
 
-template< typename S, typename T >
-Array1DView< T > cast( Array1DView< S > src )
+template< typename TOut, typename TIn >
+Array1DView< TOut > cast( Array1DView< TIn > src )
 {
-    static_assert( sizeof( S ) == sizeof( T ),
-        "S and T must have the same size" );
-    return Array1DView< T >( src.pointer(), src.size(), src.stride() );
+    static_assert( sizeof( TIn ) == sizeof( TOut ),
+        "TIn and TOut must have the same size" );
+    return Array1DView< TOut >( src.pointer(), src.size(), src.stride() );
 }
 
-template< typename S, typename T >
-Array2DView< T > cast( Array2DView< S > src )
+template< typename TOut, typename TIn >
+Array2DView< TOut > cast( Array2DView< TIn > src )
 {
-    static_assert( sizeof( S ) == sizeof( T ),
-        "S and T must have the same size" );
-    return Array2DView< T >( src.pointer(), src.size(), src.stride() );
+    static_assert( sizeof( TIn ) == sizeof( TOut ),
+        "TIn and TOut must have the same size" );
+    return Array2DView< TOut >( src.pointer(), src.size(), src.stride() );
 }
 
-template< typename S, typename T >
-Array3DView< T > cast( Array3DView< S > src )
+template< typename TOut, typename TIn >
+Array3DView< TOut > cast( Array3DView< TIn > src )
 {
-    static_assert( sizeof( S ) == sizeof( T ),
-        "S and T must have the same size" );
-    return Array3DView< T >( src.pointer(), src.size(), src.stride() );
+    static_assert( sizeof( TIn ) == sizeof( TOut ),
+        "TIn and TOut must have the same size" );
+    return Array3DView< TOut >( src.pointer(), src.size(), src.stride() );
 }
 
 template< typename T >

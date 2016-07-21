@@ -1,23 +1,8 @@
 #include "io/OBJFace.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
-OBJFace::OBJFace() :
-
-    m_bHasTextureCoordinates( false ),
-    m_bHasNormals( false )
-
-{
-
-}
-
 OBJFace::OBJFace( bool hasTextureCoordinates, bool hasNormals ) :
-
     m_bHasTextureCoordinates( hasTextureCoordinates ),
     m_bHasNormals( hasNormals )
-
 {
 
 }

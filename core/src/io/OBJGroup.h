@@ -6,6 +6,7 @@
 
 #include "OBJFace.h"
 
+// TODO(jiawen): constructor, isConsistent(), don't crash when writing.
 class OBJGroup
 {
 public:
