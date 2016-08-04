@@ -16,7 +16,7 @@ using libcgt::core::arrayutils::copy;
 using libcgt::core::cameras::Intrinsics;
 using libcgt::core::vecmath::EuclideanTransform;
 
-namespace libcgt { namespace kinect1x {
+namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 
 // static
 std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > KinectCamera::s_jointIndicesForBones;
@@ -338,40 +338,66 @@ KinectCamera::Event KinectCamera::pollOne( Frame& frame,
     }
 }
 
-KinectCamera::Event KinectCamera::pollAll( Frame& frame,
+bool KinectCamera::pollAll( Frame& frame,
     bool useExtendedDepth, int waitIntervalMilliseconds )
 {
     frame.colorUpdated = false;
     frame.depthUpdated = false;
     frame.skeletonUpdated = false;
+    bool allSucceeded = true;
 
-    DWORD nHandles = static_cast< DWORD >( m_events.size() );
-    DWORD waitMultipleResult = WaitForMultipleObjects(
-        nHandles, m_events.data(), TRUE,
-        waitIntervalMilliseconds );
-    if( waitMultipleResult == WAIT_TIMEOUT )
+    if( isUsingColor() )
     {
-        return KinectCamera::Event::TIMEOUT;
-    }
-
-    // Succeeded in waiting on all of them.
-    if( waitMultipleResult >= WAIT_OBJECT_0 &&
-        waitMultipleResult < WAIT_OBJECT_0 + nHandles )
-    {
-        // Loop over the handles and call the appropriate method to grab the
-        // data.
-        for( DWORD i = 0; i < nHandles; ++i )
+        if( colorFormat() == NUI_IMAGE_TYPE_COLOR )
         {
-            handleEvent( frame, useExtendedDepth, i );
+            frame.colorUpdated = handleGetColorFrame( waitIntervalMilliseconds,
+                frame.bgra,
+                frame.colorTimestamp, frame.colorFrameNumber );
         }
-        return KinectCamera::Event::OK;
+        else if( colorFormat() == NUI_IMAGE_TYPE_COLOR_INFRARED )
+        {
+            frame.colorUpdated = handleGetInfraredFrame(
+                waitIntervalMilliseconds,
+                frame.infrared,
+                frame.colorTimestamp, frame.colorFrameNumber );
+        }
+        allSucceeded &= frame.colorUpdated;
     }
-    return KinectCamera::Event::FAILED;
+
+    if( isUsingDepth() )
+    {
+        if( useExtendedDepth )
+        {
+            frame.depthUpdated = handleGetExtendedDepthFrame(
+                waitIntervalMilliseconds,
+                frame.extendedDepth, frame.playerIndex,
+                frame.depthTimestamp, frame.depthFrameNumber,
+                frame.depthCapturedWithNearMode );
+        }
+        else
+        {
+            frame.depthUpdated = handleGetPackedDepthFrame(
+                waitIntervalMilliseconds,
+                frame.packedDepth,
+                frame.depthTimestamp, frame.depthFrameNumber );
+        }
+        allSucceeded &= frame.depthUpdated;
+    }
+
+    if( isUsingSkeleton() )
+    {
+        frame.skeletonUpdated = handleGetSkeletonFrame(
+            waitIntervalMilliseconds, frame.skeleton );
+        allSucceeded &= frame.skeletonUpdated;
+    }
+    return allSucceeded;
 }
 
 bool KinectCamera::handleEvent( Frame& frame, bool useExtendedDepth,
     DWORD eventIndex )
 {
+    return false;
+#if 0
     if( m_events[ eventIndex ] == m_hNextColorFrameEvent )
     {
         if( colorFormat() == NUI_IMAGE_TYPE_COLOR )
@@ -410,6 +436,7 @@ bool KinectCamera::handleEvent( Frame& frame, bool useExtendedDepth,
         return frame.skeletonUpdated;
     }
     return false;
+#endif
 }
 
 #if KINECT1X_ENABLE_SPEECH
@@ -909,45 +936,9 @@ void KinectCamera::close()
     m_deviceIndex = -1;
 }
 
-bool KinectCamera::handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton )
-{
-    bool foundSkeleton = false;
-
-    HRESULT hr = m_pSensor->NuiSkeletonGetNextFrame( 0, &skeleton );
-    if( SUCCEEDED( hr ) )
-    {
-        for( int i = 0; i < NUI_SKELETON_COUNT; i++ )
-        {
-            if( skeleton.SkeletonData[i].eTrackingState ==
-                NUI_SKELETON_TRACKED )
-            {
-                foundSkeleton = true;
-            }
-        }
-    }
-
-    if( foundSkeleton )
-    {
-        // smooth data
-// TODO(jiawen): just make this a separate function.
-#if 0
-        NUI_TRANSFORM_SMOOTH_PARAMETERS smooth;
-        smooth.fSmoothing = 1.0f; // max smoothing
-        smooth.fCorrection = 1.0f; // max correction
-        smooth.fPrediction = 5.0f; // # Predicted frames
-        smooth.fJitterRadius = 0.1f; // 10 cm instead of 5
-        smooth.fMaxDeviationRadius = 0.1f; // 10 cm instead of 4
-
-        m_pSensor->NuiTransformSmooth( &skeletonFrame, &smooth );
-#else
-        m_pSensor->NuiTransformSmooth( &skeleton, NULL );
-#endif
-    }
-
-    return foundSkeleton;
-}
-
-bool KinectCamera::handleGetColorFrame( Array2DView< uint8x4 > bgra,
+// TODO(jiawen): rename to pollColor.
+bool KinectCamera::handleGetColorFrame( DWORD millisecondsToWait,
+    Array2DView< uint8x4 > bgra,
     int64_t& timestamp, int& frameNumber )
 {
     if( bgra.isNull() )
@@ -963,7 +954,7 @@ bool KinectCamera::handleGetColorFrame( Array2DView< uint8x4 > bgra,
     HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
     (
         m_hColorStreamHandle,
-        0,
+        millisecondsToWait,
         &imageFrame
     );
     if( FAILED( hr ) )
@@ -991,7 +982,8 @@ bool KinectCamera::handleGetColorFrame( Array2DView< uint8x4 > bgra,
     return valid;
 }
 
-bool KinectCamera::handleGetInfraredFrame( Array2DView< uint16_t > ir,
+bool KinectCamera::handleGetInfraredFrame( DWORD millisecondsToWait,
+    Array2DView< uint16_t > ir,
     int64_t& timestamp, int& frameNumber )
 {
     if( ir.isNull() )
@@ -1007,7 +999,7 @@ bool KinectCamera::handleGetInfraredFrame( Array2DView< uint16_t > ir,
     HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
     (
         m_hColorStreamHandle,
-        0,
+        millisecondsToWait,
         &imageFrame
     );
     if( FAILED( hr ) )
@@ -1035,64 +1027,8 @@ bool KinectCamera::handleGetInfraredFrame( Array2DView< uint16_t > ir,
     return valid;
 }
 
-bool KinectCamera::handleGetPackedDepthFrame(
-    Array2DView< uint16_t > packedDepth,
-    int64_t& timestamp, int& frameNumber )
-{
-    // If depth is null, do nothing.
-    if( packedDepth.isNull() )
-    {
-        return false;
-    }
-    // Check that sizes match.
-    if( packedDepth.notNull() &&
-        packedDepth.size() != m_depthResolutionPixels )
-    {
-        return false;
-    }
-
-    NUI_IMAGE_FRAME imageFrame;
-    NUI_LOCKED_RECT lockedRect;
-    bool valid;
-
-    HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
-    (
-        m_hDepthStreamHandle,
-        0,
-        &imageFrame
-    );
-    if( FAILED( hr ) )
-    {
-        return false;
-    }
-
-    if( packedDepth.notNull() )
-    {
-        hr = imageFrame.pFrameTexture->LockRect( 0, &lockedRect, NULL, 0 );
-        valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
-        if( valid )
-        {
-            Array2DView< const uint16_t > src
-            (
-                lockedRect.pBits,
-                m_depthResolutionPixels,
-                { sizeof( uint16_t ), lockedRect.Pitch }
-            );
-            copy( src, packedDepth );
-
-            timestamp = imageFrame.liTimeStamp.QuadPart;
-            frameNumber = imageFrame.dwFrameNumber;
-        }
-        imageFrame.pFrameTexture->UnlockRect( 0 );
-        m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle,
-            &imageFrame );
-    }
-
-    return valid;
-}
-
-bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
-    Array2DView< uint16_t > playerIndex,
+bool KinectCamera::handleGetExtendedDepthFrame( DWORD millisecondsToWait,
+    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
     int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode )
 {
     // If both are null, then do nothing.
@@ -1115,7 +1051,7 @@ bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
     HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
     (
         m_hDepthStreamHandle,
-        0,
+        millisecondsToWait,
         &imageFrame
     );
     if( FAILED( hr ) )
@@ -1178,4 +1114,102 @@ bool KinectCamera::handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
     return valid;
 }
 
-} } // kinect1x, libcgt
+
+bool KinectCamera::handleGetPackedDepthFrame( DWORD millisecondsToWait,
+    Array2DView< uint16_t > packedDepth,
+    int64_t& timestamp, int& frameNumber )
+{
+    // If depth is null, do nothing.
+    if( packedDepth.isNull() )
+    {
+        return false;
+    }
+    // Check that sizes match.
+    if( packedDepth.notNull() &&
+        packedDepth.size() != m_depthResolutionPixels )
+    {
+        return false;
+    }
+
+    NUI_IMAGE_FRAME imageFrame;
+    NUI_LOCKED_RECT lockedRect;
+    bool valid;
+
+    HRESULT hr = m_pSensor->NuiImageStreamGetNextFrame
+    (
+        m_hDepthStreamHandle,
+        0,
+        &imageFrame
+    );
+    if( FAILED( hr ) )
+    {
+        return false;
+    }
+
+    if( packedDepth.notNull() )
+    {
+        hr = imageFrame.pFrameTexture->LockRect( 0, &lockedRect, NULL, 0 );
+        valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
+        if( valid )
+        {
+            Array2DView< const uint16_t > src
+            (
+                lockedRect.pBits,
+                m_depthResolutionPixels,
+                { sizeof( uint16_t ), lockedRect.Pitch }
+            );
+            copy( src, packedDepth );
+
+            timestamp = imageFrame.liTimeStamp.QuadPart;
+            frameNumber = imageFrame.dwFrameNumber;
+        }
+        imageFrame.pFrameTexture->UnlockRect( 0 );
+        m_pSensor->NuiImageStreamReleaseFrame( m_hDepthStreamHandle,
+            &imageFrame );
+    }
+
+    return valid;
+}
+
+
+bool KinectCamera::handleGetSkeletonFrame( DWORD millisecondsToWait,
+    NUI_SKELETON_FRAME& skeleton )
+{
+    bool foundSkeleton = false;
+
+    HRESULT hr = m_pSensor->NuiSkeletonGetNextFrame( millisecondsToWait,
+        &skeleton );
+    if( SUCCEEDED( hr ) )
+    {
+        for( int i = 0; i < NUI_SKELETON_COUNT; i++ )
+        {
+            if( skeleton.SkeletonData[i].eTrackingState ==
+                NUI_SKELETON_TRACKED )
+            {
+                foundSkeleton = true;
+            }
+        }
+    }
+
+    if( foundSkeleton )
+    {
+        // smooth data
+// TODO(jiawen): just make this a separate function.
+#if 0
+        NUI_TRANSFORM_SMOOTH_PARAMETERS smooth;
+        smooth.fSmoothing = 1.0f; // max smoothing
+        smooth.fCorrection = 1.0f; // max correction
+        smooth.fPrediction = 5.0f; // # Predicted frames
+        smooth.fJitterRadius = 0.1f; // 10 cm instead of 5
+        smooth.fMaxDeviationRadius = 0.1f; // 10 cm instead of 4
+
+        m_pSensor->NuiTransformSmooth( &skeletonFrame, &smooth );
+#else
+        m_pSensor->NuiTransformSmooth( &skeleton, NULL );
+#endif
+    }
+
+    return foundSkeleton;
+}
+
+} } } // kinect1x, camera_wrappers libcgt

@@ -12,12 +12,12 @@ using libcgt::core::math::clamp;
 using libcgt::core::math::fraction;
 using libcgt::core::math::rescale;
 
-namespace libcgt { namespace core { namespace imageproc { namespace colormap {
+namespace libcgt { namespace core { namespace imageproc {
 
 void jet( Array2DView< const float > src, const Range1f& srcRange,
     Array2DView< uint8x4 > dst )
 {
-    map< float, uint8x4 >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             z = saturate( fraction( z, srcRange ) );
@@ -29,7 +29,7 @@ void jet( Array2DView< const float > src, const Range1f& srcRange,
 void jet( Array2DView< const float > src, const Range1f& srcRange,
     Array2DView< Vector4f > dst )
 {
-    map< float, Vector4f >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             z = saturate( fraction( z, srcRange ) );
@@ -41,7 +41,7 @@ void jet( Array2DView< const float > src, const Range1f& srcRange,
 void normalsToRGBA( Array2DView< const Vector4f > src,
     Array2DView< uint8x4 > dst )
 {
-    map< Vector4f, uint8x4 >( src, dst,
+    map( src, dst,
         [&] ( const Vector4f& normal )
         {
             Vector4f rgba;
@@ -58,7 +58,7 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
 void normalsToRGBA( Array2DView< const Vector4f > src,
     Array2DView< Vector4f > dst )
 {
-    map< Vector4f, Vector4f >( src, dst,
+    map( src, dst,
         [&] ( const Vector4f& normal )
         {
             Vector4f rgba;
@@ -76,7 +76,7 @@ void linearRemapToLuminance( Array2DView< const float > src,
     const Range1f& srcRange, const Range1f& dstRange,
     Array2DView< uint8_t > dst )
 {
-    map< float, uint8_t >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             float luma = saturate( rescale( z, srcRange, dstRange ) );
@@ -90,7 +90,7 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
     Array2DView< uint8x3 > dst )
 {
     float srcSize = static_cast< float >( srcRange.size );
-    map< uint16_t, uint8x3 >(src, dst,
+    map( src, dst,
         [&] ( uint16_t z )
         {
             uint8_t luma = static_cast< uint8_t >(
@@ -105,7 +105,7 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
     uint8_t dstAlpha, Array2DView< uint8x4 > dst )
 {
     float srcSize = static_cast< float >( srcRange.size );
-    map< uint16_t, uint8x4 >( src, dst,
+    map( src, dst,
         [&] ( uint16_t z )
         {
             uint8_t luma = static_cast< uint8_t >(
@@ -119,7 +119,7 @@ void linearRemapToLuminance( Array2DView< const float > src,
     const Range1f& srcRange, const Range1f& dstRange,
     Array2DView< uint8x4 > dst )
 {
-    map< float, uint8x4 >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             float luma = saturate( rescale( z, srcRange, dstRange ) );
@@ -133,7 +133,7 @@ void linearRemapToLuminance( Array2DView< const float > src,
     const Range1f& srcRange, const Range1f& dstRange,
     Array2DView< float > dst )
 {
-    map< float, float >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             float luma = saturate( rescale( z, srcRange, dstRange ) );
@@ -146,7 +146,7 @@ void linearRemapToLuminance( Array2DView< const float > src,
     const Range1f& srcRange, const Range1f& dstRange,
     Array2DView< Vector4f > dst )
 {
-    map< float, Vector4f >( src, dst,
+    map( src, dst,
         [&] ( float z )
         {
             float luma = saturate( rescale( z, srcRange, dstRange ) );
@@ -156,4 +156,4 @@ void linearRemapToLuminance( Array2DView< const float > src,
     );
 }
 
-} } } } // colormap, imageproc, core, libcgt
+} } } // imageproc, core, libcgt

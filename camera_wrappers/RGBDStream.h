@@ -10,19 +10,13 @@
 #include <io/BinaryFileOutputStream.h>
 #include <vecmath/Vector2i.h>
 
+#include "PixelFormat.h"
+
+namespace libcgt { namespace camera_wrappers {
+
 struct StreamMetadata
 {
-    enum class Format : uint32_t
-    {
-        DEPTH_MM_UINT16 = 0,
-        DEPTH_M_FLOAT32 = 1,
-        RGBA_UINT8 = 2,
-        RGB_UINT8 = 3,
-        BGRA_UINT8 = 4,
-        BGR_UINT8 = 5
-    };
-
-    Format format;
+    PixelFormat format;
     uint32_t elementSizeBytes;
     Vector2i size; // width, height
 };
@@ -75,3 +69,5 @@ private:
     BinaryFileOutputStream m_stream;
     std::vector< StreamMetadata > m_metadata;
 };
+
+} } // camera_wrappers, libcgt

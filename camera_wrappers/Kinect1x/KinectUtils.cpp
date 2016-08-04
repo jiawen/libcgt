@@ -3,8 +3,9 @@
 #include <common/ArrayUtils.h>
 #include <geometry/Plane3f.h>
 
-namespace libcgt { namespace kinect1x {
+namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 
+// TODO(jiawen): EuclideanTransform
 Matrix4f kinectToWorld( const NUI_SKELETON_FRAME& frame )
 {
     return worldToKinect( frame ).inverse();
@@ -89,4 +90,4 @@ Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution )
     }
 }
 
-} } // kinect1x, libcgt
+} } } // kinect1x, camera_wrappers, libcgt

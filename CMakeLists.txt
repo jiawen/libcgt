@@ -31,14 +31,14 @@ elseif( WIN32 )
     endif()
 endif()
 
-if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-	message(STATUS "baz: if")
-else()
-	message(STATUS "baz: else")
-endif()
+#if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+#	message(STATUS "baz: if")
+#else()
+#	message(STATUS "baz: else")
+#endif()
 
-message(STATUS "foo ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT}")
-message(STATUS "bar ${CMAKE_INSTALL_PREFIX}")
+#message(STATUS "foo ${CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT}")
+#message(STATUS "bar ${CMAKE_INSTALL_PREFIX}")
 
 # Set CMAKE_INSTALL_PREFIX on Windows.
 if( WIN32 )
@@ -68,24 +68,21 @@ endif()
 
 option( BUILD_OPENCV_INTEROP "Build OpenCV Interop module." ON )
 if( BUILD_OPENCV_INTEROP )
-    add_subdirectory( OpenCVInterop )
+    add_subdirectory( opencv_interop )
 endif()
 
 option( BUILD_QT_INTEROP "Build Qt Interop module." ON )
 if( BUILD_QT_INTEROP )
-    add_subdirectory( QtInterop )
+    add_subdirectory( qt_interop )
 endif()
 
-if( WIN32 )
-    option( BUILD_KINECT1X "Build Kinect v1.x module." ON )
-    if( BUILD_KINECT1X )
-        add_subdirectory( Kinect1x )
-    endif()
+option( BUILD_CAMERA_WRAPPERS "Build Camera Wrappers module." ON )
+if( BUILD_CAMERA_WRAPPERS )
+    add_subdirectory( camera_wrappers )
+endif()
 
 # TODO: restore D3D11 support
 #    add_subdirectory( QDirectX/D3D11 )
-endif()
-
 
 # TODO: restore MKL support or replace with Eigen
 #add_subdirectory( math )

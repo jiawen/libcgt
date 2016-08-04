@@ -5,7 +5,7 @@
 #include <vecmath/Range1f.h>
 #include <vecmath/Vector4f.h>
 
-namespace libcgt { namespace core { namespace imageproc { namespace colormap {
+namespace libcgt { namespace core { namespace imageproc {
 
 // Given an input array "src", clamp each pixel to "srcRange", then maps it to
 // and maps it to the MATLAB "jet" pattern.
@@ -63,4 +63,4 @@ void linearRemapToLuminance( Array2DView< const float > src,
     const Range1f& srcRange, const Range1f& dstRange,
     Array2DView< Vector4f > dst );
 
-} } } } // colormap, imageproc, core, libcgt
+} } } // imageproc, core, libcgt

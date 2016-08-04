@@ -1,197 +1,134 @@
 #include "imageproc/Swizzle.h"
 
-// TODO(jiawen): namespaces, null checks.
-// TODO(jiawen): convert all to use map().
-void libcgt::core::imageproc::swizzle::RGBAToBGRA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output )
+#include <common/ArrayUtils.h>
+
+using libcgt::core::arrayutils::map;
+
+namespace libcgt { namespace core { namespace imageproc {
+
+// TODO(jiawen): return bool (just return map()).
+void RGBAToBGRA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 rgba )
         {
-            uint8x4 rgba = input[ { x, y } ];
-            uint8x4 bgra = { rgba.z, rgba.y, rgba.x, rgba.w };
-            output[ { x, y } ] = bgra;
+            return uint8x4{ rgba.z, rgba.y, rgba.x, rgba.w };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::RGBAToARGB( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output )
+void RGBAToARGB( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 rgba )
         {
-            uint8x4 rgba = input[ { x, y } ];
-            uint8x4 argb = { rgba.w, rgba.x, rgba.y, rgba.z };
-            output[ { x, y } ] = argb;
+            return uint8x4{ rgba.w, rgba.x, rgba.y, rgba.z };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::RGBAToRGB( Array2DView< const uint8x4 > input, Array2DView< uint8x3 > output )
+void RGBAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 rgba )
         {
-            uint8x4 rgba = input[ { x, y } ];
-            uint8x3 rgb = { rgba.x, rgba.y, rgba.z };
-            output[ { x, y } ] = rgb;
+            return uint8x3{ rgba.x, rgba.y, rgba.z };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::RGBAToBGR( Array2DView< const uint8x4 > input, Array2DView< uint8x3 > output )
+void RGBAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 rgba )
         {
-            uint8x4 rgba = input[ { x, y } ];
-            uint8x3 bgr = { rgba.z, rgba.y, rgba.x };
-            output[ { x, y } ] = bgr;
+            return uint8x3{ rgba.z, rgba.y, rgba.x };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::BGRAToRGBA( Array2DView< const uint8x4 > input, Array2DView< uint8x4 > output )
+void BGRAToRGBA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 bgra )
         {
-            uint8x4 bgra = input[ { x, y } ];
-            uint8x4 rgba = { bgra.z, bgra.y, bgra.x, bgra.w };
-            output[ { x, y } ] = rgba;
+            return uint8x4{ bgra.z, bgra.y, bgra.x, bgra.w };
         }
-    }
+    );
 }
 
-
-void libcgt::core::imageproc::swizzle::BGRAToBGR(
-    Array2DView< const uint8x4 > input,
-    Array2DView< uint8x3 > output )
+void BGRAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&]( uint8x4 bgra )
         {
-            uint8x4 bgra = input[ { x, y } ];
-            uint8x3 rgb = { bgra.x, bgra.y, bgra.z };
-            output[ { x, y } ] = rgb;
+            return uint8x3{ bgra.x, bgra.y, bgra.z };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::BGRAToRGB(
-    Array2DView< const uint8x4 > input,
-    Array2DView< uint8x3 > output )
+void BGRAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x4 bgra )
         {
-            uint8x4 bgra = input[ { x, y } ];
-            uint8x3 rgb = { bgra.z, bgra.y, bgra.x };
-            output[ { x, y } ] = rgb;
+            return uint8x3{ bgra.z, bgra.y, bgra.x };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::BGRToRGBA( Array2DView< const uint8x3 > input, Array2DView< uint8x4 > output, uint8_t alpha )
+void BGRToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
+    uint8_t alpha )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x3 bgr )
         {
-            uint8x3 bgr = input[ { x, y } ];
-            uint8x4 rgba = { bgr.z, bgr.y, bgr.x, alpha };
-            output[ { x, y } ] = rgba;
+            return uint8x4{ bgr.z, bgr.y, bgr.x, alpha };
         }
-    }
+    );
 }
 
-void libcgt::core::imageproc::swizzle::BGRToBGRA( Array2DView< const uint8x3 > input, Array2DView< uint8x4 > output, uint8_t alpha )
+void BGRToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
+    uint8_t alpha )
 {
-    if( input.size() != output.size() )
-    {
-        return;
-    }
-
-    int w = input.width();
-    int h = input.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
+    map( src, dst,
+        [&] ( uint8x3 bgr )
         {
-            uint8x3 bgr = input[ { x, y } ];
-            uint8x4 bgra = { bgr.x, bgr.y, bgr.z, alpha };
-            output[ { x, y } ] = bgra;
+            return uint8x4{ bgr.x, bgr.y, bgr.z, alpha };
         }
-    }
+    );
 }
+
+void RGBToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
+    uint8_t alpha )
+{
+    map( src, dst,
+        [&] ( uint8x3 rgb )
+        {
+            return uint8x4{ rgb.z, rgb.y, rgb.x, alpha };
+        }
+    );
+}
+
+void RGBToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
+    uint8_t alpha )
+{
+    map( src, dst,
+        [&] ( uint8x3 rgb )
+        {
+            return uint8x4{ rgb.x, rgb.y, rgb.z, alpha };
+        }
+    );
+}
+
+void RGBToBGR( Array2DView< const uint8x3 > src, Array2DView< uint8x3 > dst )
+{
+    map( src, dst,
+        [&] ( uint8x3 rgb )
+        {
+            return uint8x3{ rgb.z, rgb.y, rgb.x };
+        }
+    );
+}
+
+} } } // imageproc, core, libcgt

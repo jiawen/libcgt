@@ -114,34 +114,34 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst )
     return true;
 }
 
-template< typename S, typename T >
-Array1DView< S > componentView( Array1DView< T > src, int componentOffsetBytes )
+template< typename TOut, typename TIn >
+Array1DView< TOut > componentView( Array1DView< TIn > src, int componentOffsetBytes )
 {
-    return Array1DView< S >
+    return Array1DView< TOut >
     (
-        reinterpret_cast< typename Array1DView< T >::UInt8Pointer >
+        reinterpret_cast< typename Array1DView< TIn >::UInt8Pointer >
             ( src.pointer() ) + componentOffsetBytes,
         src.size(), src.stride()
     );
 }
 
-template< typename S, typename T >
-Array2DView< S > componentView( Array2DView< T > src, int componentOffsetBytes )
+template< typename TOut, typename TIn >
+Array2DView< TOut > componentView( Array2DView< TIn > src, int componentOffsetBytes )
 {
-    return Array2DView< S >
+    return Array2DView< TOut >
     (
-        reinterpret_cast< typename Array2DView< T >::UInt8Pointer >
+        reinterpret_cast< typename Array2DView< TIn >::UInt8Pointer >
             ( src.pointer() ) + componentOffsetBytes,
         src.size(), src.stride()
     );
 }
 
-template< typename S, typename T >
-Array3DView< S > componentView( Array3DView< T > src, int componentOffsetBytes )
+template< typename TOut, typename TIn >
+Array3DView< TOut > componentView( Array3DView< TIn > src, int componentOffsetBytes )
 {
-    return Array3DView< S >
+    return Array3DView< TOut >
     (
-        reinterpret_cast< typename Array3DView< T >::UInt8Pointer >
+        reinterpret_cast< typename Array3DView< TIn >::UInt8Pointer >
             ( src.pointer() ) + componentOffsetBytes,
         src.size(), src.stride()
     );

@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+namespace libcgt { namespace camera_wrappers {
+
 RGBDInputStream::RGBDInputStream( const char* filename ) :
     m_stream( filename )
 {
@@ -143,3 +145,5 @@ bool RGBDOutputStream::writeFrame( uint32_t streamId, int frameId,
 
     return m_stream.writeArray( data );
 }
+
+} } // camera_wrappers, libcgt

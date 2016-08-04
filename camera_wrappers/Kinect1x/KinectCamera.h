@@ -47,7 +47,7 @@
 #include "KinectStream.h"
 #endif
 
-namespace libcgt { namespace kinect1x {
+namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 
 class KinectCamera
 {
@@ -91,6 +91,8 @@ public:
     // returned by the camera. When polling from the camera, "colorUpdated",
     // "depthUpdated", and/or "skeletonUpdated" will be set to true indicating
     // which was updated.
+    //
+    // timestamps are milliseconds since the most recent NuiInitialize() call.
     struct Frame
     {
         // ----- Color stream -----
@@ -173,8 +175,8 @@ public:
     static EuclideanTransform colorFromDepthExtrinsicsMeters();
 
     // Returns a vector of pairs of indices (i,j) such that within a
-    // NUI_SKELETON_FRAME k, frame.SkeletonData[k].SkeletonPositions[i]
-    // --> frame.SkeletonData[k].SkeletonPositions[j] is a bone.
+    // NUI_SKELETON_FRAME f, frame.SkeletonData[f].SkeletonPositions[i]
+    // --> frame.SkeletonData[f].SkeletonPositions[j] is a bone.
     static const std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > >& jointIndicesForBones();
 
     // The inverse of jointIndicesForBones().
@@ -270,6 +272,9 @@ public:
     // Returns {{0, 0}, {0, 0}} if not configured.
     Intrinsics depthIntrinsics() const;
 
+    // TODO(jiawen): get rid of extended depth as a flag. Just have the client
+    // pass in a non-null buffer.
+
     // Block until one of the input streams is available. This function blocks
     // for up to waitIntervalMilliseconds for data to be available. If
     // waitIntervalMilliseconds is 0, it will return immediately (whether data
@@ -286,7 +291,7 @@ public:
     // is available or not).
     //
     // The "updated" flag in "frame" corresponding to the channels will be set.
-    Event pollAll( Frame& frame,
+    bool pollAll( Frame& frame,
         bool useExtendedDepth = true,
         int waitIntervalMilliseconds = INFINITE );
 
@@ -298,6 +303,7 @@ public:
 #endif
 
     // Which streams are enabled.
+    // TODO(jiawen): pretend IR is another stream?
 
     bool isUsingColor() const;
     NUI_IMAGE_TYPE colorFormat() const;
@@ -328,29 +334,34 @@ private:
     // event "eventIndex" has been signaled. Returns whether it was successful.
     bool handleEvent( Frame& frame, bool useExtendedDepth, DWORD eventIndex );
 
-    // Convert data into recognizable formats.
-    bool handleGetSkeletonFrame( NUI_SKELETON_FRAME& skeleton );
-
+    // TODO(jiawen): pass in different formats?
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetColorFrame( Array2DView< uint8x4 > bgra,
+    bool handleGetColorFrame( DWORD millisecondsToWait,
+        Array2DView< uint8x4 > bgra,
         int64_t& timestamp, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetInfraredFrame( Array2DView< uint16_t > ir,
+    bool handleGetInfraredFrame( DWORD millisecondsToWait,
+        Array2DView< uint16_t > ir,
         int64_t& timestamp, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetExtendedDepthFrame( Array2DView< uint16_t > depth,
-        Array2DView< uint16_t > playerIndex,
+    bool handleGetExtendedDepthFrame( DWORD millisecondsToWait,
+        Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
         int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetPackedDepthFrame( Array2DView< uint16_t > depth,
+    bool handleGetPackedDepthFrame( DWORD millisecondsToWait,
+        Array2DView< uint16_t > depth,
         int64_t& timestamp, int& frameNumber );
+
+    // Convert data into recognizable formats.
+    bool handleGetSkeletonFrame( DWORD millisecondsToWait,
+        NUI_SKELETON_FRAME& skeleton );
 
     int m_deviceIndex = -1;
     INuiSensor* m_pSensor = nullptr;
@@ -392,4 +403,4 @@ private:
     static std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int > s_boneIndicesForJoints;
 };
 
-} } // kinect1x, libcgt
+} } } // kinect1x, camera_wrappers libcgt
