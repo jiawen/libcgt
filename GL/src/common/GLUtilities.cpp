@@ -246,7 +246,7 @@ void GLUtilities::printGLVersion()
 // static
 void GLUtilities::printLastError()
 {
-    fprintf( stderr, "%s", getLastErrorString().c_str() );
+    fprintf( stderr, "%s\n", getLastErrorString().c_str() );
 }
 
 // static

@@ -22,8 +22,13 @@ public:
 
     TriangleMesh() = default;
 
-    // Construct a triangle mesh out of a list of positions, normals
-    // and a list of triplets indexing into positions and normals.
+    // Construct a triangle mesh out of a list of positions and
+    // and a list of triplets indexing into it.
+    TriangleMesh( Array1DView< const Vector3f > positions,
+        Array1DView< const Vector3i > faces );
+
+    // Construct a triangle mesh out of a list of positions and normals,
+    // and a list of triplets indexing into them.
     // "positions" and "normals" must have the same size.
     TriangleMesh( Array1DView< const Vector3f > positions,
         Array1DView< const Vector3f > normals,

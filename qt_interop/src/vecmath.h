@@ -9,26 +9,20 @@ class QPointF;
 class QRect;
 class QRectF;
 
-namespace libcgt
-{
-namespace qt_interop
-{
-namespace vecmath
-{
-    QPointF toQPointF( const Vector2f& v );
-    QPoint toQPoint( const Vector2i& v );
+namespace libcgt { namespace qt_interop {
 
-    // Does a static_cast double --> float.
-    Vector2f toVector2f( const QPointF& q );
+QPointF toQPointF( const Vector2f& v );
+QPoint toQPoint( const Vector2i& v );
 
-    Vector2i toVector2i( const QPoint& q );
+// Does a static_cast double --> float.
+Vector2f toVector2f( const QPointF& q );
 
-    // Direct copy of x, y, width, height without any flipping up/down.
-    Rect2f toRect2f( const QRectF& r );
+Vector2i toVector2i( const QPoint& q );
 
-    // Direct copy of x, y, width, height without any flipping up/down.
-    Rect2i toRect2i( const QRect& r );
-}
-}
-}
+// Direct copy of x, y, width, height without any flipping up/down.
+Rect2f toRect2f( const QRectF& r );
 
+// Direct copy of x, y, width, height without any flipping up/down.
+Rect2i toRect2i( const QRect& r );
+
+} } // qt_interop, libcgt

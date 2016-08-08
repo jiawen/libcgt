@@ -5,6 +5,7 @@
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 
+#if 0
 // TODO(jiawen): EuclideanTransform
 Matrix4f kinectToWorld( const NUI_SKELETON_FRAME& frame )
 {
@@ -37,6 +38,7 @@ Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame )
 
     return worldToKinect;
 }
+#endif
 
 void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
     Array2DView< float > outputMeters, bool flipX, bool flipY,
@@ -65,28 +67,6 @@ void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
             float z = 0.001f * d;
             outputMeters[ { x, y } ] = z;
         }
-    }
-}
-
-Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution )
-{
-    switch( resolution )
-    {
-    case NUI_IMAGE_RESOLUTION_80x60:
-        return{ 80, 60 };
-        break;
-    case NUI_IMAGE_RESOLUTION_320x240:
-        return{ 320, 240 };
-        break;
-    case NUI_IMAGE_RESOLUTION_640x480:
-        return{ 640, 480 };
-        break;
-    case NUI_IMAGE_RESOLUTION_1280x960:
-        return{ 1280, 960 };
-        break;
-    default:
-        // Invalid resolution.
-        return{ 0, 0 };
     }
 }
 

@@ -15,6 +15,15 @@ using libcgt::core::arrayutils::copy;
 using libcgt::core::arrayutils::writeViewOf;
 
 TriangleMesh::TriangleMesh( Array1DView< const Vector3f > positions,
+    Array1DView< const Vector3i > faces ) :
+    m_positions( positions.size() ),
+    m_faces( faces.size() )
+{
+    copy( positions, writeViewOf( m_positions ) );
+    copy( faces, writeViewOf( m_faces ) );
+}
+
+TriangleMesh::TriangleMesh( Array1DView< const Vector3f > positions,
     Array1DView< const Vector3f > normals,
     Array1DView< const Vector3i > faces ) :
     m_positions( positions.size() ),

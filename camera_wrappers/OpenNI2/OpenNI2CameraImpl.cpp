@@ -20,6 +20,8 @@ OpenNI2CameraImpl::OpenNI2CameraImpl( StreamConfig colorConfig,
     m_depthConfig( depthConfig ),
     m_infraredConfig( infraredConfig )
 {
+    const bool enableSync = true;
+
     if( !OpenNI2CameraImpl::s_isOpenNIInitialized )
     {
         Status rc = OpenNI::initialize();
@@ -34,7 +36,11 @@ OpenNI2CameraImpl::OpenNI2CameraImpl( StreamConfig colorConfig,
         Status rc = m_device.open( uri );
         if( rc == STATUS_OK )
         {
-            m_isValid = initializeStreams();
+            rc = m_device.setDepthColorSyncEnabled( enableSync );
+            if( rc == STATUS_OK )
+            {
+                m_isValid = initializeStreams();
+            }
         }
     }
 }
@@ -122,20 +128,27 @@ StreamConfig OpenNI2CameraImpl::infraredConfig() const
     return m_infraredConfig;
 }
 
-void OpenNI2CameraImpl::start()
+bool OpenNI2CameraImpl::start()
 {
+    bool allSucceeded = true;
+
     if( m_colorStream.isValid() )
     {
-        m_colorStream.start();
+        Status rc = m_colorStream.start();
+        allSucceeded &= ( rc == STATUS_OK );
     }
     if( m_depthStream.isValid() )
     {
-        m_depthStream.start();
+        Status rc = m_depthStream.start();
+        allSucceeded &= ( rc == STATUS_OK );
     }
     if( m_infraredStream.isValid() )
     {
-        m_infraredStream.start();
+        Status rc = m_infraredStream.start();
+        allSucceeded &= ( rc == STATUS_OK );
     }
+
+    return allSucceeded;
 }
 
 void OpenNI2CameraImpl::stop()
@@ -154,166 +167,252 @@ void OpenNI2CameraImpl::stop()
     }
 }
 
+int OpenNI2CameraImpl::getExposure()
+{
+    if( m_colorStream.isValid() )
+    {
+        return m_colorStream.getCameraSettings()->getExposure();
+    }
+    return 0;
+}
+
+int OpenNI2CameraImpl::getGain()
+{
+    if( m_colorStream.isValid() )
+    {
+        return m_colorStream.getCameraSettings()->getGain();
+    }
+    return 0;
+}
+
+bool OpenNI2CameraImpl::setExposure( int exposure )
+{
+    if( m_colorStream.isValid() )
+    {
+        Status rc = m_colorStream.getCameraSettings()->setExposure( exposure );
+        return rc == STATUS_OK;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::setGain( int gain )
+{
+    if( m_colorStream.isValid() )
+    {
+        Status rc = m_colorStream.getCameraSettings()->setGain( gain );
+        return rc == STATUS_OK;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::getAutoExposureEnabled()
+{
+    if( m_colorStream.isValid() )
+    {
+        return m_colorStream.getCameraSettings()->getAutoExposureEnabled();
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::setAutoExposureEnabled( bool enabled )
+{
+    if( m_colorStream.isValid() )
+    {
+        Status rc = m_colorStream.getCameraSettings()->setAutoExposureEnabled(
+            enabled );
+        return rc == STATUS_OK;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::getAutoWhiteBalanceEnabled()
+{
+    if( m_colorStream.isValid() )
+    {
+        return m_colorStream.getCameraSettings()->getAutoWhiteBalanceEnabled();
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::setAutoWhiteBalanceEnabled( bool enabled )
+{
+    if( m_colorStream.isValid() )
+    {
+        Status rc =
+            m_colorStream.getCameraSettings()->setAutoWhiteBalanceEnabled(
+                enabled );
+        return rc == STATUS_OK;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::copyColor( OpenNI2Camera::Frame& frame )
+{
+    frame.colorUpdated = false;
+
+    VideoFrameRef src;
+    Status rc = m_colorStream.readFrame( &src );
+    if( rc == STATUS_OK )
+    {
+        Array2DView< const uint8x3 > srcData( src.getData(),
+            { src.getWidth(), src.getHeight() },
+            { sizeof( uint8x3 ), src.getStrideInBytes() } );
+        frame.colorTimestamp =
+            static_cast< int64_t >( src.getTimestamp() );
+        frame.colorFrameNumber = src.getFrameIndex();
+        frame.colorUpdated = copy( srcData, frame.rgb );
+        return frame.colorUpdated;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::Frame& frame )
+{
+    frame.depthUpdated = false;
+
+    VideoFrameRef src;
+    Status rc = m_depthStream.readFrame( &src );
+    if( rc == STATUS_OK )
+    {
+        Array2DView< const uint16_t > srcData( src.getData(),
+            { src.getWidth(), src.getHeight() },
+            { sizeof( uint16_t ), src.getStrideInBytes() } );
+        frame.depthTimestamp =
+            static_cast< int64_t >( src.getTimestamp() );
+        frame.depthFrameNumber = src.getFrameIndex();
+        frame.depthUpdated = copy( srcData, frame.depth );
+        return frame.depthUpdated;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::Frame& frame )
+{
+    frame.infraredUpdated = false;
+
+    VideoFrameRef src;
+    Status rc = m_infraredStream.readFrame( &src );
+    if( rc == STATUS_OK )
+    {
+        Array2DView< const uint16_t > srcData( src.getData(),
+            { src.getWidth(), src.getHeight() },
+            { sizeof( uint16_t ), src.getStrideInBytes() } );
+        frame.infraredTimestamp =
+            static_cast< int64_t >( src.getTimestamp() );
+        frame.infraredFrameNumber = src.getFrameIndex();
+        frame.infraredUpdated = copy( srcData, frame.infrared );
+        return frame.infraredUpdated;
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::pollColor( OpenNI2Camera::Frame& frame, int timeoutMS )
+{
+    if( !m_colorStream.isValid() )
+    {
+        return false;
+    }
+
+    VideoStream* streams[] = { &m_colorStream };
+    int readyIndex = -1; // Initialized to fail.
+    Status rc =
+        OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
+    if( rc == STATUS_OK && readyIndex == 0 )
+    {
+        return copyColor( frame );
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS )
+{
+    if( !m_depthStream.isValid() )
+    {
+        return false;
+    }
+
+    VideoStream* streams[] = { &m_depthStream };
+    int readyIndex = -1; // Initialized to fail.
+    Status rc =
+        OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
+    if( rc == STATUS_OK && readyIndex == 0 )
+    {
+        return copyDepth( frame );
+    }
+    return false;
+}
+
+bool OpenNI2CameraImpl::pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS )
+{
+    if( !m_infraredStream.isValid() )
+    {
+        return false;
+    }
+
+    VideoStream* streams[] = { &m_infraredStream };
+    int readyIndex = -1; // Initialized to fail.
+    Status rc =
+        OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
+    if( rc == STATUS_OK && readyIndex == 0 )
+    {
+        return copyInfrared( frame );
+    }
+    return false;
+}
+
 bool OpenNI2CameraImpl::pollOne( OpenNI2Camera::Frame& frame, int timeoutMS )
 {
     frame.colorUpdated = false;
     frame.depthUpdated = false;
+    frame.infraredUpdated = false;
 
-    VideoStream** streams = new VideoStream*[ 2 ];
-    streams[ 0 ] = &m_colorStream;
-    streams[ 1 ] = &m_depthStream;
-    const int nStreams = 2;
-
-    //VideoStream* streams[] = { &m_colorStream, &m_depthStream, &m_infraredStream };
-    //const int nStreams = 3;
+    VideoStream* streams[] =
+    {
+        &m_colorStream,
+        &m_depthStream,
+        &m_infraredStream
+    };
 
     int readyIndex = -1; // Initialized to fail.
     Status rc =
-        OpenNI::waitForAnyStream( streams, nStreams, &readyIndex, timeoutMS );
+        OpenNI::waitForAnyStream( streams, 3, &readyIndex, timeoutMS );
     if( rc == STATUS_OK )
     {
         if( readyIndex == 0 ) // color
         {
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_colorStream.readFrame( &src );
-
-            Array2DView< const uint8x3 > srcData( src.getData(),
-                { src.getWidth(), src.getHeight() },
-                { sizeof( uint8x3 ), src.getStrideInBytes() } );
-            frame.colorUpdated = copy( srcData, frame.rgb );
-            frame.colorTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.colorFrameNumber = src.getFrameIndex();
-
-            return true;
+            return copyColor( frame );
         }
         else if( readyIndex == 1 ) // depth
         {
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_depthStream.readFrame( &src );
-
-            Array2DView< const uint16_t > srcData( src.getData(),
-                { src.getWidth(), src.getHeight() },
-                { sizeof( uint16_t ), src.getStrideInBytes() } );
-            frame.depthUpdated = copy( srcData, frame.depth );
-            frame.depthTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.depthFrameNumber = src.getFrameIndex();
-
-            return true;
+            return copyDepth( frame );
         }
         else if( readyIndex == 2 ) // infrared
         {
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_infraredStream.readFrame( &src );
-
-            Array2DView< const uint16_t > srcData( src.getData(),
-                { src.getWidth(), src.getHeight() },
-                { sizeof( uint16_t ), src.getStrideInBytes() } );
-            frame.colorUpdated = copy( srcData, frame.infrared );
-            frame.colorTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.colorFrameNumber = src.getFrameIndex();
-
-            return true;
+            return copyInfrared( frame );
         }
     }
-
-    delete[] streams;
-
     return false;
 }
 
 bool OpenNI2CameraImpl::pollAll( OpenNI2Camera::Frame& frame, int timeoutMS )
 {
-    // TODO: put registered frames into an std::vector and iterate on pollOne()
-
     frame.colorUpdated = false;
     frame.depthUpdated = false;
-
-    int readyIndex = -1; // Initialized to fail.
-    VideoStream* streams[ 1 ];
-
-    Status rc;
+    frame.infraredUpdated = false;
 
     bool allSucceeded = true;
-
     if( m_colorStream.isValid() )
     {
-        streams[ 0 ] = &m_colorStream;
-        rc = OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
-        if( rc == STATUS_OK )
-        {
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_colorStream.readFrame( &src );
-
-            Array2DView< const uint8x3 > srcData( src.getData(),
-            { src.getWidth(), src.getHeight() },
-            { sizeof( uint8x3 ), src.getStrideInBytes() } );
-            frame.colorUpdated = copy( srcData, frame.rgb );
-            frame.colorTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.colorFrameNumber = src.getFrameIndex();
-        }
-        else
-        {
-            allSucceeded = false;
-        }
+        allSucceeded &= pollColor( frame, timeoutMS );
     }
-
     if( m_depthStream.isValid() )
     {
-        streams[ 0 ] = &m_depthStream;
-        rc = OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
-        if( rc == STATUS_OK )
-        {
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_depthStream.readFrame( &src );
-
-            Array2DView< const uint16_t > srcData( src.getData(),
-            { src.getWidth(), src.getHeight() },
-            { sizeof( uint16_t ), src.getStrideInBytes() } );
-            frame.depthUpdated = copy( srcData, frame.depth );
-            frame.depthTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.depthFrameNumber = src.getFrameIndex();
-        }
-        else
-        {
-            allSucceeded = false;
-        }
+        allSucceeded &= pollDepth( frame, timeoutMS );
     }
-
     if( m_infraredStream.isValid() )
     {
-        streams[ 0 ] = &m_infraredStream;
-        rc = OpenNI::waitForAnyStream( streams, 1, &readyIndex, timeoutMS );
-        if( rc == STATUS_OK )
-        {
-            // TODO(jiawen): refactor the reading into a function
-            VideoFrameRef src;
-            // TODO(jiawen): this returns a status also
-            m_colorStream.readFrame( &src );
-
-            Array2DView< const uint8x3 > srcData( src.getData(),
-            { src.getWidth(), src.getHeight() },
-            { sizeof( uint8x3 ), src.getStrideInBytes() } );
-            frame.colorUpdated = copy( srcData, frame.rgb );
-            frame.colorTimestamp =
-                static_cast< int64_t >( src.getTimestamp() );
-            frame.colorFrameNumber = src.getFrameIndex();
-        }
-        else
-        {
-            allSucceeded = false;
-        }
+        allSucceeded &= pollInfrared( frame, timeoutMS );
     }
-
     return allSucceeded;
 }
 
@@ -381,45 +480,25 @@ bool OpenNI2CameraImpl::initializeStreams()
     int infraredModeIndex =
         findMatchingVideoModeIndex( m_infraredConfig, infraredModes );
 
-#if 1
-    if( depthModeIndex != -1 )
-    {
-        Status rc = m_depthStream.create( m_device, SENSOR_DEPTH );
-        rc = m_depthStream.setVideoMode( depthModes[ depthModeIndex ] );
-    }
-
-    if( colorModeIndex != -1 )
-    {
-        Status rc = m_colorStream.create( m_device, SENSOR_COLOR );
-        rc = m_colorStream.setVideoMode( colorModes[ colorModeIndex ] );
-    }
-
-    //Status rc = m_depthStream.start();
-    //rc = m_colorStream.start();
-
-
-#else
-    if( depthModeIndex != -1 )
-    {
-        m_depthStream.create( m_device, SENSOR_DEPTH );
-        m_depthStream.start();
-    }
-
     if( colorModeIndex != -1 )
     {
         m_colorStream.create( m_device, SENSOR_COLOR );
-        m_colorStream.start();
+        m_colorStream.setVideoMode( colorModes[ colorModeIndex ] );
+        m_colorStream.setMirroringEnabled( m_colorConfig.mirror );
     }
 
-    //m_colorStream.setVideoMode( colorModes[ colorModeIndex ] );
-    //m_depthStream.setVideoMode( depthModes[ depthModeIndex ] );
-#endif
+    if( depthModeIndex != -1 )
+    {
+        m_depthStream.create( m_device, SENSOR_DEPTH );
+        m_depthStream.setVideoMode( depthModes[ depthModeIndex ] );
+        m_depthStream.setMirroringEnabled( m_depthConfig.mirror );
+    }
 
     if( infraredModeIndex != -1 )
     {
         m_infraredStream.create( m_device, SENSOR_IR );
         m_infraredStream.setVideoMode( infraredModes[ infraredModeIndex ] );
-        m_infraredStream.setMirroringEnabled( true );
+        m_infraredStream.setMirroringEnabled( m_infraredConfig.mirror );
     }
 
     return( colorModeIndex != -1 ||

@@ -5,15 +5,23 @@ project( cgt_camera_wrappers )
 include_directories( ../core/src )
 include_directories( .. )
 
-set( CAMERA_WRAPPER_HEADERS RGBDStream.h )
-set( CAMERA_WRAPPER_SOURCES RGBDStream.cpp )
+set( CAMERA_WRAPPER_HEADERS RGBDStream.h PixelFormat.h PoseStream.h StreamConfig.h )
+set( CAMERA_WRAPPER_SOURCES RGBDStream.cpp PixelFormat.cpp PoseStream.cpp )
 
 # Kinect v1.x SDK.
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Kinect1x )
 find_package( Kinect1x )
 if( KINECT1X_FOUND )
-    set( KINECT1X_HEADERS Kinect1x/KinectCamera.h Kinect1x/KinectUtils.h )
-    set( KINECT1X_SOURCES Kinect1x/KinectCamera.cpp Kinect1x/KinectUtils.cpp )
+    set( KINECT1X_HEADERS
+		Kinect1x/KinectCamera.h
+		Kinect1x/KinectCameraImpl.h
+		Kinect1x/KinectUtils.h
+	)
+    set( KINECT1X_SOURCES
+		Kinect1x/KinectCamera.cpp
+		Kinect1x/KinectCameraImpl.cpp
+		Kinect1x/KinectUtils.cpp
+	)
 
     # TODO: how do we add these into the "additional dependencies" line for the
     # static library project.
@@ -43,11 +51,13 @@ install( DIRECTORY ./ DESTINATION include/camera_wrappers
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
 
 if( Kinect1x_FOUND )
+	# TODO: don't export KinectCameraImpl.h.
     install( DIRECTORY Kinect1x/ DESTINATION include/camera_wrappers/Kinect1x
         FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
 endif()
 
 if( OpenNI2_FOUND )
+	# TODO: don't export OpenNI2CameraImpl.h.
     install( DIRECTORY OpenNI2/ DESTINATION include/camera_wrappers/OpenNI2
         FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
 endif()

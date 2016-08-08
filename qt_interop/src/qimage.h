@@ -5,12 +5,11 @@
 
 class QImage;
 
-namespace libcgt
-{
-namespace qt_interop
-{
-namespace qimage
-{
+namespace libcgt { namespace qt_interop {
+
+    // View the raw bytes of a QImage as an Array2DView< uint8_t >.
+    Array2DView< uint8_t > viewGrayscale8( QImage& q );
+
     // View the raw bytes of a QImage as an Array2DView< uint8x3 >.
     // QImage::Format_RGB32 corresponds to a uint8x3 as BGRX,
     // where X is ignored, because Qt considers pixels as integers:
@@ -48,8 +47,7 @@ namespace qimage
     // view's rows do *not* have to be packed.
     QImage wrapAsQImage( Array2DView< uint8x4 > view );
 
-    // TODO: Implement this for Qt 5.5 which has gray8.
-    // QImage wrapAsQImage( Array2DView< uint8_t > view );
-} // qimage
-} // qt_interop
-} // libcgt
+    // Wrap a view as a QImage and does not take ownership.
+    QImage wrapAsQImage( Array2DView< uint8_t > view );
+
+} } // qt_interop, libcgt

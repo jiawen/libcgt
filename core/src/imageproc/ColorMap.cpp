@@ -72,15 +72,16 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const float > src,
-    const Range1f& srcRange, const Range1f& dstRange,
+void linearRemapToLuminance( Array2DView< const uint16_t > src,
+    const Range1i& srcRange, const Range1i& dstRange,
     Array2DView< uint8_t > dst )
 {
+    float srcSize = static_cast< float >( srcRange.size );
     map( src, dst,
-        [&] ( float z )
+        [&] ( uint16_t z )
         {
-            float luma = saturate( rescale( z, srcRange, dstRange ) );
-            return toUInt8( luma );
+            return static_cast< uint8_t >(
+                clamp( rescale( z, srcRange, dstRange ), Range1i( 256 ) ) );
         }
     );
 }
@@ -96,6 +97,19 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
             uint8_t luma = static_cast< uint8_t >(
                 clamp( rescale( z, srcRange, dstRange ), Range1i( 256 ) ) );
             return uint8x3{ luma, luma, luma };
+        }
+    );
+}
+
+void linearRemapToLuminance( Array2DView< const float > src,
+    const Range1f& srcRange, const Range1f& dstRange,
+    Array2DView< uint8_t > dst )
+{
+    map( src, dst,
+        [&] ( float z )
+        {
+            float luma = saturate( rescale( z, srcRange, dstRange ) );
+            return toUInt8( luma );
         }
     );
 }

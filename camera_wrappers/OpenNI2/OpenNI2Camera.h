@@ -6,6 +6,7 @@
 #include <common/BasicTypes.h>
 #include <cameras/Intrinsics.h>
 #include <vecmath/EuclideanTransform.h>
+#include <vecmath/Range1f.h>
 
 #include <camera_wrappers/StreamConfig.h>
 
@@ -39,8 +40,12 @@ public:
         int64_t colorTimestamp;
         int colorFrameNumber;
         Array2DView< uint8x3 > rgb;
-        Array2DView< uint16_t > infrared;
         // TODO(jiawen): YUV formats.
+
+        bool infraredUpdated;
+        int64_t infraredTimestamp;
+        int infraredFrameNumber;
+        Array2DView< uint16_t > infrared;
 
         // ----- Depth stream -----
         // Only one of packedDepth or (extendedDepth and playerIndex) will be
@@ -53,17 +58,36 @@ public:
         Array2DView< uint16_t > depth;
     };
 
+    // 800 mm.
+    static uint16_t minimumDepthMillimeters();
+
+    // 4000 mm.
+    static uint16_t maximumDepthMillimeters();
+
+    // 0.8m - 4m.
+    static Range1f depthRangeMeters();
+
+    // Get the transformation mapping: color_coord <-- depth_coord.
+    // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
+    // Translation has units of millimeters.
+    static EuclideanTransform colorFromDepthExtrinsicsMillimeters();
+
+    // Get the transformation mapping: color_coord <-- depth_coord.
+    // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
+    // Translation has units of millimeters.
+    static EuclideanTransform colorFromDepthExtrinsicsMeters();
+
     // TODO(jiawen): Useful configurations:
     // StreamConfig infrared{ Vector2i{ 640, 480 }, 30, ::PixelFormat::GRAY_U16 }
     // Range is [0, 1023].
 
     OpenNI2Camera(
         StreamConfig colorConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888 },
+            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888, false },
         StreamConfig depthConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16 },
+            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16, false },
         StreamConfig infraredConfig = StreamConfig(),
-        const char* uri = "" ); // "" means "any device"
+        const char* uri = nullptr ); // nullptr means "any device"
 
     ~OpenNI2Camera();
     // TODO(VS2015): move constructor = default
@@ -79,6 +103,23 @@ public:
 
     void start();
     void stop();
+
+    bool getAutoExposureEnabled();
+    bool setAutoExposureEnabled( bool enabled );
+
+    int getExposure();
+    int getGain();
+    bool setExposure( int exposure );
+    bool setGain( int gain );
+
+    bool getAutoWhiteBalanceEnabled();
+    bool setAutoWhiteBalanceEnabled( bool enabled );
+
+    bool pollColor( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+
+    bool pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+
+    bool pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
 
     bool pollOne( Frame& frame, int timeoutMS = 0 );
 

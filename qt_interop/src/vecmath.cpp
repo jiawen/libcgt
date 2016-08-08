@@ -10,7 +10,7 @@
 
 #include "vecmath.h"
 
-namespace libcgt { namespace qt_interop { namespace vecmath {
+namespace libcgt { namespace qt_interop {
 
 QPointF toQPointF( const Vector2f& v )
 {
@@ -60,4 +60,4 @@ Rect2i toRect2i( const QRect& r )
     };
 }
 
-} } } // qimage, vecmath, libcgt
+} } // qimage, vecmath, libcgt

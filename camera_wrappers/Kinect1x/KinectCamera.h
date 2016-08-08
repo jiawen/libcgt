@@ -1,38 +1,7 @@
 #pragma once
 
-#define KINECT1X_ENABLE_SPEECH 0
-
-#if KINECT1X_ENABLE_SPEECH
-// In Visual Studio 2010
-#if ( _MSC_VER <= 1600 )
-#pragma warning( disable: 4005 ) // stdint.h and intsafe.h: disable warnings for multiply defined.
-#pragma warning( disable: 4805 ) // sphelper.h: disable unsafe mix of BOOL and bool.
-#endif
-#pragma warning( disable: 4996 ) // sphelper.h: disable GetVersionExW declared deprecated.
-#endif
-
-#include <windows.h>
-#include <NuiApi.h>
-
-#if KINECT1X_ENABLE_SPEECH
-// For configuring DMO properties
-#include <wmcodecdsp.h>
-
-// For discovering microphone array device
-#include <MMDeviceApi.h>
-#include <devicetopology.h>
-
-// For functions and definitions used to create output file
-#include <uuids.h> // FORMAT_WaveFormatEx and such
-#include <mfapi.h> // FCC
-
-// For speech APIs
-#include <sapi.h>
-#include <sphelper.h>
-#endif
-
 #include <cstdint>
-#include <map>
+#include <memory>
 #include <vector>
 
 #include <cameras/Intrinsics.h>
@@ -43,11 +12,11 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
-#if KINECT1X_ENABLE_SPEECH
-#include "KinectStream.h"
-#endif
+#include <camera_wrappers/StreamConfig.h>
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
+
+class KinectCameraImpl;
 
 class KinectCamera
 {
@@ -95,28 +64,34 @@ public:
     // timestamps are milliseconds since the most recent NuiInitialize() call.
     struct Frame
     {
-        // ----- Color stream -----
-        // Only one of bgra or infrared will be populated, depending on which
+        // Only one of color or infrared will be populated, depending on which
         // color format was configured.
         bool colorUpdated;
+        bool depthUpdated;
+        bool infraredUpdated;
 
+        // ----- Color stream -----
         int64_t colorTimestamp;
         int colorFrameNumber;
-        // bgra will always have alpha set to 0.
-        Array2DView< uint8x4 > bgra;
-        // The infrared stream has data only in the top 10 bits. Bits 5:0 are 0.
-        Array2DView< uint16_t > infrared;
+        // color will always have alpha set to 0.
+        Array2DView< uint8x4 > color;
         // TODO(jiawen): YUV formats.
 
         // ----- Depth stream -----
         // Only one of packedDepth or (extendedDepth and playerIndex) will be
         // populated, depending on whether player tracking is enabled, and
         // whether the client requested packed or extended depth.
-        bool depthUpdated;
 
         int64_t depthTimestamp;
         int depthFrameNumber;
         bool depthCapturedWithNearMode; // Not updated if using packed depth.
+
+        // ----- Infrared stream -----
+
+        int64_t infraredTimestamp;
+        int infraredFrameNumber;
+        // The infrared stream has data only in the top 10 bits. Bits 5:0 are 0.
+        Array2DView< uint16_t > infrared;
 
         // Each pixel of packedDepth is populated with a 16-bit value where:
         // - bits 15:3 is depth in millimeters.
@@ -132,8 +107,11 @@ public:
         // index (1-6), or 0 for no player.
         Array2DView< uint16_t > playerIndex;
 
+        // TODO(jiawen): wrap skeleton.
         bool skeletonUpdated;
+#if 0
         NUI_SKELETON_FRAME skeleton;
+#endif
     };
 
     static int numDevices();
@@ -158,11 +136,11 @@ public:
 
     // The typical factory-calibrated intrinsics of the Kinect color camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
-    static Intrinsics colorIntrinsics( NUI_IMAGE_RESOLUTION resolution );
+    static Intrinsics colorIntrinsics( const Vector2i& resolution );
 
     // The typical factory-calibrated intrinsics of the Kinect depth camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
-    static Intrinsics depthIntrinsics( NUI_IMAGE_RESOLUTION resolution );
+    static Intrinsics depthIntrinsics( const Vector2i& resolution );
 
     // Get the transformation mapping: color_coord <-- depth_coord.
     // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
@@ -174,6 +152,7 @@ public:
     // Translation has units of millimeters.
     static EuclideanTransform colorFromDepthExtrinsicsMeters();
 
+#if 0
     // Returns a vector of pairs of indices (i,j) such that within a
     // NUI_SKELETON_FRAME f, frame.SkeletonData[f].SkeletonPositions[i]
     // --> frame.SkeletonData[f].SkeletonPositions[j] is a bone.
@@ -181,6 +160,7 @@ public:
 
     // The inverse of jointIndicesForBones().
     static const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& boneIndicesForJoints();
+#endif
 
     // Create a Kinect device.
     //
@@ -212,17 +192,24 @@ public:
     //   - depthResolution depends on whether player index tracking is enabled.
     //     - DEPTH: 80x60, 320x240, or 640x480.
     //     - DEPTH_AND_PLAYER_INDEX: 80,60 or 320x240.
-    KinectCamera( int deviceIndex = 0,
-        DWORD nuiFlags =
-            NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_DEPTH,
-        NUI_IMAGE_TYPE colorFormat = NUI_IMAGE_TYPE_COLOR,
-        NUI_IMAGE_RESOLUTION colorResolution = NUI_IMAGE_RESOLUTION_640x480,
-        NUI_IMAGE_RESOLUTION depthResolution = NUI_IMAGE_RESOLUTION_640x480 );
+    // TODO(jiawen): pass in extra flags for enabling player index and the
+    // pixel format.
+    KinectCamera(
+        StreamConfig colorConfig =
+            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888, false },
+        StreamConfig depthConfig =
+            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16, false },
+        StreamConfig infraredConfig = StreamConfig(),
+        int deviceIndex = 0
+    );
 
     KinectCamera( const KinectCamera& copy ) = delete;
     KinectCamera& operator = ( const KinectCamera& copy ) = delete;
     // TODO(VS2015): move constructor = default
-    virtual ~KinectCamera();
+    ~KinectCamera();
+
+    // TODO(jiawen): store and provide accessors to stream configs.
+    // TODO(jiawen): using that, allow mirror mode, RGB format.
 
     // Returns true if the camera is correctly initialized.
     bool isValid() const;
@@ -278,129 +265,29 @@ public:
     // Block until one of the input streams is available. This function blocks
     // for up to waitIntervalMilliseconds for data to be available. If
     // waitIntervalMilliseconds is 0, it will return immediately (whether data
-    // is available or not).
+    // is available or not). If waitIntervalMilliseconds is -1, it will wait
+    // forever.
     //
     // The "updated" flag in "frame" corresponding to the channel will be set.
-    Event pollOne( Frame& frame,
+    bool pollOne( Frame& frame,
         bool useExtendedDepth = true,
-        int waitIntervalMilliseconds = INFINITE );
+        int waitIntervalMilliseconds = 0 );
 
     // Block until all the input streams are available. This function blocks
     // for up to waitIntervalMilliseconds for data to be available. If
     // waitIntervalMilliseconds is 0, it will return immediately (whether data
-    // is available or not).
+    // is available or not). If waitIntervalMilliseconds is -1, it will wait
+    // forever.
     //
     // The "updated" flag in "frame" corresponding to the channels will be set.
     bool pollAll( Frame& frame,
         bool useExtendedDepth = true,
-        int waitIntervalMilliseconds = INFINITE );
-
-#if KINECT1X_ENABLE_SPEECH
-    // poll the Kinect for a voice recognition command and return the results in the output variables
-    // returns false is nothing was recognized
-    bool pollSpeech( QString& phrase, float& confidence,
-        int waitInterval = 1000 );
-#endif
-
-    // Which streams are enabled.
-    // TODO(jiawen): pretend IR is another stream?
-
-    bool isUsingColor() const;
-    NUI_IMAGE_TYPE colorFormat() const;
-
-    bool isUsingDepth() const;
-
-    bool isUsingPlayerIndex() const;
-
-    bool isUsingSkeleton() const;
+        int waitIntervalMilliseconds = 0 );
 
 private:
 
-    HRESULT initializeColorStream( NUI_IMAGE_TYPE format,
-        NUI_IMAGE_RESOLUTION resolution );
-    HRESULT initializeDepthStream( NUI_IMAGE_RESOLUTION resolution,
-        bool trackPlayerIndex );
-    HRESULT initializeSkeletonTracking();
+    std::unique_ptr< KinectCameraImpl > m_impl;
 
-    void close();
-
-#if KINECT1X_ENABLE_SPEECH
-    HRESULT initializeSpeechRecognition( QVector< QString > recognizedPhrases );
-        HRESULT initializeAudio();
-        HRESULT initializePhrases( QVector< QString > recognizedPhrases );
-#endif
-
-    // Helper function for pollOne() and pollAll() to populate "frame" once
-    // event "eventIndex" has been signaled. Returns whether it was successful.
-    bool handleEvent( Frame& frame, bool useExtendedDepth, DWORD eventIndex );
-
-    // TODO(jiawen): pass in different formats?
-    // Returns false if the input is invalid (incorrect size or format), or
-    // on an invalid frame from the sensor.
-    bool handleGetColorFrame( DWORD millisecondsToWait,
-        Array2DView< uint8x4 > bgra,
-        int64_t& timestamp, int& frameNumber );
-
-    // Returns false if the input is invalid (incorrect size or format), or
-    // on an invalid frame from the sensor.
-    bool handleGetInfraredFrame( DWORD millisecondsToWait,
-        Array2DView< uint16_t > ir,
-        int64_t& timestamp, int& frameNumber );
-
-    // Returns false if the input is invalid (incorrect size or format), or
-    // on an invalid frame from the sensor.
-    bool handleGetExtendedDepthFrame( DWORD millisecondsToWait,
-        Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
-        int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode );
-
-    // Returns false if the input is invalid (incorrect size or format), or
-    // on an invalid frame from the sensor.
-    bool handleGetPackedDepthFrame( DWORD millisecondsToWait,
-        Array2DView< uint16_t > depth,
-        int64_t& timestamp, int& frameNumber );
-
-    // Convert data into recognizable formats.
-    bool handleGetSkeletonFrame( DWORD millisecondsToWait,
-        NUI_SKELETON_FRAME& skeleton );
-
-    int m_deviceIndex = -1;
-    INuiSensor* m_pSensor = nullptr;
-    bool m_usingPlayerIndex = false;
-    NUI_IMAGE_RESOLUTION m_colorResolution = NUI_IMAGE_RESOLUTION_INVALID;
-    NUI_IMAGE_TYPE m_colorFormat;
-    Vector2i m_colorResolutionPixels;
-    NUI_IMAGE_RESOLUTION m_depthResolution = NUI_IMAGE_RESOLUTION_INVALID;
-    Vector2i m_depthResolutionPixels;
-#if KINECT1X_ENABLE_SPEECH
-    bool m_usingAudio = false;
-#endif
-
-    HANDLE m_hNextColorFrameEvent = NULL;
-    HANDLE m_hNextDepthFrameEvent = NULL;
-    HANDLE m_hNextSkeletonEvent = NULL;
-    std::vector< HANDLE > m_events;
-
-    HANDLE m_hColorStreamHandle = NULL;
-    HANDLE m_hDepthStreamHandle = NULL;
-
-    // Current flags for the depth stream.
-    DWORD m_depthStreamFlags = 0;
-
-#if KINECT1X_ENABLE_SPEECH
-    // speech
-    IMediaObject* m_pDMO = nullptr;
-    IPropertyStore* m_pPS = nullptr;
-    ISpRecoContext* m_pContext = nullptr;
-    KinectStream* m_pKS = nullptr;
-    IStream* m_pStream = nullptr;
-    ISpRecognizer* m_pRecognizer = nullptr;
-    ISpStream* m_pSpStream = nullptr;
-    ISpObjectToken* m_pEngineToken = nullptr;
-    ISpRecoGrammar* m_pGrammar = nullptr;
-#endif
-
-    static std::vector< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX > > s_jointIndicesForBones;
-    static std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int > s_boneIndicesForJoints;
 };
 
 } } } // kinect1x, camera_wrappers libcgt

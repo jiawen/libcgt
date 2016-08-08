@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace libcgt { namespace camera_wrappers {
 
 enum class PixelFormat : uint32_t
@@ -18,5 +20,7 @@ enum class PixelFormat : uint32_t
     GRAY_U16 = 129,
     GRAY_U32 = 130
 };
+
+uint32_t pixelSizeBytes( PixelFormat format );
 
 } } // camera_wrappers, libcgt

@@ -182,6 +182,18 @@ bool map( Array2DView< const TSrc > src, Array2DView< TDst > dst, Func f );
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f );
 
+// Variant of map that also passes the index to f:
+// dst[ xy ] = f( xy, src[ xy ] )
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array2DView< const TSrc > src, Array2DView< TDst > dst,
+    Func f );
+
+template< typename T >
+Array1DView< T > reshape( Array2DView< T > src );
+
+template< typename T >
+Array1DView< T > reshape( Array3DView< T > src );
+
 template< typename T >
 Array1DView< const T > readViewOf( const std::vector< T >& v );
 

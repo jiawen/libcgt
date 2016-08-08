@@ -1,7 +1,5 @@
 #pragma once
 
-#include <windows.h>
-#include <NuiApi.h>
 #include <cstdint>
 
 #include <common/BasicTypes.h>
@@ -10,6 +8,8 @@
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 
+#if 0
+// TODO(jiawen): expose skeleton
 // Given a frame (in particular, its estimate of the ground plane)
 // Returns a matrix mapping points in the Kinect's frame (such as skeleton joints)
 // to points in a virtual world where:
@@ -20,6 +20,7 @@ namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 // and the point on the ground plane closest to the Kinect is the origin
 Matrix4f kinectToWorld( const NUI_SKELETON_FRAME& frame );
 Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame );
+#endif
 
 // Given the raw depth map in 16-bit shorts,
 // converts it into a floating point image in meters
@@ -46,9 +47,5 @@ Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame );
 void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
     Array2DView< float > outputMeters, bool flipX = true, bool flipY = true,
     int rightShift = 0 );
-
-// Convert a NUI_IMAGE_RESOLUTION to a numerical resolution in pixels.
-// Returns (0, 0) on NUI_IMAGE_RESOLUTION_INVALID.
-Vector2i toVector2i( NUI_IMAGE_RESOLUTION resolution );
 
 } } } // kinect1x, camera_wrappers, libcgt

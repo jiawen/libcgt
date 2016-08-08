@@ -13,13 +13,8 @@ public:
     using Intrinsics = libcgt::core::cameras::Intrinsics;
     using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
 
-    OpenNI2CameraImpl(
-        StreamConfig colorConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888 },
-        StreamConfig depthConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16 },
-        StreamConfig infraredConfig = StreamConfig(),
-        const char* uri = openni::ANY_DEVICE );
+    OpenNI2CameraImpl( StreamConfig colorConfig, StreamConfig depthConfig,
+        StreamConfig infraredConfig, const char* uri );
     virtual ~OpenNI2CameraImpl();
     // TODO(VS2015): move constructor = default
 
@@ -32,18 +27,37 @@ public:
     StreamConfig depthConfig() const;
     StreamConfig infraredConfig() const;
 
-    void start();
+    bool start();
     void stop();
+
+    bool getAutoExposureEnabled();
+    bool setAutoExposureEnabled( bool enabled );
+
+    int getExposure();
+    int getGain();
+    bool setExposure( int exposure );
+    bool setGain( int gain );
+
+    bool getAutoWhiteBalanceEnabled();
+    bool setAutoWhiteBalanceEnabled( bool enabled );
+
+    bool pollColor( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+
+    bool pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+
+    bool pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
 
     bool pollOne( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
 
-    // Poll all registered streams.
-    // Returns true if all succeeded.
     bool pollAll( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
 
 private:
 
     bool initializeStreams();
+
+    bool copyColor( OpenNI2Camera::Frame& frame );
+    bool copyDepth( OpenNI2Camera::Frame& frame );
+    bool copyInfrared( OpenNI2Camera::Frame& frame );
 
     openni::Device m_device;
 

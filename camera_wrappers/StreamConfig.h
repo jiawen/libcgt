@@ -13,10 +13,12 @@ public:
 
 #if 1
     StreamConfig() = default;
-    StreamConfig( const Vector2i& _resolution, int _fps, PixelFormat _pixelFormat ) :
+    StreamConfig( const Vector2i& _resolution, int _fps,
+        PixelFormat _pixelFormat, bool _mirror ) :
         resolution( _resolution ),
         fps( _fps ),
-        pixelFormat( _pixelFormat )
+        pixelFormat( _pixelFormat ),
+        mirror( _mirror )
     {
 
     }
@@ -27,6 +29,9 @@ public:
     Vector2i resolution = Vector2i();
     int fps = 0;
     PixelFormat pixelFormat = PixelFormat::INVALID;
+    // When false, it is a regular camera.
+    // When true, it acts like a mirror / webcam.
+    bool mirror = false;
 };
 
 } } // camera_wrappers, libcgt

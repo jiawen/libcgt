@@ -443,6 +443,63 @@ bool map( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f )
     return true;
 }
 
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array2DView< const TSrc > src, Array2DView< TDst > dst,
+    Func f )
+{
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
+
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
+
+    for( int y = 0; y < src.height(); ++y )
+    {
+        for( int x = 0; x < src.width(); ++x )
+        {
+            dst[ { x, y } ] = f( { x, y }, src[ { x, y } ] );
+        }
+    }
+
+    return true;
+}
+
+template< typename T >
+Array1DView< T > reshape( Array2DView< T > src )
+{
+    if( src.isNull() || !src.rowsArePacked() )
+    {
+        return Array1DView< T >();
+    }
+
+    return Array1DView< T >
+    (
+        src.pointer(),
+        src.numElements(),
+        src.elementStrideBytes()
+    );
+}
+
+template< typename T >
+Array1DView< T > reshape( Array3DView< T > src )
+{
+    if( src.isNull() || !src.rowsArePacked() || !src.slicesArePacked() )
+    {
+        return Array1DView< T >();
+    }
+
+    return Array1DView< T >
+    (
+        src.pointer(),
+        src.numElements(),
+        src.elementStrideBytes()
+    );
+}
+
 template< typename T >
 Array1DView< const T > readViewOf( const std::vector< T >& v )
 {

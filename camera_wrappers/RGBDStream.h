@@ -17,7 +17,6 @@ namespace libcgt { namespace camera_wrappers {
 struct StreamMetadata
 {
     PixelFormat format;
-    uint32_t elementSizeBytes;
     Vector2i size; // width, height
 };
 
@@ -34,7 +33,7 @@ public:
 
     const std::vector< StreamMetadata>& metadata() const;
 
-    Array1DView< const uint8_t > read( int& streamId, int& frameId,
+    Array1DView< const uint8_t > read( uint32_t& streamId, int& frameId,
         int64_t& timestamp );
 
 private:
@@ -50,18 +49,24 @@ class RGBDOutputStream
 {
 public:
 
+    RGBDOutputStream() = default;
     RGBDOutputStream( const std::vector< StreamMetadata >& metadata,
         const char* filename );
     virtual ~RGBDOutputStream();
 
     RGBDOutputStream( const RGBDOutputStream& copy ) = delete;
     RGBDOutputStream& operator = ( const RGBDOutputStream& copy ) = delete;
+    // TODO(VS2015): = default
+    RGBDOutputStream( RGBDOutputStream&& move );
+    RGBDOutputStream& operator = ( RGBDOutputStream&& move );
+
+    bool isValid() const;
 
     bool close();
 
     // TODO(jiawen): check that frameId and timestamp is monotonically
     // increasing.
-    bool writeFrame( uint32_t streamId, int frameId, int64_t timestamp,
+    bool write( uint32_t streamId, int frameId, int64_t timestamp,
         Array1DView< const uint8_t > data ) const;
 
 private:
