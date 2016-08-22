@@ -60,7 +60,7 @@ public:
 
     const PoseStreamMetadata& metadata() const;
 
-    Array1DView< const uint8_t > read( int& frameId, int64_t& timestamp );
+    Array1DView< const uint8_t > read( int& frameIndex, int64_t& timestamp );
 
 private:
 
@@ -89,9 +89,9 @@ public:
 
     bool close();
 
-    // TODO(jiawen): check that frameId and timestamp is monotonically
+    // TODO(jiawen): check that frameIndex and timestamp is monotonically
     // increasing.
-    bool write( int frameId, int64_t timestamp,
+    bool write( int frameIndex, int64_t timestamp,
         const Matrix3f& rotation, const Vector3f& translation );
 
 private:

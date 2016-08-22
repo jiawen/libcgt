@@ -145,6 +145,19 @@ GLsizei GLTexture::numMipMapLevels() const
     return m_nMipMapLevels;
 }
 
+void GLTexture::setSwizzle( GLTexture::SwizzleSource source,
+    GLTexture::SwizzleTarget target )
+{
+    glTextureParameteri( id(), static_cast< GLenum >( source ),
+        static_cast< GLint >( target ) );
+}
+
+void GLTexture::setSwizzleRGBA( GLTexture::SwizzleTarget targets[ 4 ] )
+{
+    GLint* glTargets = reinterpret_cast< GLint* >( targets );
+    glTextureParameteriv( id(), GL_TEXTURE_SWIZZLE_RGBA, glTargets );
+}
+
 void GLTexture::generateMipMaps()
 {
     glGenerateTextureMipmap( id() );

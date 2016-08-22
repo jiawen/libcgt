@@ -539,10 +539,127 @@ bool GeometryUtils::rayTriangleIntersection( const Vector3f& rayOrigin,
     return true;
 }
 
-#if 0
+// TODO: return std::pair
+
+template< typename T >
+void minMax3( const T& x0, const T& x1, const T& x2, T& minOut, T& maxOut )
+{
+    minOut = x0;
+    maxOut = x0;
+
+    if( x1 < minOut )
+    {
+        minOut = x1;
+    }
+    if( x1 > maxOut )
+    {
+        maxOut = x1;
+    }
+    if( x2 < minOut )
+    {
+        minOut = x2;
+    }
+    if( x2 > maxOut )
+    {
+        maxOut = x2;
+    }
+}
+
+// TODO(jiawen): expose this
+// TODO(jiawen): what is maxbox?
+bool planeBoxOverlap( const Vector3f& normal, const Vector3f& vert,
+    const Vector3f& maxbox )
+{
+    int q;
+    Vector3f vmin;
+    Vector3f vmax;
+    float v;
+    for( q = 0; q < 3; ++q )
+    {
+        v = vert[ q ];
+        if( normal[ q ] > 0.0f )
+        {
+            vmin[ q ] = -maxbox[ q ] - v;
+            vmax[ q ] = maxbox[ q ] - v;
+        }
+        else
+        {
+            vmin[ q ] = maxbox[ q ] - v;
+            vmax[ q ] = -maxbox[ q ] - v;
+        }
+    }
+
+    if( Vector3f::dot( normal, vmin ) > 0.0f )
+    {
+        return false;
+    }
+
+    if( Vector3f::dot( normal, vmax ) >= 0.0f )
+    {
+        return true;
+    }
+
+    return 0;
+}
+
+/*======================== X-tests ========================*/
+
+#define AXISTEST_X01(a, b, fa, fb)			       \
+    p0 = a*v0.y - b*v0.z;			       	   \
+    p2 = a*v2.y - b*v2.z;			       	   \
+    if( p0<p2 ) { min = p0; max = p2; }            \
+    else { min = p2; max = p0; }                   \
+    rad = fa * boxHalfSize.y + fb * boxHalfSize.z;   \
+    if( min>rad || max<-rad ) return false;
+
+#define AXISTEST_X2(a, b, fa, fb)			       \
+    p0 = a*v0.y - b*v0.z;			           \
+    p1 = a*v1.y - b*v1.z;			       	   \
+    if( p0<p1 ) { min = p0; max = p1; }            \
+    else { min = p1; max = p0; }                   \
+    rad = fa * boxHalfSize.y + fb * boxHalfSize.z;   \
+    if( min>rad || max<-rad ) return false;
+
+/*======================== Y-tests ========================*/
+
+#define AXISTEST_Y02(a, b, fa, fb)			   \
+p0 = -a*v0.x + b*v0.z;		      	   \
+p2 = -a*v2.x + b*v2.z;	       	       	   \
+if( p0<p2 ) { min = p0; max = p2; }                    \
+else { min = p2; max = p0; } \
+rad = fa * boxHalfSize.x + fb * boxHalfSize.z;   \
+if( min>rad || max<-rad ) return false;
+
+#define AXISTEST_Y1(a, b, fa, fb)			   \
+p0 = -a*v0.x + b*v0.z;		      	   \
+p1 = -a*v1.x + b*v1.z;	     	       	   \
+if( p0<p1 ) { min = p0; max = p1; } \
+else { min = p1; max = p0; } \
+rad = fa * boxHalfSize.x + fb * boxHalfSize.z;   \
+if( min>rad || max<-rad ) return false;
+
+/*======================== Z-tests ========================*/
+
+#define AXISTEST_Z12(a, b, fa, fb)			   \
+p1 = a*v1.x - b*v1.y;			           \
+p2 = a*v2.x - b*v2.y;			       	   \
+if( p2<p1 ) { min = p2; max = p1; }            \
+else { min = p1; max = p2; } \
+rad = fa * boxHalfSize.x + fb * boxHalfSize.y;   \
+if( min>rad || max<-rad ) return false;
+
+#define AXISTEST_Z0(a, b, fa, fb)			   \
+p0 = a*v0.x - b*v0.y;				   \
+p1 = a*v1.x - b*v1.y;			           \
+if( p0<p1 ) { min = p0; max = p1; }        \
+else { min = p1; max = p0; } \
+rad = fa * boxHalfSize.x + fb * boxHalfSize.y;   \
+if( min>rad || max<-rad ) return false;
+
 // static
-bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
-                                        BoundingBox3f* pBox )
+bool GeometryUtils::boxTriangleIntersection(
+    const Vector3f& u0, const Vector3f& u1, const Vector3f& u2,
+    const Box3f& box )
 {
     // use separating axis theorem to test overlap between triangle and box
     // need to test for overlap in these directions:
@@ -556,126 +673,99 @@ bool GeometryUtils::triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f*
     Vector3f v1;
     Vector3f v2;
 
-    float min,max,p0,p1,p2,rad;
+    float min;
+    float max;
+    float p0;
+    float p1;
+    float p2;
+    float rad;
 
     float fex;
     float fey;
     float fez;
 
     Vector3f normal;
+    // These are the triangle edges.
     Vector3f e0;
     Vector3f e1;
     Vector3f e2;
 
-    Vector3f boxCenter;
-    pBox->getCenter( &boxCenter );
+    Vector3f boxCenter = box.center();
+    Vector3f boxHalfSize = 0.5f * box.size;
 
-    // move everything so that the box center is in (0,0,0)
-    Vector3f::subtract( pv0, &boxCenter, &v0 );
-    Vector3f::subtract( pv1, &boxCenter, &v1 );
-    Vector3f::subtract( pv2, &boxCenter, &v2 );
+    // Move everything so that the box center is in (0,0,0).
+    v0 = u0 - boxCenter;
+    v1 = u0 - boxCenter;
+    v2 = u0 - boxCenter;
 
-    // compute triangle edges
-    Vector3f::subtract( &v1, &v0, &e0 );
-    Vector3f::subtract( &v2, &v1, &e1 );
-    Vector3f::subtract( &v0, &v2, &e2 );
+    // Compute triangle edges.
+    e0 = v1 - v0;
+    e1 = v2 - v1;
+    e2 = v0 - v2;
 
     // Bullet 3:
-    // test the 9 tests first (this was faster)
+    // Test the 9 tests first (this was faster).
+    fex = std::abs( e0.x );
+    fey = std::abs( e0.y );
+    fez = std::abs( e0.z );
+    AXISTEST_X01( e0.z, e0.y, fez, fey );
+    AXISTEST_Y02( e0.z, e0.x, fez, fex );
+    AXISTEST_Z12( e0.y, e0.x, fey, fex );
 
-    fex = abs( e0[0] );
-    fey = abs( e0[1] );
-    fez = abs( e0[2] );
+    fex = std::abs( e1.x );
+    fey = std::abs( e1.y );
+    fez = std::abs( e1.z );
+    AXISTEST_X01( e1.z, e1.y, fez, fey );
+    AXISTEST_Y02( e1.z, e1.x, fez, fex );
+    AXISTEST_Z0(  e1.y, e1.x, fey, fex );
 
-    AXISTEST_X01(e0[Z], e0[Y], fez, fey);
-
-    AXISTEST_Y02(e0[Z], e0[X], fez, fex);
-
-    AXISTEST_Z12(e0[Y], e0[X], fey, fex);
-
-
-
-    fex = absf(e1[X]);
-
-    fey = absf(e1[Y]);
-
-    fez = absf(e1[Z]);
-
-    AXISTEST_X01(e1[Z], e1[Y], fez, fey);
-
-    AXISTEST_Y02(e1[Z], e1[X], fez, fex);
-
-    AXISTEST_Z0(e1[Y], e1[X], fey, fex);
+    fex = std::abs( e2.x );
+    fey = std::abs( e2.y );
+    fez = std::abs( e2.z );
+    AXISTEST_X2(  e2.z, e2.y, fez, fey );
+    AXISTEST_Y1(  e2.z, e2.x, fez, fex );
+    AXISTEST_Z12( e2.y, e2.x, fey, fex );
 
 
+    // Bullet 1:
+    //  first test overlap in the {x,y,z}-directions
+    //  find min, max of the triangle each direction, and test for overlap in
+    //  that direction -- this is equivalent to testing a minimal AABB around
+    //  the triangle against the AABB.
 
-    fex = absf(e2[X]);
-
-    fey = absf(e2[Y]);
-
-    fez = absf(e2[Z]);
-
-    AXISTEST_X2(e2[Z], e2[Y], fez, fey);
-
-    AXISTEST_Y1(e2[Z], e2[X], fez, fex);
-
-    AXISTEST_Z12(e2[Y], e2[X], fey, fex);
-
-
-
-    /* Bullet 1: */
-
-    /*  first test overlap in the {x,y,z}-directions */
-
-    /*  find min, max of the triangle each direction, and test for overlap in */
-
-    /*  that direction -- this is equivalent to testing a minimal AABB around */
-
-    /*  the triangle against the AABB */
+    // Test in x direction.
+    minMax3( v0.x, v1.x, v2.x, min, max );
+    if( min > boxHalfSize.x || max < -boxHalfSize.x )
+    {
+        return false;
+    }
 
 
+    // Test in y direction.
+    minMax3( v0.y, v1.y, v2.y, min, max );
+    if( min > boxHalfSize.y || max < -boxHalfSize.y )
+    {
+        return false;
+    }
 
-    /* test in X-direction */
-
-    FINDMINMAX(v0[X],v1[X],v2[X],min,max);
-
-    if(min>boxhalfsize[X] || max<-boxhalfsize[X]) return 0;
-
-
-
-    /* test in Y-direction */
-
-    FINDMINMAX(v0[Y],v1[Y],v2[Y],min,max);
-
-    if(min>boxhalfsize[Y] || max<-boxhalfsize[Y]) return 0;
-
-
-
-    /* test in Z-direction */
-
-    FINDMINMAX(v0[Z],v1[Z],v2[Z],min,max);
-
-    if(min>boxhalfsize[Z] || max<-boxhalfsize[Z]) return 0;
-
-
+    // Test in z direction.
+    minMax3( v0.z, v1.z, v2.z, min, max );
+    if( min > boxHalfSize.z || max < -boxHalfSize.z )
+    {
+        return false;
+    }
 
     /* Bullet 2: */
-
     /*  test if the box intersects the plane of the triangle */
-
     /*  compute plane equation of triangle: normal*x+d=0 */
+    normal = Vector3f::cross( e0, e1 );
+    if( !planeBoxOverlap( normal, v0, boxHalfSize ) )
+    {
+        return false;
+    }
 
-    CROSS(normal,e0,e1);
-
-    // -NJMP- (line removed here)
-
-    if(!planeBoxOverlap(normal,v0,boxhalfsize)) return 0;   // -NJMP-
-
-
-
-    return 1;   /* box and triangle overlaps */
+    return true;   /* box and triangle overlaps */
 }
-#endif
 
 // static
 float GeometryUtils::pointToPlaneDistance( const Vector3f& point, const Vector4f& plane )

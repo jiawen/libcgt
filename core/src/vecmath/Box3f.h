@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <string>
 #include <vector>
 #include "vecmath/Vector3f.h"
@@ -109,18 +110,41 @@ public:
     // (intersection is unmodified if the intersection is empty)
     static bool intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection );
 
-    // Computes the intersection between this Box3f and a ray,
-    // with the ray parameterized as an origin and a direction,
-    // and a minimum intersection distance (default to 0).
-    // Calls intersectLine:
-    //   If both intersections are behind the origin, returns false.
-    //   Otherwise, sets tIntersect to the closer positive distance.
-    bool intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect, float tMin = 0 ) const;
-
-    // Computes the intersection between this Box3f and a line,
-    // with the line parameterized as an origin and a direction.
-    // If an intersection is found:
-    //   Returns true, with the parametric distances tNear and tFar.
-    //   tNear and tFar can both be < 0. tNear <= tFar.
-    bool intersectLine( const Vector3f& origin, const Vector3f& direction, float& tNear, float& tFar ) const;
 };
+
+// Compute the intersection between a box and a ray, with the ray
+// ray parameterized as an origin, direction, and a minimum intersection
+// distance (defaulting to 0).
+// Calls intersectLine:
+//   If both intersections are behind the origin, returns false.
+//   Otherwise, sets tIntersect to the closer positive distance.
+bool intersectRay( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& tIntersect, float tMin = 0 );
+
+// This function is useful for conservative rasterization and acceleration
+// structures.
+//
+// Carefully compute the intersection between a box and a ray, with the ray
+// ray parameterized as an origin, direction, and a minimum intersection
+// distance (defaulting to 0).
+//
+// It also returns which face of the box was hit. 0/1 for -/+ x, 2/3 for -/+ y,
+// and 4/5 for -/+ z.
+//
+// TODO(jiawen): correctly propagate NaN to handle edge on cases.
+// TODO(jiawen): maybe a Ray class isn't such a bad idea, with its limits.
+bool carefulIntersectBoxRay( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& t0, float& t1, int& t0Face, int& t1Face,
+    float rayTMin = 0,
+    float rayTMax = std::numeric_limits< float >::infinity() );
+
+// Compute the intersection between a box and a line with the line
+// parameterized as an origin and a direction.
+// If an intersection is found:
+//   Returns true, with the parametric distances tNear and tFar.
+//   tNear and tFar can both be < 0. tNear <= tFar.
+bool intersectLine( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& tNear, float& tFar );

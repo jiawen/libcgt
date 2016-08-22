@@ -21,7 +21,7 @@ class GLTexture
 {
 public:
 
-    enum class Target
+    enum class Target : GLenum
     {
         // Standard targets.
         TEXTURE_1D = GL_TEXTURE_1D,
@@ -43,6 +43,25 @@ public:
 
         // Texture buffer.
         TEXTURE_BUFFER = GL_TEXTURE_BUFFER
+    };
+
+    enum class SwizzleSource : GLenum
+    {
+        RED = GL_TEXTURE_SWIZZLE_R,
+        GREEN = GL_TEXTURE_SWIZZLE_G,
+        BLUE = GL_TEXTURE_SWIZZLE_B,
+        ALPHA = GL_TEXTURE_SWIZZLE_A
+        // Set RGBA using setSwizzleRGBA().
+    };
+
+    enum class SwizzleTarget : GLint
+    {
+        RED = GL_RED,
+        GREEN = GL_GREEN,
+        BLUE = GL_BLUE,
+        ALPHA = GL_ALPHA,
+        ZERO = GL_ZERO,
+        ONE = GL_ONE
     };
 
     // Returns the current active texture unit.
@@ -98,6 +117,15 @@ public:
     GLImageInternalFormat internalFormat() const;
     GLenum glInternalFormat() const;
     GLsizei numMipMapLevels() const;
+
+    // TODO(jiawen): get swizzle?
+
+    // Set the texture swizzle, such that a shader or fixed-function fragment
+    // operation reading from source produces the target instead.
+    void setSwizzle( SwizzleSource source, SwizzleTarget target );
+
+    // Sets all 4 source channels simultaneously.
+    void setSwizzleRGBA( SwizzleTarget targets[ 4 ] );
 
     void generateMipMaps();
 

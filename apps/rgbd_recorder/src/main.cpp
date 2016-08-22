@@ -8,8 +8,21 @@
 
 #include "Viewfinder.h"
 
+#include <core/vecmath/Box3f.h>
+
 int main( int argc, char* argv[] )
 {
+    Box3f b({ 2, 2, 2 });
+
+    Vector3f o{ 0, 0, -1.0f };
+    Vector3f d{ 0, 0, 1 };
+
+    float tNear;
+    float tFar;
+    bool isect = b.intersectLine(o, d, tNear, tFar);
+
+    return 0;
+
     if( argc < 2 )
     {
         printf( "Usage: %s <dir>\n", argv[0] );

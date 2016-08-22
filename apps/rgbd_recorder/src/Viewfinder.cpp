@@ -246,7 +246,7 @@ void Viewfinder::writeFrame( OpenNI2Camera::Frame frame )
         status += QString( " color frame %1 " ).arg( frame.colorFrameNumber );
         Array1DView< uint8_t > view( frame.rgb,
             frame.rgb.numElements() * sizeof( uint8x3 ) );
-        m_outputStream.writeFrame( 0, frame.colorFrameNumber,
+        m_outputStream.write( 0, frame.colorFrameNumber,
             frame.colorTimestamp, view );
     }
     if( frame.depthUpdated )
@@ -254,7 +254,7 @@ void Viewfinder::writeFrame( OpenNI2Camera::Frame frame )
         status += QString( " depth frame %1 " ).arg( frame.depthFrameNumber );
         Array1DView< uint8_t > view( frame.depth,
             frame.depth.numElements() * sizeof( uint16_t ) );
-        m_outputStream.writeFrame( 1, frame.depthFrameNumber,
+        m_outputStream.write( 1, frame.depthFrameNumber,
             frame.depthTimestamp, view );
     }
     emit statusChanged( status );

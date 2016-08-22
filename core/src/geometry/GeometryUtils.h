@@ -136,9 +136,10 @@ public:
         const Vector3f& v0, const Vector3f& v1, const Vector3f& v2,
         float& t, Vector3f& barycentrics );
 
-    // NOT IMPLEMENTED
-    //static bool triangleAABBOverlap( Vector3f* pv0, Vector3f* pv1, Vector3f* pv2,
-    //  BoundingBox3f* pBox );
+    // TODO(jiawen): rename? This is an overlap test
+    static bool boxTriangleIntersection(
+        const Vector3f& u0, const Vector3f& u1, const Vector3f& u2,
+        const Box3f& box );
 
     // plane is defined by dot( plane.xyz, X ) = plane.w
     static float pointToPlaneDistance( const Vector3f& point, const Vector4f& plane );

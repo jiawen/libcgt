@@ -61,7 +61,7 @@ const std::vector< StreamMetadata>& RGBDInputStream::metadata() const
 }
 
 Array1DView< const uint8_t > RGBDInputStream::read( uint32_t& streamId,
-    int& frameId, int64_t& timestamp )
+    int& frameIndex, int64_t& timestamp )
 {
     bool ok;
     if( isValid() )
@@ -69,7 +69,7 @@ Array1DView< const uint8_t > RGBDInputStream::read( uint32_t& streamId,
         ok = m_stream.read( streamId );
         if( ok && streamId >= 0 && streamId < m_buffers.size() )
         {
-            ok = m_stream.read( frameId );
+            ok = m_stream.read( frameIndex );
             if( ok )
             {
                 ok = m_stream.read( timestamp );
@@ -155,7 +155,7 @@ bool RGBDOutputStream::close()
     return m_stream.close();
 }
 
-bool RGBDOutputStream::write( uint32_t streamId, int frameId,
+bool RGBDOutputStream::write( uint32_t streamId, int frameIndex,
     int64_t timestamp, Array1DView< const uint8_t > data ) const
 {
     if( streamId >= m_metadata.size() )
@@ -168,7 +168,7 @@ bool RGBDOutputStream::write( uint32_t streamId, int frameId,
         return false;
     }
 
-    if( !m_stream.write( frameId ) )
+    if( !m_stream.write( frameIndex ) )
     {
         return false;
     }

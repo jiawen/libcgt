@@ -11,7 +11,7 @@ namespace libcgt { namespace camera_wrappers { namespace openni2 {
 // static
 uint16_t OpenNI2Camera::minimumDepthMillimeters()
 {
-    return 800;
+    return 500;
 }
 
 // static

@@ -291,11 +291,17 @@ bool Box3f::intersect( const Box3f& b0, const Box3f& b1, Box3f& intersection )
     return false;
 }
 
-bool Box3f::intersectRay( const Vector3f& origin, const Vector3f& direction, float& tIntersect, float tMin ) const
+bool intersectRay( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& tIntersect, float tMin )
 {
+    assert( box.isStandard() );
+    assert( !box.isEmpty() );
+
     float tNear;
     float tFar;
-    bool intersect = intersectLine( origin, direction, tNear, tFar );
+    bool intersect = intersectLine( box, rayOrigin, rayDirection,
+        tNear, tFar );
     if( intersect )
     {
         if( tNear >= tMin )
@@ -314,16 +320,20 @@ bool Box3f::intersectRay( const Vector3f& origin, const Vector3f& direction, flo
     return intersect;
 }
 
-bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
-    float& tNear, float& tFar ) const
+bool intersectLine( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& tNear, float& tFar )
 {
-    // compute t to each face
-    Vector3f rcpDir = 1.0f / direction;
+    assert( box.isStandard() );
+    assert( !box.isEmpty() );
 
-    // three "bottom" faces (min of the box)
-    Vector3f tBottom = rcpDir * ( minimum() - origin );
+    // Compute t to each face.
+    Vector3f rcpDir = 1.0f / rayDirection;
+
+    // Three "bottom" faces (min of the box).
+    Vector3f tBottom = rcpDir * ( box.origin - rayOrigin );
     // three "top" faces (max of the box)
-    Vector3f tTop = rcpDir * ( maximum() - origin );
+    Vector3f tTop = rcpDir * ( box.rightTopFront() - rayOrigin );
 
     // find the smallest and largest distances along each axis
     Vector3f tMin = libcgt::core::math::minimum( tBottom, tTop );
@@ -336,6 +346,65 @@ bool Box3f::intersectLine( const Vector3f& origin, const Vector3f& direction,
     tFar = libcgt::core::math::minimum( tMax );
 
     return tFar > tNear;
+}
+
+bool carefulIntersectBoxRay( const Box3f& box,
+    const Vector3f& rayOrigin, const Vector3f& rayDirection,
+    float& t0, float& t1, int& t0Face, int& t1Face,
+    float rayTMin, float rayTMax )
+{
+    assert( box.isStandard() );
+    assert( !box.isEmpty() );
+
+    t0 = rayTMin;
+    t1 = rayTMax;
+    t0Face = -1;
+    t1Face = -1;
+
+    // Compute t to each face.
+    Vector3f rcpDir = 1.0f / rayDirection;
+
+    Vector3f boxMax = box.rightTopFront();
+
+    for( int i = 0; i < 3; ++i )
+    {
+        // Compute the intersection between the line and the slabs along the
+        // i-th axis, parameterized as [tNear, tFar].
+        float rcpDir = 1.0f / rayDirection[ i ];
+        float tNear = rcpDir * ( box.origin[ i ] - rayOrigin[ i ] );
+        float tFar = rcpDir * ( boxMax[ i ] - rayOrigin[ i ] );
+
+        // Which face we're testing against.
+        int nearFace = 2 * i;
+        int farFace = 2 * i + 1;
+
+        // Swap such that tNear < tFAr.
+        if( tNear > tFar )
+        {
+            std::swap( tNear, tFar );
+            std::swap( nearFace, farFace );
+        }
+
+        // Compute the set intersection between [tNear, tFar] and [t0, t1].
+        if( tNear > t0 )
+        {
+            t0 = tNear;
+            t0Face = nearFace;
+        }
+        if( tFar < t1 )
+        {
+            t1 = tFar;
+            t1Face = farFace;
+        }
+
+        // Early abort if the range is empty.
+        if( t0 > t1 )
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // static
