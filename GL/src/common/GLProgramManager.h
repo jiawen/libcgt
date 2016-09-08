@@ -15,9 +15,10 @@ public:
     void addFromFile( const std::string& programName,
         GLSeparableProgram::Type type,
         const std::string& sourceFile );
+
     void addFromSourceCode( const std::string& programName,
         GLSeparableProgram::Type type,
-        const std::string& sourceFile );
+        const std::string& sourceCode );
 
     GLSeparableProgram& get( const std::string& programName );
 

@@ -10,6 +10,8 @@
 #include <GL/glew.h>
 #endif
 
+#include <common/Array1DView.h>
+
 class Matrix4f;
 class Vector2f;
 class Vector3f;
@@ -43,8 +45,9 @@ public:
 
     // Construct a separable GL shader program given source code (as a string).
     // If it successfully compiled, isValid() will be true.
-    // You can check the compilation info log with infoLog().
-    GLSeparableProgram( Type shaderType, const char* sourceCode );
+    // If infoLog != nullptr, returns the info log.
+    GLSeparableProgram( Type shaderType, const char* sourceCode,
+        std::string* infoLog = nullptr );
 
     // TODO(VS2015): = default
     GLSeparableProgram( GLSeparableProgram&& move );
@@ -54,13 +57,15 @@ public:
 
     GLuint id() const;
 
-    std::string infoLog() const;
-
     // Returns true if this program is valid (id() != 0).
     bool isValid() const;
 
     Type type() const;
 
+    void setUniformHandle( GLint uniformLocation, GLuint64 h );
+    // handles must be packed.
+    void setUniformHandleArray( GLint uniformLocation,
+        Array1DView< GLuint64 > handles );
     void setUniformInt( GLint uniformLocation, int x );
     void setUniformFloat( GLint uniformLocation, float x );
     void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& m );
@@ -80,4 +85,5 @@ private:
     Type m_type = Type::NO_TYPE;
 
     void destroy();
+    std::string getInfoLog() const;
 };

@@ -20,10 +20,15 @@ GLSeparableProgram GLSeparableProgram::fromFile(
 }
 
 GLSeparableProgram::GLSeparableProgram( GLSeparableProgram::Type shaderType,
-    const char* sourceCode )
+    const char* sourceCode, std::string* infoLog )
 {
     GLenum type = static_cast< GLenum >( shaderType );
     GLuint id = glCreateShaderProgramv( type, 1, &sourceCode );
+
+    if( infoLog != nullptr )
+    {
+        *infoLog = getInfoLog();
+    }
 
     GLint status;
     glGetProgramiv( id, GL_LINK_STATUS, &status );
@@ -72,24 +77,6 @@ GLuint GLSeparableProgram::id() const
     return m_id;
 }
 
-std::string GLSeparableProgram::infoLog() const
-{
-    GLint length;
-    glGetProgramiv( id(), GL_INFO_LOG_LENGTH, &length );
-    if( length > 1 )
-    {
-        std::string log( length - 1, '\0' );
-        char* bufferStart = &( log[ 0 ] );
-        GLsizei tmp;
-        glGetProgramInfoLog( id(), length, &tmp, bufferStart );
-        return log;
-    }
-    else
-    {
-        return std::string();
-    }
-}
-
 bool GLSeparableProgram::isValid() const
 {
     return( id() != 0 && type() != Type::NO_TYPE );
@@ -100,10 +87,23 @@ GLSeparableProgram::Type GLSeparableProgram::type() const
     return m_type;
 }
 
-void GLSeparableProgram::setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix )
+void GLSeparableProgram::setUniformHandle( GLint uniformLocation, GLuint64 h )
 {
     assert( isValid() );
-    glProgramUniformMatrix4fv( id(), uniformLocation, 1, false, matrix );
+    glProgramUniformHandleui64ARB( id(), uniformLocation, h );
+}
+
+void GLSeparableProgram::setUniformHandleArray( GLint uniformLocation,
+    Array1DView< GLuint64 > handles )
+{
+    assert( isValid() );
+    assert( handles.packed() );
+
+    if( handles.packed() )
+    {
+        glProgramUniformHandleui64vARB( id(), uniformLocation, handles.size(),
+            handles );
+    }
 }
 
 void GLSeparableProgram::setUniformInt( GLint uniformLocation, int x )
@@ -116,6 +116,13 @@ void GLSeparableProgram::setUniformFloat( GLint uniformLocation, float x )
 {
     assert( isValid() );
     glProgramUniform1f( id(), uniformLocation, x );
+}
+
+void GLSeparableProgram::setUniformMatrix4f( GLint uniformLocation, const Matrix4f& matrix )
+{
+    assert( isValid() );
+    glProgramUniformMatrix4fv( id(), uniformLocation, 1, false, matrix );
+
 }
 
 void GLSeparableProgram::setUniformVector2f( GLint uniformLocation, const Vector2f& v )
@@ -165,5 +172,23 @@ void GLSeparableProgram::destroy()
     {
         glDeleteProgram( m_id );
         m_id = 0;
+    }
+}
+
+std::string GLSeparableProgram::getInfoLog() const
+{
+    GLint length;
+    glGetProgramiv( id(), GL_INFO_LOG_LENGTH, &length );
+    if( length > 1 )
+    {
+        std::string log( length - 1, '\0' );
+        char* bufferStart = &( log[ 0 ] );
+        GLsizei tmp;
+        glGetProgramInfoLog( id(), length, &tmp, bufferStart );
+        return log;
+    }
+    else
+    {
+        return std::string();
     }
 }

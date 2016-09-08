@@ -9,10 +9,10 @@ void GLProgramManager::addFromFile( const std::string& programName,
 
 void GLProgramManager::addFromSourceCode( const std::string& programName,
     GLSeparableProgram::Type type,
-    const std::string& sourceFile )
+    const std::string& sourceCode )
 {
     m_programsByName.emplace( programName,
-        GLSeparableProgram( type, sourceFile.c_str() ) );
+        GLSeparableProgram( type, sourceCode.c_str() ) );
 }
 
 GLSeparableProgram& GLProgramManager::get( const std::string& programName )
