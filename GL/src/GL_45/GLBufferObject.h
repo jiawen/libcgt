@@ -10,6 +10,11 @@
 #include "GLImageFormat.h"
 #include "GLImageInternalFormat.h"
 
+
+// TODO(jiawen): GLBufferObject needs:
+//   a default constructor for invalid.
+//   a default map() that maps the entire buffer as a uint8_t
+
 // An object-oriented wrapper around OpenGL buffer objects. This wrapper uses
 // OpenGL 4.5's direct state access and immutable data store feature.
 class GLBufferObject

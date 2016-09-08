@@ -157,11 +157,11 @@ Matrix2f::operator float* ()
 
 std::string Matrix2f::toString() const
 {
-    const int kFieldWidth = 8;
-    const int kPrecision = 4;
+    const int FIELD_WIDTH = 8;
+    const int PRECISION = 4;
 
     std::ostringstream sstream;
-    sstream << std::fixed << std::setprecision( kPrecision ) <<
+    sstream << std::fixed << std::setprecision( PRECISION ) <<
         std::setiosflags( std::ios::right );
     sstream << std::endl;
 
@@ -170,7 +170,7 @@ std::string Matrix2f::toString() const
         sstream << "[ ";
         for( int j = 0; j < 2; ++j )
         {
-            sstream << std::setw( kFieldWidth ) << ( *this )( i, j ) << " ";
+            sstream << std::setw( FIELD_WIDTH ) << ( *this )( i, j ) << " ";
         }
         sstream << "]" << std::endl;
     }
