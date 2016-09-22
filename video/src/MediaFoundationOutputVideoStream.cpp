@@ -338,8 +338,9 @@ HRESULT MediaFoundationOutputVideoStream::initializeOutputType()
         format = MFVideoFormat_WMV3;
         break;
 
-    case MediaFoundationOutputVideoStream::Codec::MOTION_MPEG:
+    case MediaFoundationOutputVideoStream::Codec::MOTION_JPEG:
         format = MFVideoFormat_MJPG;
+	break;
 
     default:
         format = MFVideoFormat_H264;

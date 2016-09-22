@@ -21,7 +21,7 @@ public:
         H264,
         VC1,
         WMV9,
-        MOTION_MPEG
+        MOTION_JPEG
     };
 
     static int recommendedBitsPerSecond( int width, int height, int framesPerSecondNumerator = 24,
