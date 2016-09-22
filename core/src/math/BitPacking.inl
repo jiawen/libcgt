@@ -66,7 +66,6 @@ void BitPacking::byteSwap16( Array1DView< uint16_t > view16 )
             uint64_t a = view64[ i ];
             uint64_t b = byteSwap16x4( a );
             view64[ i ] = b;
-            // view64[i] = byteSwap16x4( view64[i] );
         }
 
         // Input length may not be a multiple of 4.
@@ -92,8 +91,8 @@ void BitPacking::byteSwap16( Array1DView< uint16_t > view16 )
 // static
 uint32_t BitPacking::mortonPack2D( uint16_t x, uint16_t y )
 {
-    static const unsigned int B[ ] = { 0x55555555, 0x33333333, 0x0f0f0f0f, 0x00ff00ff };
-    static const unsigned int S[ ] = { 1, 2, 4, 8 };
+    static const unsigned int B[] = { 0x55555555, 0x33333333, 0x0f0f0f0f, 0x00ff00ff };
+    static const unsigned int S[] = { 1, 2, 4, 8 };
 
     // Interleave lower 16 bits of x and y, so the bits of x
     // are in the even positions and bits from y in the odd.

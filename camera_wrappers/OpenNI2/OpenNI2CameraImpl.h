@@ -13,8 +13,8 @@ public:
     using Intrinsics = libcgt::core::cameras::Intrinsics;
     using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
 
-    OpenNI2CameraImpl( StreamConfig colorConfig, StreamConfig depthConfig,
-        StreamConfig infraredConfig, const char* uri );
+    OpenNI2CameraImpl( const std::vector< StreamConfig >& streamConfig,
+        const char* uri );
     virtual ~OpenNI2CameraImpl();
     // TODO(VS2015): move constructor = default
 
@@ -61,9 +61,9 @@ private:
 
     openni::Device m_device;
 
-    const StreamConfig m_colorConfig;
-    const StreamConfig m_depthConfig;
-    const StreamConfig m_infraredConfig;
+    StreamConfig m_colorConfig;
+    StreamConfig m_depthConfig;
+    StreamConfig m_infraredConfig;
 
     openni::VideoStream m_colorStream;
     openni::VideoStream m_depthStream;

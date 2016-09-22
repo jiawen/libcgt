@@ -24,7 +24,8 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
     }
 
     lodepng::State state;
-    error = lodepng_inspect( &width, &height, &state, encoded.data( ), encoded.size( ) );
+    error = lodepng_inspect( &width, &height, &state,
+        encoded.data(), encoded.size() );
     if( error != 0 )
     {
         return output;
@@ -42,7 +43,8 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
              state.info_png.color.colortype;
 
     unsigned char* bits;
-    error = lodepng_decode( &bits, &width, &height, &state, encoded.data( ), encoded.size( ) );
+    error = lodepng_decode( &bits, &width, &height, &state,
+        encoded.data(), encoded.size() );
     if( error != 0 )
     {
         return output;
@@ -104,15 +106,16 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
         break;
 
     default:
-        // should never get here
-        // returns output.valid = false;
+        // Should never get here.
+        // Returns output.valid = false.
         break;
     }
 
-    // Swap endianness of 16-bit outputs
+    // Swap endianness of 16-bit outputs.
     if( output.bitDepth == 16 )
     {
-        Array1DView< uint16_t > bitsView( bits, output.nComponents * width * height );
+        Array1DView< uint16_t > bitsView( bits,
+            output.nComponents * width * height );
         BitPacking::byteSwap16( bitsView );
     }
 
@@ -120,59 +123,95 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
 }
 
 // static
-bool PNGIO::write( const std::string& filename, Array2DView< const uint8x3 > image )
+bool PNGIO::write( const std::string& filename,
+    Array2DView< const uint8_t > image )
 {
-    Array2D< uint8x3 > tmpImage;
-    const uint8_t* pSrcPointer;
+    Array2D< uint8_t > tmpImage;
+    const uint8_t* srcPointer;
 
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        libcgt::core::arrayutils::copy< uint8x3 >( image, tmpImage );
-        pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
+        libcgt::core::arrayutils::copy< uint8_t >( image, tmpImage );
+        srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
     }
     else
     {
-        pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
+        srcPointer = reinterpret_cast< const uint8_t* >( image.pointer() );
     }
 
-    unsigned int errVal = lodepng_encode24_file
-    (
-        filename.c_str(),
-        pSrcPointer,
-        image.width(),
-        image.height()
-    );
-
+    unsigned int errVal = lodepng::encode(
+        filename, srcPointer, image.width(), image.height(), LCT_GREY );
     bool succeeded = ( errVal == 0 );
     return succeeded;
 }
 
 // static
-bool PNGIO::write( const std::string& filename, Array2DView< const uint8x4 > image )
+bool PNGIO::write( const std::string& filename,
+    Array2DView< const uint8x3 > image )
+{
+    Array2D< uint8x3 > tmpImage;
+    const uint8_t* srcPointer;
+
+    if( !image.packed() )
+    {
+        tmpImage.resize( image.size() );
+        libcgt::core::arrayutils::copy< uint8x3 >( image, tmpImage );
+        srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
+    }
+    else
+    {
+        srcPointer = reinterpret_cast< const uint8_t* >( image.pointer() );
+    }
+
+    unsigned int errVal = lodepng::encode(
+        filename, srcPointer, image.width(), image.height(), LCT_RGB );
+    bool succeeded = ( errVal == 0 );
+    return succeeded;
+}
+
+// static
+bool PNGIO::write( const std::string& filename,
+    Array2DView< const uint8x4 > image )
 {
     Array2D< uint8x4 > tmpImage;
-    const uint8_t* pSrcPointer;
+    const uint8_t* srcPointer;
 
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
         libcgt::core::arrayutils::copy< uint8x4 >( image, tmpImage );
-        pSrcPointer = reinterpret_cast< uint8_t* >( tmpImage.rowPointer( 0 ) );
+        srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
     }
     else
     {
-        pSrcPointer = reinterpret_cast< const uint8_t* >( image.rowPointer( 0 ) );
+        srcPointer = reinterpret_cast< const uint8_t* >( image.pointer() );
     }
 
-    unsigned int errVal = lodepng_encode32_file
-    (
-        filename.c_str(),
-        pSrcPointer,
-        image.width(),
-        image.height()
+    unsigned int errVal = lodepng::encode(
+        filename, srcPointer, image.width(), image.height(), LCT_RGBA );
+    bool succeeded = ( errVal == 0 );
+    return succeeded;
+}
+
+// static
+bool PNGIO::write( const std::string& filename,
+    Array2DView< const uint16_t > image )
+{
+    // TODO: use BitPacking::byteSwap16 on the buffer once it supports a
+    // destination.
+    Array2D< uint16_t > tmpImage( image.size() );
+    libcgt::core::arrayutils::map( image, tmpImage.writeView(),
+        [&] ( uint16_t z )
+        {
+            return BitPacking::byteSwap16( z );
+        }
     );
 
+    const uint8_t* srcPointer = reinterpret_cast< const uint8_t* >(
+        tmpImage.pointer() );
+    unsigned int errVal = lodepng::encode(
+        filename, srcPointer, image.width(), image.height(), LCT_GREY, 16U );
     bool succeeded = ( errVal == 0 );
     return succeeded;
 }

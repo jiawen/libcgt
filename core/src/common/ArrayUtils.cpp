@@ -7,22 +7,22 @@ namespace libcgt { namespace core { namespace arrayutils {
 template<>
 bool fill( Array2DView< uint8_t > view, const uint8_t& value )
 {
-    if( view.isNull( ) )
+    if( view.isNull() )
     {
         return false;
     }
 
-    if( view.packed( ) )
+    if( view.packed() )
     {
-        memset( view.pointer( ), value, view.numElements( ) );
+        memset( view.pointer(), value, view.numElements() );
         return true;
     }
 
-    if( view.elementsArePacked( ) )
+    if( view.elementsArePacked() )
     {
         // Fill w bytes at a time.
-        int w = view.width( );
-        for( int y = 0; y < view.height( ); ++y )
+        int w = view.width();
+        for( int y = 0; y < view.height(); ++y )
         {
             memset( view.rowPointer( y ), value, w );
         }
@@ -30,7 +30,7 @@ bool fill( Array2DView< uint8_t > view, const uint8_t& value )
     }
 
     // Nothing is packed, iterate.
-    int ne = view.numElements( );
+    int ne = view.numElements();
     for( int k = 0; k < ne; ++k )
     {
         view[ k ] = value;

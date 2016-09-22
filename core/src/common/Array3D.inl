@@ -66,7 +66,7 @@ template< typename T >
 Array3D< T >::Array3D( const Array3D< T >& copy )
 {
     resize( copy.m_size, copy.m_stride );
-    if( copy.notNull( ) )
+    if( copy.notNull() )
     {
         memcpy( m_data, copy.m_data, m_stride.z * m_size.z );
     }
@@ -270,13 +270,13 @@ void Array3D< T >::resize( const Vector3i& size, const Vector3i& stride )
 }
 
 template< typename T >
-const T* Array3D< T >::pointer( ) const
+const T* Array3D< T >::pointer() const
 {
     return reinterpret_cast< T* >( m_data );
 }
 
 template< typename T >
-T* Array3D< T >::pointer( )
+T* Array3D< T >::pointer()
 {
     return reinterpret_cast< T* >( m_data );
 }

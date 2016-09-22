@@ -54,10 +54,9 @@ EuclideanTransform OpenNI2Camera::colorFromDepthExtrinsicsMeters()
     return output;
 }
 
-OpenNI2Camera::OpenNI2Camera( StreamConfig colorConfig,
-    StreamConfig depthConfig, StreamConfig infraredConfig, const char* uri ) :
-    m_impl( new OpenNI2CameraImpl(
-        colorConfig, depthConfig, infraredConfig, uri ) )
+OpenNI2Camera::OpenNI2Camera( const std::vector< StreamConfig >& streamConfig,
+    const char* uri ) :
+    m_impl( new OpenNI2CameraImpl( streamConfig, uri ) )
 {
 
 }

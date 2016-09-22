@@ -14,12 +14,39 @@ namespace libcgt { namespace camera_wrappers { namespace openni2 {
 
 bool OpenNI2CameraImpl::s_isOpenNIInitialized = false;
 
-OpenNI2CameraImpl::OpenNI2CameraImpl( StreamConfig colorConfig,
-    StreamConfig depthConfig, StreamConfig infraredConfig, const char* uri ) :
-    m_colorConfig( colorConfig ),
-    m_depthConfig( depthConfig ),
-    m_infraredConfig( infraredConfig )
+OpenNI2CameraImpl::OpenNI2CameraImpl(
+    const std::vector< StreamConfig >& streamConfig, const char* uri )
 {
+    // TODO: do more validation: you can't have RGB and IR at the same
+    // time, etc.
+    // Then move it into a function and re-introduce const.
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::COLOR )
+        {
+            m_colorConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::DEPTH )
+        {
+            m_depthConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::INFRARED )
+        {
+            m_infraredConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
     const bool enableSync = true;
 
     if( !OpenNI2CameraImpl::s_isOpenNIInitialized )

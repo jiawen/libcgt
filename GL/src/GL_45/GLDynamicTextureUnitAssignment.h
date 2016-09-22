@@ -2,8 +2,8 @@
 
 #include <memory>
 
-class GLProgram;
 class GLSamplerObject;
+class GLSeparableProgram;
 class GLTexture;
 
 // A dynamic assignment of textures to texture units and sampler names.
@@ -14,22 +14,24 @@ class GLDynamicTextureUnitAssignment
 {
 public:
 
-    GLDynamicTextureUnitAssignment( std::shared_ptr< GLProgram > pProgram );
+    GLDynamicTextureUnitAssignment(
+        std::shared_ptr< GLSeparableProgram > program );
 
     // Binds pTexture to the next available texture unit i (starting at 0),
     // and sets the sampler to i.
-    void assign( const char* samplerName, std::shared_ptr< GLTexture > pTexture );
+    void assign( const char* samplerName, GLTexture& texture );
 
     // Binds pTexture and pSamplerObject to the next available texture unit i
     // (starting at 0), and sets the sampler to i.
     void assign( const char* samplerName,
-        std::shared_ptr< GLTexture > pTexture, std::shared_ptr< GLSamplerObject > pSamplerObject );
+        GLTexture& texture, GLSamplerObject& samplerObject );
 
     // Resets the counter to 0.
     void reset();
 
 private:
 
-    std::shared_ptr< GLProgram > m_pProgram;
+    // TODO(jiawen): consider using a raw pointer.
+    std::shared_ptr< GLSeparableProgram > m_program;
     int m_count;
 };

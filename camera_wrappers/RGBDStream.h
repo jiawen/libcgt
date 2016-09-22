@@ -11,11 +11,13 @@
 #include <vecmath/Vector2i.h>
 
 #include "PixelFormat.h"
+#include "StreamType.h"
 
 namespace libcgt { namespace camera_wrappers {
 
 struct StreamMetadata
 {
+    StreamType type;
     PixelFormat format;
     Vector2i size; // width, height
 };
@@ -31,7 +33,7 @@ public:
 
     bool isValid() const;
 
-    const std::vector< StreamMetadata>& metadata() const;
+    const std::vector< StreamMetadata >& metadata() const;
 
     Array1DView< const uint8_t > read( uint32_t& streamId, int& frameIndex,
         int64_t& timestamp );

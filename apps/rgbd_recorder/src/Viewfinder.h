@@ -19,9 +19,12 @@ class Viewfinder : public QWidget
 public:
 
     using OpenNI2Camera = libcgt::camera_wrappers::openni2::OpenNI2Camera;
+    using StreamConfig = libcgt::camera_wrappers::StreamConfig;
+    using StreamMetadata = libcgt::camera_wrappers::StreamMetadata;
 
     // dir should be something like "/tmp". The trailing slash is optional.
-    Viewfinder( const std::string& dir, QWidget* parent = nullptr );
+    Viewfinder( const std::vector< StreamConfig >& streamConfig,
+        const std::string& dir, QWidget* parent = nullptr );
 
     void updateRGB( Array2DView< const uint8x3 > frame );
     void updateBGRA( Array2DView< const uint8x4 > frame );
@@ -55,6 +58,11 @@ private:
     std::string m_filename;
 
     std::unique_ptr< OpenNI2Camera > m_oniCamera;
+    std::vector< StreamConfig > m_streamConfig;
+    std::vector< StreamMetadata > m_outputMetadata;
+    int m_colorStreamIndex = -1;
+    int m_depthStreamIndex = -1;
+    int m_infraredStreamIndex = -1;
 
     Array2D< uint8x3 > m_rgb;
     Array2D< uint8x4 > m_bgra;

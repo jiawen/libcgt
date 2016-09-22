@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include <common/Array2DView.h>
 #include <common/BasicTypes.h>
@@ -78,15 +79,22 @@ public:
     static EuclideanTransform colorFromDepthExtrinsicsMeters();
 
     // TODO(jiawen): Useful configurations:
-    // StreamConfig infrared{ Vector2i{ 640, 480 }, 30, ::PixelFormat::GRAY_U16 }
+    // StreamConfig infrared{ StreamType::INFRARED, Vector2i{ 640, 480 }, 30, ::PixelFormat::GRAY_U16 }
     // Range is [0, 1023].
 
-    OpenNI2Camera(
-        StreamConfig colorConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888, false },
-        StreamConfig depthConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16, false },
-        StreamConfig infraredConfig = StreamConfig(),
+    OpenNI2Camera( const std::vector< StreamConfig >& streamConfig =
+        {
+            {
+                StreamType::COLOR,
+                { 640, 480 }, PixelFormat::RGB_U888, 30,
+                false
+            },
+            {
+                StreamType::DEPTH,
+                { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30,
+                false
+            }
+        },
         const char* uri = nullptr ); // nullptr means "any device"
 
     ~OpenNI2Camera();

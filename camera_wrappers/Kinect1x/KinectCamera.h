@@ -24,6 +24,7 @@ public:
 
     using Intrinsics = libcgt::core::cameras::Intrinsics;
     using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
+    using StreamConfig = libcgt::camera_wrappers::StreamConfig;
 
     enum class Event
     {
@@ -162,6 +163,10 @@ public:
     static const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_INDEX >, int >& boneIndicesForJoints();
 #endif
 
+    // TODO: update this documentation.
+    // TODO(jiawen): pass in extra flags for enabling player index and the
+    // pixel format.
+    //
     // Create a Kinect device.
     //
     // deviceIndex should be between [0, numDevices()),
@@ -184,22 +189,30 @@ public:
     // colorResolution and depthResolution are self-explanatory.
     //
     ///  Restrictions:
-    //   - colorResolution depends on the colorType:
+    //   - color resolution depends on the color pixel format:
     //     - NUI_IMAGE_TYPE_COLOR: 640x480 or 1280x960.
     //     - NUI_IMAGE_TYPE_COLOR_YUV: 640x480
     //     - NUI_IMAGE_TYPE_COLOR_RAW_YUV: 640x480
-    //     - NUI_IMAGE_TYPE_COLOR_INFRARED: 640x480
-    //   - depthResolution depends on whether player index tracking is enabled.
+    //   - depth resolution depends on whether player index tracking is
+    //     enabled.
     //     - DEPTH: 80x60, 320x240, or 640x480.
     //     - DEPTH_AND_PLAYER_INDEX: 80,60 or 320x240.
-    // TODO(jiawen): pass in extra flags for enabling player index and the
-    // pixel format.
+    //   - infrared resolution can only be 640x480. The dynamic range is
+    //     [64, 65536).
     KinectCamera(
-        StreamConfig colorConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::RGB_U888, false },
-        StreamConfig depthConfig =
-            StreamConfig{ { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16, false },
-        StreamConfig infraredConfig = StreamConfig(),
+        const std::vector< StreamConfig >& streamConfig =
+        {
+            {
+                StreamType::COLOR,
+                { 640, 480 }, PixelFormat::RGB_U888, 30,
+                false
+            },
+            {
+                StreamType::DEPTH,
+                { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30,
+                false
+            }
+        },
         int deviceIndex = 0
     );
 

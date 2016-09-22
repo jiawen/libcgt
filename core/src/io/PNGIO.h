@@ -11,7 +11,7 @@ class PNGIO
 public:
 
     // TODO: implement uint16x3 / uint16x4 (16-bit) input.
-    // TODO: needs big-endian input.
+    // TODO: LodePNG needs big-endian input.
     struct PNGData
     {
         bool valid;
@@ -32,6 +32,13 @@ public:
 
     static PNGData read( const std::string& filename );
 
-    static bool write( const std::string& filename, Array2DView< const uint8x3 > image );
-    static bool write( const std::string& filename, Array2DView< const uint8x4 > image );
+    static bool write( const std::string& filename,
+        Array2DView< const uint8_t > image );
+    static bool write( const std::string& filename,
+        Array2DView< const uint8x3 > image );
+    static bool write( const std::string& filename,
+        Array2DView< const uint8x4 > image );
+
+    static bool write( const std::string& filename,
+        Array2DView< const uint16_t > image );
 };

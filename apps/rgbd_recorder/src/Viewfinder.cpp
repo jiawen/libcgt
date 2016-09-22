@@ -26,15 +26,12 @@ using libcgt::qt_interop::viewGrayscale8;
 using libcgt::qt_interop::viewRGB32AsBGRX;
 using libcgt::qt_interop::viewRGB32AsBGR;
 
-Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
+Viewfinder::Viewfinder( const std::vector< StreamConfig >& streamConfig,
+    const std::string& dir, QWidget* parent ) :
     m_nfb( pystring::os::path::join( dir, "recording_" ), ".rgbd" ),
-    m_oniCamera( std::unique_ptr< OpenNI2Camera >( new OpenNI2Camera
-        (
-            StreamConfig( { 640, 480 }, 30, PixelFormat::RGB_U888, false ),
-            StreamConfig( { 640, 480 }, 30, PixelFormat::DEPTH_MM_U16, false ),
-            StreamConfig()
-        )
-    ) ),
+    m_oniCamera( std::unique_ptr< OpenNI2Camera >(
+        new OpenNI2Camera( streamConfig ) ) ),
+    m_streamConfig( streamConfig ),
     m_rgb( m_oniCamera->colorConfig().resolution ),
     m_depth( m_oniCamera->depthConfig().resolution ),
     m_infrared( m_oniCamera->infraredConfig().resolution ),
@@ -51,6 +48,25 @@ Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
 {
     if( m_oniCamera->isValid() )
     {
+        for( size_t i = 0; i < m_streamConfig.size(); ++i )
+        {
+            const StreamConfig& config = m_streamConfig[ i ];
+            m_outputMetadata.push_back( StreamMetadata{
+                config.type, config.pixelFormat, config.resolution } );
+            if( config.type == StreamType::COLOR )
+            {
+                m_colorStreamIndex = i;
+            }
+            if( config.type == StreamType::DEPTH )
+            {
+                m_depthStreamIndex = i;
+            }
+            if( config.type == StreamType::INFRARED )
+            {
+                m_infraredStreamIndex = i;
+            }
+        }
+
         m_oniCamera->start();
         setFixedSize
         (
@@ -139,13 +155,13 @@ void Viewfinder::setAeEnabled( bool enabled )
 
 void Viewfinder::setExposure( int value )
 {
-    printf( "setting exposure to %d\n" , value);
+    printf( "Setting exposure to %d\n" , value);
     m_oniCamera->setExposure( value );
 }
 
 void Viewfinder::setGain( int value )
 {
-    printf( "setting gain to %d\n", value );
+    printf( "Setting gain to %d\n", value );
     m_oniCamera->setGain( value );
 }
 
@@ -161,17 +177,8 @@ void Viewfinder::paintEvent( QPaintEvent* e )
 
     painter.drawImage( 0, 0, m_colorImage );
     painter.drawImage( m_colorImage.width(), 0, m_depthImage );
-    painter.drawImage( m_colorImage.width() + m_depthImage.width(), 0, m_infraredImage );
-
-#if 0
-    painter.setPen( m_yellowPen );
-    QFont font = painter.font();
-    font.setPointSize( 96 );
-    painter.setFont( font );
-    int flags = Qt::AlignCenter;
-    painter.drawText( 0, 0, 640, 480, flags,
-        QString( "%1" ).arg( m_nSecondsUntilNextShot ) );
-#endif
+    painter.drawImage(
+        m_colorImage.width() + m_depthImage.width(), 0, m_infraredImage );
 }
 
 void Viewfinder::startWriting()
@@ -185,16 +192,11 @@ void Viewfinder::startWriting()
             filename = m_nfb.filenameForNumber( m_nextFileNumber );
         }
         m_filename = filename;
+        m_outputStream = RGBDOutputStream(
+            m_outputMetadata, m_filename.c_str() );
 
-        std::vector< StreamMetadata > metadata =
-        {
-            { PixelFormat::RGB_U888, m_oniCamera->colorConfig().resolution },
-            { PixelFormat::DEPTH_MM_U16, m_oniCamera->depthConfig().resolution }
-        };
-
-        m_outputStream = RGBDOutputStream( metadata, m_filename.c_str() );
-
-        emit statusChanged( QString( "Writing to: " ) + QString::fromStdString( m_filename ) );
+        emit statusChanged( QString( "Writing to: " ) +
+            QString::fromStdString( m_filename ) );
     }
 }
 
@@ -240,13 +242,14 @@ void Viewfinder::onViewfinderTimeout()
 
 void Viewfinder::writeFrame( OpenNI2Camera::Frame frame )
 {
-    QString status = QString( "Writing to: " ) + QString::fromStdString( m_filename );
+    QString status = QString( "Writing to: " ) +
+        QString::fromStdString( m_filename );
     if( frame.colorUpdated )
     {
         status += QString( " color frame %1 " ).arg( frame.colorFrameNumber );
         Array1DView< uint8_t > view( frame.rgb,
             frame.rgb.numElements() * sizeof( uint8x3 ) );
-        m_outputStream.write( 0, frame.colorFrameNumber,
+        m_outputStream.write( m_colorStreamIndex, frame.colorFrameNumber,
             frame.colorTimestamp, view );
     }
     if( frame.depthUpdated )
@@ -254,8 +257,17 @@ void Viewfinder::writeFrame( OpenNI2Camera::Frame frame )
         status += QString( " depth frame %1 " ).arg( frame.depthFrameNumber );
         Array1DView< uint8_t > view( frame.depth,
             frame.depth.numElements() * sizeof( uint16_t ) );
-        m_outputStream.write( 1, frame.depthFrameNumber,
+        m_outputStream.write( m_depthStreamIndex, frame.depthFrameNumber,
             frame.depthTimestamp, view );
+    }
+    if( frame.infraredUpdated )
+    {
+        status += QString( " infrared frame %1 " ).arg(
+            frame.infraredFrameNumber );
+        Array1DView< uint8_t > view( frame.infrared,
+            frame.infrared.numElements() * sizeof( uint16_t ) );
+        m_outputStream.write( m_infraredStreamIndex, frame.infraredFrameNumber,
+            frame.infraredTimestamp, view );
     }
     emit statusChanged( status );
 }

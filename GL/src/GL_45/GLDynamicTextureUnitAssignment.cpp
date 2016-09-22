@@ -1,32 +1,34 @@
 #include "GLDynamicTextureUnitAssignment.h"
 
-#include "GLProgram.h"
 #include "GLSamplerObject.h"
+#include "GLSeparableProgram.h"
 #include "GLTexture.h"
 
-GLDynamicTextureUnitAssignment::GLDynamicTextureUnitAssignment( std::shared_ptr< GLProgram > pProgram ) :
-    m_pProgram( pProgram ),
+GLDynamicTextureUnitAssignment::GLDynamicTextureUnitAssignment(
+    std::shared_ptr< GLSeparableProgram > program ) :
+    m_program( program ),
     m_count( 0 )
 {
 
 }
 
 void GLDynamicTextureUnitAssignment::assign( const char* samplerName,
-                                            std::shared_ptr< GLTexture > pTexture )
+    GLTexture& texture )
 {
-    pTexture->bind( m_count );
+    texture.bind( m_count );
     GLSamplerObject::unbind( m_count );
-    m_pProgram->setUniformInt( samplerName, m_count );
+    m_program->setUniformInt( m_program->uniformLocation( samplerName ),
+        m_count );
     ++m_count;
 }
 
 void GLDynamicTextureUnitAssignment::assign( const char* samplerName,
-                                            std::shared_ptr< GLTexture > pTexture,
-                                            std::shared_ptr< GLSamplerObject > pSamplerObject )
+    GLTexture& texture, GLSamplerObject& samplerObject )
 {
-    pTexture->bind( m_count );
-    pSamplerObject->bind( m_count );
-    m_pProgram->setUniformInt( samplerName, m_count );
+    texture.bind( m_count );
+    samplerObject.bind( m_count );
+    m_program->setUniformInt( m_program->uniformLocation( samplerName ),
+        m_count );
     ++m_count;
 }
 

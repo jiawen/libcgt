@@ -44,6 +44,7 @@ public:
     // [ b0 b1 b2 b3 b4 b5 b6 b7 ]
     static uint64_t byteSwap64( uint64_t x );
 
+    // TODO: supply a destination.
     // Efficiently performs 16-bit byte swapping on an Array1DView.
     static void byteSwap16( Array1DView< uint16_t > view16 );
 

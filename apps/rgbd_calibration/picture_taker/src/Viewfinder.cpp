@@ -23,48 +23,98 @@ using libcgt::camera_wrappers::StreamConfig;
 using libcgt::qt_interop::viewRGB32AsBGRX;
 using libcgt::qt_interop::viewRGB32AsBGR;
 
-#define USE_KINECT1X 1
-#define USE_OPENNI2 0
+#define USE_KINECT1X 0
+#define USE_OPENNI2 1
 
-Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
-#if USE_KINECT1X
-    m_kinect1xCamera( std::unique_ptr< KinectCamera >( new KinectCamera ) ),
-    m_bgra( m_kinect1xCamera->colorResolution() ),
-    m_infrared( m_kinect1xCamera->colorResolution() ),
-    m_image( m_kinect1xCamera->colorResolution().x,
-        m_kinect1xCamera->colorResolution().y,
-        QImage::Format_RGB32 ),
-#endif
+const std::vector< StreamConfig > COLOR_ONLY_CONFIG =
+{
+    StreamConfig
+    {
+        StreamType::COLOR, { 640, 480 }, PixelFormat::RGB_U888, 30, false
+    }
+};
 
-#if USE_OPENNI2
-    m_oniCamera( std::unique_ptr< OpenNI2Camera >( new OpenNI2Camera
-        (
-            StreamConfig( { 640, 480 }, 30, PixelFormat::RGB_U888, false ),
-            StreamConfig(),
-            StreamConfig()
-        )
-    ) ),
-    m_rgb( m_oniCamera->colorConfig().resolution ),
-    m_infrared( m_oniCamera->colorConfig().resolution ),
-    m_image( m_oniCamera->colorConfig().resolution.x,
-        m_oniCamera->colorConfig().resolution.y,
-        QImage::Format_RGB32 ),
-#endif
+const std::vector< StreamConfig > DEPTH_ONLY_CONFIG =
+{
+    StreamConfig
+    {
+        StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false
+    }
+};
+
+const std::vector< StreamConfig > INFRARED_ONLY_CONFIG =
+{
+    StreamConfig
+    {
+        StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false
+    }
+};
+
+const std::vector< StreamConfig > COLOR_DEPTH_CONFIG =
+{
+    StreamConfig{ StreamType::COLOR, { 640, 480 }, PixelFormat::RGB_U888, 30, false },
+    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
+};
+
+const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
+{
+    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
+    StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
+};
+
+Viewfinder::Viewfinder( int mode, const std::string& dir, QWidget* parent ) :
+    m_mode( mode ),
+    m_isDryRun( dir == "" ),
     m_colorNFB( pystring::os::path::join( dir, "color_" ), ".png" ),
     m_infraredNFB( pystring::os::path::join( dir, "ir_" ), ".png" ),
     QWidget( parent )
 {
-    if( m_kinect1xCamera != nullptr )
+    const std::vector< StreamConfig >* config = &COLOR_ONLY_CONFIG;
+
+    if( mode == 0 || mode == 2 )
     {
-        resize( m_kinect1xCamera->colorResolution().x,
-            m_kinect1xCamera->colorResolution().y );
+        m_isColor = true;
     }
     else
     {
-        m_oniCamera->start();
-        resize( m_oniCamera->colorConfig().resolution.x,
-            m_oniCamera->colorConfig().resolution.y );
+        m_isColor = false;
+        config = &INFRARED_ONLY_CONFIG;
     }
+
+
+#if USE_KINECT1X
+    m_kinect1xCamera = std::unique_ptr< KinectCamera >(
+        new KinectCamera( *config ) );
+
+    m_kinect1xCamera( std::unique_ptr< KinectCamera >( new KinectCamera ) ),
+    m_bgra.resize( m_kinect1xCamera->colorResolution() ),
+    m_infrared.resize( m_kinect1xCamera->colorResolution() ),
+    m_image.resize( m_kinect1xCamera->colorResolution().x,
+        m_kinect1xCamera->colorResolution().y,
+        QImage::Format_RGB32 )
+#endif
+
+#if USE_OPENNI2
+    m_oniCamera = std::unique_ptr< OpenNI2Camera >(
+        new OpenNI2Camera( *config ) );
+    m_oniCamera->start();
+
+    m_rgb.resize( m_oniCamera->colorConfig().resolution );
+    m_infrared.resize( m_oniCamera->infraredConfig().resolution );
+    m_image = QImage(
+        std::max( m_rgb.width(), m_infrared.width() ),
+        std::max( m_rgb.height(), m_infrared.height() ),
+        QImage::Format_RGB32 );
+#endif
+
+    resize( m_image.width(), m_image.height() );
+
+    QTimer::singleShot( kStartWaitTimeSeconds * 1000,
+        [&]()
+        {
+            m_startSaving = true;
+        }
+    );
 
     QTimer* viewfinderTimer = new QTimer( this );
     connect( viewfinderTimer, SIGNAL( timeout() ), this, SLOT( onViewfinderTimeout() ) );
@@ -201,70 +251,59 @@ void Viewfinder::onShotTimeout()
         // Take a shot and reset the camera.
         m_nDrawFlashFrames = kDefaultDrawFlashFrames;
 
-#if 0
-        if( m_isColor )
+        if( !m_isDryRun && m_startSaving )
         {
-            m_image.save( QString::fromStdString( m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
-            ++m_nextColorImageIndex;
-        }
-        else
-        {
-            m_image.save( QString::fromStdString( m_infraredNFB.filenameForNumber( m_nextInfraredImageIndex ) ) );
-            ++m_nextInfraredImageIndex;
-        }
-#endif
-
-        // Toggle the next shot between color and infrared.
-        m_isColor = !m_isColor;
-
-        if( m_kinect1xCamera != nullptr )
-        {
-            m_kinect1xCamera.reset();
-
-            StreamConfig colorConfig;
-            StreamConfig depthConfig;
-            StreamConfig infraredConfig;
             if( m_isColor )
             {
-                colorConfig =
-                    StreamConfig( { 640, 480 }, 30, PixelFormat::RGB_U888, false );
+                m_image.save( QString::fromStdString( m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
+                ++m_nextColorImageIndex;
+            }
+            else
+            {
+                m_image.save( QString::fromStdString( m_infraredNFB.filenameForNumber( m_nextInfraredImageIndex ) ) );
+                ++m_nextInfraredImageIndex;
+            }
+        }
+
+        // If in toggle mode, do the toggling.
+        if( m_mode == 0 )
+        {
+            m_nSecondsUntilNextShot = kColorShotIntervalSeconds;
+        }
+        else if( m_mode == 1 )
+        {
+            m_nSecondsUntilNextShot = kInfraredShotIntervalSeconds;
+        }
+        if( m_mode == 2 )
+        {
+            // Toggle the next shot between color and infrared.
+            m_isColor = !m_isColor;
+
+            const std::vector< StreamConfig >* config;
+            if( m_isColor )
+            {
+                config = &COLOR_ONLY_CONFIG;
                 m_nSecondsUntilNextShot = kColorShotIntervalSeconds;
             }
             else
             {
-                infraredConfig =
-                    StreamConfig{ { 640, 480 }, 30, PixelFormat::GRAY_U16, false };
+                config = &INFRARED_ONLY_CONFIG;
                 m_nSecondsUntilNextShot = kInfraredShotIntervalSeconds;
             }
 
-            m_kinect1xCamera = std::unique_ptr< KinectCamera >
-            (
-                new KinectCamera( colorConfig, depthConfig, infraredConfig )
-            );
-        }
-        else
-        {
-            m_oniCamera.reset();
-
-            StreamConfig colorConfig;
-            StreamConfig depthConfig;
-            StreamConfig infraredConfig;
-            if( m_isColor )
+            if( m_kinect1xCamera != nullptr )
             {
-                colorConfig =
-                    StreamConfig( { 640, 480 }, 30, PixelFormat::RGB_U888, false );
-                m_nSecondsUntilNextShot = kColorShotIntervalSeconds;
+                m_kinect1xCamera.reset();
+                m_kinect1xCamera = std::unique_ptr< KinectCamera >(
+                    new KinectCamera( *config ) );
             }
             else
             {
-                infraredConfig =
-                    StreamConfig{ { 640, 480 }, 30, PixelFormat::GRAY_U16, false };
-                m_nSecondsUntilNextShot = kInfraredShotIntervalSeconds;
+                m_oniCamera.reset();
+                m_oniCamera = std::unique_ptr< OpenNI2Camera >(
+                    new OpenNI2Camera( *config ) );
+                m_oniCamera->start();
             }
-
-            m_oniCamera = std::unique_ptr< OpenNI2Camera >( new OpenNI2Camera(
-                colorConfig, depthConfig, infraredConfig ) );
-            m_oniCamera->start();
         }
     }
 }

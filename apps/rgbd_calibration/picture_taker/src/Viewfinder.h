@@ -12,10 +12,9 @@
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/vecmath/Vector2i.h>
 
-const int kColorShotIntervalSeconds = 5;
-//const int kColorShotIntervalSeconds = 1;
-//const int kInfraredShotIntervalSeconds = 2;
-const int kInfraredShotIntervalSeconds = 5;
+const int kStartWaitTimeSeconds = 10;
+const int kColorShotIntervalSeconds = 2;
+const int kInfraredShotIntervalSeconds = 2;
 
 class Viewfinder : public QWidget
 {
@@ -27,7 +26,8 @@ public:
     using OpenNI2Camera = libcgt::camera_wrappers::openni2::OpenNI2Camera;
 
     // dir should be something like "/tmp". The trailing slash is optional.
-    Viewfinder( const std::string& dir,
+    Viewfinder( int mode,
+        const std::string& dir = "",
         QWidget* parent = nullptr );
 
     void updateRGB( Array2DView< const uint8x3 > frame );
@@ -42,6 +42,9 @@ private:
 
     NumberedFilenameBuilder m_colorNFB;
     NumberedFilenameBuilder m_infraredNFB;
+
+    const bool m_isDryRun;
+    bool m_startSaving = false;
 
     bool m_isColor = true;
     std::unique_ptr< KinectCamera > m_kinect1xCamera;
@@ -63,6 +66,8 @@ private:
 
     int m_nextColorImageIndex = 0;
     int m_nextInfraredImageIndex = 0;
+
+    int m_mode = 0;
 
 private slots:
 

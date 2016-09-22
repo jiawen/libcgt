@@ -197,13 +197,7 @@ const std::map< std::pair< NUI_SKELETON_POSITION_INDEX, NUI_SKELETON_POSITION_IN
 }
 #endif
 
-#if 0
-KinectCamera::KinectCamera( int deviceIndex, DWORD nuiFlags,
-    NUI_IMAGE_TYPE colorFormat, NUI_IMAGE_RESOLUTION colorResolution,
-    NUI_IMAGE_RESOLUTION depthResolution ) :
-    m_deviceIndex( deviceIndex )
-#endif
-
+// Allow asking for both RGBA and BGRA since we'll do the conversion for them.
 bool isValidColorConfig( StreamConfig config )
 {
     if( config.pixelFormat == PixelFormat::BGRA_U8888 ||
@@ -269,32 +263,65 @@ NUI_IMAGE_RESOLUTION fromVector2i( const Vector2i& resolution )
     }
 }
 
-KinectCamera::KinectCamera( StreamConfig colorConfig,
-    StreamConfig depthConfig, StreamConfig infraredConfig,
+KinectCamera::KinectCamera( const std::vector< StreamConfig >& streamConfig,
     int deviceIndex )
 {
-    // TODO(jiawen): make a function to check for allowed combinations of
-    // streams.
+    // TODO: make a function to check for allowed combinations of streams and
+    // expose it as a public interface.
 
-    // Turn streams into flags.
+    // Turn vector of StreamConfigs into flags:
+    StreamConfig colorConfig;
+    StreamConfig depthConfig;
+    StreamConfig infraredConfig;
+
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::COLOR &&
+            isValidColorConfig( streamConfig[ i ] ) )
+        {
+            colorConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::DEPTH &&
+            isValidDepthConfig( streamConfig[ i ] ) )
+        {
+            depthConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
+    for( int i = 0; i < static_cast< int >( streamConfig.size() ); ++i )
+    {
+        if( streamConfig[ i ].type == StreamType::INFRARED &&
+            isValidInfraredConfig( streamConfig[ i ] ) )
+        {
+            infraredConfig = streamConfig[ i ];
+            break;
+        }
+    }
+
     DWORD nuiFlags = 0;
     NUI_IMAGE_TYPE colorFormat = NUI_IMAGE_TYPE_COLOR;
     NUI_IMAGE_RESOLUTION colorResolution = NUI_IMAGE_RESOLUTION_INVALID;
     NUI_IMAGE_TYPE depthFormat = NUI_IMAGE_TYPE_DEPTH;
     NUI_IMAGE_RESOLUTION depthResolution = NUI_IMAGE_RESOLUTION_INVALID;
-    if( isValidColorConfig( colorConfig ) )
+    if( colorConfig.type != StreamType::UNKNOWN )
     {
         nuiFlags |= NUI_INITIALIZE_FLAG_USES_COLOR;
         colorFormat = NUI_IMAGE_TYPE_COLOR;
         colorResolution = fromVector2i( colorConfig.resolution );
     }
-    else if( isValidInfraredConfig( infraredConfig ) )
+    else if( infraredConfig.type != StreamType::UNKNOWN )
     {
         nuiFlags |= NUI_INITIALIZE_FLAG_USES_COLOR;
         colorFormat = NUI_IMAGE_TYPE_COLOR_INFRARED;
         colorResolution = fromVector2i( infraredConfig.resolution );
     }
-    if( isValidDepthConfig( depthConfig ) )
+    if( depthConfig.type != StreamType::UNKNOWN )
     {
         nuiFlags |= NUI_INITIALIZE_FLAG_USES_DEPTH;
         depthFormat = NUI_IMAGE_TYPE_DEPTH;
