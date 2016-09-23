@@ -14,7 +14,7 @@
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/vecmath/Vector2i.h>
 
-class Viewfinder : public QWidget
+class DepthAveragerViewfinder : public QWidget
 {
     Q_OBJECT
 
@@ -24,11 +24,10 @@ public:
     using OpenNI2Camera = libcgt::camera_wrappers::openni2::OpenNI2Camera;
 
     // dir should be something like "/tmp". The trailing slash is optional.
-    Viewfinder( const std::string& dir = "",
+    DepthAveragerViewfinder( const std::string& dir = "",
         QWidget* parent = nullptr );
 
-    void updateRGB( Array2DView< const uint8x3 > frame );
-    void updateBGRA( Array2DView< const uint8x4 > frame );
+    void updateDepth( Array2DView< const uint16_t > frame );
     void updateInfrared( Array2DView< const uint16_t > frame );
 
 protected:
@@ -38,39 +37,39 @@ protected:
 
 private:
 
-    NumberedFilenameBuilder m_colorNFB;
-    NumberedFilenameBuilder m_infraredNFB;
-
     const bool m_isDryRun;
-    bool m_saving = false;
 
-    bool m_isColor = true;
-    std::unique_ptr< KinectCamera > m_kinect1xCamera;
     std::unique_ptr< OpenNI2Camera > m_oniCamera;
 
-    Array2D< uint8x3 > m_rgb;
-    Array2D< uint8x4 > m_bgra;
+    Array2D< uint16_t > m_depth;
+    Array2D< uint64_t > m_depthSum;
+    Array2D< int32_t > m_depthWeight;
+
     Array2D< uint16_t > m_infrared;
+    Array2D< uint64_t > m_infraredSum;
+    int32_t m_infraredWeight = 0;
 
-    int m_nSecondsUntilNextShot;
-
-    const int kDefaultDrawFlashFrames = 5;
-    int m_nDrawFlashFrames = 0;
-
-    QImage m_image;
+    QImage m_depthImage;
+    QImage m_depthAverageImage;
+    QImage m_infraredImage;
+    QImage m_infraredAverageImage;
 
     const QPen m_yellowPen = QPen{ Qt::yellow };
     const QBrush m_whiteBrush = QBrush{ Qt::white };
 
-    int m_nextColorImageIndex = 0;
-    int m_nextInfraredImageIndex = 0;
+    void resetDepthAverage();
+    void saveDepthAverage();
 
-    void maybeSaveShot();
-    void maybeToggleStreams();
+    void resetInfraredAverage();
+    void saveInfraredAverage();
+
+    NumberedFilenameBuilder m_depthNFB;
+    int m_nextDepthAverageImageIndex = 0;
+    NumberedFilenameBuilder m_infraredNFB;
+    int m_nextInfraredAverageImageIndex = 0;
 
 private slots:
 
     void onViewfinderTimeout();
-    void onShotTimeout();
 
 };

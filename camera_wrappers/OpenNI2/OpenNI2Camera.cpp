@@ -31,6 +31,40 @@ Range1f OpenNI2Camera::depthRangeMeters()
 }
 
 // static
+Intrinsics OpenNI2Camera::defaultColorIntrinsics()
+{
+    return
+    {
+        { 529.21508098293293f, 525.56393630057437f },
+        { 328.94272028759258f, 267.48068171871557f }
+#if 0
+        k1_rgb 2.6451622333009589e-01
+        k2_rgb - 8.3990749424620825e-01
+        p1_rgb - 1.9922302173693159e-03
+        p2_rgb 1.4371995932897616e-03
+        k3_rgb 9.1192465078713847e-01
+#endif
+    };
+}
+
+// static
+Intrinsics OpenNI2Camera::defaultDepthIntrinsics()
+{
+    return
+    {
+        { 594.21434211923247f, 591.04053696870778f },
+        { 339.30780975300314f, 242.73913761751615f }
+#if 0
+        k1_d - 2.6386489753128833e-01
+        k2_d 9.9966832163729757e-01
+        p1_d - 7.6275862143610667e-04
+        p2_d 5.0350940090814270e-03
+        k3_d - 1.3053628089976321e+00
+#endif
+    };
+}
+
+// static
 EuclideanTransform OpenNI2Camera::colorFromDepthExtrinsicsMillimeters()
 {
     // From {openni_camera,openni_camera_deperecated}/info/openni_params.yaml.

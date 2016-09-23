@@ -1,6 +1,7 @@
 #include "Viewfinder.h"
 
 #include <QBrush>
+#include <QKeyEvent>
 #include <QPainter>
 #include <QTimer>
 
@@ -10,6 +11,11 @@
 #include <core/io/NumberedFilenameBuilder.h>
 #include <qt_interop/qimage.h>
 #include <third_party/pystring.h>
+
+DECLARE_int32( start_after );
+DECLARE_string( mode );
+DECLARE_int32( shot_interval );
+DECLARE_int32( secondary_shot_interval );
 
 using libcgt::core::arrayutils::copy;
 using libcgt::core::arrayutils::flipX;
@@ -62,23 +68,33 @@ const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
     StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
 };
 
-Viewfinder::Viewfinder( int mode, const std::string& dir, QWidget* parent ) :
-    m_mode( mode ),
+Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
     m_isDryRun( dir == "" ),
     m_colorNFB( pystring::os::path::join( dir, "color_" ), ".png" ),
-    m_infraredNFB( pystring::os::path::join( dir, "ir_" ), ".png" ),
+    m_infraredNFB( pystring::os::path::join( dir, "infrared_" ), ".png" ),
+    m_nSecondsUntilNextShot( FLAGS_shot_interval ),
     QWidget( parent )
 {
-    const std::vector< StreamConfig >* config = &COLOR_ONLY_CONFIG;
-
-    if( mode == 0 || mode == 2 )
+    const std::vector< StreamConfig >* config;
+    if( FLAGS_mode == "color" )
     {
         m_isColor = true;
+        config = &COLOR_ONLY_CONFIG;
+        m_rgb.resize( config->at( 0 ).resolution );
     }
-    else
+    else if( FLAGS_mode == "infrared" )
     {
         m_isColor = false;
         config = &INFRARED_ONLY_CONFIG;
+        m_infrared.resize( config->at( 0 ).resolution );
+    }
+    else
+    {
+        // Start with color.
+        m_isColor = true;
+        config = &COLOR_ONLY_CONFIG;
+        m_rgb.resize( COLOR_ONLY_CONFIG[ 0 ].resolution );
+        m_infrared.resize( INFRARED_ONLY_CONFIG[ 0 ].resolution );
     }
 
 
@@ -99,8 +115,6 @@ Viewfinder::Viewfinder( int mode, const std::string& dir, QWidget* parent ) :
         new OpenNI2Camera( *config ) );
     m_oniCamera->start();
 
-    m_rgb.resize( m_oniCamera->colorConfig().resolution );
-    m_infrared.resize( m_oniCamera->infraredConfig().resolution );
     m_image = QImage(
         std::max( m_rgb.width(), m_infrared.width() ),
         std::max( m_rgb.height(), m_infrared.height() ),
@@ -109,22 +123,35 @@ Viewfinder::Viewfinder( int mode, const std::string& dir, QWidget* parent ) :
 
     resize( m_image.width(), m_image.height() );
 
-    QTimer::singleShot( kStartWaitTimeSeconds * 1000,
-        [&]()
-        {
-            m_startSaving = true;
-        }
-    );
+    if( FLAGS_start_after == 0 )
+    {
+        m_saving = true;
+    }
+    else
+    {
+        m_saving = false;
+        QTimer::singleShot( FLAGS_start_after * 1000,
+            [&] ()
+            {
+                m_saving = true;
+            }
+        );
+    }
 
     QTimer* viewfinderTimer = new QTimer( this );
-    connect( viewfinderTimer, SIGNAL( timeout() ), this, SLOT( onViewfinderTimeout() ) );
+    connect( viewfinderTimer, &QTimer::timeout,
+        this, &Viewfinder::onViewfinderTimeout );
     viewfinderTimer->setInterval( 0 );
     viewfinderTimer->start();
 
-    QTimer* shotTimer = new QTimer( this );
-    connect( shotTimer, SIGNAL( timeout() ), this, SLOT( onShotTimeout() ) );
-    shotTimer->setInterval( 1000 );
-    shotTimer->start();
+    if( FLAGS_shot_interval > 0 )
+    {
+        QTimer* shotTimer = new QTimer( this );
+        connect( shotTimer, &QTimer::timeout,
+            this, &Viewfinder::onShotTimeout );
+        shotTimer->setInterval( 1000 );
+        shotTimer->start();
+    }
 }
 
 void Viewfinder::updateRGB( Array2DView< const uint8x3 > frame )
@@ -173,8 +200,6 @@ void Viewfinder::updateInfrared( Array2DView< const uint16_t > frame )
 
     Range1i dstRange( 256 );
     linearRemapToLuminance( frame, srcRange, dstRange, dst );
-
-    update();
 }
 
 // virtual
@@ -184,20 +209,33 @@ void Viewfinder::paintEvent( QPaintEvent* e )
 
     painter.drawImage( 0, 0, m_image );
 
-    painter.setPen( m_yellowPen );
-    QFont font = painter.font();
-    font.setPointSize( 96 );
-    painter.setFont( font );
-    int flags = Qt::AlignCenter;
-    painter.drawText( 0, 0, 640, 480, flags,
-        QString( "%1" ).arg( m_nSecondsUntilNextShot ) );
-
-    if( m_nDrawFlashFrames > 0 )
+    if( FLAGS_shot_interval > 0 )
     {
-        painter.setBrush( m_whiteBrush );
-        painter.drawRect( 0, 0, m_image.width(), m_image.height() );
+        painter.setPen( m_yellowPen );
+        QFont font = painter.font();
+        font.setPointSize( 96 );
+        painter.setFont( font );
+        int flags = Qt::AlignCenter;
+        painter.drawText( 0, 0, 640, 480, flags,
+            QString( "%1" ).arg( m_nSecondsUntilNextShot ) );
 
-        --m_nDrawFlashFrames;
+        if( m_nDrawFlashFrames > 0 )
+        {
+            painter.setBrush( m_whiteBrush );
+            painter.drawRect( 0, 0, m_image.width(), m_image.height() );
+
+            --m_nDrawFlashFrames;
+        }
+    }
+}
+
+// virtual
+void Viewfinder::keyPressEvent( QKeyEvent* e )
+{
+    if( e->key() == Qt::Key_Space )
+    {
+        maybeSaveShot();
+        maybeToggleStreams();
     }
 }
 
@@ -251,59 +289,68 @@ void Viewfinder::onShotTimeout()
         // Take a shot and reset the camera.
         m_nDrawFlashFrames = kDefaultDrawFlashFrames;
 
-        if( !m_isDryRun && m_startSaving )
+        maybeSaveShot();
+        maybeToggleStreams();
+    }
+}
+
+void Viewfinder::maybeSaveShot()
+{
+    if( !m_isDryRun && m_saving )
+    {
+        if( m_isColor )
         {
-            if( m_isColor )
-            {
-                m_image.save( QString::fromStdString( m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
-                ++m_nextColorImageIndex;
-            }
-            else
-            {
-                m_image.save( QString::fromStdString( m_infraredNFB.filenameForNumber( m_nextInfraredImageIndex ) ) );
-                ++m_nextInfraredImageIndex;
-            }
+            m_image.save( QString::fromStdString( m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
+            ++m_nextColorImageIndex;
+        }
+        else
+        {
+            m_image.save( QString::fromStdString( m_infraredNFB.filenameForNumber( m_nextInfraredImageIndex ) ) );
+            ++m_nextInfraredImageIndex;
+        }
+    }
+}
+
+void Viewfinder::maybeToggleStreams()
+{
+    // If in toggle mode, do the toggling.
+    if( FLAGS_mode == "color" )
+    {
+        m_nSecondsUntilNextShot = FLAGS_shot_interval;
+    }
+    else if( FLAGS_mode == "infrared" )
+    {
+        m_nSecondsUntilNextShot = FLAGS_shot_interval;
+    }
+    else if( FLAGS_mode == "toggleColorInfrared" )
+    {
+        // Toggle the next shot between color and infrared.
+        m_isColor = !m_isColor;
+
+        const std::vector< StreamConfig >* config;
+        if( m_isColor )
+        {
+            config = &COLOR_ONLY_CONFIG;
+            m_nSecondsUntilNextShot = FLAGS_shot_interval;
+        }
+        else
+        {
+            config = &INFRARED_ONLY_CONFIG;
+            m_nSecondsUntilNextShot = FLAGS_secondary_shot_interval;
         }
 
-        // If in toggle mode, do the toggling.
-        if( m_mode == 0 )
+        if( m_kinect1xCamera != nullptr )
         {
-            m_nSecondsUntilNextShot = kColorShotIntervalSeconds;
+            m_kinect1xCamera.reset();
+            m_kinect1xCamera = std::unique_ptr< KinectCamera >(
+                new KinectCamera( *config ) );
         }
-        else if( m_mode == 1 )
+        else
         {
-            m_nSecondsUntilNextShot = kInfraredShotIntervalSeconds;
-        }
-        if( m_mode == 2 )
-        {
-            // Toggle the next shot between color and infrared.
-            m_isColor = !m_isColor;
-
-            const std::vector< StreamConfig >* config;
-            if( m_isColor )
-            {
-                config = &COLOR_ONLY_CONFIG;
-                m_nSecondsUntilNextShot = kColorShotIntervalSeconds;
-            }
-            else
-            {
-                config = &INFRARED_ONLY_CONFIG;
-                m_nSecondsUntilNextShot = kInfraredShotIntervalSeconds;
-            }
-
-            if( m_kinect1xCamera != nullptr )
-            {
-                m_kinect1xCamera.reset();
-                m_kinect1xCamera = std::unique_ptr< KinectCamera >(
-                    new KinectCamera( *config ) );
-            }
-            else
-            {
-                m_oniCamera.reset();
-                m_oniCamera = std::unique_ptr< OpenNI2Camera >(
-                    new OpenNI2Camera( *config ) );
-                m_oniCamera->start();
-            }
+            m_oniCamera.reset();
+            m_oniCamera = std::unique_ptr< OpenNI2Camera >(
+                new OpenNI2Camera( *config ) );
+            m_oniCamera->start();
         }
     }
 }

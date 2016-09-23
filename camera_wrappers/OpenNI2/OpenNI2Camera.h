@@ -68,6 +68,16 @@ public:
     // 0.8m - 4m.
     static Range1f depthRangeMeters();
 
+    // TODO(jiawen): pass in resolution and scale.
+    // Retrieve the "default" intrinsics that is approximately correct for all
+    // models at 640x480.
+    static Intrinsics defaultColorIntrinsics();
+
+    // TODO(jiawen): pass in resolution and scale.
+    // Retrieve the "default" intrinsics that is approximately correct for all
+    // models at 640x480.
+    static Intrinsics defaultDepthIntrinsics();
+
     // Get the transformation mapping: color_coord <-- depth_coord.
     // This transformation is in the OpenGL convention (y-up, z-out-of-screen).
     // Translation has units of millimeters.
@@ -102,7 +112,10 @@ public:
 
     bool isValid() const;
 
+    // Retrieve the factory-calibrated intrinsics for this device.
     Intrinsics colorIntrinsics() const;
+
+    // Retrieve the factory-calibrated intrinsics for this device.
     Intrinsics depthIntrinsics() const;
 
     StreamConfig colorConfig() const;
