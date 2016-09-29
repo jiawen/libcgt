@@ -10,6 +10,7 @@
 #include <core/imageproc/ColorMap.h>
 #include <core/imageproc/Swizzle.h>
 #include <core/io/NumberedFilenameBuilder.h>
+#include <core/io/PortableFloatMapIO.h>
 #include <qt_interop/qimage.h>
 #include <third_party/pystring.h>
 
@@ -64,7 +65,8 @@ const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
 DepthAveragerViewfinder::DepthAveragerViewfinder( const std::string& dir,
     QWidget* parent ) :
     m_isDryRun( dir == "" ),
-    m_depthNFB( pystring::os::path::join( dir, "depth_average_" ), ".png" ),
+    m_depthPNGNFB( pystring::os::path::join( dir, "depth_average_" ), ".png" ),
+    m_depthPFMNFB( pystring::os::path::join( dir, "depth_average_" ), ".pfm" ),
     m_infraredNFB( pystring::os::path::join( dir, "infrared_average_" ),
         ".png" ),
     QWidget( parent )
@@ -75,6 +77,8 @@ DepthAveragerViewfinder::DepthAveragerViewfinder( const std::string& dir,
     m_depthSum.fill( 0 );
     m_depthWeight.resize( config[ 0 ].resolution );
     m_depthWeight.fill( 0 );
+    m_depthAverage.resize( config[ 0 ].resolution );
+    m_depthAverage.fill( 0 );
     m_infrared.resize( config[ 1 ].resolution );
     m_infraredSum.resize( config[ 1 ].resolution );
     m_infraredSum.fill( 0 );
@@ -133,11 +137,8 @@ void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
         }
     );
 
-    printf( "frame[320,240] = %d\n", frame[ {320, 240} ] );
-    printf( "dst[320,240] = %d\n", dst[ {320, 240} ] );
-
     // Update average.
-    auto dst2 = viewGrayscale8( m_depthAverageImage );
+    auto averageImageView = viewGrayscale8( m_depthAverageImage );
     Iterators::for2D( frame.size(),
         [&] ( int x, int y )
         {
@@ -145,30 +146,36 @@ void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
             if( w > 0 )
             {
                 uint64_t srcZ = m_depthSum[ {x, y} ];
-                uint16_t div = srcZ / w;
+                uint16_t q16 = srcZ / w;
 
                 uint8_t tonemapped = static_cast< uint8_t >(
-                    clamp( rescale( div, srcRange, dstRange ),
+                    clamp( rescale( q16, srcRange, dstRange ),
                     Range1i( 256 ) ) );
 
                 uint16_t averageZ =
                     static_cast< uint16_t >(
                         m_depthSum[ {x, y} ] / static_cast< uint64_t >( w )
                     );
-                dst2[ {x, y} ] = static_cast< uint8_t >(
+                averageImageView[ {x, y} ] = static_cast< uint8_t >(
                     clamp( rescale( averageZ, srcRange, dstRange ),
                     Range1i( 256 ) ) );
+
+                // Carefully divide to get float:
+                // x div y --> (q, r) such that x = q * y + r. r in [0, y).
+                // A nice floating point quotient would be:
+                // float(q) + float(r)/y.
+                std::lldiv_t qr = std::lldiv( srcZ, w );
+                float q = static_cast< float >( qr.quot ) +
+                    static_cast< float >( qr.rem ) / w;
+                m_depthAverage[ {x, y} ] = q;
             }
             else
             {
-                dst2[ {x, y} ] = 0;
+                averageImageView[ {x, y} ] = 0;
+                m_depthAverage[ {x, y} ] = 0;
             }
         }
     );
-
-    printf( "sum[320,240] = %lld\n", m_depthSum[ {320, 240} ] );
-    printf( "weight[320,240] = %d\n", m_depthWeight[ {320, 240} ] );
-    printf( "dst2[320,240] = %d\n", dst2[ {320, 240} ] );
 }
 
 void DepthAveragerViewfinder::updateInfrared( Array2DView< const uint16_t > frame )
@@ -312,6 +319,7 @@ void DepthAveragerViewfinder::resetDepthAverage()
     m_depthSum.fill( 0 );
     m_depthWeight.fill( 0 );
     m_depthAverageImage.fill( 0 );
+    m_depthAverage.fill( 0 );
     update();
 }
 
@@ -320,7 +328,13 @@ void DepthAveragerViewfinder::saveDepthAverage()
     if( !m_isDryRun )
     {
         m_depthAverageImage.save( QString::fromStdString(
-            m_depthNFB.filenameForNumber( m_nextDepthAverageImageIndex ) ) );
+            m_depthPNGNFB.filenameForNumber(
+                m_nextDepthAverageImageIndex ) ) );
+
+        std::string pfmFilename = m_depthPFMNFB.filenameForNumber(
+            m_nextDepthAverageImageIndex );
+        PortableFloatMapIO::write( pfmFilename, m_depthAverage );
+
         ++m_nextDepthAverageImageIndex;
     }
 }

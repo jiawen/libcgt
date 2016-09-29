@@ -277,6 +277,7 @@ bool KinectCameraImpl::pollOne( KinectCamera::Frame& frame,
             frame.infraredTimestamp, frame.infraredFrameNumber );
         return frame.infraredUpdated;
     }
+	return false;
 }
 
 bool KinectCameraImpl::pollAll( KinectCamera::Frame& frame,

@@ -91,9 +91,11 @@ public:
         NUI_IMAGE_TYPE depthFormat, NUI_IMAGE_RESOLUTION depthResolution,
         int deviceIndex );
 
+    KinectCameraImpl( KinectCameraImpl&& move ) = default;
+    KinectCameraImpl& operator = ( KinectCameraImpl&& move ) = default;
+
     KinectCameraImpl( const KinectCameraImpl& copy ) = delete;
     KinectCameraImpl& operator = ( const KinectCameraImpl& copy ) = delete;
-    // TODO(VS2015): move constructor = default
     virtual ~KinectCameraImpl();
 
     // Returns true if the camera is correctly initialized.

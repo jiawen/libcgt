@@ -216,9 +216,11 @@ public:
         int deviceIndex = 0
     );
 
+    KinectCamera( KinectCamera&& move ) = default;
+    KinectCamera& operator = ( KinectCamera&& move ) = default;
+
     KinectCamera( const KinectCamera& copy ) = delete;
     KinectCamera& operator = ( const KinectCamera& copy ) = delete;
-    // TODO(VS2015): move constructor = default
     ~KinectCamera();
 
     // TODO(jiawen): store and provide accessors to stream configs.

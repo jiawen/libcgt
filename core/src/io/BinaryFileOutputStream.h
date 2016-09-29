@@ -16,8 +16,6 @@ public:
     BinaryFileOutputStream( BinaryFileOutputStream&& move );
     BinaryFileOutputStream& operator = (
         const BinaryFileOutputStream& copy ) = delete;
-
-    // TODO(VS2015): default
     BinaryFileOutputStream& operator = ( BinaryFileOutputStream&& move );
 
     // Returns true if the file was properly opened.

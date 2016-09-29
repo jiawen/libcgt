@@ -8,6 +8,8 @@ class File
 {
 public:
 
+    // Returns true if the filename is an existing file.
+    // Does not work on directories.
     static bool exists( const char* filename );
 
     // Returns 0 on failure.

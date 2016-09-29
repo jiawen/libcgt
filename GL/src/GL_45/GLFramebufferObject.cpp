@@ -217,34 +217,35 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
     return isComplete;
 }
 
-void GLFramebufferObject::clearColor( int drawBufferIndex, const int8x4& color )
+void GLFramebufferObject::clearColor( int drawbufferIndex, const int8x4& color )
 {
-    glClearNamedFramebufferiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex,
+    glClearNamedFramebufferiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex,
         reinterpret_cast< const GLint* >( &color ) );
 }
 
-void GLFramebufferObject::clearColor( int drawBufferIndex, const uint8x4& color )
+void GLFramebufferObject::clearColor( int drawbufferIndex, const uint8x4& color )
 {
-    glClearNamedFramebufferuiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex,
+    glClearNamedFramebufferuiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex,
         reinterpret_cast< const GLuint* >( &color ) );
 }
 
-void GLFramebufferObject::clearColor( int drawBufferIndex, const Vector4f& color )
+void GLFramebufferObject::clearColor( int drawbufferIndex, const Vector4f& color )
 {
-    glClearNamedFramebufferfv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawBufferIndex, color );
+	Vector4f c = color;
+    glClearNamedFramebufferfv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex, c );
 }
 
-void GLFramebufferObject::clearDepth( float depth )
+void GLFramebufferObject::clearDepth( int drawbufferIndex, float depth )
 {
     glClearNamedFramebufferfv( m_id, GL_DEPTH, 0, &depth );
 }
 
-void GLFramebufferObject::clearStencil( int stencil )
+void GLFramebufferObject::clearStencil( int drawbufferIndex, int stencil )
 {
-    glClearNamedFramebufferiv( m_id, GL_STENCIL, 0, &stencil );
+    glClearNamedFramebufferiv( m_id, GL_STENCIL, drawbufferIndex, &stencil );
 }
 
-void GLFramebufferObject::clearDepthStencil( float depth, int stencil )
+void GLFramebufferObject::clearDepthStencil( int drawbufferIndex, float depth, int stencil )
 {
-    glClearNamedFramebufferfi( m_id, GL_DEPTH_STENCIL, depth, stencil );
+    glClearNamedFramebufferfi( m_id, GL_DEPTH_STENCIL, drawbufferIndex, depth, stencil );
 }

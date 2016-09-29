@@ -1,7 +1,9 @@
 #include <gflags/gflags.h>
 #include <QApplication>
+#include <QDir>
+#include <third_party/pystring.h>
 
-#include "Viewfinder.h"
+#include "PictureTakerViewfinder.h"
 
 static bool validateStartAfter( const char* flagname, gflags::int32 value )
 {
@@ -34,6 +36,14 @@ DEFINE_int32( secondary_shot_interval, 2,
     "In toggleColorInfrared mode, wait N seconds after the color shot before "
     "taking the infrared shot. Will be forced to 0 if shot_interval is 0." );
 
+DEFINE_string( output_dir, "",
+    "Output directory.\n"
+    "In color or infrared mode, writes files to"
+    " <output_dir>/<stream>/<stream>_<#####>.png.\n"
+    "In toggleColorInfrared mode, writes color_<#####>.png and"
+    " infrared_<#####>.png. to"
+    " <output_dir>/infrared_color_stereo_images/.\n" );
+
 int main( int argc, char* argv[] )
 {
     gflags::ParseCommandLineFlags( &argc, &argv, true );
@@ -48,18 +58,40 @@ int main( int argc, char* argv[] )
     // TODO:
     // [--stop-after 0] means unlimited
 
-    std::string destDir = "";
-    if( argc > 1 )
+    std::string streamOutputDir;
+
+    if( FLAGS_output_dir == "" )
     {
-        destDir = argv[ 1 ];
-        printf( "Writing outputs to: %s\n", destDir.c_str() );
+        printf( "No destination dir specified: in DRY RUN mode.\n" );
+        streamOutputDir = "";
     }
     else
     {
-        printf( "No destination dir specified: in DRY RUN mode.\n" );
+        printf( "Writing outputs to: %s\n", FLAGS_output_dir.c_str() );
+
+        // Try to create destination directory if it doesn't exist.
+        if( FLAGS_mode == "color" || FLAGS_mode == "infrared" )
+        {
+            streamOutputDir = pystring::os::path::join( FLAGS_output_dir,
+                FLAGS_mode + "_images" );
+        }
+        else
+        {
+            streamOutputDir = pystring::os::path::join( FLAGS_output_dir,
+                "infrared_color_stereo_images" );
+        }
+
+        QDir dir( QString::fromStdString( streamOutputDir ) );
+        if( !dir.mkpath( "." ) )
+        {
+            fprintf( stderr, "Unable to create output directory: %s\n",
+                streamOutputDir.c_str() );
+            return 1;
+        }
     }
 
-    Viewfinder vf( destDir );
+
+    PictureTakerViewfinder vf( streamOutputDir );
     vf.move( 10, 10 );
     vf.show();
 

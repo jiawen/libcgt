@@ -1,9 +1,10 @@
+#include <gflags/gflags.h>
 #include <QApplication>
-
-#include <QGridLayout>
-#include <QPushButton>
 #include <QCheckBox>
+#include <QDir>
+#include <QGridLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QSlider>
 
 #include "Viewfinder.h"
@@ -50,35 +51,73 @@ const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
     StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
 };
 
-// Color and infrared disallowed.
+// Can't have color and infrared at the same time.
+
+static bool validateMode( const char* flagname, const std::string& mode )
+{
+    return
+    (
+        mode == "color" ||
+        mode == "infrared" ||
+        mode == "depth" ||
+        mode == "color+depth" ||
+        mode == "depth+infrared"
+    );
+}
+
+DEFINE_string( mode, "color+depth",
+    "Stream mode, must be one of: [color, depth, infrared, color+depth,"
+    " depth+infrared]. Default: color+depth."
+    " Note: color+infrared is not allowed." );
+static const bool mode_dummy = gflags::RegisterFlagValidator(
+    &FLAGS_mode, &validateMode );
+
+DEFINE_string( output_dir, "",
+    "Output dir. Files are written to <output_dir>/recording_<#####>.rgbd." );
 
 int main( int argc, char* argv[] )
 {
-#if 0
-    Box3f b({ 2, 2, 2 });
+    gflags::ParseCommandLineFlags( &argc, &argv, true );
 
-    Vector3f o{ 0, 0, -1.0f };
-    Vector3f d{ 0, 0, 1 };
-
-    float tNear;
-    float tFar;
-    bool isect = b.intersectLine(o, d, tNear, tFar);
-
-    return 0;
-#endif
-
-    // TODO(jiawen): --ir, --out foo.rgbd or --outdir
-
-    if( argc < 2 )
+    if( FLAGS_output_dir == "" )
     {
-        printf( "Usage: %s <dir>\n", argv[0] );
-        printf( "Files will be saved to <dir>/recording_#####.rgbd" );
+        fprintf( stderr, "output_dir required.\n" );
+        return 1;
+    }
+    // Try to create destination directory if it doesn't exist.
+    QDir dir( QString::fromStdString( FLAGS_output_dir ) );
+    if( !dir.mkpath( "." ) )
+    {
+        fprintf( stderr, "Unable to create output directory: %s\n",
+            FLAGS_output_dir.c_str() );
         return 1;
     }
 
     QApplication app( argc, argv );
 
-    Viewfinder* vf = new Viewfinder( DEPTH_INFRARED_CONFIG, argv[ 1 ] );
+    std::vector< StreamConfig > config;
+    if( FLAGS_mode == "color" )
+    {
+        config = COLOR_ONLY_CONFIG;
+    }
+    else if( FLAGS_mode == "infrared" )
+    {
+        config = INFRARED_ONLY_CONFIG;
+    }
+    else if( FLAGS_mode == "depth" )
+    {
+        config = DEPTH_ONLY_CONFIG;
+    }
+    else if( FLAGS_mode == "color+depth" )
+    {
+        config = COLOR_DEPTH_CONFIG;
+    }
+    else if( FLAGS_mode == "depth+infrared" )
+    {
+        config = DEPTH_INFRARED_CONFIG;
+    }
+
+    Viewfinder* vf = new Viewfinder( config, FLAGS_output_dir );
 
     QGridLayout* layout = new QGridLayout;
     layout->addWidget( vf, 0, 0, 3, 1 );

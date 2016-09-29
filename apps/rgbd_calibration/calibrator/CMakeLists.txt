@@ -8,22 +8,13 @@ find_package(gflags REQUIRED)
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-# Qt 5
-set( CMAKE_AUTOMOC ON )
-find_package( Qt5Core )
-find_package( Qt5Widgets )
-
 # libcgt
 set( LIBCGT_DIR ../../.. )
 include_directories( ${LIBCGT_DIR}/build/include )
 include_directories( ${LIBCGT_DIR}/build/include/core )
 include_directories( ${LIBCGT_DIR}/build/include/camera_wrappers )
 include_directories( ${LIBCGT_DIR}/build/include/opencv_interop )
-include_directories( ${LIBCGT_DIR}/build/include/qt_interop )
 link_directories( ${LIBCGT_DIR}/build/lib )
-
-#file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
-#file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
 
 add_executable( intrinsics_calibrator
 	src/common.h src/common.cpp src/intrinsics_calibrator.cpp )

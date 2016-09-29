@@ -130,28 +130,28 @@ public:
     bool checkStatus( GLenum* pStatus = nullptr );
 
     // Clear the color buffer (signed integer format).
-    void clearColor( int drawBufferIndex, const int8x4& color );
+    void clearColor( int drawbufferIndex, const int8x4& color );
 
     // Clear the color buffer (unsigned integer format).
-    void clearColor( int drawBufferIndex, const uint8x4& color );
+    void clearColor( int drawbufferIndex, const uint8x4& color );
 
     // Clear the color buffer (fixed- or floating-point format).
-    void clearColor( int drawBufferIndex, const Vector4f& color );
+    void clearColor( int drawbufferIndex, const Vector4f& color );
 
     // Clear the depth buffer.
     // If depth is fixed point, it's clamped to [0,1] then converted to fixed point.
     // If depth is floating point, it is *still* clamped but no conversion is done.
     // You'll have to use glDepthRangedNV().
-    void clearDepth( float depth );
+    void clearDepth( int drawbufferIndex, float depth );
 
     // Clear the stencil buffer.
-    void clearStencil( int stencil );
+    void clearStencil( int drawbufferIndex, int stencil );
 
     // Clear the depth and stencil attachments of this FBO simultaneously.
     // If depth is fixed point, it's clamped to [0,1] then converted to fixed point.
     // If depth is floating point, it is *still* clamped but no conversion is done.
     // You'll have to use glDepthRangedNV().
-    void clearDepthStencil( float depth, int stencil );
+    void clearDepthStencil( int drawbufferIndex, float depth, int stencil );
 
 private:
 

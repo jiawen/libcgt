@@ -14,7 +14,7 @@
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/vecmath/Vector2i.h>
 
-class Viewfinder : public QWidget
+class PictureTakerViewfinder : public QWidget
 {
     Q_OBJECT
 
@@ -24,7 +24,7 @@ public:
     using OpenNI2Camera = libcgt::camera_wrappers::openni2::OpenNI2Camera;
 
     // dir should be something like "/tmp". The trailing slash is optional.
-    Viewfinder( const std::string& dir = "",
+    PictureTakerViewfinder( const std::string& dir = "",
         QWidget* parent = nullptr );
 
     void updateRGB( Array2DView< const uint8x3 > frame );

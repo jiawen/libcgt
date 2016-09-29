@@ -32,12 +32,12 @@ public:
     };
 
     GLProgramPipeline();
-
-    // TODO(VS2015): = default
     GLProgramPipeline( GLProgramPipeline&& move );
     GLProgramPipeline& operator = ( GLProgramPipeline&& move );
+    ~GLProgramPipeline();
 
-    virtual ~GLProgramPipeline();
+    GLProgramPipeline( const GLProgramPipeline& copy ) = delete;
+    GLProgramPipeline& operator = ( const GLProgramPipeline& copy ) = delete;
 
     GLuint id() const;
 

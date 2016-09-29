@@ -44,6 +44,7 @@ private:
     Array2D< uint16_t > m_depth;
     Array2D< uint64_t > m_depthSum;
     Array2D< int32_t > m_depthWeight;
+    Array2D< float > m_depthAverage;
 
     Array2D< uint16_t > m_infrared;
     Array2D< uint64_t > m_infraredSum;
@@ -63,7 +64,8 @@ private:
     void resetInfraredAverage();
     void saveInfraredAverage();
 
-    NumberedFilenameBuilder m_depthNFB;
+    NumberedFilenameBuilder m_depthPNGNFB;
+    NumberedFilenameBuilder m_depthPFMNFB;
     int m_nextDepthAverageImageIndex = 0;
     NumberedFilenameBuilder m_infraredNFB;
     int m_nextInfraredAverageImageIndex = 0;

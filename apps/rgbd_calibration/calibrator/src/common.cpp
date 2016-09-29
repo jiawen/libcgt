@@ -19,7 +19,7 @@ std::vector< cv::Mat > readImages( const std::string& dir,
     while( true )
     {
         std::string filename = nfb.filenameForNumber( i );
-        printf( "Looking for image: %s...", filename.c_str() );
+        printf( "Looking for image: %s...\n", filename.c_str() );
         if( !File::exists( filename.c_str() ) )
         {
             printf( "File does not exist, "
@@ -40,24 +40,25 @@ std::vector< std::vector< cv::Point2f > > detectFeatures(
 {
     std::vector< std::vector< cv::Point2f > > detectedFeaturesPerImage;
 
-    printf( "Looking for features centers..." );
+    printf( "Detecting features...\n" );
     for( int i = 0; i < static_cast< int >( images.size() ); ++i )
     {
-        printf( "image %d of %d\n", i, images.size() );
+        printf( "Image %d of %zu: ", i, images.size() );
         std::vector< cv::Point2f > foundPoints;
         bool found = cv::findCirclesGrid( images[ i ], patternSize,
             foundPoints, cv::CALIB_CB_ASYMMETRIC_GRID );
         if( found )
         {
-            printf( "found %d points.\n", foundPoints.size() );
+            printf( "found %zu points.\n", foundPoints.size() );
             detectedFeaturesPerImage.push_back( foundPoints );
         }
         else
         {
-            printf( "FAILED: found %d points.\n", foundPoints.size() );
+            printf( "FAILED: found %zu points.\n", foundPoints.size() );
             detectedFeaturesPerImage.emplace_back();
         }
     }
+    printf( "\n" );
 
     return detectedFeaturesPerImage;
 }

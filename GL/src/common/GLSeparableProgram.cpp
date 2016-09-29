@@ -66,7 +66,6 @@ GLSeparableProgram& GLSeparableProgram::operator = (
     return *this;
 }
 
-// virtual
 GLSeparableProgram::~GLSeparableProgram()
 {
     destroy();
@@ -101,8 +100,8 @@ void GLSeparableProgram::setUniformHandleArray( GLint uniformLocation,
 
     if( handles.packed() )
     {
-        glProgramUniformHandleui64vARB( id(), uniformLocation, handles.size(),
-            handles );
+        glProgramUniformHandleui64vARB( id(), uniformLocation,
+			static_cast< GLsizei >( handles.size() ), handles );
     }
 }
 

@@ -34,7 +34,6 @@ GLProgramPipeline& GLProgramPipeline::operator = (
     return *this;
 }
 
-// virtual
 GLProgramPipeline::~GLProgramPipeline()
 {
     destroy();

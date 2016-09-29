@@ -1,4 +1,4 @@
-#include "Viewfinder.h"
+#include "PictureTakerViewfinder.h"
 
 #include <QBrush>
 #include <QKeyEvent>
@@ -68,7 +68,8 @@ const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
     StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
 };
 
-Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
+PictureTakerViewfinder::PictureTakerViewfinder( const std::string& dir,
+    QWidget* parent ) :
     m_isDryRun( dir == "" ),
     m_colorNFB( pystring::os::path::join( dir, "color_" ), ".png" ),
     m_infraredNFB( pystring::os::path::join( dir, "infrared_" ), ".png" ),
@@ -116,8 +117,8 @@ Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
     m_oniCamera->start();
 
     m_image = QImage(
-        std::max( m_rgb.width(), m_infrared.width() ),
-        std::max( m_rgb.height(), m_infrared.height() ),
+        static_cast< int >( std::max( m_rgb.width(), m_infrared.width() ) ),
+        static_cast< int >( std::max( m_rgb.height(), m_infrared.height() ) ),
         QImage::Format_RGB32 );
 #endif
 
@@ -140,7 +141,7 @@ Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
 
     QTimer* viewfinderTimer = new QTimer( this );
     connect( viewfinderTimer, &QTimer::timeout,
-        this, &Viewfinder::onViewfinderTimeout );
+        this, &PictureTakerViewfinder::onViewfinderTimeout );
     viewfinderTimer->setInterval( 0 );
     viewfinderTimer->start();
 
@@ -148,13 +149,13 @@ Viewfinder::Viewfinder( const std::string& dir, QWidget* parent ) :
     {
         QTimer* shotTimer = new QTimer( this );
         connect( shotTimer, &QTimer::timeout,
-            this, &Viewfinder::onShotTimeout );
+            this, &PictureTakerViewfinder::onShotTimeout );
         shotTimer->setInterval( 1000 );
         shotTimer->start();
     }
 }
 
-void Viewfinder::updateRGB( Array2DView< const uint8x3 > frame )
+void PictureTakerViewfinder::updateRGB( Array2DView< const uint8x3 > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -166,7 +167,7 @@ void Viewfinder::updateRGB( Array2DView< const uint8x3 > frame )
     RGBToBGRA( frame, dst ); // HACK: need RGBToBGRA
 }
 
-void Viewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
+void PictureTakerViewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -178,7 +179,7 @@ void Viewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
     copy( frame, dst );
 }
 
-void Viewfinder::updateInfrared( Array2DView< const uint16_t > frame )
+void PictureTakerViewfinder::updateInfrared( Array2DView< const uint16_t > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -203,7 +204,7 @@ void Viewfinder::updateInfrared( Array2DView< const uint16_t > frame )
 }
 
 // virtual
-void Viewfinder::paintEvent( QPaintEvent* e )
+void PictureTakerViewfinder::paintEvent( QPaintEvent* e )
 {
     QPainter painter( this );
 
@@ -230,7 +231,7 @@ void Viewfinder::paintEvent( QPaintEvent* e )
 }
 
 // virtual
-void Viewfinder::keyPressEvent( QKeyEvent* e )
+void PictureTakerViewfinder::keyPressEvent( QKeyEvent* e )
 {
     if( e->key() == Qt::Key_Space )
     {
@@ -239,7 +240,7 @@ void Viewfinder::keyPressEvent( QKeyEvent* e )
     }
 }
 
-void Viewfinder::onViewfinderTimeout()
+void PictureTakerViewfinder::onViewfinderTimeout()
 {
     if( m_kinect1xCamera != nullptr )
     {
@@ -281,7 +282,7 @@ void Viewfinder::onViewfinderTimeout()
     }
 }
 
-void Viewfinder::onShotTimeout()
+void PictureTakerViewfinder::onShotTimeout()
 {
     --m_nSecondsUntilNextShot;
     if( m_nSecondsUntilNextShot == 0 )
@@ -294,7 +295,7 @@ void Viewfinder::onShotTimeout()
     }
 }
 
-void Viewfinder::maybeSaveShot()
+void PictureTakerViewfinder::maybeSaveShot()
 {
     if( !m_isDryRun && m_saving )
     {
@@ -311,7 +312,7 @@ void Viewfinder::maybeSaveShot()
     }
 }
 
-void Viewfinder::maybeToggleStreams()
+void PictureTakerViewfinder::maybeToggleStreams()
 {
     // If in toggle mode, do the toggling.
     if( FLAGS_mode == "color" )

@@ -48,12 +48,12 @@ public:
     // If infoLog != nullptr, returns the info log.
     GLSeparableProgram( Type shaderType, const char* sourceCode,
         std::string* infoLog = nullptr );
-
-    // TODO(VS2015): = default
     GLSeparableProgram( GLSeparableProgram&& move );
     GLSeparableProgram& operator = ( GLSeparableProgram&& move );
+    ~GLSeparableProgram();
 
-    virtual ~GLSeparableProgram();
+    GLSeparableProgram( const GLSeparableProgram& copy ) = delete;
+    GLSeparableProgram& operator = ( const GLSeparableProgram& copy ) = delete;
 
     GLuint id() const;
 

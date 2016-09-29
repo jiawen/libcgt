@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
     RGBDInputStream inputStream( argv[ 1 ] );
     if( !inputStream.isValid() )
     {
-        fprintf( stderr, "Error reading input %s\n" );
+        fprintf( stderr, "Error reading input %s.\n", argv[ 1 ] );
         return 2;
     }
 

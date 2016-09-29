@@ -328,16 +328,10 @@ KinectCamera::KinectCamera( const std::vector< StreamConfig >& streamConfig,
         depthResolution = fromVector2i( depthConfig.resolution );
     }
 
-    // TODO(VS2015): make_unique.
-    m_impl = std::unique_ptr< KinectCameraImpl >
-    (
-        new KinectCameraImpl
-        (
-            nuiFlags,
-            colorFormat, colorResolution,
-            depthFormat, depthResolution,
-            deviceIndex
-        )
+    m_impl = std::make_unique< KinectCameraImpl >( nuiFlags,
+        colorFormat, colorResolution,
+        depthFormat, depthResolution,
+        deviceIndex
     );
 }
 

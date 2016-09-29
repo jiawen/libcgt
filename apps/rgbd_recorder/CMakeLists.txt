@@ -1,10 +1,13 @@
 cmake_minimum_required( VERSION 3.4 )
 project( rgbd_recorder )
 
+# gflags
+find_package(gflags REQUIRED)
+
 # Qt 5
 set( CMAKE_AUTOMOC ON )
-find_package( Qt5Core )
-find_package( Qt5Widgets )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Widgets REQUIRED )
 
 # libcgt
 set( LIBCGT_DIR ../.. )
@@ -19,6 +22,7 @@ add_executable( rgbd_recorder ${HEADERS} ${SOURCES_CPP} )
 set_property( TARGET rgbd_recorder PROPERTY CXX_STANDARD 11 )
 
 target_link_libraries( rgbd_recorder
+	gflags_shared
     Qt5::Core Qt5::Widgets
     debug cgt_cored
     debug cgt_camera_wrappersd

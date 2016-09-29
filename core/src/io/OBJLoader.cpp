@@ -597,7 +597,7 @@ bool OBJLoader::getVertexAttributes( const std::string& objFaceVertexToken,
 
     std::vector< std::string > vertexAttributes;
     pystring::split( objFaceVertexToken, vertexAttributes, "/" );
-    int numVertexAttributes = vertexAttributes.size();
+    size_t numVertexAttributes = vertexAttributes.size();
 
     // Check if it has position. It is required.
     if( numVertexAttributes < 1 )

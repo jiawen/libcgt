@@ -107,8 +107,12 @@ public:
         },
         const char* uri = nullptr ); // nullptr means "any device"
 
+    OpenNI2Camera( OpenNI2Camera&& move ) = default;
+    OpenNI2Camera& operator = ( OpenNI2Camera&& move ) = default;
     ~OpenNI2Camera();
-    // TODO(VS2015): move constructor = default
+
+    OpenNI2Camera( const OpenNI2Camera& copy ) = delete;
+    OpenNI2Camera& operator = ( const OpenNI2Camera& copy ) = delete;
 
     bool isValid() const;
 

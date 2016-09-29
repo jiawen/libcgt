@@ -16,7 +16,25 @@
 
 #include "common.h"
 
-const cv::Size boardSize( 4, 11 ); // (cols, rows), TODO(jiawen): gflags
+const cv::Size boardSize( 4, 11 ); // (cols, rows), TODO: make this a flag.
+
+DEFINE_string( dir, "",
+    "Working directory.\n"
+    "Expects intrinsic calibration to be under"
+    " <dir>/color_calibration.yaml and <dir>/infrared_calibration.yaml"
+    "Expects infrared_<#####>.png and color_<#####>.png to be under"
+    " <dir>/infrared_color_stereo_images\n" );
+static bool validateDir( const char* flagname, const std::string& value )
+{
+    if( value == "" )
+    {
+        fprintf( stderr, "dir must be a valid directory.\n" );
+        return false;
+    }
+    return true;
+}
+const bool dir_dummy = gflags::RegisterFlagValidator( &FLAGS_dir,
+    &validateDir );
 
 DEFINE_double( feature_spacing, 0.02, // 2 cm.
     "Spacing between two features on the calibration target in physical units "
@@ -46,15 +64,17 @@ int main( int argc, char* argv[] )
 {
     gflags::ParseCommandLineFlags( &argc, &argv, true );
 
-    std::string intrinsicsDir( "c:/tmp/calib" );
-    std::string dir( "c:/tmp/stereo_calib" );
+    std::string stereoImageDir = pystring::os::path::join(
+        FLAGS_dir, "infrared_color_stereo_images" );
 
     // IR is on the left.
-    std::vector< cv::Mat > infraredImages = readImages( dir, "infrared_" );
-    std::vector< cv::Mat > colorImages = readImages( dir, "color_");
+    std::vector< cv::Mat > infraredImages =
+        readImages( stereoImageDir, "infrared_" );
+    std::vector< cv::Mat > colorImages =
+        readImages( stereoImageDir, "color_" );
 
-    printf( "Loaded %d infrared images.\n", infraredImages.size() );
-    printf( "Loaded %d color images.\n", colorImages.size() );
+    printf( "Loaded %zu infrared images.\n", infraredImages.size() );
+    printf( "Loaded %zu color images.\n", colorImages.size() );
     if( infraredImages.size() != colorImages.size() )
     {
         printf( "Number of images not equal, aborting.\n" );
@@ -65,9 +85,9 @@ int main( int argc, char* argv[] )
     std::cout << "infrared image size: " << imageSize << std::endl;
 
     auto infraredIntrinsics = readIntrinsicsFromFile( pystring::os::path::join(
-        intrinsicsDir, "infrared_calibration.yaml" ) );
+        FLAGS_dir, "infrared_calibration.yaml" ) );
     auto colorIntrinsics = readIntrinsicsFromFile( pystring::os::path::join(
-        intrinsicsDir, "color_calibration.yaml" ) );
+        FLAGS_dir, "color_calibration.yaml" ) );
 
     std::cout << std::endl << std::endl;
 

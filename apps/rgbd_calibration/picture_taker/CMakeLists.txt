@@ -17,8 +17,8 @@ link_directories( ${LIBCGT_DIR}/build/lib )
 
 set( PICTURE_TAKER_SRCS
 	src/PictureTaker.cpp
-	src/Viewfinder.h
-	src/Viewfinder.cpp
+	src/PictureTakerViewfinder.h
+	src/PictureTakerViewfinder.cpp
 )
 
 set( DEPTH_AVERAGER_SRCS
