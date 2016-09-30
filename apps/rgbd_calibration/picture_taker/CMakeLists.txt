@@ -34,7 +34,7 @@ add_executable( depth_averager ${DEPTH_AVERAGER_SRCS} )
 set_property( TARGET depth_averager PROPERTY CXX_STANDARD 11 )
 
 target_link_libraries( picture_taker
-    gflags_shared
+    gflags_nothreads_shared
     Qt5::Core Qt5::Widgets
     debug cgt_cored
     debug cgt_camera_wrappersd

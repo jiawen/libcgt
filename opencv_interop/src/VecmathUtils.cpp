@@ -7,17 +7,26 @@
 
 namespace libcgt { namespace opencv_interop {
 
-cv::Point2f toCV( const Vector2f& v )
+cv::Point2f toCVPoint( const Vector2f& v )
 {
     return cv::Point2f( v.x, v.y );
 }
 
-cv::Point3f toCV( const Vector3f& v )
+cv::Point3f toCVPoint( const Vector3f& v )
 {
     return cv::Point3f( v.x, v.y, v.z );
 }
 
-cv::Mat_< float > toCV( const Matrix3f& a )
+cv::Mat_< float > toCVMatrix3x1( const Vector3f& v )
+{
+    cv::Mat_< float > output( 3, 1 );
+    output.at< float >( 0, 0 ) = v.x;
+    output.at< float >( 1, 0 ) = v.y;
+    output.at< float >( 2, 0 ) = v.z;
+    return output;
+}
+
+cv::Mat_< float > toCVMatrix3x3( const Matrix3f& a )
 {
     cv::Mat_< float > output( 3, 3 );
     for( int i = 0; i < 3; ++i )
@@ -30,7 +39,7 @@ cv::Mat_< float > toCV( const Matrix3f& a )
     return output;
 }
 
-cv::Mat_< float > toCV( const Matrix4f& a )
+cv::Mat_< float > toCVMatrix4x4( const Matrix4f& a )
 {
     cv::Mat_< float > output( 4, 4 );
     for( int i = 0; i < 4; ++i )

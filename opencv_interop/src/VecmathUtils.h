@@ -9,13 +9,15 @@ class Vector3f;
 
 namespace libcgt { namespace opencv_interop {
 
-cv::Point2f toCV( const Vector2f& v );
+cv::Point2f toCVPoint( const Vector2f& v );
 
-cv::Point3f toCV( const Vector3f& v );
+cv::Point3f toCVPoint( const Vector3f& v );
 
-cv::Mat_< float > toCV( const Matrix3f& a );
+cv::Mat_< float > toCVMatrix3x1( const Vector3f& v );
 
-cv::Mat_< float > toCV( const Matrix4f& a );
+cv::Mat_< float > toCVMatrix3x3( const Matrix3f& a );
+
+cv::Mat_< float > toCVMatrix4x4( const Matrix4f& a );
 
 // Grab 3 elements from row i, starting at column j0.
 // a( i, j0 : j0 + 3 )

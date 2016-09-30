@@ -58,6 +58,34 @@ GLFramebufferObject::GLFramebufferObject( int externalId ) :
 
 }
 
+GLFramebufferObject::GLFramebufferObject( GLFramebufferObject&& move )
+{
+    destroy();
+    m_id = move.m_id;
+    m_isExternal = move.m_isExternal;
+    move.m_id = 0;
+    move.m_isExternal = true;
+}
+
+GLFramebufferObject& GLFramebufferObject::operator = (
+    GLFramebufferObject&& move )
+{
+    if( this != &move )
+    {
+        destroy();
+        m_id = move.m_id;
+        m_isExternal = move.m_isExternal;
+        move.m_id = 0;
+        move.m_isExternal = true;
+    }
+    return *this;
+}
+
+GLFramebufferObject::~GLFramebufferObject()
+{
+    destroy();
+}
+
 GLuint GLFramebufferObject::id() const
 {
     return m_id;
@@ -66,17 +94,6 @@ GLuint GLFramebufferObject::id() const
 bool GLFramebufferObject::isExternal() const
 {
     return m_isExternal;
-}
-
-// virtual
-GLFramebufferObject::~GLFramebufferObject()
-{
-    // Don't delete the default FBO if it was wrapped.
-    if( !m_isExternal )
-    {
-        glDeleteFramebuffers( 1, &m_id );
-        m_id = 0;
-    }
 }
 
 void GLFramebufferObject::bind()
@@ -173,7 +190,6 @@ void GLFramebufferObject::setReadBuffer( GLenum attachment )
     glFramebufferReadBufferEXT( m_id, attachment );
 }
 
-#include "GLUtilities.h"
 bool GLFramebufferObject::checkStatus( GLenum* pStatus )
 {
     bool isComplete = false;
@@ -190,23 +206,25 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
         fprintf( stderr, "Framebuffer incomplete: no attachments.\n" );
         break;
-    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
-        fprintf( stderr, "Framebuffer incomplete: drawbuffer set to GL_NONE.\n" );
+    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+        fprintf( stderr,
+            "Framebuffer incomplete: drawbuffer set to GL_NONE.\n" );
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-        fprintf( stderr, "framebuffer incpmplete: readbuffer set to GL_NONE.\n" );
+        fprintf( stderr,
+            "framebuffer incpmplete: readbuffer set to GL_NONE.\n" );
         break;
     case GL_FRAMEBUFFER_UNSUPPORTED:
         fprintf( stderr, "Framebuffer incomplete: format unsupported.\n" );
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-        fprintf( stderr, "Framebuffer incomplete: inconsistent numbers of multisamples.\n" );
+        fprintf( stderr, "Framebuffer incomplete: inconsistent number of"
+            " multisamples.\n" );
         break;
-    case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS :
-        fprintf(stderr, "Framebuffer incomplete: inconsistent layering.\n" );
+    case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+        fprintf( stderr, "Framebuffer incomplete: inconsistent layering.\n" );
     default:
         fprintf( stderr, "Can't get here!\n" );
-        GLUtilities::printLastError();
         assert( false );
     }
 
@@ -217,13 +235,16 @@ bool GLFramebufferObject::checkStatus( GLenum* pStatus )
     return isComplete;
 }
 
-void GLFramebufferObject::clearColor( int drawbufferIndex, const int8x4& color )
+void GLFramebufferObject::clearColor( int drawbufferIndex,
+    const int8x4& color )
 {
-    glClearNamedFramebufferiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex,
+    glClearNamedFramebufferiv( m_id, GL_COLOR,
+        GL_DRAW_BUFFER0 + drawbufferIndex,
         reinterpret_cast< const GLint* >( &color ) );
 }
 
-void GLFramebufferObject::clearColor( int drawbufferIndex, const uint8x4& color )
+void GLFramebufferObject::clearColor( int drawbufferIndex,
+    const uint8x4& color )
 {
     glClearNamedFramebufferuiv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex,
         reinterpret_cast< const GLuint* >( &color ) );
@@ -231,7 +252,7 @@ void GLFramebufferObject::clearColor( int drawbufferIndex, const uint8x4& color 
 
 void GLFramebufferObject::clearColor( int drawbufferIndex, const Vector4f& color )
 {
-	Vector4f c = color;
+    Vector4f c = color;
     glClearNamedFramebufferfv( m_id, GL_COLOR, GL_DRAW_BUFFER0 + drawbufferIndex, c );
 }
 
@@ -248,4 +269,14 @@ void GLFramebufferObject::clearStencil( int drawbufferIndex, int stencil )
 void GLFramebufferObject::clearDepthStencil( int drawbufferIndex, float depth, int stencil )
 {
     glClearNamedFramebufferfi( m_id, GL_DEPTH_STENCIL, drawbufferIndex, depth, stencil );
+}
+
+void GLFramebufferObject::destroy()
+{
+    // Don't delete the default FBO if it was wrapped.
+    if( !m_isExternal )
+    {
+        glDeleteFramebuffers( 1, &m_id );
+        m_id = 0;
+    }
 }

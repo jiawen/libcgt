@@ -47,7 +47,13 @@ public:
     // QOpenGLWidget.
     GLFramebufferObject( int externalId );
 
-    virtual ~GLFramebufferObject();
+    GLFramebufferObject( GLFramebufferObject&& move );
+    GLFramebufferObject& operator = ( GLFramebufferObject&& move );
+    ~GLFramebufferObject();
+
+    GLFramebufferObject( const GLFramebufferObject& copy ) = delete;
+    GLFramebufferObject& operator =
+        ( const GLFramebufferObject& copy ) = delete;
 
     GLuint id() const;
 
@@ -157,4 +163,6 @@ private:
 
     GLuint m_id;
     bool m_isExternal;
+
+    void destroy();
 };

@@ -77,7 +77,7 @@ StereoFeatures detectStereoFeatures(
 
     int nImages = static_cast< int >( leftImages.size() );
 
-    printf( "Looking for features centers..." );
+    printf( "Looking for feature points...\n" );
     for( int i = 0; i < nImages; ++i )
     {
         printf( "image %d of %d\n", i, nImages );

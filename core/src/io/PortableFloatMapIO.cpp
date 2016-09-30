@@ -26,6 +26,10 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
     {
         nComponents = 1;
     }
+    else if( strncmp( buffer, "PF2", 3 ) == 0 )
+    {
+        nComponents = 2;
+    }
     else if( strncmp( buffer, "PF4", 3 ) == 0 )
     {
         nComponents = 4;
@@ -52,7 +56,8 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
     }
 
     float* floatData = new float[ nComponents * width * height ];
-    size_t nElementsRead = fread( floatData, nComponents * sizeof( float ), width * height, fp );
+    size_t nElementsRead =
+        fread( floatData, nComponents * sizeof( float ), width * height, fp );
     if( nElementsRead != width * height )
     {
         delete[] floatData;
@@ -64,11 +69,15 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
     {
         output.grayscale = Array2D< float >( floatData, { width, height } );
     }
+    else if( nComponents == 2 )
+    {
+        output.rg = Array2D< Vector2f >( floatData, { width, height } );
+    }
     else if( nComponents == 3 )
     {
         output.rgb = Array2D< Vector3f >( floatData, { width, height } );
     }
-    if( nComponents == 4 )
+    else if( nComponents == 4 )
     {
         output.rgba = Array2D< Vector4f >( floatData, { width, height } );
     }
@@ -127,6 +136,58 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
     fclose( pFile );
     return true;
 }
+
+// static
+bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector2f > image )
+{
+    int w = image.width();
+    int h = image.height();
+
+    // use "wb" binary mode to ensure that on Windows,
+    // newlines in the header are written out as '\n'
+    FILE* pFile = fopen( filename.c_str(), "wb" );
+    if( pFile == nullptr )
+    {
+        return false;
+    }
+
+    // write header
+    int nCharsWritten = fprintf( pFile, "PF2\n%d %d\n-1\n", w, h );
+    if( nCharsWritten < 0 )
+    {
+        fclose( pFile );
+        return false;
+    }
+
+    // All at once.
+    if( image.packed() )
+    {
+        fwrite( image.rowPointer( 0 ), sizeof( Vector2f ), image.numElements(), pFile );
+    }
+    // Row by Row.
+    else if( image.elementsArePacked() )
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            fwrite( image.rowPointer( y ), sizeof( Vector2f ), image.width(), pFile );
+        }
+    }
+    // Element by element.
+    else
+    {
+        for( int y = 0; y < h; ++y )
+        {
+            for( int x = 0; x < w; ++x )
+            {
+                fwrite( image.elementPointer( { x, y } ), sizeof( Vector2f ), 1, pFile );
+            }
+        }
+    }
+
+    fclose( pFile );
+    return true;
+}
+
 
 // static
 bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector3f > image )
