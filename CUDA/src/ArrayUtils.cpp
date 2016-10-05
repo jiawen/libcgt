@@ -17,7 +17,7 @@ bool saveTXT( Array1DView< const int3 > array, const char* filename )
         return false;
     }
 
-    fprintf( fp, "Size: %d\n", array.size() );
+    fprintf( fp, "Size: %zu\n", array.size() );
     fprintf( fp, "Format: int3\n" );
 
     int length = static_cast< int >( array.size() );
@@ -279,7 +279,9 @@ bool saveTXT( Array3DView< const int4 > array, const char* filename )
             {
                 int index = z * w * h + y * w + x;
                 int4 v = array[ { x, y, z } ];
-                fprintf( fp, "[%d] (%d %d %d %d): %d %d\n", index, x, y, z, v.x, v.y, v.z, v.w );
+                fprintf( fp, "[%d] (%d %d %d): %d %d %d %d\n",
+					index, x, y, z,
+					v.x, v.y, v.z, v.w );
             }
         }
     }
