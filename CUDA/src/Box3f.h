@@ -70,12 +70,8 @@ public:
     __inline__ __host__ __device__
     static bool intersect( const Box3f& r0, const Box3f& r1, Box3f& intersection );
 
-    // TODO(VS2015):
-    //float3 m_origin = { 0 };
-    //float3 m_size = { 0 };
-
-    float3 m_origin = make_float3( 0 );
-    float3 m_size = make_float3( 0 );
+    float3 m_origin = {};
+    float3 m_size = {};
 };
 
 __inline__ __host__ __device__

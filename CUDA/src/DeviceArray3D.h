@@ -92,8 +92,7 @@ private:
 
     // We allocate memory by first making a cudaExtent, which expects:
     // width in *bytes*, height and depth in elements.
-    // TODO(VS2015): cudaExtent m_extent = { 0 };
-    cudaExtent m_extent = make_cudaExtent( 0, 0, 0 );
+    cudaExtent m_extent = {};
 
     // We then pass m_extent to cudaMalloc3D() to allocate a 3D block of
     // memory. It returns a cudaPitchedPtr, which only knows about 2D pitch.
@@ -104,8 +103,7 @@ private:
     //   ysize is the logical height.
     //   depth is not echoed.
     // There is never any space between slices.
-    // TODO(VS2015): cudaPitchedPtr m_pitchedPointer = { 0 };
-    cudaPitchedPtr m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
+    cudaPitchedPtr m_pitchedPointer = {};
 
     // Frees the memory if this is not null.
     void destroy();

@@ -1,5 +1,7 @@
-cmake_minimum_required( VERSION 3.4 )
+cmake_minimum_required( VERSION 3.6 )
 project( rgbd_recorder )
+set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )
 
 # gflags
 find_package(gflags REQUIRED)
@@ -11,9 +13,9 @@ find_package( Qt5Widgets REQUIRED )
 
 # libcgt
 set( LIBCGT_DIR ../.. )
-include_directories( ${LIBCGT_DIR}/build/include )
-include_directories( ${LIBCGT_DIR}/build/include/core )
-link_directories( ${LIBCGT_DIR}/build/lib )
+include_directories( ${LIBCGT_DIR}/build/lib/include )
+include_directories( ${LIBCGT_DIR}/build/lib/include/core )
+link_directories( ${LIBCGT_DIR}/build/lib/lib )
 
 file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
 file( GLOB_RECURSE SOURCES_CPP src/*.cpp )

@@ -3,8 +3,8 @@ project( cgt_qt_interop )
 
 # Qt 5
 set( CMAKE_AUTOMOC ON )
-find_package( Qt5Core )
-find_package( Qt5Widgets )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Widgets REQUIRED )
 
 # Add include to the set of compiler include paths
 include_directories( ../core/src )

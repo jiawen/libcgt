@@ -16,7 +16,6 @@ public:
     OpenNI2CameraImpl( const std::vector< StreamConfig >& streamConfig,
         const char* uri );
     virtual ~OpenNI2CameraImpl();
-    // TODO(VS2015): move constructor = default
 
     bool isValid() const;
 

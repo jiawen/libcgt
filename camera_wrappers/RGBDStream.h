@@ -58,7 +58,6 @@ public:
 
     RGBDOutputStream( const RGBDOutputStream& copy ) = delete;
     RGBDOutputStream& operator = ( const RGBDOutputStream& copy ) = delete;
-    // TODO(VS2015): = default
     RGBDOutputStream( RGBDOutputStream&& move );
     RGBDOutputStream& operator = ( RGBDOutputStream&& move );
 

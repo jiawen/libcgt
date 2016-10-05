@@ -1,35 +1,49 @@
 cmake_minimum_required( VERSION 3.4 )
 project( cgt_camera_wrappers )
 
-# Add libcgt/core to the set of compiler include paths
+# TODO: make BUILD_KINECT and BUILD_OPENNI2 options.
+
+# Add libcgt/core to the set of compiler include paths.
 include_directories( ../core/src )
 include_directories( .. )
 
-set( CAMERA_WRAPPER_HEADERS RGBDStream.h PixelFormat.h PoseStream.h StreamConfig.h )
-set( CAMERA_WRAPPER_SOURCES RGBDStream.cpp PixelFormat.cpp PoseStream.cpp )
+set( CAMERA_WRAPPER_HEADERS
+    RGBDStream.h PixelFormat.h PoseStream.h StreamConfig.h )
+set( CAMERA_WRAPPER_SOURCES
+    RGBDStream.cpp PixelFormat.cpp PoseStream.cpp )
+set( LIBRARY_DEPENDENCIES cgt_core )
 
 # Kinect v1.x SDK.
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Kinect1x )
 find_package( Kinect1x )
 if( KINECT1X_FOUND )
-    set( KINECT1X_HEADERS
+	set( KINECT1X_HEADERS
 		Kinect1x/KinectCamera.h
 		Kinect1x/KinectCameraImpl.h
-		Kinect1x/KinectUtils.h
-	)
+		Kinect1x/KinectUtils.h )
     set( KINECT1X_SOURCES
 		Kinect1x/KinectCamera.cpp
 		Kinect1x/KinectCameraImpl.cpp
-		Kinect1x/KinectUtils.cpp
-	)
+		Kinect1x/KinectUtils.cpp )
 
+    set( CAMERA_WRAPPER_HEADERS
+        ${CAMERA_WRAPPER_HEADERS} ${KINECT1X_HEADERS} )
+	set( CAMERA_WRAPPER_SOURCES
+        ${CAMERA_WRAPPER_SOURCES} ${KINECT1X_SOURCES} )
+	set( LIBRARY_DEPENDENCIES
+        ${LIBRARY_DEPENDENCIES} Kinect1x::Kinect1x )
     # TODO: how do we add these into the "additional dependencies" line for the
     # static library project.
     # Apparently, amstrmid.lib and sapi.lib are not used.
     # set( MS_SPEECH_LIBRARIES strmiids.lib dmoguids.lib msdmo.lib avrt.lib )
+else()
+    message( "Kinect 1.x libraries not found on system. Resulting library will\
+ not have Kinect 1.x support." )
 endif()
 
-# OpenNI2 SDK.
+## OpenNI2 SDK.
+
+# So we can find FindOpenNI2.cmake.
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/OpenNI2 )
 find_package( OpenNI2 )
 if( OpenNI2_FOUND )
@@ -37,14 +51,21 @@ if( OpenNI2_FOUND )
 
     file( GLOB_RECURSE OPENNI2_HEADERS OpenNI2/*.h OpenNI2*.inl )
     file( GLOB_RECURSE OPENNI2_SOURCES OpenNI2/*.cpp )
+
+	set( CAMERA_WRAPPER_HEADERS
+        ${CAMERA_WRAPPER_HEADERS} ${OPENNI2_HEADERS} )
+	set( CAMERA_WRAPPER_SOURCES
+        ${CAMERA_WRAPPER_SOURCES} ${OPENNI2_SOURCES} )
+	set( LIBRARY_DEPENDENCIES
+        ${LIBRARY_DEPENDENCIES} ${OPENNI2_LIBRARY} )
+else()
+    message( "OpenNI2 libraries not found on system. Resulting library will\
+ not have OpenNI2 support." )
 endif()
 
-# TODO: append list correctly
 add_library( cgt_camera_wrappers SHARED
-    ${CAMERA_WRAPPER_HEADERS} ${KINECT1X_HEADERS} ${OPENNI2_HEADERS}
-    ${CAMERA_WRAPPER_SOURCES} ${KINECT1X_SOURCES} ${OPENNI2_SOURCES}
-)
-target_link_libraries( cgt_camera_wrappers cgt_core Kinect1x::Kinect1x ${OPENNI2_LIBRARY} )
+    ${CAMERA_WRAPPER_HEADERS} ${CAMERA_WRAPPER_SOURCES} )
+target_link_libraries( cgt_camera_wrappers ${LIBRARY_DEPENDENCIES} )
 
 install( TARGETS cgt_camera_wrappers DESTINATION lib )
 install( DIRECTORY ./ DESTINATION include/camera_wrappers

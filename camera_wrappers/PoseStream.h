@@ -81,7 +81,6 @@ public:
 
     PoseOutputStream( const PoseOutputStream& copy ) = delete;
     PoseOutputStream& operator = ( const PoseOutputStream& copy ) = delete;
-    // TODO(VS2015): = default
     PoseOutputStream( PoseOutputStream&& move );
     PoseOutputStream& operator = ( PoseOutputStream&& move );
 
