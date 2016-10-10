@@ -64,8 +64,6 @@ public:
     void homogenize();
     Vector4f homogenized() const;
 
-    void negate();
-
     // implicit cast
     operator const float* () const;
     operator float* ();

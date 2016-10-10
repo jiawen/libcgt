@@ -24,9 +24,9 @@ public:
 
     EuclideanTransform() = default;
     // Rotation only.
-    EuclideanTransform( const Matrix3f& r );
+    explicit EuclideanTransform( const Matrix3f& r );
     // Translation only.
-    EuclideanTransform( const Vector3f& t );
+    explicit EuclideanTransform( const Vector3f& t );
     // Rotation followed by translation.
     EuclideanTransform( const Matrix3f& r, const Vector3f& t );
 

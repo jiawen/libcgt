@@ -1,4 +1,5 @@
 cmake_minimum_required( VERSION 3.4 )
+project( libcgt CXX )
 
 # Compiler options by platform.
 if( APPLE )
@@ -6,12 +7,13 @@ if( APPLE )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
 elseif( UNIX )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
-		# Use libc++ with Clang.
-    	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
-	else()
+        # Use libc++ with Clang.
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
+    else()
         # Use the default stdlib with other compilers.
-    	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
-	endif()
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+        message( FATAL_ERROR "libcgt currently only compiles with Clang and libc++." )
+    endif()
 elseif( WIN32 )
     set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true )
 
@@ -42,7 +44,6 @@ if( WIN32 )
     endif()
 endif()
 
-project( libcgt )
 
 # TODO: can get fancy with the options: default to whether dependencies exist.
 add_subdirectory( core )

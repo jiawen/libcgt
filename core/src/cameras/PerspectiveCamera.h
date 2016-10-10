@@ -43,6 +43,12 @@ public:
         bool isDirectX = false );
 
     PerspectiveCamera(
+        const EuclideanTransform& cameraFromWorld,
+        const Intrinsics& intrinsics, const Vector2f& imageSize,
+        float zNear = 1.0f, float zFar = 100.0f,
+        bool isDirectX = false );
+
+    PerspectiveCamera(
         const Vector3f& eye, const Vector3f& center, const Vector3f& up,
         const GLFrustum& frustum,
         bool isDirectX = false );

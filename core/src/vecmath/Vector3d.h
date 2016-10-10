@@ -34,8 +34,6 @@ public:
     void normalize();
     Vector3d normalized() const;
 
-    void negate();
-
     // ---- Utility ----
     operator const double* (); // automatic type conversion for GL
     void print() const;

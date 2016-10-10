@@ -49,9 +49,7 @@ public:
     void copyFromDevice( const DevicePool& pool );
     void copyToDevice( DevicePool& pool );
 
-    void loadBinary( FILE* fp );
-    void saveBinary( FILE* fp );
-
+    // TODO: fix this.
     //private:
 
     int m_capacity;

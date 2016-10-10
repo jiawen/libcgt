@@ -90,12 +90,6 @@ Vector2d Vector2d::normalized() const
     return Vector2d( m_elements[0] / length, m_elements[1] / length );
 }
 
-void Vector2d::negate()
-{
-    m_elements[0] = -m_elements[0];
-    m_elements[1] = -m_elements[1];
-}
-
 Vector2d::operator const double* ()
 {
     return m_elements;

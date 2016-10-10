@@ -280,6 +280,23 @@ Array2DView< T > flipY( Array2DView< T > src )
     );
 }
 
+// TODO: ugh, Array1DView< const T > is a big hack. Reconsider this design.
+template< typename T >
+void flipYInPlace( Array2DView< T > v )
+{
+    Array1D< T > tmp( v.width() );
+    for( int y = 0; y < v.height() / 2; ++y )
+    {
+        // Copy row y into tmp.
+        copy( Array1DView< const T >( v.row( y ) ), tmp.writeView() );
+        // Copy row (height - y - 1) into y.
+        copy( Array1DView< const T >( v.row( v.height() - y - 1 ) ),
+            v.row( y ) );
+        // Copy tmp into row (height - y - 1).
+        copy( tmp.readView(), v.row( v.height() - y - 1 ) );
+    }
+}
+
 template< typename T >
 Array2DView< T > transpose( Array2DView< T > src )
 {
@@ -509,52 +526,7 @@ Array1DView< const T > readViewOf( const std::vector< T >& v )
 template< typename T >
 Array1DView< T > writeViewOf( std::vector< T >& v )
 {
-    return Array1DView< T >(v.data(), v.size());
+    return Array1DView< T >( v.data(), v.size() );
 }
-
 
 } } } // namespace arrayutils, core, libcgt
-
-// static
-template< typename T >
-bool ArrayUtils::loadBinary( FILE* fp, std::vector< T >& output )
-{
-    int length;
-
-    fread( &length, sizeof( int ), 1, fp );
-    output.resize( length );
-
-    fread( output.data(), sizeof( T ), length, fp );
-
-    // TODO: error checking
-    return true;
-}
-
-// static
-template< typename T >
-bool ArrayUtils::saveBinary( const std::vector< T >& input, const char* filename )
-{
-    FILE* fp = fopen( filename, "wb" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    bool succeeded = saveBinary( input, fp );
-    fclose( fp );
-    return succeeded;
-}
-
-// static
-template< typename T >
-bool ArrayUtils::saveBinary( const std::vector< T >& input, FILE* fp )
-{
-    // TODO: error check
-
-    int length = static_cast< int >( input.size() );
-    fwrite( &length, sizeof( int ), 1, fp );
-
-    fwrite( input.data(), sizeof( T ), length, fp );
-
-    return true;
-}

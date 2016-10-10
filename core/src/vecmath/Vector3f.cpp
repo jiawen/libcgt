@@ -137,13 +137,6 @@ Vector3f Vector3f::homogenized() const
     }
 }
 
-void Vector3f::negate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-}
-
 std::string Vector3f::toString() const
 {
     std::ostringstream sstream;

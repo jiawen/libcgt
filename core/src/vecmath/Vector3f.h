@@ -57,8 +57,6 @@ public:
     void homogenize();
     Vector3f homogenized() const;
 
-    void negate();
-
     // automatic type conversion to float pointer
     operator const float* () const;
     operator float* ();

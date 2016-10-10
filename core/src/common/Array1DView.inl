@@ -11,7 +11,7 @@ Array1DView< T >::Array1DView( typename Array1DView< T >::VoidPointer pointer,
 
 template< typename T >
 Array1DView< T >::Array1DView( typename Array1DView< T >::VoidPointer pointer,
-    size_t size, ptrdiff_t stride ) :
+    size_t size, std::ptrdiff_t stride ) :
     m_size( size ),
     m_stride( stride ),
     m_pointer( reinterpret_cast< typename Array1DView< T >::UInt8Pointer >(
@@ -98,13 +98,13 @@ size_t Array1DView< T >::numElements() const
 }
 
 template< typename T >
-ptrdiff_t Array1DView< T >::elementStrideBytes() const
+std::ptrdiff_t Array1DView< T >::elementStrideBytes() const
 {
     return m_stride;
 }
 
 template< typename T >
-ptrdiff_t Array1DView< T >::stride() const
+std::ptrdiff_t Array1DView< T >::stride() const
 {
     return m_stride;
 }

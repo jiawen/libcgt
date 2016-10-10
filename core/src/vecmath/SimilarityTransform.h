@@ -21,13 +21,13 @@ public:
 
     SimilarityTransform() = default;
     // Scale only.
-    SimilarityTransform( float s );
+    explicit SimilarityTransform( float s );
     // Rotation only.
-    SimilarityTransform( const Matrix3f& r );
+    explicit SimilarityTransform( const Matrix3f& r );
     // Translation only.
-    SimilarityTransform( const Vector3f& t );
+    explicit SimilarityTransform( const Vector3f& t );
     // Euclidean only.
-    SimilarityTransform( const EuclideanTransform& e );
+    explicit SimilarityTransform( const EuclideanTransform& e );
     // Linear only.
     SimilarityTransform( float s, const Matrix3f& r );
     SimilarityTransform( float s, const Matrix3f& r, const Vector3f& t );

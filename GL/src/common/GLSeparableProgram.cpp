@@ -11,6 +11,27 @@
 #include <vecmath/Vector4f.h>
 #include <vecmath/Vector4i.h>
 
+namespace
+{
+std::string getInfoLog( GLuint id )
+{
+    GLint length;
+    glGetProgramiv( id, GL_INFO_LOG_LENGTH, &length );
+    if( length > 1 )
+    {
+        std::string log( length - 1, '\0' );
+        char* bufferStart = &( log[ 0 ] );
+        GLsizei tmp;
+        glGetProgramInfoLog( id, length, &tmp, bufferStart );
+        return log;
+    }
+    else
+    {
+        return std::string();
+    }
+}
+} // namespace
+
 // static
 GLSeparableProgram GLSeparableProgram::fromFile(
     GLSeparableProgram::Type shaderType, const char* filename )
@@ -20,15 +41,11 @@ GLSeparableProgram GLSeparableProgram::fromFile(
 }
 
 GLSeparableProgram::GLSeparableProgram( GLSeparableProgram::Type shaderType,
-    const char* sourceCode, std::string* infoLog )
+    const char* sourceCode )
 {
     GLenum type = static_cast< GLenum >( shaderType );
     GLuint id = glCreateShaderProgramv( type, 1, &sourceCode );
-
-    if( infoLog != nullptr )
-    {
-        *infoLog = getInfoLog();
-    }
+    m_infoLog = ::getInfoLog( id );
 
     GLint status;
     glGetProgramiv( id, GL_LINK_STATUS, &status );
@@ -79,6 +96,11 @@ GLuint GLSeparableProgram::id() const
 bool GLSeparableProgram::isValid() const
 {
     return( id() != 0 && type() != Type::NO_TYPE );
+}
+
+std::string GLSeparableProgram::getInfoLog() const
+{
+    return m_infoLog;
 }
 
 GLSeparableProgram::Type GLSeparableProgram::type() const
@@ -171,23 +193,6 @@ void GLSeparableProgram::destroy()
     {
         glDeleteProgram( m_id );
         m_id = 0;
-    }
-}
-
-std::string GLSeparableProgram::getInfoLog() const
-{
-    GLint length;
-    glGetProgramiv( id(), GL_INFO_LOG_LENGTH, &length );
-    if( length > 1 )
-    {
-        std::string log( length - 1, '\0' );
-        char* bufferStart = &( log[ 0 ] );
-        GLsizei tmp;
-        glGetProgramInfoLog( id(), length, &tmp, bufferStart );
-        return log;
-    }
-    else
-    {
-        return std::string();
+        m_type = GLSeparableProgram::Type::NO_TYPE;
     }
 }

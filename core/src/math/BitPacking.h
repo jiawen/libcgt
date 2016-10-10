@@ -44,9 +44,9 @@ public:
     // [ b0 b1 b2 b3 b4 b5 b6 b7 ]
     static uint64_t byteSwap64( uint64_t x );
 
-    // TODO: supply a destination.
     // Efficiently performs 16-bit byte swapping on an Array1DView.
-    static void byteSwap16( Array1DView< uint16_t > view16 );
+    static bool byteSwap16( Array1DView< const uint16_t > src,
+        Array1DView< uint16_t > dst );
 
     // packs 16-bit (x,y) into a 32-bit Morton curve index
     // From: http://graphics.stanford.edu/~seander/bithacks.html

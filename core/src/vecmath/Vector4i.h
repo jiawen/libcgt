@@ -51,8 +51,6 @@ public:
     void homogenize();
     Vector4i homogenized() const;
 
-    void negate();
-
     // implicit cast
     operator const int* () const;
     operator int* ();

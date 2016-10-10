@@ -28,10 +28,6 @@ public:
     int normSquared() const;
     Vector2f normalized() const;
 
-    void negate();
-
-    Vector2i flippedUD( int height ) const;
-
     // implicit cast
     operator const int* () const;
     operator int* ();

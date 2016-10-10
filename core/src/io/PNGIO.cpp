@@ -116,7 +116,7 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
     {
         Array1DView< uint16_t > bitsView( bits,
             output.nComponents * width * height );
-        BitPacking::byteSwap16( bitsView );
+        BitPacking::byteSwap16( bitsView, bitsView );
     }
 
     return output;

@@ -227,14 +227,6 @@ Vector4d Vector4d::homogenized() const
     }
 }
 
-void Vector4d::negate()
-{
-    m_elements[0] = -m_elements[0];
-    m_elements[1] = -m_elements[1];
-    m_elements[2] = -m_elements[2];
-    m_elements[3] = -m_elements[3];
-}
-
 // ---- Utility ----
 
 Vector4d::operator const double* ()

@@ -47,8 +47,8 @@ PerspectiveCamera::PerspectiveCamera(
     const GLFrustum& frustum,
     bool isDirectX )
 {
-    setFrustum( frustum );
     setCameraFromWorld( cameraFromWorld );
+    setFrustum( frustum );
     setDirectX( isDirectX );
 }
 
@@ -59,6 +59,17 @@ PerspectiveCamera::PerspectiveCamera(
 {
     setLookAt( eye, center, up );
     setFrustum( frustum );
+    setDirectX( isDirectX );
+}
+
+PerspectiveCamera::PerspectiveCamera(
+    const EuclideanTransform& cameraFromWorld,
+    const Intrinsics& intrinsics, const Vector2f& imageSize,
+    float zNear, float zFar,
+    bool isDirectX )
+{
+    setCameraFromWorld( cameraFromWorld );
+    setFrustumFromIntrinsics( intrinsics, imageSize, zNear, zFar );
     setDirectX( isDirectX );
 }
 

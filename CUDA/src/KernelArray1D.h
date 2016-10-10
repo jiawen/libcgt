@@ -16,7 +16,7 @@ struct KernelArray1D
 
     __inline__ __host__ __device__
     KernelArray1D( VoidPointer pointer, size_t size,
-        ptrdiff_t stride = sizeof( T ) );
+        std::ptrdiff_t stride = sizeof( T ) );
 
     __inline__ __device__
     size_t width() const;
@@ -26,7 +26,7 @@ struct KernelArray1D
 
     // The number of bytes between elements.
     __inline__ __device__
-    ptrdiff_t stride() const;
+    std::ptrdiff_t stride() const;
 
     __inline__ __device__
     T* pointer() const;
@@ -41,7 +41,7 @@ private:
 
     UInt8Pointer md_pointer = nullptr;
     size_t m_size = 0;
-    ptrdiff_t m_stride = 0;
+    std::ptrdiff_t m_stride = 0;
 };
 
 #include "KernelArray1D.inl"

@@ -45,9 +45,9 @@ public:
 
     // Construct a separable GL shader program given source code (as a string).
     // If it successfully compiled, isValid() will be true.
-    // If infoLog != nullptr, returns the info log.
-    GLSeparableProgram( Type shaderType, const char* sourceCode,
-        std::string* infoLog = nullptr );
+    // Otherwise, isValid() will be false. Call infoLog() to retrieve the info
+    // log for compilation errors.
+    GLSeparableProgram( Type shaderType, const char* sourceCode );
     GLSeparableProgram( GLSeparableProgram&& move );
     GLSeparableProgram& operator = ( GLSeparableProgram&& move );
     ~GLSeparableProgram();
@@ -57,8 +57,10 @@ public:
 
     GLuint id() const;
 
-    // Returns true if this program is valid (id() != 0).
+    // Returns true if this program is valid.
     bool isValid() const;
+
+    std::string getInfoLog() const;
 
     Type type() const;
 
@@ -83,7 +85,7 @@ private:
 
     GLuint m_id = 0;
     Type m_type = Type::NO_TYPE;
+    std::string m_infoLog;
 
     void destroy();
-    std::string getInfoLog() const;
 };

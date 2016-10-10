@@ -81,7 +81,7 @@ public:
     operator const float* () const;
     operator float* ();
 
-    std::string Matrix4f::toString() const;
+    std::string toString() const;
 
     // uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
     Vector3f transformPoint( const Vector3f& p ) const;

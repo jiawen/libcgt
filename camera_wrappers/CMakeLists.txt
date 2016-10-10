@@ -14,31 +14,33 @@ set( CAMERA_WRAPPER_SOURCES
 set( LIBRARY_DEPENDENCIES cgt_core )
 
 # Kinect v1.x SDK.
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Kinect1x )
-find_package( Kinect1x )
-if( KINECT1X_FOUND )
-	set( KINECT1X_HEADERS
-		Kinect1x/KinectCamera.h
-		Kinect1x/KinectCameraImpl.h
-		Kinect1x/KinectUtils.h )
-    set( KINECT1X_SOURCES
-		Kinect1x/KinectCamera.cpp
-		Kinect1x/KinectCameraImpl.cpp
-		Kinect1x/KinectUtils.cpp )
+if( WIN32 )
+    set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Kinect1x )
+    find_package( Kinect1x )
+    if( KINECT1X_FOUND )
+        set( KINECT1X_HEADERS
+            Kinect1x/KinectCamera.h
+            Kinect1x/KinectCameraImpl.h
+            Kinect1x/KinectUtils.h )
+        set( KINECT1X_SOURCES
+            Kinect1x/KinectCamera.cpp
+            Kinect1x/KinectCameraImpl.cpp
+            Kinect1x/KinectUtils.cpp )
 
-    set( CAMERA_WRAPPER_HEADERS
-        ${CAMERA_WRAPPER_HEADERS} ${KINECT1X_HEADERS} )
-	set( CAMERA_WRAPPER_SOURCES
-        ${CAMERA_WRAPPER_SOURCES} ${KINECT1X_SOURCES} )
-	set( LIBRARY_DEPENDENCIES
-        ${LIBRARY_DEPENDENCIES} Kinect1x::Kinect1x )
-    # TODO: how do we add these into the "additional dependencies" line for the
-    # static library project.
-    # Apparently, amstrmid.lib and sapi.lib are not used.
-    # set( MS_SPEECH_LIBRARIES strmiids.lib dmoguids.lib msdmo.lib avrt.lib )
-else()
-    message( "Kinect 1.x libraries not found on system. Resulting library will\
- not have Kinect 1.x support." )
+        set( CAMERA_WRAPPER_HEADERS
+            ${CAMERA_WRAPPER_HEADERS} ${KINECT1X_HEADERS} )
+        set( CAMERA_WRAPPER_SOURCES
+            ${CAMERA_WRAPPER_SOURCES} ${KINECT1X_SOURCES} )
+        set( LIBRARY_DEPENDENCIES
+            ${LIBRARY_DEPENDENCIES} Kinect1x::Kinect1x )
+        # TODO: how do we add these into the "additional dependencies" line for the
+        # static library project.
+        # Apparently, amstrmid.lib and sapi.lib are not used.
+        # set( MS_SPEECH_LIBRARIES strmiids.lib dmoguids.lib msdmo.lib avrt.lib )
+    else()
+        message( "Kinect 1.x libraries not found on system. Resulting library will\
+     not have Kinect 1.x support." )
+    endif()
 endif()
 
 ## OpenNI2 SDK.

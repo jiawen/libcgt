@@ -5,11 +5,11 @@ BinaryFileOutputStream::BinaryFileOutputStream( const char* filename,
 {
     if( append )
     {
-        m_fp = fopen( filename, "wb" );
+        m_fp = fopen( filename, "ab" );
     }
     else
     {
-        m_fp = fopen( filename, "ab" );
+        m_fp = fopen( filename, "wb" );
     }
 }
 

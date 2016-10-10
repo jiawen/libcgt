@@ -138,6 +138,10 @@ public:
 
     // Given a point in world coordinates, transforms it into eye coordinates
     // by computing viewMatrix() * world.
+    Vector3f worldToEye( const Vector3f& worldPoint ) const;
+
+    // Given a point in world coordinates, transforms it into eye coordinates
+    // by computing viewMatrix() * world.
     Vector4f worldToEye( const Vector4f& worldPoint ) const;
 
     // Given a point in eye coordinates, transforms it into clip coordinates
@@ -179,31 +183,51 @@ public:
     // and an actual depth value (\in [0, +inf)), not distance along ray,
     // returns its eye space coordinates (right handed, output z will be negative), output.w = 1
     // (integer versions are at the center of pixel)
-    Vector4f screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
-    Vector4f screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+    Vector4f eyeFromScreen( const Vector2f& xy,
+        float depth, const Vector2f& screenSize ) const;
+    Vector4f eyeFromScreen( const Vector2i& xy,
+        float depth, const Vector2f& screenSize ) const;
 
-    // given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
-    // and an actual depth value (\in [0, +inf)), not distance along ray,
-    // returns its world space coordinates, output.w = 1
-    // (integer versions are at the center of pixel)
-    Vector4f screenToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const;
-    Vector4f screenToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const;
+    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an actual
+    // depth value (\in [0, +inf), not distance along ray), return its world
+    // space coordinates. output.w = 1.
+    Vector4f worldFromScreen( const Vector2f& xy,
+        float depth, const Vector2f& screenSize ) const;
+
+    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an actual
+    // depth value (\in [0, +inf), not distance along ray), return its world
+    // space coordinates. output.w = 1.
+    //
+    // The integer pixel coordinates places the sample at the pixel center.
+    Vector4f worldFromScreen( const Vector2i& xy,
+        float depth, const Vector2f& screenSize ) const;
 
     // ----- unprojection: screen --> a ray in world space for raytracing -----
-    // TODO: write unprojectToWorld(), that takes in the useless zScreen value
-    // just for completeness
-    // pixelToEye and pixelToWorld are much more useful.
-    // In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye), zEye = -depth
+    // In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye) where zEye = -depth
 
-    // Converts a 2D pixel (x,y) on a screen of size "screenSize"
-    // to a 3D ray direction.
-    Vector3f screenToDirection( const Vector2f& xy, const Vector2f& screenSize ) const;
+    // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
+    // direction in eye coordinates.
+    //
+    // The integer pixel coordinates places the sample at the pixel center.
+    Vector3f eyeDirectionFromScreen( const Vector2f& xy,
+        const Vector2f& screenSize ) const;
 
-    // Converts a 2D pixel (x,y) on grid of size "screenSize" into a 3D ray
-    // direction.
-    // The integer pixel coordinates (xy) places the point at the center of the
-    // pixel.
-    Vector3f screenToDirection( const Vector2i& xy, const Vector2f& screenSize ) const;
+    // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
+    // direction in eye coordinates.
+    Vector3f eyeDirectionFromScreen( const Vector2i& xy,
+        const Vector2f& screenSize ) const;
+
+    // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
+    // direction in world coordinates.
+    Vector3f worldDirectionFromScreen( const Vector2f& xy,
+        const Vector2f& screenSize ) const;
+
+    // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
+    // direction in world coordinates.
+    //
+    // The integer pixel coordinates places the sample at the pixel center.
+    Vector3f worldDirectionFromScreen( const Vector2i& xy,
+        const Vector2f& screenSize ) const;
 
     virtual std::string toString() const = 0;
 

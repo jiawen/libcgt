@@ -19,13 +19,18 @@ class GLFrustum
 {
 public:
 
-    float left;
-    float right;
-    float bottom;
-    float top;
+    float left = -1.0f;
+    float right = 1.0f;
+    float bottom = -1.0f;
+    float top = 1.0f;
 
-    float zNear;
-    float zFar; // May be std::numeric_limits<float>::infinity().
+    float zNear = 1.0f;
+    float zFar = 100.0f; // May be std::numeric_limits<float>::infinity().
+
+    GLFrustum() = default;
+
+    GLFrustum( float _left, float _right, float _bottom, float _top,
+        float _zNear, float _zFar );
 
     // The image aspect ratio (width divided by height).
     // Works even for an asymmetric frustum.

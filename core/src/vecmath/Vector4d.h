@@ -52,8 +52,6 @@ public:
     void homogenize();
     Vector4d homogenized() const;
 
-    void negate();
-
     // ---- Utility ----
     operator const double* (); // automatic type conversion for GL
     void print() const;

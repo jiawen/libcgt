@@ -4,9 +4,12 @@
 #include <functional>
 #include <vector>
 
+#include "Array1D.h"
 #include "Array1DView.h"
 #include "Array2D.h"
+#include "Array2DView.h"
 #include "Array3D.h"
+#include "Array3DView.h"
 #include "BasicTypes.h" // TODO: uint8x4 --> Vector4ub
 
 #include <vecmath/Box3i.h>
@@ -130,6 +133,11 @@ Array2DView< T > flipX( Array2DView< T > src );
 template< typename T >
 Array2DView< T > flipY( Array2DView< T > src );
 
+// Flip the contents of a view in-place.
+// Flipping twice is the identity.
+template< typename T >
+void flipYInPlace( Array2DView< T > v );
+
 // Create a view that swaps x and y.
 // Transposing twice is the identity.
 template< typename T >
@@ -206,17 +214,7 @@ class ArrayUtils
 {
 public:
 
-    // TODO: saveTMP
-    // TODO: vector --> Array1DView<T>
-    template< typename T >
-    static bool loadBinary( FILE* fp, std::vector< T >& output );
-
-    template< typename T >
-    static bool saveBinary( const std::vector< T >& input, const char* filename );
-
-    template< typename T >
-    static bool saveBinary( const std::vector< T >& input, FILE* fp );
-
+    // TODO: implement load / save of ImageStack TMP files.
     static bool saveTXT( Array1DView< const int16_t > view, const char* filename );
     static bool saveTXT( Array1DView< const int32_t > view, const char* filename );
 

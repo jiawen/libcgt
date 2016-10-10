@@ -70,12 +70,6 @@ inline Vector2f Vector2f::normalized() const
     return{ x / n, y / n };
 }
 
-inline void Vector2f::negate()
-{
-    x = -x;
-    y = -y;
-}
-
 inline Vector2f::operator const float* () const
 {
     return &x;

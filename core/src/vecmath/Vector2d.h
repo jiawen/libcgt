@@ -27,8 +27,6 @@ public:
     void normalize();
     Vector2d normalized() const;
 
-    void negate();
-
     // ---- Utility ----
     operator const double* (); // automatic type conversion for GL
     void print() const;

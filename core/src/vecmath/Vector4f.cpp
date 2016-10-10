@@ -156,14 +156,6 @@ Vector4f Vector4f::homogenized() const
     }
 }
 
-void Vector4f::negate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-    w = -w;
-}
-
 std::string Vector4f::toString() const
 {
     std::ostringstream sstream;

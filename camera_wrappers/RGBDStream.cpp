@@ -4,7 +4,7 @@
 
 namespace libcgt { namespace camera_wrappers {
 
-const int FORMAT_VERSION = 1;
+const uint32_t FORMAT_VERSION = 1;
 
 RGBDInputStream::RGBDInputStream( const char* filename ) :
     m_stream( filename )
@@ -13,7 +13,7 @@ RGBDInputStream::RGBDInputStream( const char* filename ) :
 
     // Read header.
     char magic[ 5 ] = {};
-    int version;
+    uint32_t version;
     ok = m_stream.read( magic[ 0 ] );
     ok = m_stream.read( magic[ 1 ] );
     ok = m_stream.read( magic[ 2 ] );
@@ -22,17 +22,17 @@ RGBDInputStream::RGBDInputStream( const char* filename ) :
 
     if( ok && strcmp( magic, "rgbd" ) == 0 && version == FORMAT_VERSION )
     {
-        int nStreams = 0;
+        uint32_t nStreams = 0;
         ok = m_stream.read( nStreams );
         if( ok && nStreams > 0 )
         {
             m_metadata.resize( nStreams );
-            for( int i = 0; i < nStreams; ++i )
+            for( uint32_t i = 0; i < nStreams; ++i )
             {
                 ok = m_stream.read( m_metadata[ i ] );
                 if( ok )
                 {
-                    int bufferSize =
+                    uint32_t bufferSize =
                         pixelSizeBytes( m_metadata[ i ].format ) *
                         m_metadata[ i ].size.x * m_metadata[ i ].size.y;
                     m_buffers.emplace_back( bufferSize );
@@ -61,7 +61,7 @@ const std::vector< StreamMetadata>& RGBDInputStream::metadata() const
 }
 
 Array1DView< const uint8_t > RGBDInputStream::read( uint32_t& streamId,
-    int& frameIndex, int64_t& timestamp )
+    int32_t& frameIndex, int64_t& timestamp )
 {
     bool ok;
     if( isValid() )
@@ -94,7 +94,7 @@ RGBDOutputStream::RGBDOutputStream(
     const char* filename ) :
     m_metadata( metadata )
 {
-    int nStreams = static_cast< int >( metadata.size() );
+    uint32_t nStreams = static_cast< uint32_t >( metadata.size() );
     assert( nStreams > 0 );
 
     if( nStreams > 0 )
@@ -104,7 +104,7 @@ RGBDOutputStream::RGBDOutputStream(
         m_stream.write( 'g' );
         m_stream.write( 'b' );
         m_stream.write( 'd' );
-        m_stream.write< int >( FORMAT_VERSION );
+        m_stream.write< uint32_t >( FORMAT_VERSION );
 
         m_stream.write( nStreams );
 
@@ -155,7 +155,7 @@ bool RGBDOutputStream::close()
     return m_stream.close();
 }
 
-bool RGBDOutputStream::write( uint32_t streamId, int frameIndex,
+bool RGBDOutputStream::write( uint32_t streamId, int32_t frameIndex,
     int64_t timestamp, Array1DView< const uint8_t > data ) const
 {
     if( streamId >= m_metadata.size() )

@@ -120,13 +120,6 @@ Vector3d Vector3d::normalized() const
         );
 }
 
-void Vector3d::negate()
-{
-    m_elements[0] = -m_elements[0];
-    m_elements[1] = -m_elements[1];
-    m_elements[2] = -m_elements[2];
-}
-
 // ---- Utility ----
 
 Vector3d::operator const double* ()

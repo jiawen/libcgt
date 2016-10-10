@@ -24,7 +24,7 @@ public:
     Array1DView( VoidPointer pointer, size_t size );
 
     // Create an Array1DView with the specified size and element stride.
-    Array1DView( VoidPointer pointer, size_t size, ptrdiff_t stride );
+    Array1DView( VoidPointer pointer, size_t size, std::ptrdiff_t stride );
 
     bool isNull() const;
     bool notNull() const;
@@ -57,8 +57,8 @@ public:
 
     // The space between the start of elements, in bytes.
     // For a 1D view, stride and elementStrideBytes are equivalent.
-    ptrdiff_t elementStrideBytes() const;
-    ptrdiff_t stride() const;
+    std::ptrdiff_t elementStrideBytes() const;
+    std::ptrdiff_t stride() const;
 
     // Returns true if the array is tightly packed,
     // i.e. elementStrideBytes() == sizeof( T ).
@@ -77,7 +77,7 @@ public:
 private:
 
     size_t m_size = 0;
-    ptrdiff_t m_stride = 0;
+    std::ptrdiff_t m_stride = 0;
     UInt8Pointer m_pointer = nullptr;
 };
 

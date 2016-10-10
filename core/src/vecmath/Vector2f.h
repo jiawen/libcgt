@@ -49,8 +49,6 @@ public:
     void normalize();
     Vector2f normalized() const;
 
-    void negate();
-
     // ---- Utility ----
     operator const float* () const;
     operator float* ();

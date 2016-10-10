@@ -111,13 +111,6 @@ Vector3f Vector3i::normalized() const
     );
 }
 
-void Vector3i::negate()
-{
-    m_elements[0] = -m_elements[0];
-    m_elements[1] = -m_elements[1];
-    m_elements[2] = -m_elements[2];
-}
-
 Vector3i::operator const int* () const
 {
     return m_elements;

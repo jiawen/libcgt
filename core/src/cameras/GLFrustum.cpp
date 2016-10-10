@@ -7,6 +7,18 @@ using libcgt::core::math::lerp;
 
 namespace libcgt { namespace core { namespace cameras {
 
+GLFrustum::GLFrustum( float _left, float _right, float _bottom, float _top,
+    float _zNear, float _zFar ) :
+    left( _left ),
+    right( _right ),
+    bottom( _bottom ),
+    top( _top ),
+    zNear( _zNear ),
+    zFar( _zFar )
+{
+
+}
+
 float GLFrustum::aspectRatio() const
 {
     return ( right - left ) / ( top - bottom );

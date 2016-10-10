@@ -215,14 +215,6 @@ Vector4i Vector4i::homogenized() const
     }
 }
 
-void Vector4i::negate()
-{
-    m_elements[0] = -m_elements[0];
-    m_elements[1] = -m_elements[1];
-    m_elements[2] = -m_elements[2];
-    m_elements[3] = -m_elements[3];
-}
-
 Vector4i& Vector4i::operator += ( const Vector4i& v )
 {
     x += v.x;

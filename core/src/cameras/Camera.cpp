@@ -63,15 +63,17 @@ std::vector< Vector3f > Camera::frustumCorners() const
     // take the NDC cube and unproject it
     for( int i = 0; i < 8; ++i )
     {
-        // so vertices go around in order counterclockwise
+        // Vertices go around in order counterclockwise.
+        // DirectX uses NDC z in [0,1]
         cubePoint[0] = ( ( i & 1 ) ^ ( ( i & 2 ) >> 1 ) ? 1.f : -1.f );
         cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
-        cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
+        cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f );
 
         // This would be the hypercube ordering.
         // cubePoint[0] = ( i & 1 ) ? 1.f : -1.f;
         // cubePoint[1] = ( i & 2 ) ? 1.f : -1.f;
-        // cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f ); // DirectX uses NDC z in [0,1]
+        // DirectX uses NDC z in [0,1]
+        // cubePoint[2] = ( i & 4 ) ? 1.f : ( m_directX ? 0.f : -1.f );
 
         corners[ i ] = ( invViewProj * cubePoint ).homogenized().xyz;
     }
@@ -105,7 +107,7 @@ EuclideanTransform Camera::cameraFromWorld() const
     return m_cameraFromWorld;
 }
 
-void Camera::setCameraFromWorld( const libcgt::core::vecmath::EuclideanTransform& cfw )
+void Camera::setCameraFromWorld( const EuclideanTransform& cfw )
 {
     m_cameraFromWorld = cfw;
 }
@@ -115,7 +117,7 @@ EuclideanTransform Camera::worldFromCamera() const
     return inverse( m_cameraFromWorld );
 }
 
-void Camera::setWorldFromCamera( const libcgt::core::vecmath::EuclideanTransform& wfc )
+void Camera::setWorldFromCamera( const EuclideanTransform& wfc )
 {
     m_cameraFromWorld = inverse( wfc );
 }
@@ -173,7 +175,15 @@ Matrix4f Camera::viewMatrix() const
 
 Matrix4f Camera::inverseViewMatrix() const
 {
-    return viewMatrix().inverse();
+    Matrix4f m0 = inverse( m_cameraFromWorld ).asMatrix();
+    Matrix4f m1 = viewMatrix().inverse();
+
+    printf( "m0 = %s\n", m0.toString().c_str() );
+    printf( "m1 = %s\n", m1.toString().c_str() );
+    printf( "m0 - m1 = %s\n", ( m0 - m1 ).toString().c_str() );
+
+    //return inverse( m_cameraFromWorld ).asMatrix();
+    return m1;
 }
 
 Matrix4f Camera::jitteredViewMatrix( float eyeX, float eyeY ) const
@@ -197,6 +207,11 @@ Intrinsics Camera::intrinsics( const Vector2f& screenSize ) const
     return frustumToIntrinsics( m_frustum, screenSize );
 }
 
+Vector3f Camera::worldToEye( const Vector3f& world ) const
+{
+    return transformPoint( m_cameraFromWorld, world );
+}
+
 Vector4f Camera::worldToEye( const Vector4f& world ) const
 {
     return viewMatrix() * world;
@@ -214,7 +229,8 @@ Vector4f Camera::clipToNDC( const Vector4f& clip ) const
     return ndc;
 }
 
-Vector4f Camera::eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) const
+Vector4f Camera::eyeToScreen( const Vector4f& eye,
+    const Vector2f& screenSize ) const
 {
     Vector4f clip = eyeToClip( eye );
     Vector4f ndc = clip.homogenized();
@@ -222,7 +238,8 @@ Vector4f Camera::eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) 
     return ndcToScreen( ndc, screenSize );
 }
 
-Vector4f Camera::ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) const
+Vector4f Camera::ndcToScreen( const Vector4f& ndc,
+    const Vector2f& screenSize ) const
 {
     return Vector4f
     (
@@ -233,20 +250,24 @@ Vector4f Camera::ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) 
     );
 }
 
-Vector4f Camera::worldToScreen( const Vector4f& world, const Vector2f& screenSize ) const
+Vector4f Camera::worldToScreen( const Vector4f& world,
+    const Vector2f& screenSize ) const
 {
     Vector4f eye = worldToEye( world );
     return eyeToScreen( eye, screenSize );
 }
 
 // virtual
-Vector4f Camera::screenToEye( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::eyeFromScreen( const Vector2i& xy,
+    float depth, const Vector2f& screenSize ) const
 {
-    return screenToEye( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
+    return eyeFromScreen( Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
+        depth, screenSize );
 }
 
 // virtual
-Vector4f Camera::screenToEye( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::eyeFromScreen( const Vector2f& xy,
+    float depth, const Vector2f& screenSize ) const
 {
     Vector2f ndcXY = screenToNDC( xy, screenSize );
 
@@ -285,41 +306,53 @@ Vector4f Camera::screenToEye( const Vector2f& xy, float depth, const Vector2f& s
     return Vector4f( xEye, yEye, zEye, 1 );
 }
 
-Vector4f Camera::screenToWorld( const Vector2i& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::worldFromScreen( const Vector2i& xy, float depth,
+    const Vector2f& screenSize ) const
 {
-    return screenToWorld( Vector2f{ xy.x + 0.5f, xy.y + 0.5f }, depth, screenSize );
+    return worldFromScreen( Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
+        depth, screenSize );
 }
 
-Vector4f Camera::screenToWorld( const Vector2f& xy, float depth, const Vector2f& screenSize ) const
+Vector4f Camera::worldFromScreen( const Vector2f& xy, float depth,
+    const Vector2f& screenSize ) const
 {
-    Vector4f eye = screenToEye( xy, depth, screenSize );
+    Vector4f eye = eyeFromScreen( xy, depth, screenSize );
     return inverseViewMatrix() * eye;
 }
 
-Vector3f Camera::screenToDirection( const Vector2i& xy,
+Vector3f Camera::eyeDirectionFromScreen( const Vector2f& xy,
     const Vector2f& screenSize ) const
 {
-    return screenToDirection
+    // TODO: can use Intrinsics functions instead, which is less math.
+    Vector4f eyePoint = eyeFromScreen( xy, zNear(), screenSize );
+    return eyePoint.xyz.normalized();
+}
+
+Vector3f Camera::eyeDirectionFromScreen( const Vector2i& xy,
+    const Vector2f& screenSize ) const
+{
+    return eyeDirectionFromScreen
     (
         Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
         screenSize
     );
 }
 
-Vector3f Camera::screenToDirection( const Vector2f& xy,
+Vector3f Camera::worldDirectionFromScreen( const Vector2i& xy,
     const Vector2f& screenSize ) const
 {
-    // Convert from screen coordinates to NDC.
-    Vector2f ndc = screenToNDC( xy, screenSize );
-    Vector4f clipPoint( ndc, 0, 1 );
-    Vector4f eyePoint = inverseProjectionMatrix() * clipPoint;
-    Vector4f worldPoint = inverseViewMatrix() * eyePoint;
+    return worldDirectionFromScreen
+    (
+        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
+        screenSize
+    );
+}
 
-    Vector3f pointOnNearPlane = worldPoint.homogenized().xyz;
-
-    // TODO: can use pixelToWorld on z = zNear(), but pixelToWorld needs a viewport version
-
-    return ( pointOnNearPlane - eye() ).normalized();
+Vector3f Camera::worldDirectionFromScreen( const Vector2f& xy,
+    const Vector2f& screenSize ) const
+{
+    Vector4f worldPoint = worldFromScreen( xy, zNear(), screenSize );
+    return ( worldPoint.xyz - eye() ).normalized();
 }
 
 // static

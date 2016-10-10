@@ -37,8 +37,6 @@ public:
     int normSquared() const;
     Vector3f normalized() const;
 
-    void negate();
-
     // implicit cast
     operator const int* () const;
     operator int* ();

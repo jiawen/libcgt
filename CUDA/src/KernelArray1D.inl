@@ -2,7 +2,7 @@ template< typename T >
 __inline__ __host__ __device__
 KernelArray1D< T >::KernelArray1D(
     typename KernelArray1D< T >::VoidPointer pointer, size_t size,
-    ptrdiff_t stride ) :
+    std::ptrdiff_t stride ) :
     md_pointer( reinterpret_cast< KernelArray1D::UInt8Pointer >( pointer ) ),
     m_size( size ),
     m_stride( stride )
@@ -26,7 +26,7 @@ size_t KernelArray1D< T >::size() const
 
 template< typename T >
 __inline__ __device__
-ptrdiff_t KernelArray1D< T >::stride() const
+std::ptrdiff_t KernelArray1D< T >::stride() const
 {
     return m_stride;
 }

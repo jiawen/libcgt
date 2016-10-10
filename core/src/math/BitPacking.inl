@@ -55,43 +55,52 @@ uint64_t BitPacking::byteSwap64( uint64_t x )
         ( ( x << 56 ) & 0xff00000000000000 );  // [ b0  0  0  0  0  0  0  0 ]
 }
 
-void BitPacking::byteSwap16( Array1DView< uint16_t > view16 )
+// static
+bool BitPacking::byteSwap16( Array1DView< const uint16_t > src,
+    Array1DView< uint16_t > dst )
 {
-    if( view16.packed() )
+    if( src.size() != dst.size() )
     {
-        int nWords64 = static_cast< int >( view16.size() ) / 64;
-        Array1DView< uint64_t > view64( view16.pointer(), nWords64 );
-        for( int i = 0; i < nWords64; ++i )
+        return false;
+    }
+
+    if( src.packed() && dst.packed() )
+    {
+        size_t nWords64 = src.size() / 4;
+        Array1DView< const uint64_t > src64( src.pointer(), nWords64 );
+        Array1DView< uint64_t > dst64( dst.pointer(), nWords64 );
+        for( size_t i = 0; i < nWords64; ++i )
         {
-            uint64_t a = view64[ i ];
-            uint64_t b = byteSwap16x4( a );
-            view64[ i ] = b;
+            dst64[ i ] = byteSwap16x4( src64[ i ] );
         }
 
         // Input length may not be a multiple of 4.
-        if( nWords64 * 4 < view16.size() )
+        if( nWords64 * 4 < src.size() )
         {
             // Could in theory do a byteSwap32() and then a byteSwap16()
             // if there were 3 elements left, but it's totally not worth it.
-            for( int i = nWords64 * 4; i < view16.size(); ++i )
+            for( size_t i = nWords64 * 4; i < src.size(); ++i )
             {
-                byteSwap16( view16[ view16.size() - 1 ] );
+                dst[ i ] = byteSwap16( src[ i ] );
             }
         }
     }
     else
     {
-        for( int i = 0; i < view16.size(); ++i )
+        for( int i = 0; i < src.size(); ++i )
         {
-            view16[ i ] = byteSwap16( view16[ i ] );
+            dst[ i ] = byteSwap16( src[ i ] );
         }
     }
+
+    return true;
 }
 
 // static
 uint32_t BitPacking::mortonPack2D( uint16_t x, uint16_t y )
 {
-    static const unsigned int B[] = { 0x55555555, 0x33333333, 0x0f0f0f0f, 0x00ff00ff };
+    static const unsigned int B[] =
+        { 0x55555555, 0x33333333, 0x0f0f0f0f, 0x00ff00ff };
     static const unsigned int S[] = { 1, 2, 4, 8 };
 
     // Interleave lower 16 bits of x and y, so the bits of x
@@ -121,12 +130,11 @@ void BitPacking::mortonUnpack2D( uint32_t index, uint16_t& x, uint16_t& y )
 {
     uint64_t index64 = index;
 
-    // pack into 64-bits:
-    // [y | x]
-    // 0xAAAAAAAA extracts odd bits
-    // 0x55555555 extracts even bits
-    // only shift y by 31 since we want the bottom bit (which was the 1st, not the 0th)
-    // to be in bit w[32]
+    // Pack into 64-bits: [y | x].
+    // 0xAAAAAAAA extracts odd bits.
+    // 0x55555555 extracts even bits.
+    // Only shift y by 31 since we want the bottom bit (which was the 1st, not
+    // the 0th) to be in bit w[32].
     uint64_t w = ( ( index64 & 0xAAAAAAAA ) << 31 ) | ( index64 & 0x55555555 );
 
     w = ( w | ( w >> 1 ) ) & 0x3333333333333333;
@@ -170,11 +178,13 @@ uint16_t BitPacking::mortonPack3D_5bit( uint8_t x, uint8_t y, uint8_t z )
     index1 &= 0x12490000;
     index2 &= 0x12490000;
 
-    return static_cast< uint16_t >( ( index0 >> 16 ) | ( index1 >> 15 ) | ( index2 >> 14 ) );
+    return static_cast< uint16_t >(
+        ( index0 >> 16 ) | ( index1 >> 15 ) | ( index2 >> 14 ) );
 }
 
 // static
-void BitPacking::mortonUnpack3D_5bit( uint16_t index, uint8_t& x, uint8_t& y, uint8_t& z )
+void BitPacking::mortonUnpack3D_5bit( uint16_t index,
+    uint8_t& x, uint8_t& y, uint8_t& z )
 {
     uint32_t value0 = index;
     uint32_t value1 = ( value0 >> 1 );
@@ -256,7 +266,8 @@ uint32_t BitPacking::mortonPack3D_10bit( uint16_t x, uint16_t y, uint16_t z )
 }
 
 // static
-void BitPacking::mortonUnpack3D_10bit( uint32_t index, uint16_t& x, uint16_t& y, uint16_t& z )
+void BitPacking::mortonUnpack3D_10bit( uint32_t index,
+    uint16_t& x, uint16_t& y, uint16_t& z )
 {
     uint32_t value0 = index;
     uint32_t value1 = ( value0 >> 1 );

@@ -43,11 +43,9 @@ public:
     // Total size of the data in bytes (counting alignment)
     size_t sizeInBytes() const;
 
-    // resizes the array, original data is not preserved
-    void resize( int width, int height, int depth );
+    // Resizes array. Original data is not preserved.
     void resize( const Vector3i& size );
 
-    // TODO: implement get/set/operator() with Vector3i, vector3
     // TODO: implement constructors for strided, pitched, slicePitched
 
     // fills this array with the 0 byte pattern

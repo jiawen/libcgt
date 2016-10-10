@@ -95,23 +95,3 @@ void HostPool::copyToDevice( DevicePool& pool )
     pool.md_freeList.copyFromHost( m_freeList );
     pool.md_backingStore.copyFromHost( writeViewOf( m_backingStore ) );
 }
-
-void HostPool::loadBinary( FILE* fp )
-{
-    // TODO: error checking
-
-    fread( &m_capacity, sizeof( int ), 1, fp );
-    fread( &m_elementSizeBytes, sizeof( int ), 1, fp );
-    ArrayUtils::loadBinary( fp, m_freeList );
-    ArrayUtils::loadBinary( fp, m_backingStore );
-}
-
-void HostPool::saveBinary( FILE* fp )
-{
-    // TODO: error checking
-
-    fwrite( &m_capacity, sizeof( int ), 1, fp );
-    fwrite( &m_elementSizeBytes, sizeof( int ), 1, fp );
-    ArrayUtils::saveBinary( m_freeList, fp );
-    ArrayUtils::saveBinary( m_backingStore, fp );
-}

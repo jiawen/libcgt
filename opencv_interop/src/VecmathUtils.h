@@ -1,6 +1,6 @@
 #pragma once
 
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 
 class Matrix3f;
 class Matrix4f;

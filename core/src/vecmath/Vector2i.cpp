@@ -9,10 +9,6 @@
 #include "vecmath/Vector2f.h"
 #include "vecmath/Vector3i.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 Vector2i::Vector2i( int i ) :
     x( i ),
     y( i )
@@ -74,17 +70,6 @@ Vector2f Vector2i::normalized() const
         n * x,
         n * y
     };
-}
-
-void Vector2i::negate()
-{
-    x = -x;
-    y = -y;
-}
-
-Vector2i Vector2i::flippedUD( int height ) const
-{
-    return{ x, height - y - 1 };
 }
 
 Vector2i::operator const int* () const
