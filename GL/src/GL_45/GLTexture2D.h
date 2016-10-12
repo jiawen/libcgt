@@ -35,8 +35,14 @@ public:
     //
     // If "nMipMapLevels" is set to a special value of 0, the number of levels
     // will be automatically calculated.
+    GLTexture2D();
     GLTexture2D( const Vector2i& size, GLImageInternalFormat internalFormat,
         int nMipMapLevels = 1 );
+    GLTexture2D( const GLTexture2D& copy ) = delete;
+    GLTexture2D( GLTexture2D&& move );
+    GLTexture2D& operator = ( const GLTexture2D& copy ) = delete;
+    GLTexture2D& operator = ( GLTexture2D&& move );
+    virtual ~GLTexture2D();
 
     int numElements() const;
     int width() const;
@@ -151,5 +157,5 @@ private:
                GLImageFormat srcFormat, GLPixelType srcType,
                const Vector2i& dstOffset );
 
-    Vector2i m_size;
+    Vector2i m_size = { 0, 0 };
 };

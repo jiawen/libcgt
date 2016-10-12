@@ -17,6 +17,7 @@ using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
 using libcgt::core::cameras::intrinsicsToFrustum;
 using libcgt::core::cameras::GLFrustum;
 using libcgt::core::cameras::Intrinsics;
+using libcgt::core::math::cubicInterpolate;
 using libcgt::core::math::degreesToRadians;
 using libcgt::core::math::radiansToDegrees;
 using libcgt::core::math::HALF_PI;
@@ -109,38 +110,44 @@ Matrix4f PerspectiveCamera::projectionMatrix() const
 {
     if( isinf( frustum().zFar ) )
     {
-        return Matrix4f::infinitePerspectiveProjection( frustum().left, frustum().right,
+        return Matrix4f::infinitePerspectiveProjection(
+            frustum().left, frustum().right,
             frustum().bottom, frustum().top,
             frustum().zNear, isDirectX() );
     }
     else
     {
-        return Matrix4f::perspectiveProjection( frustum().left, frustum().right,
+        return Matrix4f::perspectiveProjection(
+            frustum().left, frustum().right,
             frustum().bottom, frustum().top,
             frustum().zNear, frustum().zFar, isDirectX() );
     }
 }
 
-Matrix4f PerspectiveCamera::jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
+Matrix4f PerspectiveCamera::jitteredProjectionMatrix( float eyeX, float eyeY,
+    float focusZ ) const
 {
     float dx = -eyeX * frustum().zNear / focusZ;
     float dy = -eyeY * frustum().zNear / focusZ;
 
     if( isinf( frustum().zFar ) )
     {
-        return Matrix4f::infinitePerspectiveProjection( frustum().left + dx, frustum().right + dx,
+        return Matrix4f::infinitePerspectiveProjection(
+            frustum().left + dx, frustum().right + dx,
             frustum().bottom + dy, frustum().top + dy,
             frustum().zNear, isDirectX() );
     }
     else
     {
-        return Matrix4f::perspectiveProjection( frustum().left + dx, frustum().right + dx,
+        return Matrix4f::perspectiveProjection(
+            frustum().left + dx, frustum().right + dx,
             frustum().bottom + dy, frustum().top + dy,
             frustum().zNear, frustum().zFar, isDirectX() );
     }
 }
 
-Matrix4f PerspectiveCamera::jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const
+Matrix4f PerspectiveCamera::jitteredViewProjectionMatrix(
+    float eyeX, float eyeY, float focusZ ) const
 {
     return
     (
@@ -221,7 +228,8 @@ std::vector< Vector4f > PerspectiveCamera::frustumLines() const
 }
 
 // static
-PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t )
+PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0,
+    const PerspectiveCamera& c1, float t )
 {
     bool isDirectX = c0.isDirectX();
 
@@ -230,8 +238,10 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0, const Pe
     // TODO(jiawen): lerp between EuclideanTransforms?
     Vector3f eye = libcgt::core::math::lerp( c0.eye(), c1.eye(), t );
 
-    Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );
-    Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );
+    Quat4f q0 = Quat4f::fromRotatedBasis(
+        c0.right(), c0.up(), -( c0.forward() ) );
+    Quat4f q1 = Quat4f::fromRotatedBasis(
+        c1.right(), c1.up(), -( c1.forward() ) );
     Quat4f q = Quat4f::slerp( q0, q1, t );
 
     Vector3f x = q.rotateVector( Vector3f::RIGHT );
@@ -258,12 +268,17 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate(
 {
     GLFrustum f = GLFrustum::lerp(c0.frustum(), c1.frustum(), t);
 
-    Vector3f eye = libcgt::core::math::cubicInterpolate( c0.eye(), c1.eye(), c2.eye(), c3.eye(), t );
+    Vector3f eye = ::cubicInterpolate(
+        c0.eye(), c1.eye(), c2.eye(), c3.eye(), t );
 
-    Quat4f q0 = Quat4f::fromRotatedBasis( c0.right(), c0.up(), -( c0.forward() ) );
-    Quat4f q1 = Quat4f::fromRotatedBasis( c1.right(), c1.up(), -( c1.forward() ) );
-    Quat4f q2 = Quat4f::fromRotatedBasis( c2.right(), c2.up(), -( c2.forward() ) );
-    Quat4f q3 = Quat4f::fromRotatedBasis( c3.right(), c3.up(), -( c3.forward() ) );
+    Quat4f q0 = Quat4f::fromRotatedBasis(
+        c0.right(), c0.up(), -( c0.forward() ) );
+    Quat4f q1 = Quat4f::fromRotatedBasis(
+        c1.right(), c1.up(), -( c1.forward() ) );
+    Quat4f q2 = Quat4f::fromRotatedBasis(
+        c2.right(), c2.up(), -( c2.forward() ) );
+    Quat4f q3 = Quat4f::fromRotatedBasis(
+        c3.right(), c3.up(), -( c3.forward() ) );
 
     Quat4f q = Quat4f::cubicInterpolate( q0, q1, q2, q3, t );
 

@@ -86,20 +86,25 @@ public:
     // been moved by (eyeX, eyeY) *in the plane of the lens*.
     // I.e. eyeX is in the direction of right() and eyeY is in the direction of
     // up().
-    Matrix4f jitteredProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
+    Matrix4f jitteredProjectionMatrix(
+        float eyeX, float eyeY, float focusZ ) const;
 
     // Equivalent to jitteredProjectionMatrix() * jitteredViewMatrix().
-    Matrix4f jitteredViewProjectionMatrix( float eyeX, float eyeY, float focusZ ) const;
+    Matrix4f jitteredViewProjectionMatrix(
+        float eyeX, float eyeY, float focusZ ) const;
 
     // TODO(jiawen): implement fromString().
     virtual std::string toString() const override;
 
-    // Returns the 24 points corresponding to the 12 lines of a perspective frustum.
-    // The first 8 points correspond to lines from the eye to each corner of the far plane.
+    // Returns the 24 points corresponding to the 12 lines of a perspective
+    // frustum.
+    // The first 8 points correspond to lines from the eye to each corner of
+    // the far plane.
     // The next 8 points correspond to lines of the near plane.
     // The last 8 points correspond to lines of the far plane.
     std::vector< Vector4f > frustumLines() const;
 
+    // TODO: make this a global function once this is moved into a namespace.
     static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
     static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );
 

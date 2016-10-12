@@ -207,40 +207,33 @@ Intrinsics Camera::intrinsics( const Vector2f& screenSize ) const
     return frustumToIntrinsics( m_frustum, screenSize );
 }
 
-Vector3f Camera::worldToEye( const Vector3f& world ) const
+Vector3f Camera::eyeFromWorld( const Vector3f& world ) const
 {
     return transformPoint( m_cameraFromWorld, world );
 }
 
-Vector4f Camera::worldToEye( const Vector4f& world ) const
+Vector4f Camera::eyeFromWorld( const Vector4f& world ) const
 {
     return viewMatrix() * world;
 }
 
-Vector4f Camera::eyeToClip( const Vector4f& eye ) const
+Vector4f Camera::clipFromEye( const Vector4f& eye ) const
 {
     return projectionMatrix() * eye;
 }
 
-Vector4f Camera::clipToNDC( const Vector4f& clip ) const
+Vector4f Camera::ndcFromClip( const Vector4f& clip ) const
 {
     Vector4f ndc = clip.homogenized();
     ndc.w = clip.w;
     return ndc;
 }
 
-Vector4f Camera::eyeToScreen( const Vector4f& eye,
+Vector4f Camera::screenFromNDC( const Vector4f& ndc,
     const Vector2f& screenSize ) const
 {
-    Vector4f clip = eyeToClip( eye );
-    Vector4f ndc = clip.homogenized();
-    ndc.w = clip.w;
-    return ndcToScreen( ndc, screenSize );
-}
-
-Vector4f Camera::ndcToScreen( const Vector4f& ndc,
-    const Vector2f& screenSize ) const
-{
+    // In Direct3D, ndc.z is in [0, 1], so leave it as is.
+    // In OpenGL, ndc.z is in [-1, 1], so shift it.
     return Vector4f
     (
         screenSize.x * 0.5f * ( ndc.x + 1.0f ),
@@ -250,11 +243,25 @@ Vector4f Camera::ndcToScreen( const Vector4f& ndc,
     );
 }
 
-Vector4f Camera::worldToScreen( const Vector4f& world,
+Vector4f Camera::screenFromClip( const Vector4f& clip,
     const Vector2f& screenSize ) const
 {
-    Vector4f eye = worldToEye( world );
-    return eyeToScreen( eye, screenSize );
+    Vector4f ndc = ndcFromClip( clip );
+    return screenFromNDC( ndc, screenSize );
+}
+
+Vector4f Camera::screenFromEye( const Vector4f& eye,
+    const Vector2f& screenSize ) const
+{
+    Vector4f clip = clipFromEye( eye );
+    return screenFromClip( clip, screenSize );
+}
+
+Vector4f Camera::screenFromWorld( const Vector4f& world,
+    const Vector2f& screenSize ) const
+{
+    Vector4f eye = eyeFromWorld( world );
+    return screenFromEye( eye, screenSize );
 }
 
 // virtual
@@ -269,7 +276,7 @@ Vector4f Camera::eyeFromScreen( const Vector2i& xy,
 Vector4f Camera::eyeFromScreen( const Vector2f& xy,
     float depth, const Vector2f& screenSize ) const
 {
-    Vector2f ndcXY = screenToNDC( xy, screenSize );
+    Vector2f ndcXY = ndcFromScreen( xy, screenSize );
 
     // forward transformation:
     //
@@ -356,9 +363,27 @@ Vector3f Camera::worldDirectionFromScreen( const Vector2f& xy,
 }
 
 // static
-Vector2f Camera::screenToNDC( const Vector2f& xy, const Vector2f& screenSize )
+Vector2f Camera::ndcFromScreen( const Vector2f& xy,
+    const Vector2f& screenSize )
 {
     return 2 * xy / screenSize - Vector2f{ 1 };
+}
+
+// static
+Vector2f Camera::ndcFromScreen( const Vector2i& xy,
+    const Vector2f& screenSize )
+{
+    return ndcFromScreen
+    (
+        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
+        screenSize
+    );
+}
+
+// static
+void Camera::copyFrustum( const Camera& from, Camera& to )
+{
+    to.m_frustum = from.m_frustum;
 }
 
 // static

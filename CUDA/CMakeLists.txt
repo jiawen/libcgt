@@ -8,7 +8,8 @@ set( CUDA_SEPARABLE_COMPILATION ON )
 
 # Add include to the set of compiler include paths
 include_directories( ../core/src )
-include_directories( include )
+include_directories( ../gl/src/common )
+include_directories( ../gl/src/GL_45 )
 
 # Define CUDA_SAMPLES_ROOT:
 if( WIN32 )
@@ -39,7 +40,8 @@ set( CUDA_NVCC_FLAGS_DEBUG -g;-G;-DTHRUST_DEBUG )
 set( CUDA_NVCC_FLAGS_RELEASE --use_fast_math )
 
 cuda_add_library( cgt_cuda SHARED ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
-target_link_libraries( cgt_cuda cgt_core )
+target_link_libraries( cgt_cuda
+    cgt_core cgt_gl )
 
 install( TARGETS cgt_cuda DESTINATION lib )
 install( DIRECTORY src/ DESTINATION include/cuda

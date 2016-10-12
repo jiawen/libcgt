@@ -133,11 +133,15 @@ protected:
 
     GLTexture( Target target, GLImageInternalFormat internalFormat,
               GLsizei nMipMapLevels );
+    GLTexture( GLTexture&& move );
+    GLTexture& operator = ( GLTexture&& move );
 
 private:
 
-    GLuint m_id;
+    GLuint m_id = 0;
     Target m_target;
     GLImageInternalFormat m_internalFormat;
-    GLsizei m_nMipMapLevels;
+    GLsizei m_nMipMapLevels = 0;
+
+    void destroy();
 };

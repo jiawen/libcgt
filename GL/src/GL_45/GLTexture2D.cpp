@@ -40,6 +40,12 @@ Vector2i GLTexture2D::calculateMipMapSizeForLevel( const Vector2i& baseSize,
     return size;
 }
 
+GLTexture2D::GLTexture2D() :
+    GLTexture( GLTexture::Target::TEXTURE_2D, GLImageInternalFormat::NONE, 0 )
+{
+
+}
+
 GLTexture2D::GLTexture2D( const Vector2i& size,
     GLImageInternalFormat internalFormat, GLsizei nMipMapLevels ) :
     GLTexture( GLTexture::Target::TEXTURE_2D, internalFormat, nMipMapLevels ),
@@ -52,6 +58,30 @@ GLTexture2D::GLTexture2D( const Vector2i& size,
 
     glTextureStorage2D( id(), numMipMapLevels(), glInternalFormat(),
                        size.x, size.y );
+}
+
+GLTexture2D::GLTexture2D( GLTexture2D&& move ) :
+    GLTexture( std::move( move ) )
+{
+    m_size = move.m_size;
+    move.m_size = { 0, 0 };
+}
+
+GLTexture2D& GLTexture2D::operator = ( GLTexture2D&& move )
+{
+    GLTexture::operator = ( std::move( move ) );
+    if( this != &move )
+    {
+        m_size = move.m_size;
+        move.m_size = { 0, 0 };
+    }
+    return *this;
+}
+
+// virtual
+GLTexture2D::~GLTexture2D()
+{
+    m_size = { 0, 0 };
 }
 
 int GLTexture2D::width() const

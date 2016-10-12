@@ -103,18 +103,18 @@ public:
     // in the world frame.
     Vector3f forward() const;
 
-    // Get the OpenGL / Direct3D style view matrix,
-    // mapping world space to eye space.
+    // Get the OpenGL / Direct3D style view matrix, mapping world space to eye
+    // space.
     // (Equivalent to cameraFromWorld, but as a Matrix4f).
     Matrix4f viewMatrix() const;
 
-    // Get the inverse of the view matrix, mapping
-    // eye space back to world space.
+    // Get the inverse of the view matrix, mapping eye space back to world
+    // space.
     // (Equivalent to worldFromCamera, but as a Matrix4f).
     Matrix4f inverseViewMatrix() const;
 
     // Returns the view matrix V such that
-    // the eye has been moved by (fEyeX, fEyeY)
+    // the eye has been moved by (eyeX, eyeY)
     // *in the plane of the lens*
     // i.e. eyeX is in the direction of getRight()
     // and eyeY is in the direction of getUp().
@@ -134,81 +134,87 @@ public:
 
     // ----- projection: world --> eye --> clip --> NDC --> screen -----
 
-    // TODO: rename these to yFromX conventions.
+    // Given a point in world coordinates, transforms it into eye coordinates
+    // by computing viewMatrix() * world.
+    Vector3f eyeFromWorld( const Vector3f& worldPoint ) const;
 
     // Given a point in world coordinates, transforms it into eye coordinates
     // by computing viewMatrix() * world.
-    Vector3f worldToEye( const Vector3f& worldPoint ) const;
-
-    // Given a point in world coordinates, transforms it into eye coordinates
-    // by computing viewMatrix() * world.
-    Vector4f worldToEye( const Vector4f& worldPoint ) const;
+    Vector4f eyeFromWorld( const Vector4f& worldPoint ) const;
 
     // Given a point in eye coordinates, transforms it into clip coordinates
     // by computing projectionMatrix() * eye.
     //
     // Recall that clipPoint.w = -eyePoint.z: it is the orthogonal depth from
     // the camera center, where positive depth points into the screen.
-    Vector4f eyeToClip( const Vector4f& eyePoint ) const;
+    Vector4f clipFromEye( const Vector4f& eyePoint ) const;
 
     // Given a point in clip coordinates, transforms it into normalized device
     // coordinates by computing:
-    // ndc = clip.homogenized(); ndc.w = clip.w;
+    // ndc = clip.homogenized().
+    // We separately set ndc.w = clip.w, the orthogonal depth from the eye
+    //   (not along the ray).
     // In OpenGL: ndc.xyz \in [-1,1]^3.
     // In DirectX: ndc.xy \in [-1,1]^2, ndc.z \in [0,1].
-    // ndc.w is the orthogonal depth from the eye (not along ray).
-    Vector4f clipToNDC( const Vector4f& clipPoint ) const;
+    Vector4f ndcFromClip( const Vector4f& clipPoint ) const;
 
-    // Rescales normalized device coordinates NDC to screen coordinates (pixels),
-    // given the screen size.
+    // Rescales normalized device coordinates to screen coordinates (pixels).
     // (x,y) is the 2D pixel coordinate on the screen.
     //   (outside [0,width),[0,height) is clipped)
     // z is the nonlinear screen-space z, where [zNear,zFar] is mapped to [0,1]
     //   (outside this range is clipped).
     // output.w = ndc.w (the w coordinate is passed through).
-    // You should pass clip.w as ndc.w, where clip = projectionMatrix() * eye as
-    //   in eyeToClip().
+    // You should pass clip.w as ndc.w, where clip = projectionMatrix() * eye
+    //   as in eyeToClip().
     // TODO: support viewports and depth range (aka 3D viewport).
-    Vector4f ndcToScreen( const Vector4f& ndc, const Vector2f& screenSize ) const;
+    Vector4f screenFromNDC( const Vector4f& ndc,
+        const Vector2f& screenSize ) const;
 
     // Composition of eyeToClip(), clipToNDC(), and ndcToScreen().
-    Vector4f eyeToScreen( const Vector4f& eye, const Vector2f& screenSize ) const;
+    Vector4f screenFromClip( const Vector4f& clip,
+        const Vector2f& screenSize ) const;
+
+    // Composition of eyeToClip(), clipToNDC(), and ndcToScreen().
+    Vector4f screenFromEye( const Vector4f& eye,
+        const Vector2f& screenSize ) const;
 
     // The composition of worldToEye() followed by eyeToScreen().
-    Vector4f worldToScreen( const Vector4f& world, const Vector2f& screenSize ) const;
+    Vector4f screenFromWorld( const Vector4f& world,
+        const Vector2f& screenSize ) const;
 
     // ----- unprojection: screen --> eye --> world -----
+    // TODO: implement a version where depth is in [0,1] from the z-buffer.
 
-    // given a pixel (x,y) in screen space (in [0,screenSize.x), [0,screenSize.y))
-    // and an actual depth value (\in [0, +inf)), not distance along ray,
-    // returns its eye space coordinates (right handed, output z will be negative), output.w = 1
-    // (integer versions are at the center of pixel)
+    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an
+    // orthogonal depth value (\in [0, +inf), not distance along ray), return
+    // its eye space coordinates (x-right, y-up, z out of screen).
+    // output.w = 1.
     Vector4f eyeFromScreen( const Vector2f& xy,
         float depth, const Vector2f& screenSize ) const;
     Vector4f eyeFromScreen( const Vector2i& xy,
         float depth, const Vector2f& screenSize ) const;
 
-    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an actual
-    // depth value (\in [0, +inf), not distance along ray), return its world
-    // space coordinates. output.w = 1.
+    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an
+    // orthogonal depth value (\in [0, +inf), not distance along ray), return
+    // its world space coordinates. output.w = 1.
     Vector4f worldFromScreen( const Vector2f& xy,
         float depth, const Vector2f& screenSize ) const;
 
-    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an actual
-    // depth value (\in [0, +inf), not distance along ray), return its world
-    // space coordinates. output.w = 1.
-    //
-    // The integer pixel coordinates places the sample at the pixel center.
+    // Given a pixel (x,y) in screen space (\in [0,screenSize)), and an
+    // orthogonal depth value (\in [0, +inf), not distance along ray), return
+    // its world space coordinates. output.w = 1.
     Vector4f worldFromScreen( const Vector2i& xy,
         float depth, const Vector2f& screenSize ) const;
 
     // ----- unprojection: screen --> a ray in world space for raytracing -----
-    // In OpenGL: zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye) where zEye = -depth
+    // The Vector2i versions of functions place the sample at the half-integer
+    // pixel center.
+    //
+    // Note, in OpenGL:
+    //   zNDC = (f+n)/(f-n) + 2fn/(f-n) * (1/zEye) where zEye = -depth
 
     // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
     // direction in eye coordinates.
-    //
-    // The integer pixel coordinates places the sample at the pixel center.
     Vector3f eyeDirectionFromScreen( const Vector2f& xy,
         const Vector2f& screenSize ) const;
 
@@ -224,17 +230,21 @@ public:
 
     // Convert a 2D pixel (x,y) on a screen of size "screenSize" to a 3D ray
     // direction in world coordinates.
-    //
-    // The integer pixel coordinates places the sample at the pixel center.
     Vector3f worldDirectionFromScreen( const Vector2i& xy,
         const Vector2f& screenSize ) const;
 
     virtual std::string toString() const = 0;
 
     // TODO: support viewports
-    // Given a pixel (x,y) in screen space (\in [0,screenSize.x), [0,screenSize.y))
-    // returns its NDC \in [-1,1]^2.
-    static Vector2f screenToNDC( const Vector2f& xy, const Vector2f& screenSize );
+    // Convert a pixel (x,y) in screen space (\in [0,screenSize)) to NDC space
+    // (\in [-1,1]^2).
+    static Vector2f ndcFromScreen( const Vector2f& xy,
+        const Vector2f& screenSize );
+
+    // Convert a pixel (x,y) in screen space (\in [0,screenSize)) to NDC space
+    // (\in [-1,1]^2).
+    static Vector2f ndcFromScreen( const Vector2i& xy,
+        const Vector2f& screenSize );
 
     // Copies the camera frustum (intrinsics), from --> to.
     static void copyFrustum( const Camera& from, Camera& to );

@@ -76,7 +76,7 @@ int GLTexture::maxArrayLayers()
 // virtual
 GLTexture::~GLTexture()
 {
-    glDeleteTextures( 1, &m_id );
+    destroy();
 }
 
 void GLTexture::bind( GLuint textureUnitIndex ) const
@@ -178,4 +178,42 @@ GLTexture::GLTexture( Target target, GLImageInternalFormat internalFormat,
         m_nMipMapLevels = nMipMapLevels;
     }
     glCreateTextures( glTarget(), 1, &m_id );
+}
+
+GLTexture::GLTexture( GLTexture&& move )
+{
+    destroy();
+    m_id = move.m_id;
+    m_target = move.m_target;
+    m_internalFormat = move.m_internalFormat;
+    m_nMipMapLevels = move.m_nMipMapLevels;
+
+    move.m_id = 0;
+    move.m_nMipMapLevels = 0;
+}
+
+GLTexture& GLTexture::operator = ( GLTexture&& move )
+{
+    if( this != &move )
+    {
+        destroy();
+        m_id = move.m_id;
+        m_target = move.m_target;
+        m_internalFormat = move.m_internalFormat;
+        m_nMipMapLevels = move.m_nMipMapLevels;
+
+        move.m_id = 0;
+        move.m_nMipMapLevels = 0;
+    }
+    return *this;
+}
+
+void GLTexture::destroy()
+{
+    if( m_id != 0 )
+    {
+        glDeleteTextures( 1, &m_id );
+        m_id = 0;
+        m_nMipMapLevels = 0;
+    }
 }

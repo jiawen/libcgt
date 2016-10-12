@@ -4,7 +4,8 @@ GLDrawable::GLDrawable( GLPrimitiveType primitiveType,
     const PlanarVertexBufferCalculator& calculator ) :
     m_primitiveType( primitiveType ),
     m_calculator( calculator ),
-    m_vbo( calculator.totalSizeBytes(), GLBufferObject::StorageFlags::MAP_WRITE_BIT )
+    m_vbo( calculator.totalSizeBytes(),
+        GLBufferObject::StorageFlags::MAP_WRITE_BIT )
 {
     for( int i = 0; i < calculator.numAttributes(); ++i )
     {

@@ -10,6 +10,9 @@
 
 enum class GLImageInternalFormat
 {
+    // Invalid, for default initialization.
+    NONE = 0,
+
     // Color Formats.
 
     // 8-bit unsigned normalized integer
@@ -117,7 +120,7 @@ enum class GLImageInternalFormat
     COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
 #endif
 
-    // Special
+    // ----- Special formats -----
 
     // Normalized
 #ifdef GL_PLATFORM_45
