@@ -3,6 +3,7 @@
 #include <cameras/CameraUtils.h>
 #include <vecmath/Matrix3f.h>
 #include <vecmath/Vector2f.h>
+#include <vecmath/Vector2i.h>
 #include <vecmath/Vector3f.h>
 
 namespace libcgt { namespace opencv_interop {
@@ -15,6 +16,11 @@ cv::Point2f toCVPoint( const Vector2f& v )
 cv::Point3f toCVPoint( const Vector3f& v )
 {
     return cv::Point3f( v.x, v.y, v.z );
+}
+
+cv::Size2i toCVSize( const Vector2i& v )
+{
+    return cv::Size2i( v.x, v.y );
 }
 
 cv::Mat_< float > toCVMatrix3x1( const Vector3f& v )

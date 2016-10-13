@@ -14,20 +14,42 @@ public:
     static const Quat4f ZERO;
     static const Quat4f IDENTITY;
 
+    // Construct a quaternion from an axis-angle representation, where
+    // axisAngle.norm() is the rotation angle in radians and
+    // axisAngle.normalized() is the direction.
+    static Quat4f fromAxisAngle( const Vector3f& axisAngle );
+
+    // Given a rotation matrix m, returns its unit quaternion representation
+    static Quat4f fromRotationMatrix( const Matrix3f& m );
+
+    // Convert an orthonormal basis of R^3: (x, y, z = x cross y) into a
+    // rotation matrix m = [x y z] and then into a unit quaternion.
+    //
+    // If x, y, z are the world-space vectors denoting the right, up, and back
+    // vectors of a camera, then q (and m) is the mapping worldFromCamera.
+    static Quat4f fromRotatedBasis(
+        const Vector3f& x, const Vector3f& y, const Vector3f& z );
+
+    // returns a unit quaternion that's a uniformly distributed rotation
+    // given u[i] is a uniformly distributed random number in [0,1]
+    // taken from Graphics Gems II
+    static Quat4f randomRotation( float u0, float u1, float u2 );
+
     Quat4f();
-    Quat4f( float w, float x, float y, float z );
-
-    Quat4f( const Quat4f& rq ); // copy constructor
-    Quat4f& operator = ( const Quat4f& rq ); // assignment operator
-    // no destructor necessary
-
+    Quat4f( float _w, float _x, float _y, float _z );
     // returns a quaternion with 0 real part
     Quat4f( const Vector3f& v );
 
-    // copies the components of a Vector4f directly into this quaternion
+    // Copies the components of a Vector4f directly into this quaternion.
     Quat4f( const Vector4f& v );
 
-    // returns the ith element
+    // [_w, _v.x, _v.y, _v.z].
+    Quat4f( float _w, const Vector3f& _v );
+
+    Quat4f( const Quat4f& q );
+    Quat4f& operator = ( const Quat4f& q );
+
+    // Returns the ith element.
     const float& operator [] ( int i ) const;
     float& operator [] ( int i );
 
@@ -60,18 +82,8 @@ public:
     // Returns axis = (0,0,0) and angle = 0 for the identity quaternion (1,0,0,0)
     Vector4f getAxisAngle() const;
 
-    // sets this quaternion to be a rotation of radians about axis
-    // axis need not be unit length
-    void setAxisAngle( float radians, const Vector3f& axis );
-
-    // sets this quaternion to be a rotation of axisAngle.w radians
-    // about the axisAngle.xyz axis
-    // axisAngle.xyz need not be unit length
-    void setAxisAngle( const Vector4f& axisAngle );
-
-    // rotates vector v using the rotation defined by q = *this
-    // returns v' = q * quat(v) * conj(q)
-    // where quat(v) is a quaternion with w = 0 and q.xyz ~ v.xyz
+    // If this is a unit quaternion, rotates a vector v as:
+    // v' = q * quat(v) * conj(q), where quat(v) is the quaternion [0 v.xyz].
     Vector3f rotateVector( const Vector3f& v );
 
     // ---- Utility ----
@@ -102,19 +114,6 @@ public:
     // Useful for squad()
     static Quat4f squadTangent( const Quat4f& before, const Quat4f& center, const Quat4f& after );
 
-    // Given a rotation matrix m, returns its unit quaternion representation
-    static Quat4f fromRotationMatrix( const Matrix3f& m );
-
-    // Given an orthonormal basis of R^3 x, y, and z = x cross y
-    // Converts it into the rotation matrix m = [ x y z ]
-    // and returns its unit quaternion representation
-    static Quat4f fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vector3f& z );
-
-    // returns a unit quaternion that's a uniformly distributed rotation
-    // given u[i] is a uniformly distributed random number in [0,1]
-    // taken from Graphics Gems II
-    static Quat4f randomRotation( float u0, float u1, float u2 );
-
     union
     {
         struct
@@ -131,6 +130,7 @@ public:
 
 Quat4f operator + ( const Quat4f& q0, const Quat4f& q1 );
 Quat4f operator - ( const Quat4f& q0, const Quat4f& q1 );
+Quat4f operator - ( const Quat4f& q );
 Quat4f operator * ( const Quat4f& q0, const Quat4f& q1 );
 Quat4f operator * ( float f, const Quat4f& q );
 Quat4f operator * ( const Quat4f& q, float f );

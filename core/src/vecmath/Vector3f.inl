@@ -21,6 +21,8 @@ inline Vector3f::Vector3f( float _x, float _y, float _z )
 
 inline const float& Vector3f::operator [] ( int i ) const
 {
+    assert( i >= 0 );
+    assert( i < 3 );
     return ( &x )[i];
 }
 

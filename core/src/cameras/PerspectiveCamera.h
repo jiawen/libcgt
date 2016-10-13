@@ -105,7 +105,14 @@ public:
     std::vector< Vector4f > frustumLines() const;
 
     // TODO: make this a global function once this is moved into a namespace.
-    static PerspectiveCamera lerp( const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
-    static PerspectiveCamera cubicInterpolate( const PerspectiveCamera& c0, const PerspectiveCamera& c1, const PerspectiveCamera& c2, const PerspectiveCamera& c3, float t );
+    static PerspectiveCamera lerp(
+        const PerspectiveCamera& c0, const PerspectiveCamera& c1, float t );
+    static PerspectiveCamera cubicInterpolate(
+        const PerspectiveCamera& c0, const PerspectiveCamera& c1,
+        const PerspectiveCamera& c2, const PerspectiveCamera& c3,
+        float t );
 
 };
+
+bool operator == ( const PerspectiveCamera& c0, const PerspectiveCamera& c1 );
+bool operator != ( const PerspectiveCamera& c0, const PerspectiveCamera& c1 );

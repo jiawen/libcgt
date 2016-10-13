@@ -8,83 +8,160 @@
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector4f.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 // static
 const Quat4f Quat4f::ZERO = Quat4f( 0, 0, 0, 0 );
 
 // static
 const Quat4f Quat4f::IDENTITY = Quat4f( 1, 0, 0, 0 );
 
-Quat4f::Quat4f() :
-
-    w( 0 ),
-    x( 0 ),
-    y( 0 ),
-    z( 0 )
-
+// static
+Quat4f Quat4f::fromAxisAngle( const Vector3f& axisAngle )
 {
-    w = 0;
-    x = 0;
-    y = 0;
-    z = 0;
+    // TODO: decompose vector into norm and unit vector.
+    float radians = axisAngle.norm();
+    float halfRadians = 0.5f * radians;
+    float c = cos( halfRadians );
+    float s = sin(halfRadians);
+    Vector3f axis = axisAngle.normalized();
+
+    return Quat4f( c, axis * s );
 }
 
-Quat4f::Quat4f( float w, float x, float y, float z ) :
-
-    w( w ),
-    x( x ),
-    y( y ),
-    z( z )
+// static
+Quat4f Quat4f::fromRotationMatrix( const Matrix3f& m )
 {
+    float x;
+    float y;
+    float z;
+    float w;
 
-}
+    // Compute one plus the trace of the matrix
+    float onePlusTrace = 1.0f + m( 0, 0 ) + m( 1, 1 ) + m( 2, 2 );
 
-Quat4f::Quat4f( const Quat4f& rq ) :
-
-    w( rq.w ),
-    x( rq.x ),
-    y( rq.y ),
-    z( rq.z )
-
-{
-
-}
-
-Quat4f& Quat4f::operator = ( const Quat4f& rq )
-{
-    if( this != ( &rq ) )
+    if( onePlusTrace > 1e-5 )
     {
-        w = rq.w;
-        x = rq.x;
-        y = rq.y;
-        z = rq.z;
+        // Direct computation
+        float s = sqrt( onePlusTrace ) * 2.0f;
+        x = ( m( 2, 1 ) - m( 1, 2 ) ) / s;
+        y = ( m( 0, 2 ) - m( 2, 0 ) ) / s;
+        z = ( m( 1, 0 ) - m( 0, 1 ) ) / s;
+        w = 0.25f * s;
     }
-    return( *this );
+    else
+    {
+        // Computation depends on major diagonal term
+        if( ( m( 0, 0 ) > m( 1, 1 ) ) & ( m( 0, 0 ) > m( 2, 2 ) ) )
+        {
+            float s = sqrt( 1.0f + m( 0, 0 ) - m( 1, 1 ) - m( 2, 2 ) ) * 2.0f;
+            x = 0.25f * s;
+            y = ( m( 0, 1 ) + m( 1, 0 ) ) / s;
+            z = ( m( 0, 2 ) + m( 2, 0 ) ) / s;
+            w = ( m( 1, 2 ) - m( 2, 1 ) ) / s;
+        }
+        else if( m( 1, 1 ) > m( 2, 2 ) )
+        {
+            float s = sqrt( 1.0f + m( 1, 1 ) - m( 0, 0 ) - m( 2, 2 ) ) * 2.0f;
+            x = ( m( 0, 1 ) + m( 1, 0 ) ) / s;
+            y = 0.25f * s;
+            z = ( m( 1, 2 ) + m( 2, 1 ) ) / s;
+            w = ( m( 0, 2 ) - m( 2, 0 ) ) / s;
+        }
+        else
+        {
+            float s = sqrt( 1.0f + m( 2, 2 ) - m( 0, 0 ) - m( 1, 1 ) ) * 2.0f;
+            x = ( m( 0, 2 ) + m( 2, 0 ) ) / s;
+            y = ( m( 1, 2 ) + m( 2, 1 ) ) / s;
+            z = 0.25f * s;
+            w = ( m( 0, 1 ) - m( 1, 0 ) ) / s;
+        }
+    }
+
+    Quat4f q( w, x, y, z );
+    return q.normalized();
+}
+
+// static
+Quat4f Quat4f::fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vector3f& z )
+{
+    return fromRotationMatrix( Matrix3f( x, y, z ) );
+}
+
+// static
+Quat4f Quat4f::randomRotation( float u0, float u1, float u2 )
+{
+    float z = u0;
+    float theta = 2.0f * libcgt::core::math::PI * u1;
+    float r = sqrt( 1.f - z * z );
+    float w = libcgt::core::math::PI * u2;
+
+    return Quat4f
+    (
+        cos( w ),
+        sin( w ) * cos( theta ) * r,
+        sin( w ) * sin( theta ) * r,
+        sin( w ) * z
+    );
+}
+
+Quat4f::Quat4f() :
+    w( 0.0f ),
+    x( 0.0f ),
+    y( 0.0f ),
+    z( 0.0f )
+{
+}
+
+Quat4f::Quat4f( float _w, float _x, float _y, float _z ) :
+    w( _w ),
+    x( _x ),
+    y( _y ),
+    z( _z )
+{
 }
 
 Quat4f::Quat4f( const Vector3f& v ) :
-
-    w( 0 ),
+    w( 0.0f ),
     x( v.x ),
     y( v.y ),
     z( v.z )
-
 {
 
 }
 
 Quat4f::Quat4f( const Vector4f& v ) :
-
     w( v.x ),
     x( v.y ),
     y( v.z ),
     z( v.w )
-
 {
+}
 
+Quat4f::Quat4f( float _w, const Vector3f& _v ) :
+    w( _w ),
+    x( _v.x ),
+    y( _v.y ),
+    z( _v.z )
+{
+}
+
+Quat4f::Quat4f( const Quat4f& q ) :
+    w( q.w ),
+    x( q.x ),
+    y( q.y ),
+    z( q.z )
+{
+}
+
+Quat4f& Quat4f::operator = ( const Quat4f& q )
+{
+    if( this != &q )
+    {
+        w = q.w;
+        x = q.x;
+        y = q.y;
+        z = q.z;
+    }
+    return( *this );
 }
 
 const float& Quat4f::operator [] ( int i ) const
@@ -258,24 +335,6 @@ Vector4f Quat4f::getAxisAngle() const
     }
 }
 
-void Quat4f::setAxisAngle( float radians, const Vector3f& axis )
-{
-    w = cos( radians / 2 );
-
-    float sinHalfTheta = sin( radians / 2 );
-    float vectorNorm = axis.norm();
-    float reciprocalVectorNorm = 1.f / vectorNorm;
-
-    x = axis.x * sinHalfTheta * reciprocalVectorNorm;
-    y = axis.y * sinHalfTheta * reciprocalVectorNorm;
-    z = axis.z * sinHalfTheta * reciprocalVectorNorm;
-}
-
-void Quat4f::setAxisAngle( const Vector4f& axisAngle )
-{
-    setAxisAngle( axisAngle.w, axisAngle.xyz );
-}
-
 void Quat4f::print()
 {
     printf( "< %.2f + %.2f i + %.2f j + %.2f k >\n",
@@ -391,90 +450,10 @@ Quat4f Quat4f::squadTangent( const Quat4f& before, const Quat4f& center, const Q
     return e;
 }
 
-// static
-Quat4f Quat4f::fromRotationMatrix( const Matrix3f& m )
-{
-    float x;
-    float y;
-    float z;
-    float w;
-
-    // Compute one plus the trace of the matrix
-    float onePlusTrace = 1.0f + m( 0, 0 ) + m( 1, 1 ) + m( 2, 2 );
-
-    if( onePlusTrace > 1e-5 )
-    {
-        // Direct computation
-        float s = sqrt( onePlusTrace ) * 2.0f;
-        x = ( m( 2, 1 ) - m( 1, 2 ) ) / s;
-        y = ( m( 0, 2 ) - m( 2, 0 ) ) / s;
-        z = ( m( 1, 0 ) - m( 0, 1 ) ) / s;
-        w = 0.25f * s;
-    }
-    else
-    {
-        // Computation depends on major diagonal term
-        if( ( m( 0, 0 ) > m( 1, 1 ) ) & ( m( 0, 0 ) > m( 2, 2 ) ) )
-        {
-            float s = sqrt( 1.0f + m( 0, 0 ) - m( 1, 1 ) - m( 2, 2 ) ) * 2.0f;
-            x = 0.25f * s;
-            y = ( m( 0, 1 ) + m( 1, 0 ) ) / s;
-            z = ( m( 0, 2 ) + m( 2, 0 ) ) / s;
-            w = ( m( 1, 2 ) - m( 2, 1 ) ) / s;
-        }
-        else if( m( 1, 1 ) > m( 2, 2 ) )
-        {
-            float s = sqrt( 1.0f + m( 1, 1 ) - m( 0, 0 ) - m( 2, 2 ) ) * 2.0f;
-            x = ( m( 0, 1 ) + m( 1, 0 ) ) / s;
-            y = 0.25f * s;
-            z = ( m( 1, 2 ) + m( 2, 1 ) ) / s;
-            w = ( m( 0, 2 ) - m( 2, 0 ) ) / s;
-        }
-        else
-        {
-            float s = sqrt( 1.0f + m( 2, 2 ) - m( 0, 0 ) - m( 1, 1 ) ) * 2.0f;
-            x = ( m( 0, 2 ) + m( 2, 0 ) ) / s;
-            y = ( m( 1, 2 ) + m( 2, 1 ) ) / s;
-            z = 0.25f * s;
-            w = ( m( 0, 1 ) - m( 1, 0 ) ) / s;
-        }
-    }
-
-    Quat4f q( w, x, y, z );
-    return q.normalized();
-}
-
-// static
-Quat4f Quat4f::fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vector3f& z )
-{
-    return fromRotationMatrix( Matrix3f( x, y, z ) );
-}
-
-// static
-Quat4f Quat4f::randomRotation( float u0, float u1, float u2 )
-{
-    float z = u0;
-    float theta = 2.0f * libcgt::core::math::PI * u1;
-    float r = sqrt( 1.f - z * z );
-    float w = libcgt::core::math::PI * u2;
-
-    return Quat4f
-    (
-        cos( w ),
-        sin( w ) * cos( theta ) * r,
-        sin( w ) * sin( theta ) * r,
-        sin( w ) * z
-    );
-}
-
 Vector3f Quat4f::rotateVector( const Vector3f& v )
 {
     return ( ( *this ) * Quat4f( v ) * conjugated() ).xyz();
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
 
 Quat4f operator + ( const Quat4f& q0, const Quat4f& q1 )
 {
@@ -496,6 +475,11 @@ Quat4f operator - ( const Quat4f& q0, const Quat4f& q1 )
         q0.y - q1.y,
         q0.z - q1.z
     );
+}
+
+Quat4f operator - ( const Quat4f& q )
+{
+    return{ -q.w, -q.x, -q.y, -q.z };
 }
 
 Quat4f operator * ( const Quat4f& q0, const Quat4f& q1 )

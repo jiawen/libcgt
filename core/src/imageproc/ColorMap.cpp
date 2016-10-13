@@ -5,9 +5,6 @@
 #include <math/MathUtils.h>
 
 using libcgt::core::arrayutils::map;
-using libcgt::core::imageproc::colorutils::colorMapJet;
-using libcgt::core::imageproc::colorutils::saturate;
-using libcgt::core::imageproc::colorutils::toUInt8;
 using libcgt::core::math::clamp;
 using libcgt::core::math::fraction;
 using libcgt::core::math::rescale;

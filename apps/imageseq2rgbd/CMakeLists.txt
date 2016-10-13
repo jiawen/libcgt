@@ -1,16 +1,21 @@
 cmake_minimum_required( VERSION 3.6 )
 project( imageseq2rgbd )
-# Broken??
-# vs_startup_project( imageseq2rgbd )
-
-# gflags
-find_package(gflags REQUIRED)
+set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )
 
 # libcgt
-set( LIBCGT_DIR ../.. )
+set( LIBCGT_DIR ${PROJECT_SOURCE_DIR}/../.. )
 include_directories( ${LIBCGT_DIR}/build/lib/include )
 include_directories( ${LIBCGT_DIR}/build/lib/include/core )
 link_directories( ${LIBCGT_DIR}/build/lib/lib )
+
+# gflags
+if( EXISTS "${LIBCGT_DIR}/third_party/gflags/CMakeLists.txt" )
+    add_subdirectory( "${LIBCGT_DIR}/third_party/gflags"
+	    "${PROJECT_SOURCE_DIR}/third_party/gflags" )
+else()
+	find_package(gflags REQUIRED)
+endif()
 
 file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
 file( GLOB_RECURSE SOURCES src/*.cpp )
@@ -24,12 +29,14 @@ set_property( TARGET imageseq2rgbd PROPERTY CXX_STANDARD 11 )
 
 if( WIN32 )
     target_link_libraries( imageseq2rgbd
-		gflags_shared
+		gflags
         debug cgt_cored
         debug cgt_camera_wrappersd
         optimized cgt_core
         optimized cgt_camera_wrappers )
 else()
     target_link_libraries( imageseq2rgbd
-        gflags_shared cgt_core cgt_camera_wrappers )
+        gflags
+		cgt_core
+		cgt_camera_wrappers )
 endif()

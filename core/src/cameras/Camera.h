@@ -270,3 +270,6 @@ private:
     // [zNear, zFar] gets mapped to [0,1] (DirectX) or [-1,1] (OpenGL) in NDC
     bool m_directX;
 };
+
+bool operator == ( const Camera& c0, const Camera& c1 );
+bool operator != ( const Camera& c0, const Camera& c1 );

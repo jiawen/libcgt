@@ -5,8 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include "common/Iterators.h"
-
+#include "common/ForND.h"
 #include "geometry/Plane3f.h"
 #include "math/Arithmetic.h"
 #include "math/MathUtils.h"
@@ -20,6 +19,7 @@
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector4f.h"
 
+using libcgt::core::for2D;
 using std::abs;
 using std::max;
 using std::min;
@@ -101,9 +101,9 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, con
     std::vector< Vector2f > pointsInside;
     pointsInside.reserve( bbox.area() );
 
-    Iterators::for2D( bbox.minimum(), bbox.size, [&]( int x, int y )
+    for2D( bbox.minimum(), bbox.size, [&]( const Vector2i& xy )
     {
-        Vector2f p = { x + 0.5f, y + 0.5f };
+        Vector2f p = { xy.x + 0.5f, xy.y + 0.5f };
 
         if( pointInTriangle( p, v0, v1, v2 ) )
         {
@@ -159,9 +159,9 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative(
     std::vector< Vector2f > pointsInside;
     pointsInside.reserve( bbox.area() );
 
-    Iterators::for2D( bbox.minimum(), bbox.size, [&]( int x, int y )
+    for2D( bbox.minimum(), bbox.size, [ & ]( const Vector2i& xy )
     {
-        Vector2f p = { x + 0.5f, y + 0.5f };
+        Vector2f p = { xy.x + 0.5f, xy.y + 0.5f };
 
         float passed01 = edgeTestConservative( normal01, v0, p );
         float passed12 = edgeTestConservative( normal12, v1, p );

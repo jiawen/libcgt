@@ -13,10 +13,14 @@
 #include <core/common/ArrayUtils.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/io/PortableFloatMapIO.h>
+#include <core/imageproc/Swizzle.h>
 #include <core/math/ArrayOps.h>
 #include <opencv_interop/ArrayUtils.h>
+#include <opencv_interop/Calib3d.h>
 #include <opencv_interop/VecmathUtils.h>
 #include <third_party/pystring.h>
+
+#include <core/io/PNGIO.h>
 
 #include "common.h"
 
@@ -24,6 +28,7 @@ using namespace libcgt::camera_wrappers::kinect1x;
 using namespace libcgt::camera_wrappers::openni2;
 using namespace libcgt::core::arrayutils;
 using namespace libcgt::core::cameras;
+using namespace libcgt::core::imageproc;
 using namespace libcgt::opencv_interop;
 using namespace pystring;
 
@@ -33,7 +38,6 @@ const cv::Size boardSize( 4, 11 ); // (cols, rows), TODO(jiawen): gflags
 // In y-down.
 const double depthFromInfraredPixelCoordinateShiftX = -4.5;
 const double depthFromInfraredPixelCoordinateShiftY = -3.5;
-
 
 DEFINE_double( feature_spacing, 0.02, // 2 cm.
     "Spacing between two features on the calibration target in physical units "
@@ -80,50 +84,6 @@ DEFINE_bool( visualize_detection, false,
 DEFINE_bool( visualize_undistort, false,
     "Debug output: write out undistorted images as "
     "<stream>_undistort_<index>.png" );
-
-Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
-    const cv::Mat_< float >& map1 )
-{
-    Array2DView< const float > map0View =
-        cvMatAsArray2DView< const float >( map0 );
-    Array2DView< const float > map1View =
-        cvMatAsArray2DView< const float >( map1 );
-
-    Array2D< Vector2f > undistortMap( map0View.size() );
-
-    copy( map0View, componentView< float >(
-        undistortMap.writeView(), 0 ) );
-    copy( map1View, componentView< float >(
-        undistortMap.writeView(), sizeof( float ) ) );
-
-    return undistortMap;
-}
-
-Array2D< Vector3f > undistortMapsAsRGB( const cv::Mat_< float >& map0,
-    const cv::Mat_< float >& map1 )
-{
-    Array2DView< const float > map0View =
-        cvMatAsArray2DView< const float >( map0 );
-    Array2DView< const float > map1View =
-        cvMatAsArray2DView< const float >( map1 );
-
-    Array2D< Vector3f > undistortMap( map0View.size() );
-
-    copy( map0View, componentView< float >(
-        undistortMap.writeView(), 0 ) );
-    copy( map1View, componentView< float >(
-        undistortMap.writeView(), sizeof( float ) ) );
-
-    return undistortMap;
-}
-
-cv::Mat flipPrincipalPointY( const cv::Mat& cameraMatrix, cv::Size imageSize )
-{
-    cv::Mat output = cameraMatrix.clone();
-    output.at< double >( 1, 2 ) =
-        imageSize.height - cameraMatrix.at< double >( 1, 2 );
-    return output;
-}
 
 int main( int argc, char* argv[] )
 {
@@ -233,9 +193,9 @@ int main( int argc, char* argv[] )
         cameraMatrix, distCoeffs, imageSize, alpha );
 
     // Flip the principal point on the GL versions of the camera matrix.
-    cv::Mat cameraMatrix_gl = flipPrincipalPointY( cameraMatrix, imageSize );
+    cv::Mat cameraMatrix_gl = cameraMatrixCVToGL( cameraMatrix, imageSize );
     cv::Mat newCameraMatrix_gl =
-        flipPrincipalPointY( newCameraMatrix, imageSize );
+        cameraMatrixCVToGL( newCameraMatrix, imageSize );
 
     std::cout << "calibration type: " << calibrationType << "\n";
     std::cout << "resolution: " << imageSize.width << ", " <<
@@ -272,31 +232,15 @@ int main( int argc, char* argv[] )
     fs.release();
 
     // TODO: collect everything into a IntrinsicCalibrationResults object.
+    Array2D< Vector2f > undistortMap = undistortRectifyMap(
+        cameraMatrix, distCoeffs, cv::Mat(), newCameraMatrix, imageSize );
 
-    // NOTE: you obviously get a different undistort map depending on what
-    // you pass in for newCameraMatrix. The documentation says that for a
-    // monocular camera, you can pass in cameraMatrix itself.
-    // Experimentally, this does *not* correspond to alpha = 0 or 1!.
-    cv::Mat map0;
-    cv::Mat map1;
-    cv::initUndistortRectifyMap( cameraMatrix, distCoeffs, cv::Mat(),
-        newCameraMatrix, imageSize, CV_32FC1, map0, map1 );
-
-    // NOTE: even though the distortion coefficients are independent of
-    // resolution and which way y points on the image plane (because they're a
-    // function of angles), the undistortion maps are.
-    Array2D< Vector2f > undistortMap = undistortMapsAsRG( map0, map1 );
-    std::string undistortMapFilename = os::path::join(
-        FLAGS_dir, inputFilenameRoot + "undistort_map_cv.pfm2" );
     std::string undistortMapGLFilename = os::path::join(
         FLAGS_dir, inputFilenameRoot + "undistort_map_gl.pfm2" );
     std::cout << "Writing undistortion map to: " <<
-        undistortMapFilename << "\n";
-    PortableFloatMapIO::write( undistortMapFilename, undistortMap );
-    std::cout << "Writing undistortion map to: " <<
         undistortMapGLFilename << "\n";
     PortableFloatMapIO::write( undistortMapGLFilename,
-        flipY( undistortMap.readView() ) );
+        undistortMap );
 
     // In infrared mode, also output depth intrinsics and undistortion maps.
     if( FLAGS_stream == "infrared" )
@@ -318,15 +262,9 @@ int main( int argc, char* argv[] )
             depthCameraMatrix, distCoeffs, imageSize, alpha );
 
         cv::Mat depthCameraMatrix_gl =
-            flipPrincipalPointY( depthCameraMatrix, imageSize );
+            cameraMatrixCVToGL( depthCameraMatrix, imageSize );
         cv::Mat newDepthCameraMatrix_gl =
-            flipPrincipalPointY( newDepthCameraMatrix, imageSize );
-
-        cv::Mat depthUndistortMap0;
-        cv::Mat depthUndistortMap1;
-        cv::initUndistortRectifyMap( depthCameraMatrix, distCoeffs, cv::Mat(),
-            newDepthCameraMatrix, imageSize, CV_32FC1,
-            depthUndistortMap0, depthUndistortMap1 );
+            cameraMatrixCVToGL( newDepthCameraMatrix, imageSize );
 
         std::string outputCalibrationFilename = os::path::join(
             FLAGS_dir, inputFilenameRoot + "calibration.yaml" );
@@ -348,8 +286,9 @@ int main( int argc, char* argv[] )
 
         fs.release();
 
-        Array2D< Vector2f > depthUndistortMap =
-            undistortMapsAsRG( depthUndistortMap0, depthUndistortMap1 );
+        Array2D< Vector2f > depthUndistortMap = undistortRectifyMap(
+            depthCameraMatrix, distCoeffs, cv::Mat(),
+            newDepthCameraMatrix, imageSize );
         std::string depthUndistortMapFilename = os::path::join(
             FLAGS_dir, inputFilenameRoot + "undistort_map_cv.pfm2" );
         std::string depthUndistortMapGLFilename = os::path::join(
@@ -372,15 +311,22 @@ int main( int argc, char* argv[] )
 
         for( int i = 0; i < nImages; ++i )
         {
-            cv::Mat undistorted;
-
             printf( "Undistorting %d of %d\n", i, nImages );
-            cv::remap( images[ i ], undistorted, map0, map1,
-                cv::INTER_LANCZOS4 );
+
+            Array2DView< const uint8x3 > inputImageGLView = flipY(
+                cvMatAsArray2DView< uint8x3 >( images[ i ] ) );
+
+            Array2D< uint8x3 > remappedImageGL( inputImageGLView.size() );
+            remap( inputImageGLView, undistortMap.readView(),
+                remappedImageGL.writeView() );
+
+            RGBToBGR( remappedImageGL.readView(),
+                remappedImageGL.writeView() );
 
             std::string outputFilename = undistortNFB.filenameForNumber( i );
             printf( "Writing: %s\n", outputFilename.c_str() );
-            cv::imwrite( outputFilename, undistorted );
+            PNGIO::write( outputFilename,
+                flipY( remappedImageGL.readView() ) );
         }
     }
 }

@@ -5,6 +5,7 @@
 class Matrix3f;
 class Matrix4f;
 class Vector2f;
+class Vector2i;
 class Vector3f;
 
 namespace libcgt { namespace opencv_interop {
@@ -12,6 +13,8 @@ namespace libcgt { namespace opencv_interop {
 cv::Point2f toCVPoint( const Vector2f& v );
 
 cv::Point3f toCVPoint( const Vector3f& v );
+
+cv::Size2i toCVSize( const Vector2i& v );
 
 cv::Mat_< float > toCVMatrix3x1( const Vector3f& v );
 

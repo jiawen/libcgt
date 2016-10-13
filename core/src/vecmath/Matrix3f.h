@@ -81,7 +81,15 @@ public:
     static Matrix3f rotateX( float radians );
     static Matrix3f rotateY( float radians );
     static Matrix3f rotateZ( float radians );
+
+    // Assumes axis is normalized.
     static Matrix3f rotation( const Vector3f& axis, float radians );
+
+    // Construct a rotation matrix from an axis-angle representation, where
+    // axisAngle.norm() is the rotation angle in radians and
+    // axisAngle.normalized() is the direction.
+    static Matrix3f rotation( const Vector3f& axisAngle );
+
     static Matrix3f scaling( const Vector3f& xyz );
     static Matrix3f uniformScaling( float s );
     static Matrix3f translation( const Vector2f& xy );
@@ -90,8 +98,8 @@ public:
     static Matrix3f scaleTranslate( const Vector2f& srcOrigin, const Vector2f& srcSize,
         const Vector2f& dstOrigin, const Vector2f& dstSize );
 
-    // Returns the rotation matrix represented by a quaternion
-    // (method will normalize q first)
+    // Construct a rotation matrix represented by a unit quaternion (does not
+    // normalize q).
     static Matrix3f fromQuat( const Quat4f& q );
 
     union

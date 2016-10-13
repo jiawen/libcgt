@@ -168,27 +168,26 @@ Array1DView< T > head( Array1DView< T > src, size_t n );
 template< typename T >
 Array1DView< T > tail( Array1DView< T > src, size_t n );
 
-// Classical "map" function: dst[ i ] = f( src[ i ] )
-#if 0
-// TODO(MSVC_2015): the following should work but does not in VS2013.
-template< typename TSrc, typename TDst >
-bool map( Array1DView< TSrc > src, Array1DView< TDst > dst,
-    std::function< TDst( TSrc ) > f );
-#else
-// f should be a function object that mapping TSrc -> TDst
+// Classical "map" function: dst[ i ] = f( src[ i ] ).
+// f should be a function object that mapping TSrc -> TDst.
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array1DView< const TSrc > src, Array1DView< TDst > dst, Func f );
-#endif
 
-// Classical "map" function: dst[ xy ] = f( src[ xy ] )
-// f should be a function object that mapping TSrc -> TDst
+// Classical "map" function: dst[ xy ] = f( src[ xy ] ).
+// f should be a function object that mapping TSrc -> TDst.
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array2DView< const TSrc > src, Array2DView< TDst > dst, Func f );
 
-// Classical "map" function: dst[ xyz ] = f( src[ xyz ] )
-// f should be a function object that mapping TSrc -> TDst
+// Classical "map" function: dst[ xyz ] = f( src[ xyz ] ).
+// f should be a function object that mapping TSrc -> TDst.
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f );
+
+// Variant of map that also passes the index to f:
+// dst[ x ] = f( x, src[ x ] )
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array1DView< const TSrc > src, Array1DView< TDst > dst,
+    Func f );
 
 // Variant of map that also passes the index to f:
 // dst[ xy ] = f( xy, src[ xy ] )

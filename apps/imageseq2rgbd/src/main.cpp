@@ -75,12 +75,19 @@ int main( int argc, char* argv[] )
         printf( "depth scale = %lf\n", FLAGS_depth_scale );
         printf( "depth offset = %lf\n", FLAGS_depth_offset );
     }
+    else
+    {
+        fprintf( stderr, "Invalid output format.\n" );
+        return 3;
+    }
+
+    return 0;
 
     RGBDOutputStream outputStream( outputMetadata, argv[ 2 ] );
     if( !outputStream.isValid() )
     {
         fprintf( stderr, "Unable to open output file %s\n", argv[ 2 ] );
-        return 3;
+        return 4;
     }
 
     float a = static_cast< float >( FLAGS_depth_scale );

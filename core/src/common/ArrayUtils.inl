@@ -376,17 +376,9 @@ Array1DView< T > tail( Array1DView< T > src, size_t n )
     return Array1DView< T >( p, n, src.stride() );
 }
 
-#if 0
-template< typename TSrc, typename TDst >
-bool ArrayUtils::map( Array1DView< TSrc > src, Array1DView< TDst > dst,
-    std::function< TDst( TSrc ) > f )
-#else
 template< typename TSrc, typename TDst, typename Func >
 bool map( Array1DView< const TSrc > src, Array1DView< TDst > dst, Func f )
-#endif
 {
-    std::function< TDst( const TSrc ) > f2( f );
-
     if( src.isNull() || dst.isNull() )
     {
         return false;
@@ -399,11 +391,7 @@ bool map( Array1DView< const TSrc > src, Array1DView< TDst > dst, Func f )
 
     for( int x = 0; x < src.size(); ++x )
     {
-#if 0
         dst[ x ] = f( src[ x ] );
-#else
-        dst[ x ] = f2( src[ x ] );
-#endif
     }
 
     return true;
@@ -455,6 +443,28 @@ bool map( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f )
                 dst[ { x, y, z } ] = f( src[ { x, y, z } ] );
             }
         }
+    }
+
+    return true;
+}
+
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array1DView< const TSrc > src, Array1DView< TDst > dst,
+    Func f )
+{
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
+
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
+
+    for( int x = 0; x < src.width(); ++x )
+    {
+        dst[ x ] = f( x, src[ x ] );
     }
 
     return true;

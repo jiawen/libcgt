@@ -58,19 +58,19 @@ double radiansToDegrees( double radians );
 // ----- Clamping -----
 
 // Clamps x to [lo, hi).
-inline int clampToRangeExclusive( int x, int lo, int hi );
+int clampToRangeExclusive( int x, int lo, int hi );
 
 // Clamps x to [lo, hi].
-inline float clampToRangeInclusive( float x, float lo, float hi );
+float clampToRangeInclusive( float x, float lo, float hi );
 
 // Clamps x to [lo, hi].
-inline double clampToRangeInclusive( double x, double lo, double hi );
+double clampToRangeInclusive( double x, double lo, double hi );
 
 // Clamp x to range (exclusive).
-inline int clamp( int x, const Range1i& range );
+int clamp( int x, const Range1i& range );
 
 // Clamp x to range (inclusive).
-inline float clamp( float x, const Range1f& range );
+float clamp( float x, const Range1f& range );
 
 // Clamps v to rect (exclusive).
 Vector2i clamp( const Vector2i& v, const Rect2i& rect );
@@ -138,16 +138,16 @@ Vector4i maximum( const Vector4i& v0, const Vector4i& v1 );
 
 // ----- Linear interpolation -----
 template< typename T >
-T lerp( const T& x, const T& y, float t );
+T lerp( T x, T y, float t );
 
 template< typename T >
-T lerp( const T& x, const T& y, double t );
+T lerp( T x, T y, double t );
 
 // Lerp between range.left() and range.right() by t.
-inline float lerp( const Range1f& range, float t );
+float lerp( const Range1f& range, float t );
 
 // Lerp between range.left() and range.right() by t.
-inline float lerp( const Range1i& range, float t );
+float lerp( const Range1i& range, float t );
 
 // TODO(jiawen): can make fraction templatized on output and input:
 // fraction<double>( T x, Range< T > range );
@@ -155,13 +155,13 @@ inline float lerp( const Range1i& range, float t );
 // range.right(). Equal to (x - range.left()) / range.size. If x is in the
 // range, then returns a value in [0, 1]. x outside the range will *not* be
 // clamped.
-inline float fraction( float x, const Range1f& range );
+float fraction( float x, const Range1f& range );
 
 // Returns what fraction of the way x is between range.left() and
 // range.right(). Equal to (x - range.left()) / range.size. If x is in the
 // range, then returns a value in [0, 1]. x outside the range will *not* be
 // clamped.
-inline float fraction( int x, const Range1i& range );
+float fraction( int x, const Range1i& range );
 
 // TODO(jiawen): Move this into RangeUtils.
 
@@ -176,13 +176,13 @@ void rescaleRangeToScaleOffset( float inputMin, float inputMax,
     float outputMin, float outputMax,
     float& scale, float& offset );
 
-inline float rescale( float x, const Range1f& src, const Range1f& dst );
+float rescale( float x, const Range1f& src, const Range1f& dst );
 
-inline int rescale( float x, const Range1f& src, const Range1i& dst );
+int rescale( float x, const Range1f& src, const Range1i& dst );
 
-inline float rescale( int x, const Range1i& src, const Range1f& dst );
+float rescale( int x, const Range1i& src, const Range1f& dst );
 
-inline int rescale( int x, const Range1i& src, const Range1i& dst );
+int rescale( int x, const Range1i& src, const Range1i& dst );
 
 // ----- Cubic spline interpolation -----
 
@@ -201,8 +201,8 @@ float distanceSquared( float x0, float y0, float x1, float y1 );
 float gaussian( float x, float u, float sigma );
 
 // 1/x, returns 0 if x=0
-inline float oo_0( float x );
-inline double oo_0( double x );
+float oo_0( float x );
+double oo_0( double x );
 
 } } } // math, core, libcgt
 

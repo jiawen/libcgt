@@ -406,3 +406,15 @@ void Camera::setDirectX( bool directX )
 {
     m_directX = directX;
 }
+
+bool operator == ( const Camera& c0, const Camera& c1 )
+{
+    return( c0.cameraFromWorld() == c1.cameraFromWorld() &&
+        c0.frustum() == c1.frustum() &&
+        c0.isDirectX() == c1.isDirectX() );
+}
+
+bool operator != ( const Camera& c0, const Camera& c1 )
+{
+    return !( c0 == c1 );
+}

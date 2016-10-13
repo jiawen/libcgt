@@ -3,9 +3,9 @@
 #include <cassert>
 #include <cstdio>
 
-#include "imageproc/ColorUtils.h"
+#include <imageproc/ColorUtils.h>
 
-using namespace libcgt::core::imageproc::colorutils;
+using namespace libcgt::core::imageproc;
 
 // static
 bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< const uint8x3 > image )

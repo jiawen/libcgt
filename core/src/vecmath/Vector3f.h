@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 
 #include "Vector2f.h"
@@ -34,8 +35,6 @@ public:
     Vector3f& operator = ( const Vector3d& v );
     Vector3f& operator = ( const Vector3i& v );
 
-    // no destructor necessary
-
     // returns the ith element
     const float& operator [] ( int i ) const;
     float& operator [] ( int i );
@@ -68,10 +67,10 @@ public:
     // cross product
     static Vector3f cross( const Vector3f& v0, const Vector3f& v1 );
 
-    Vector3f& operator += ( const Vector3f& v );
-    Vector3f& operator -= ( const Vector3f& v );
-    Vector3f& operator *= ( float f );
-    Vector3f& operator /= ( float f );
+    inline Vector3f& operator += ( const Vector3f& v );
+    inline Vector3f& operator -= ( const Vector3f& v );
+    inline Vector3f& operator *= ( float f );
+    inline Vector3f& operator /= ( float f );
 
     union
     {
@@ -96,24 +95,24 @@ public:
 
 };
 
-Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 );
+inline Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 );
 
-Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 );
-// negate
-Vector3f operator - ( const Vector3f& v );
+inline Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 );
+// Negate.
+inline Vector3f operator - ( const Vector3f& v );
 
-Vector3f operator * ( float f, const Vector3f& v );
-Vector3f operator * ( const Vector3f& v, float f );
+inline Vector3f operator * ( float f, const Vector3f& v );
+inline Vector3f operator * ( const Vector3f& v, float f );
 
-// component-wise multiplication
-Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 );
+// Component-wise multiplication.
+inline Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 );
 
-// component-wise division
-Vector3f operator / ( const Vector3f& v, float f );
-Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
+// Component-wise division.
+inline Vector3f operator / ( const Vector3f& v, float f );
+inline Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
 
-// reciprocal of each component
-Vector3f operator / ( float f, const Vector3f& v );
+// Reciprocal of each component.
+inline Vector3f operator / ( float f, const Vector3f& v );
 
 inline bool operator == ( const Vector3f& v0, const Vector3f& v1 );
 inline bool operator != ( const Vector3f& v0, const Vector3f& v1 );

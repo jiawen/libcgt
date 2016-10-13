@@ -2,10 +2,11 @@
 
 #include <cstdio>
 
+#include "Vector3d.h"
+
 class Matrix2d;
 class Matrix3f;
-class Quat4f;
-class Vector3d;
+class Quat4d;
 class Vector3d;
 
 // 3x3 Matrix, stored in column major order (OpenGL style)
@@ -61,11 +62,17 @@ public:
 
     static Matrix3d ones();
     static Matrix3d identity();
-    static Matrix3d rotation( const Vector3d& rDirection, double degrees );
 
-    // Returns the rotation matrix represented by a unit quaternion
-    // if q is not normalized, it it normalized first
-    static Matrix3d rotation( const Quat4f& rq );
+    // Assumes axis is normalized.
+    static Matrix3d rotation( const Vector3d& axis, double radians );
+
+    // Construct a rotation matrix from an axis-angle representation, where
+    // axisAngle.norm() is the rotation angle in radians and
+    // axisAngle.normalized() is the direction.
+    static Matrix3d rotation( const Vector3f& axisAngle );
+
+    // Returns the rotation matrix represented by a unit quaternion.
+    static Matrix3d fromQuat( const Quat4d& q );
 
     union
     {

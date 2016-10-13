@@ -16,7 +16,7 @@ std::vector< cv::Mat > readImages( const std::string& dir,
 
     NumberedFilenameBuilder nfb( fullPrefix, suffix );
     int i = 0;
-    while( true )
+    while( true && i < 10 )
     {
         std::string filename = nfb.filenameForNumber( i );
         printf( "Looking for image: %s...\n", filename.c_str() );

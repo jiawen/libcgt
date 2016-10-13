@@ -4,7 +4,9 @@
 #include "vecmath/Vector3f.h"
 #include "vecmath/Vector4f.h"
 
-void libcgt::core::imageproc::compositing::over( Array2DView< const Vector4f > foreground,
+namespace libcgt { namespace core { namespace imageproc {
+
+void over( Array2DView< const Vector4f > foreground,
     Array2DView< const Vector4f > background,
     Array2DView< Vector4f > output )
 {
@@ -26,7 +28,7 @@ void libcgt::core::imageproc::compositing::over( Array2DView< const Vector4f > f
     }
 }
 
-void libcgt::core::imageproc::compositing::extractBackgroundColor( Array2DView< const Vector4f > composite,
+void extractBackgroundColor( Array2DView< const Vector4f > composite,
     Array2DView< const Vector4f > foreground,
     Array2DView< Vector4f > background )
 {
@@ -51,7 +53,7 @@ void libcgt::core::imageproc::compositing::extractBackgroundColor( Array2DView< 
     }
 }
 
-void libcgt::core::imageproc::compositing::extractBackgroundColor( Array2DView< const uint8x4 > composite,
+void extractBackgroundColor( Array2DView< const uint8x4 > composite,
     Array2DView< const uint8x4 > foreground,
     Array2DView< uint8x4 > background )
 {
@@ -59,17 +61,17 @@ void libcgt::core::imageproc::compositing::extractBackgroundColor( Array2DView< 
     {
         for( int x = 0; x < composite.width(); ++x )
         {
-            Vector4f cRGBA = libcgt::core::imageproc::colorutils::toFloat( composite[ { x, y } ] );
-            Vector4f fRGBA = libcgt::core::imageproc::colorutils::toFloat( foreground[ { x, y } ] );
+            Vector4f cRGBA = toFloat( composite[ { x, y } ] );
+            Vector4f fRGBA = toFloat( foreground[ { x, y } ] );
 
             Vector4f bRGBA = extractBackgroundColor( cRGBA, fRGBA );
-            background[ { x, y } ] = libcgt::core::imageproc::colorutils::toUInt8( bRGBA );
+            background[ { x, y } ] = toUInt8( bRGBA );
         }
     }
 }
 
 // static
-Vector4f libcgt::core::imageproc::compositing::extractBackgroundColor( const Vector4f& composite,
+Vector4f extractBackgroundColor( const Vector4f& composite,
     const Vector4f& foreground )
 {
     // red channel:
@@ -115,3 +117,5 @@ Vector4f libcgt::core::imageproc::compositing::extractBackgroundColor( const Vec
 
     return bRGBA;
 }
+
+} } } // imageproc, core, libcgt

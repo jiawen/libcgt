@@ -42,6 +42,12 @@ public:
 EuclideanTransform operator * ( const EuclideanTransform& second,
     const EuclideanTransform& first );
 
+bool operator == ( const EuclideanTransform& e0,
+    const EuclideanTransform& e1 );
+
+bool operator != ( const EuclideanTransform& e0,
+    const EuclideanTransform& e1 );
+
 // Compose two Euclidean transformations. The resulting Euclidean transformation
 // is equivalent to first applying "first", then applying "second".
 //   R2 * (R1 * x + t1) + t2

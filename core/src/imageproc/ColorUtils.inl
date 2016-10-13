@@ -1,104 +1,135 @@
-#include "imageproc/ColorUtils.h"
+namespace libcgt { namespace core { namespace imageproc {
 
-#include <algorithm>
-#include <cassert>
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <math/Arithmetic.h>
-#include <common/Iterators.h>
-
-namespace libcgt { namespace core { namespace imageproc { namespace colorutils {
-
-using libcgt::core::math::floorToInt;
-
-// TODO(jiawen): Check over the rounding.
-
-float toFloat( uint8_t x )
+// TODO: Check over the rounding.
+inline float toFloat( uint8_t x )
 {
     return x / 255.f;
 }
 
-Vector2f toFloat( const uint8x2& v )
+inline Vector2f toFloat( uint8x2 v )
 {
     return{ toFloat( v.x ), toFloat( v.y ) };
 }
 
-Vector3f toFloat( const uint8x3& v )
+inline Vector3f toFloat( uint8x3 v )
 {
     return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) };
 }
 
-Vector4f toFloat( const uint8x4& v )
+inline Vector4f toFloat( uint8x4 v )
 {
     return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) };
 }
 
-uint8_t toUInt8( float x )
+inline uint8_t toUInt8( float x )
 {
     return static_cast< uint8_t >( 255.0f * x );
 }
 
-uint8x2 toUInt8( const Vector2f& v )
+inline uint8x2 toUInt8( Vector2f v )
 {
     return{ toUInt8( v.x ), toUInt8( v.y ) };
 }
 
-uint8x3 toUInt8( const Vector3f& v )
+inline uint8x3 toUInt8( Vector3f v )
 {
     return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ) };
 }
 
-uint8x4 toUInt8( const Vector4f& v )
+inline uint8x4 toUInt8( Vector4f v )
 {
     return{ toUInt8( v.x ), toUInt8( v.y ), toUInt8( v.z ), toUInt8( v.w ) };
 }
 
-float toFloat( int8_t x )
+inline float toFloat( int8_t x )
 {
     return std::max( x / 127.0f, -1.0f );
 }
 
-Vector2f toFloat( const int8x2& v )
+inline Vector2f toFloat( int8x2 v )
 {
     return{ toFloat( v.x ), toFloat( v.y ) };
 }
 
-Vector3f toFloat( const int8x3& v )
+inline Vector3f toFloat( int8x3 v )
 {
     return Vector3f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) );
 }
 
-Vector4f toFloat( const int8x4& v )
+inline Vector4f toFloat( int8x4 v )
 {
     return Vector4f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) );
 }
 
-int8_t toSInt8( float x )
+inline int8_t toSInt8( float x )
 {
     return static_cast< int8_t >( x * 127.0f );
 }
 
-int8x2 toSInt8( const Vector2f& v )
+inline int8x2 toSInt8( Vector2f v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ) };
 }
 
-int8x3 toSInt8( const Vector3f& v )
+inline int8x3 toSInt8( Vector3f v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ), toSInt8( v.z ) };
 }
 
-int8x4 toSInt8( const Vector4f& v )
+inline int8x4 toSInt8( Vector4f v )
 {
     return{ toSInt8( v.x ), toSInt8( v.y ), toSInt8( v.z ), toSInt8( v.w ) };
 }
 
-float rgbToLuminance( const Vector3f& rgb )
+inline float saturate( float x )
+{
+    if( x < 0 )
+    {
+        x = 0;
+    }
+    else if( x > 1 )
+    {
+        x = 1;
+    }
+    return x;
+}
+
+inline Vector2f saturate( Vector2f v )
+{
+    return
+    {
+        saturate( v.x ),
+        saturate( v.y )
+    };
+}
+
+inline Vector3f saturate( Vector3f v )
+{
+    return
+    {
+        saturate( v.x ),
+        saturate( v.y ),
+        saturate( v.z )
+    };
+}
+
+inline Vector4f saturate( Vector4f v )
+{
+    return Vector4f
+    {
+        saturate( v.x ),
+        saturate( v.y ),
+        saturate( v.z ),
+        saturate( v.w )
+    };
+}
+
+inline float rgbToLuminance( Vector3f rgb )
 {
     return( 0.3279f * rgb.x + 0.6557f * rgb.y + 0.0164f * rgb.z );
 }
 
-float rgbToLuminance( uint8x3 rgb )
+inline float rgbToLuminance( uint8x3 rgb )
 {
     return
     (
@@ -108,7 +139,7 @@ float rgbToLuminance( uint8x3 rgb )
     );
 }
 
-Vector3f rgb2xyz( const Vector3f& rgb )
+inline Vector3f rgb2xyz( Vector3f rgb )
 {
     float rOut = ( rgb.x > 0.04045f ) ?
         pow( ( rgb.x + 0.055f ) / 1.055f, 2.4f ) :
@@ -122,18 +153,16 @@ Vector3f rgb2xyz( const Vector3f& rgb )
 
     Vector3f rgbOut = 100 * Vector3f( rOut, gOut, bOut );
 
-    return Vector3f
-    (
+    return
+    {
         Vector3f::dot( rgbOut, Vector3f( 0.4124f, 0.3576f, 0.1805f ) ),
         Vector3f::dot( rgbOut, Vector3f( 0.2126f, 0.7152f, 0.0722f ) ),
         Vector3f::dot( rgbOut, Vector3f( 0.0193f, 0.1192f, 0.9505f ) )
-    );
+    };
 }
 
-Vector3f xyz2lab( const Vector3f& xyz,
-                             const Vector3f& xyzRef,
-                             float epsilon,
-                             float kappa )
+inline Vector3f xyz2lab( Vector3f xyz, const Vector3f& xyzRef,
+    float epsilon, float kappa )
 {
     Vector3f xyzNormalized = xyz / xyzRef;
 
@@ -155,12 +184,12 @@ Vector3f xyz2lab( const Vector3f& xyz,
     );
 }
 
-Vector3f rgb2lab( const Vector3f& rgb )
+inline Vector3f rgb2lab( Vector3f rgb )
 {
     return xyz2lab( rgb2xyz( rgb ) );
 }
 
-Vector3f hsv2rgb( const Vector3f& hsv )
+inline Vector3f hsv2rgb( Vector3f hsv )
 {
     float h = hsv.x;
     float s = hsv.y;
@@ -182,7 +211,7 @@ Vector3f hsv2rgb( const Vector3f& hsv )
     else
     {
         h /= 60.f; // sector 0 to 5
-        i = floorToInt( h );
+        i = libcgt::core::math::floorToInt( h );
         f = h - i; // factorial part of h
         p = v * ( 1.f - s );
         q = v * ( 1.f - s * f );
@@ -202,12 +231,12 @@ Vector3f hsv2rgb( const Vector3f& hsv )
     }
 }
 
-Vector4f hsva2rgba( const Vector4f& hsva )
+inline Vector4f hsva2rgba( Vector4f hsva )
 {
     return Vector4f( hsv2rgb( hsva.xyz ), hsva.w );
 }
 
-Vector4f colorMapJet( float x )
+inline Vector4f colorMapJet( float x )
 {
     float fourX = 4 * x;
     float r = std::min( fourX - 1.5f, -fourX + 4.5f );
@@ -217,7 +246,7 @@ Vector4f colorMapJet( float x )
     return saturate( Vector4f( r, g, b, 1 ) );
 }
 
-float logL( float l )
+inline float logL( float l )
 {
     const float logMin = log( LOG_LAB_EPSILON );
     const float logRange = log( 100 + LOG_LAB_EPSILON ) - logMin;
@@ -231,7 +260,7 @@ float logL( float l )
     return 100.f * logL_ZO;
 }
 
-float expL( float ll )
+inline float expL( float ll )
 {
     const float logMin = log( LOG_LAB_EPSILON );
     const float logRange = log( 100 + LOG_LAB_EPSILON ) - logMin;
@@ -245,48 +274,4 @@ float expL( float ll )
     return exp( logL ) - LOG_LAB_EPSILON;
 }
 
-// TODO(jiawen): inline
-float saturate( float x )
-{
-    if( x < 0 )
-    {
-        x = 0;
-    }
-    else if( x > 1 )
-    {
-        x = 1;
-    }
-    return x;
-}
-
-Vector2f saturate( const Vector2f& v )
-{
-    return
-    {
-        saturate( v[ 0 ] ),
-        saturate( v[ 1 ] )
-    };
-}
-
-Vector3f saturate( const Vector3f& v )
-{
-    return
-    {
-        saturate( v[ 0 ] ),
-        saturate( v[ 1 ] ),
-        saturate( v[ 2 ] )
-    };
-}
-
-Vector4f saturate( const Vector4f& v )
-{
-    return Vector4f
-    {
-        saturate( v[ 0 ] ),
-        saturate( v[ 1 ] ),
-        saturate( v[ 2 ] ),
-        saturate( v[ 3 ] )
-    };
-}
-
-} } } } // colorutils, imageproc, core, libcgt
+} } } // imageproc, core, libcgt

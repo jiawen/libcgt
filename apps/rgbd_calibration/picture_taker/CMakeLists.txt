@@ -1,19 +1,24 @@
 cmake_minimum_required( VERSION 3.4 )
 project( picture_taker )
 
+# libcgt
+set( LIBCGT_DIR ${PROJECT_SOURCE_DIR}/../../.. )
+include_directories( ${LIBCGT_DIR}/build/lib/include )
+include_directories( ${LIBCGT_DIR}/build/lib/include/core )
+link_directories( ${LIBCGT_DIR}/build/lib/lib )
+
 # gflags
-find_package(gflags REQUIRED)
+if( EXISTS "${LIBCGT_DIR}/third_party/gflags/CMakeLists.txt" )
+    add_subdirectory( "${LIBCGT_DIR}/third_party/gflags"
+	    "${PROJECT_SOURCE_DIR}/third_party/gflags" )
+else()
+    find_package(gflags REQUIRED)
+endif()
 
 # Qt 5
 set( CMAKE_AUTOMOC ON )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Widgets REQUIRED )
-
-# libcgt
-set( LIBCGT_DIR ../../.. )
-include_directories( ${LIBCGT_DIR}/build/include )
-include_directories( ${LIBCGT_DIR}/build/include/core )
-link_directories( ${LIBCGT_DIR}/build/lib )
 
 set( PICTURE_TAKER_SRCS
 	src/PictureTaker.cpp
@@ -34,7 +39,7 @@ add_executable( depth_averager ${DEPTH_AVERAGER_SRCS} )
 set_property( TARGET depth_averager PROPERTY CXX_STANDARD 11 )
 
 target_link_libraries( picture_taker
-    gflags_nothreads_shared
+    gflags
     Qt5::Core Qt5::Widgets
     debug cgt_cored
     debug cgt_camera_wrappersd
@@ -45,7 +50,7 @@ target_link_libraries( picture_taker
 )
 
 target_link_libraries( depth_averager
-    gflags_shared
+    gflags
     Qt5::Core Qt5::Widgets
     debug cgt_cored
     debug cgt_camera_wrappersd

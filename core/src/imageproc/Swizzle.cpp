@@ -6,7 +6,7 @@ using libcgt::core::arrayutils::map;
 
 namespace libcgt { namespace core { namespace imageproc {
 
-// TODO(jiawen): return bool (just return map()).
+// TODO: return bool (just return map()).
 void RGBAToBGRA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
 {
     map( src, dst,

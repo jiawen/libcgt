@@ -68,26 +68,26 @@ public:
     float y = 0.f;
 };
 
-inline Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );
 
-inline Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 );
 // negate
-inline Vector2f operator - ( const Vector2f& v );
+Vector2f operator - ( const Vector2f& v );
 
-inline Vector2f operator * ( float f, const Vector2f& v );
-inline Vector2f operator * ( const Vector2f& v, float f );
+Vector2f operator * ( float f, const Vector2f& v );
+Vector2f operator * ( const Vector2f& v, float f );
 
 // component-wise multiplication
-inline Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator * ( const Vector2f& v0, const Vector2f& v1 );
 
 // component-wise division
-inline Vector2f operator / ( const Vector2f& v, float f );
-inline Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator / ( const Vector2f& v, float f );
+Vector2f operator / ( const Vector2f& v0, const Vector2f& v1 );
 
 // reciprocal of each component
-inline Vector2f operator / ( float f, const Vector2f& v );
+Vector2f operator / ( float f, const Vector2f& v );
 
-inline bool operator == ( const Vector2f& v0, const Vector2f& v1 );
-inline bool operator != ( const Vector2f& v0, const Vector2f& v1 );
+bool operator == ( const Vector2f& v0, const Vector2f& v1 );
+bool operator != ( const Vector2f& v0, const Vector2f& v1 );
 
 #include "Vector2f.inl"

@@ -70,4 +70,7 @@ public:
         float t );
 };
 
+bool operator == ( const GLFrustum& f0, const GLFrustum& f1 );
+bool operator != ( const GLFrustum& f0, const GLFrustum& f1 );
+
 } } } // cameras, core, libcgt

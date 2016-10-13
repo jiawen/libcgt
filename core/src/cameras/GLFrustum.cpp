@@ -136,4 +136,26 @@ GLFrustum GLFrustum::cubicInterpolate(
     return frustum;
 }
 
+bool operator == ( const GLFrustum& f0, const GLFrustum& f1 )
+{
+    // If one of them is infinite but the other is not, they're not equal.
+    if( isinf( f0.zFar ) ^ isinf( f1.zFar ) )
+    {
+        return false;
+    }
+    else
+    {
+        return( f0.left == f1.left &&
+            f0.right == f1.right &&
+            f0.bottom == f1.bottom &&
+            f0.top == f1.top &&
+            f0.zNear == f1.zNear );
+    }
+}
+
+bool operator != ( const GLFrustum& f0, const GLFrustum& f1 )
+{
+    return !( f0 == f1 );
+}
+
 } } } // cameras, core, libcgt

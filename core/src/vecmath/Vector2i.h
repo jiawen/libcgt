@@ -36,10 +36,10 @@ public:
     static int dot( const Vector2i& v0, const Vector2i& v1 );
     static Vector3i cross( const Vector2i& v0, const Vector2i& v1 );
 
-    inline Vector2i& operator += ( const Vector2i& v );
-    inline Vector2i& operator -= ( const Vector2i& v );
-    inline Vector2i& operator *= ( int s );
-    inline Vector2i& operator /= ( int s );
+    Vector2i& operator += ( const Vector2i& v );
+    Vector2i& operator -= ( const Vector2i& v );
+    Vector2i& operator *= ( int s );
+    Vector2i& operator /= ( int s );
 
     int x = 0;
     int y = 0;

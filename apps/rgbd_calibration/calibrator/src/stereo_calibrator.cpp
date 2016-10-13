@@ -131,7 +131,7 @@ int main( int argc, char* argv[] )
     StereoFeatures stereoFeatures =
         detectStereoFeatures( infraredImages, colorImages, boardSize );
     int nUsableImages = static_cast< int >( stereoFeatures.left.size() );
-    printf( "Found %d image pairs with usable features.\n" );
+    printf( "Found %d image pairs with usable features.\n", nUsableImages );
 
     auto objPoints =
         generateObjectPoints( stereoFeatures.left.size(),

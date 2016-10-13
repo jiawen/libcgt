@@ -46,6 +46,18 @@ EuclideanTransform operator * ( const EuclideanTransform& second,
     return compose( second, first );
 }
 
+bool operator == ( const EuclideanTransform& e0,
+    const EuclideanTransform& e1 )
+{
+    return e0.rotation == e1.rotation && e0.translation == e1.translation;
+}
+
+bool operator != ( const EuclideanTransform& e0,
+    const EuclideanTransform& e1 )
+{
+    return !( e0 == e1 );
+}
+
 EuclideanTransform compose( const EuclideanTransform& second,
     const EuclideanTransform& first )
 {

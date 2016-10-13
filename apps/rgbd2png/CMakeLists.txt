@@ -1,11 +1,21 @@
-cmake_minimum_required( VERSION 3.4 )
-project( rgbd2png )
+cmake_minimum_required( VERSION 3.6 )
+project( rgbd2png CXX )
+set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )
 
 # libcgt
-set( LIBCGT_DIR ../.. )
+set( LIBCGT_DIR ${PROJECT_SOURCE_DIR}/../.. )
 include_directories( ${LIBCGT_DIR}/build/lib/include )
 include_directories( ${LIBCGT_DIR}/build/lib/include/core )
 link_directories( ${LIBCGT_DIR}/build/lib/lib )
+
+# gflags
+if( EXISTS "${LIBCGT_DIR}/third_party/gflags/CMakeLists.txt" )
+    add_subdirectory( "${LIBCGT_DIR}/third_party/gflags"
+        "${PROJECT_SOURCE_DIR}/third_party/gflags" )
+else()
+    find_package(gflags REQUIRED)
+endif()
 
 file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
 file( GLOB_RECURSE SOURCES src/*.cpp )

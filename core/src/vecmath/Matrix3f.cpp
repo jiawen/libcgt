@@ -1,7 +1,9 @@
 #include "vecmath/Matrix3f.h"
 
 #include <cassert>
+#ifdef WIN32
 #define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -10,9 +12,9 @@
 
 #include <math/MathUtils.h>
 
-#include "vecmath/Matrix2f.h"
-#include "vecmath/Quat4f.h"
-#include "vecmath/Vector2f.h"
+#include "Matrix2f.h"
+#include "Quat4f.h"
+#include "Vector2f.h"
 
 using std::abs;
 
@@ -292,40 +294,44 @@ Matrix3f Matrix3f::identity()
 // static
 Matrix3f Matrix3f::rotation( const Vector3f& axis, float radians )
 {
-    Vector3f normalizedDirection = axis.normalized();
+    float c = cos( radians );
+    float s = sin( radians );
+    float omc = 1.0f - c;
 
-    float cosTheta = cos( radians );
-    float sinTheta = sin( radians );
-
-    float x = normalizedDirection.x;
-    float y = normalizedDirection.y;
-    float z = normalizedDirection.z;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
 
     return Matrix3f
     (
-        x * x * ( 1.0f - cosTheta ) + cosTheta,         y * x * ( 1.0f - cosTheta ) - z * sinTheta,     z * x * ( 1.0f - cosTheta ) + y * sinTheta,
-        x * y * ( 1.0f - cosTheta ) + z * sinTheta,     y * y * ( 1.0f - cosTheta ) + cosTheta,         z * y * ( 1.0f - cosTheta ) - x * sinTheta,
-        x * z * ( 1.0f - cosTheta ) - y * sinTheta,     y * z * ( 1.0f - cosTheta ) + x * sinTheta,     z * z * ( 1.0f - cosTheta ) + cosTheta
+        x * x * omc + c,         y * x * omc - z * s,     z * x * omc + y * s,
+        x * y * omc + z * s,     y * y * omc + c,         z * y * omc - x * s,
+        x * z * omc - y * s,     y * z * omc + x * s,     z * z * omc + c
     );
+}
+
+// static
+Matrix3f Matrix3f::rotation( const Vector3f& axisAngle )
+{
+    // TODO: decompose axis angle in one function.
+    return rotation( axisAngle.normalized(), axisAngle.norm() );
 }
 
 // static
 Matrix3f Matrix3f::fromQuat( const Quat4f& q )
 {
-    Quat4f qq = q.normalized();
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
 
-    float xx = qq.x * qq.x;
-    float yy = qq.y * qq.y;
-    float zz = qq.z * qq.z;
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
 
-    float xy = qq.x * qq.y;
-    float zw = qq.z * qq.w;
+    float xz = q.x * q.z;
+    float yw = q.y * q.w;
 
-    float xz = qq.x * qq.z;
-    float yw = qq.y * qq.w;
-
-    float yz = qq.y * qq.z;
-    float xw = qq.x * qq.w;
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
 
     return Matrix3f
     (

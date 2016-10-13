@@ -1,17 +1,18 @@
 #include "vecmath/Matrix3d.h"
 
 #include <cassert>
+#ifdef WIN32
 #define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 #include <cstdio>
 #include <cstring>
 
 #include <math/MathUtils.h>
 
-#include "vecmath/Matrix2d.h"
-#include "vecmath/Matrix3f.h"
-#include "vecmath/Quat4f.h"
-#include "vecmath/Vector3d.h"
+#include "Matrix2d.h"
+#include "Matrix3f.h"
+#include "Quat4d.h"
 
 using std::abs;
 using libcgt::core::math::degreesToRadians;
@@ -304,31 +305,34 @@ Matrix3d Matrix3d::identity()
 }
 
 // static
-Matrix3d Matrix3d::rotation( const Vector3d& rDirection, double degrees )
+Matrix3d Matrix3d::rotation( const Vector3d& axis, double radians )
 {
-    Vector3d normalizedDirection = rDirection.normalized();
+    double c = cos( radians );
+    double s = sin( radians );
+    double omc = 1.0 - c;
 
-    double theta = degreesToRadians( degrees );
-    double cosTheta = cos( theta );
-    double sinTheta = sin( theta );
-
-    double x = normalizedDirection.x;
-    double y = normalizedDirection.y;
-    double z = normalizedDirection.z;
+    double x = axis.x;
+    double y = axis.y;
+    double z = axis.z;
 
     return Matrix3d
     (
-        x * x * ( 1.0 - cosTheta ) + cosTheta,          y * x * ( 1.0 - cosTheta ) - z * sinTheta,      z * x * ( 1.0 - cosTheta ) + y * sinTheta,
-        x * y * ( 1.0 - cosTheta ) + z * sinTheta,      y * y * ( 1.0 - cosTheta ) + cosTheta,          z * y * ( 1.0 - cosTheta ) - x * sinTheta,
-        x * z * ( 1.0 - cosTheta ) - y * sinTheta,      y * z * ( 1.0 - cosTheta ) + x * sinTheta,      z * z * ( 1.0 - cosTheta ) + cosTheta
+        x * x * omc + c,        y * x * omc - z * s,    z * x * omc + y * s,
+        x * y * omc + z * s,    y * y * omc + c,        z * y * omc - x * s,
+        x * z * omc - y * s,    y * z * omc + x * s,    z * z * omc + c
     );
 }
 
 // static
-Matrix3d Matrix3d::rotation( const Quat4f& rq )
+Matrix3d Matrix3d::rotation( const Vector3f& axisAngle )
 {
-    Quat4f q = rq.normalized();
+    // TODO: decompose axis angle in one function.
+    return rotation( axisAngle.normalized(), axisAngle.norm() );
+}
 
+// static
+Matrix3d Matrix3d::fromQuat( const Quat4d& q )
+{
     double xx = q.x * q.x;
     double yy = q.y * q.y;
     double zz = q.z * q.z;
@@ -344,15 +348,11 @@ Matrix3d Matrix3d::rotation( const Quat4f& rq )
 
     return Matrix3d
     (
-        1.0 - 2.0 * ( yy + zz ),        2.0 * ( xy - zw ),              2.0 * ( xz + yw ),
-        2.0 * ( xy + zw ),              1.0 - 2.0 * ( xx + zz ),        2.0 * ( yz - xw ),
-        2.0 * ( xz - yw ),              2.0 * ( yz + xw ),              1.0 - 2.0 * ( xx + yy )
+        1.0 - 2.0 * ( yy + zz ),    2.0 * ( xy - zw ),          2.0 * ( xz + yw ),
+        2.0 * ( xy + zw ),          1.0 - 2.0 * ( xx + zz ),    2.0 * ( yz - xw ),
+        2.0 * ( xz - yw ),          2.0 * ( yz + xw ),          1.0 - 2.0 * ( xx + yy )
     );
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Operators
-//////////////////////////////////////////////////////////////////////////
 
 Vector3d operator * ( const Matrix3d& m, const Vector3d& v )
 {

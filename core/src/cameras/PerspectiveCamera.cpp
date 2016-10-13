@@ -295,3 +295,15 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate(
         c0.isDirectX()
     );
 }
+
+bool operator == ( const PerspectiveCamera& c0, const PerspectiveCamera& c1 )
+{
+    const Camera& cc0 = c0;
+    const Camera& cc1 = c1;
+    return cc0 == cc1;
+}
+
+bool operator != ( const PerspectiveCamera& c0, const PerspectiveCamera& c1 )
+{
+    return !( c0 == c1 );
+}

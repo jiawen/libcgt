@@ -112,7 +112,7 @@ public:
     // dir1 and dir2 should be normalized
     static bool rayRayIntersection( const Vector2f& p1, const Vector2f& dir1,
                                     const Vector2f& p2, const Vector2f& dir2,
-                                    Vector2f& outIntersection);
+                                    Vector2f& outIntersection );
 
     // dir should be normalized
     static bool lineLineSegmentIntersection( const Vector2f& p, const Vector2f& dir,
