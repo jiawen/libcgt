@@ -81,6 +81,19 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
 
 namespace libcgt { namespace opencv_interop {
 
+cv::Mat_< double > makeCameraMatrix( double focalLength,
+    double principalPointX, double principalPointY, double skew )
+{
+    cv::Mat_< double > cameraMatrix = cv::Mat_<double>::zeros( 3, 3 );
+    cameraMatrix( 0, 0 ) = focalLength;
+    cameraMatrix( 0, 1 ) = skew;
+    cameraMatrix( 0, 2 ) = principalPointX;
+    cameraMatrix( 1, 1 ) = focalLength;
+    cameraMatrix( 1, 2 ) = principalPointY;
+    cameraMatrix( 2, 2 ) = 1;
+    return cameraMatrix;
+}
+
 cv::Mat_< double > cameraMatrixCVToGL( const cv::Mat_< double >& cameraMatrix,
     cv::Size imageSize, bool shiftHalfPixel )
 {

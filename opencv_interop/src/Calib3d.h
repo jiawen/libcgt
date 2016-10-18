@@ -9,6 +9,12 @@
 
 namespace libcgt { namespace opencv_interop {
 
+// Construct a 3x3 OpenCV-style camera matrix given individual intrinsic
+// parameters. The y-axis points down, pixel centers have integer coordinates.
+cv::Mat_< double > makeCameraMatrix( double focalLength,
+    double principalPointX, double principalPointY,
+    double skew = 0 );
+
 // Given an OpenCV-style camera matrix (intrinsics), flip the y axis such that
 // y points up.
 //

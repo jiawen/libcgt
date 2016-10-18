@@ -359,19 +359,19 @@ bool GLTexture2D::set( Array2DView< const Vector4f > srcData,
                  dstOffset );
 }
 
-void GLTexture2D::drawNV( GLSamplerObject* pSampler,
+void GLTexture2D::drawNV( GLSamplerObject* sampler,
                          float z,
                          const Rect2f& texCoords )
 {
-    drawNV( Rect2f( size() ), pSampler, z, texCoords );
+    drawNV( Rect2f( size() ), sampler, z, texCoords );
 }
 
 void GLTexture2D::drawNV( const Rect2f& windowCoords,
-                         GLSamplerObject* pSampler,
+                         GLSamplerObject* sampler,
                          float z,
                          const Rect2f& texCoords )
 {
-    GLuint samplerId = pSampler == nullptr ? 0 : pSampler->id();
+    GLuint samplerId = sampler == nullptr ? 0 : sampler->id();
 
     Vector2f p0 = windowCoords.leftBottom();
     Vector2f p1 = windowCoords.rightTop();

@@ -74,15 +74,22 @@ public:
     // { elementStride, rowStride } in bytes.
     Vector2i stride() const;
 
-    // Returns true if there is no space between adjacent elements *within* a row.
+    // Returns true if there is no space between adjacent elements *within* a
+    // row.
+    //
+    // Note that null views are not packed.
     bool elementsArePacked() const;
 
     // Returns true if there is no space between adjacent rows,
     // i.e., if rowStrideBytes() == width() * elementStrideBytes().
+    //
+    // Note that null views are not packed.
     bool rowsArePacked() const;
 
     // Returns true if elementsArePacked() && rowsArePacked(),
     // also known as "linear".
+    //
+    // Note that null views are not packed.
     bool packed() const;
 
     // Implicit conversion operator from Array2DView< T > to Array2DView< const T >.

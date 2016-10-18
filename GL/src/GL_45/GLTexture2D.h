@@ -126,7 +126,7 @@ public:
 
     // Same as drawNV() below, but with
     // windowCoords = Rect2f( 0, 0, width(), height() )
-    void drawNV( GLSamplerObject* pSampler = nullptr,
+    void drawNV( GLSamplerObject* sampler = nullptr,
         float z = 0,
         const Rect2f& texCoords = Rect2f{ { 1, 1 } });
 
@@ -143,7 +143,7 @@ public:
     //
     // The fragments will all have depth z.
     void drawNV( const Rect2f& windowCoords,
-        GLSamplerObject* pSampler = nullptr,
+        GLSamplerObject* sampler = nullptr,
         float z = 0,
         const Rect2f& texCoords = Rect2f{ { 1, 1 } });
 
