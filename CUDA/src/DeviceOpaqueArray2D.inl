@@ -9,7 +9,12 @@ DeviceOpaqueArray2D< T >::DeviceOpaqueArray2D( const Vector2i& size ) :
 
     cudaError_t err = cudaMallocArray( &m_deviceArray, &m_cfd,
         size.x, size.y );
-    if( err != cudaSuccess )
+    if( err == cudaSuccess )
+    {
+        m_resourceDesc.resType = cudaResourceTypeArray;
+        m_resourceDesc.res.array.array = m_deviceArray;
+    }
+    else
     {
         m_size = Vector2i{ 0 };
         m_cfd = { 0 };
@@ -27,7 +32,8 @@ DeviceOpaqueArray2D< T >::~DeviceOpaqueArray2D()
         m_deviceArray = nullptr;
     }
     m_size = Vector2i{ 0 };
-    m_cfd = { 0 };
+    m_resourceDesc = {};
+    m_cfd = {};
     m_sizeInBytes = 0;
 }
 
@@ -44,9 +50,16 @@ bool DeviceOpaqueArray2D< T >::notNull() const
 }
 
 template< typename T >
-cudaChannelFormatDesc DeviceOpaqueArray2D< T >::channelFormatDescription() const
+const cudaChannelFormatDesc&
+DeviceOpaqueArray2D< T >::channelFormatDescription() const
 {
     return m_cfd;
+}
+
+template< typename T >
+const cudaResourceDesc& DeviceOpaqueArray2D< T >::resourceDescription() const
+{
+    return m_resourceDesc;
 }
 
 template< typename T >

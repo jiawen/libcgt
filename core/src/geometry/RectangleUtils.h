@@ -12,7 +12,7 @@
 #include <vecmath/Vector4f.h>
 #include <vecmath/Vector4i.h>
 
-namespace libcgt { namespace core { namespace geometry { namespace rectangleutils {
+namespace libcgt { namespace core { namespace geometry {
 
 // Fit an image of a given aspect ratio inside a rectangle,
 // maximizing the resulting area and centering (coordinates are rounded down).
@@ -137,8 +137,11 @@ void writeScreenAlignedTriangleStripTextureCoordinates(
     const Rect2f& rect = Rect2f{ { 1, 1 } }
 );
 
-// Returns a standard rectangle (square) with the given center and side length.
-Rect2f makeSquare( const Vector2f& center, float sideLength );
+// Make a square given a center and side length.
+Rect2f makeRect( const Vector2f& center, float sideLength );
+
+// Make a box given a center and side lengths.
+Rect2f makeRect( const Vector2f& center, const Vector2f& sideLengths );
 
 // [Requires a standard rectangle].
 // Returns the 4 corners in counterclockwise order (if y points up).
@@ -150,13 +153,13 @@ Array1D< Vector4i > corners( const Rect2i& r, int z = 0, int w = 1 );
 
 // Returns the 6 indices in corners() of a solid box with triangle strip
 // topology.
-Array1D< int > solidTriangleListIndices();
+Array1D< int > solidRectTriangleListIndices();
 
 // Returns the 4 indices in corners() of a solid box with triangle list
 // topology.
-Array1D< int > solidTriangleStripIndices();
+Array1D< int > solidRectTriangleStripIndices();
 
 // Returns the 8 indices in corners() of a solid box with line list topology.
-Array1D< int > wireframeLineListIndices();
+Array1D< int > wireframeRectLineListIndices();
 
-} } } } // rectangleutils, geometry, core, libcgt
+} } } // geometry, core, libcgt

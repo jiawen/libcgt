@@ -541,10 +541,11 @@ Matrix4f Matrix4f::randomRotation( float u0, float u1, float u2 )
 // static
 Matrix4f Matrix4f::lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up )
 {
-    // z is negative forward
+    // z is negative forward and normalized.
     Vector3f z = ( eye - center ).normalized();
     Vector3f y = up;
-    Vector3f x = Vector3f::cross( y, z );
+    Vector3f x = Vector3f::cross( y, z ).normalized();
+    y = Vector3f::cross( z, x );
 
     // the x, y, and z vectors define the orthonormal coordinate system
     // the affine part defines the overall translation

@@ -648,7 +648,7 @@ HRESULT KinectCameraImpl::initializeSpeechRecognition( QVector< QString > recogn
     if( SUCCEEDED( hr ) )
     {
         WAVEFORMATEX wfxOut = { WAVE_FORMAT_PCM, 1, 16000, 32000, 2, 16, 0 };
-        DMO_MEDIA_TYPE mt = { 0 };
+        DMO_MEDIA_TYPE mt = {};
 
         // Set DMO output format
         hr = MoInitMediaType( &mt, sizeof( WAVEFORMATEX ) );

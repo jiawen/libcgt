@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace libcgt { namespace core { namespace geometry { namespace boxutils {
+namespace libcgt { namespace core { namespace geometry {
 
 void writeTriangleListPositions( const Box3f& box,
     Array1DView< Vector4f > positions )
@@ -15,7 +15,7 @@ void writeTriangleListPositions( const Box3f& box,
 {
     // Hypercube corners.
     Array1D< Vector4f > pos = corners( box );
-    Array1D< int > idx = solidTriangleListIndices();
+    Array1D< int > idx = solidBoxTriangleListIndices();
 
     for( int i = 0; i < idx.size(); ++i )
     {
@@ -85,7 +85,7 @@ void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
 {
     // Hypercube corners.
     Array1D< Vector4f > pos = corners( box );
-    Array1D< int > idx = wireframeLineListIndices();
+    Array1D< int > idx = wireframeBoxLineListIndices();
 
     for( int i = 0; i < idx.size(); ++i )
     {
@@ -144,10 +144,14 @@ void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
     }
 }
 
-Box3f makeCube( const Vector3f& center, float sideLength )
+Box3f makeBox( const Vector3f& center, float sideLength )
 {
-    Vector3f side{ sideLength };
-    return{ center - 0.5f * side, side };
+    return makeBox( center, Vector3f{ sideLength } );
+}
+
+Box3f makeBox( const Vector3f& center, const Vector3f& sideLengths )
+{
+    return{ center - 0.5f * sideLengths, sideLengths };
 }
 
 Array1D< Vector4f > corners( const Box3f& b )
@@ -199,7 +203,7 @@ Array1D< Vector3f > cornerNormalsDiagonal( const Box3f& b )
     return out;
 }
 
-Array1D< int > solidTriangleListIndices()
+Array1D< int > solidBoxTriangleListIndices()
 {
     return Array1D< int >
     {
@@ -229,7 +233,7 @@ Array1D< int > solidTriangleListIndices()
     };
 }
 
-Array1D< int > wireframeLineListIndices()
+Array1D< int > wireframeBoxLineListIndices()
 {
     return Array1D< int >
     {
@@ -248,4 +252,4 @@ Array1D< int > wireframeLineListIndices()
     };
 }
 
-} } } } // boxutils, geometry, core, libcgt
+} } } // geometry, core, libcgt

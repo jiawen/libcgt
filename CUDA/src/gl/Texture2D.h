@@ -27,6 +27,7 @@ public:
         cudaArray* array() const;
 
     private:
+
         friend class libcgt::cuda::gl::Texture2D;
         cudaGraphicsResource* m_resource;
         cudaArray* m_array = nullptr;

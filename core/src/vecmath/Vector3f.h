@@ -67,10 +67,10 @@ public:
     // cross product
     static Vector3f cross( const Vector3f& v0, const Vector3f& v1 );
 
-    inline Vector3f& operator += ( const Vector3f& v );
-    inline Vector3f& operator -= ( const Vector3f& v );
-    inline Vector3f& operator *= ( float f );
-    inline Vector3f& operator /= ( float f );
+    Vector3f& operator += ( const Vector3f& v );
+    Vector3f& operator -= ( const Vector3f& v );
+    Vector3f& operator *= ( float f );
+    Vector3f& operator /= ( float f );
 
     union
     {
@@ -95,26 +95,26 @@ public:
 
 };
 
-inline Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 );
 
-inline Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 );
 // Negate.
-inline Vector3f operator - ( const Vector3f& v );
+Vector3f operator - ( const Vector3f& v );
 
-inline Vector3f operator * ( float f, const Vector3f& v );
-inline Vector3f operator * ( const Vector3f& v, float f );
+Vector3f operator * ( float f, const Vector3f& v );
+Vector3f operator * ( const Vector3f& v, float f );
 
 // Component-wise multiplication.
-inline Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator * ( const Vector3f& v0, const Vector3f& v1 );
 
 // Component-wise division.
-inline Vector3f operator / ( const Vector3f& v, float f );
-inline Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator / ( const Vector3f& v, float f );
+Vector3f operator / ( const Vector3f& v0, const Vector3f& v1 );
 
 // Reciprocal of each component.
-inline Vector3f operator / ( float f, const Vector3f& v );
+Vector3f operator / ( float f, const Vector3f& v );
 
-inline bool operator == ( const Vector3f& v0, const Vector3f& v1 );
-inline bool operator != ( const Vector3f& v0, const Vector3f& v1 );
+bool operator == ( const Vector3f& v0, const Vector3f& v1 );
+bool operator != ( const Vector3f& v0, const Vector3f& v1 );
 
 #include "Vector3f.inl"

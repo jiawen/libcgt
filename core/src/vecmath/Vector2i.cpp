@@ -151,9 +151,14 @@ Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 )
     return{ v0.x / v1.x, v0.y / v1.y };
 }
 
-Vector2i operator / ( const Vector2i& v, int c )
+Vector2i operator / ( const Vector2i& v, int i )
 {
-    return{ v.x / c, v.y / c };
+    return{ v.x / i, v.y / i };
+}
+
+Vector2f operator / ( const Vector2i& v, float f )
+{
+    return{ v.x / f, v.y / f };
 }
 
 bool operator == ( const Vector2i& v0, const Vector2i& v1 )

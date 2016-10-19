@@ -23,7 +23,7 @@ public:
     DeviceArray3D( DeviceArray3D< T >&& move );
     DeviceArray3D< T >& operator = ( const DeviceArray3D< T >& copy );
     DeviceArray3D< T >& operator = ( DeviceArray3D< T >&& move );
-    virtual ~DeviceArray3D();
+    ~DeviceArray3D();
 
     bool isNull() const;
     bool notNull() const;

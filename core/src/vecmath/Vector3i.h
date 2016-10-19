@@ -68,9 +68,6 @@ public:
 
 };
 
-bool operator == ( const Vector3i& v0, const Vector3i& v1 );
-bool operator != ( const Vector3i& v0, const Vector3i& v1 );
-
 Vector3i operator + ( const Vector3i& v0, const Vector3i& v1 );
 Vector3i operator - ( const Vector3i& v0, const Vector3i& v1 );
 Vector3i operator * ( const Vector3i& v0, const Vector3i& v1 );
@@ -83,5 +80,14 @@ Vector3i operator * ( const Vector3i& v, int c );
 Vector3f operator * ( float f, const Vector3i& v );
 Vector3f operator * ( const Vector3i& v, float f );
 
-Vector3i operator / ( const Vector3i& v, int c );
+// Component-wise division.
 Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 );
+Vector3i operator / ( const Vector3i& v, int i );
+Vector3f operator / ( const Vector3i& v, float f );
+
+// Reciprocal of each component.
+Vector3i operator / ( int i, const Vector3i& v );
+Vector3f operator / ( float f, const Vector3i& v );
+
+bool operator == ( const Vector3i& v0, const Vector3i& v1 );
+bool operator != ( const Vector3i& v0, const Vector3i& v1 );

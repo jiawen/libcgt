@@ -49,10 +49,15 @@ libcgt::core::cameras::Intrinsics cameraMatrixToIntrinsics(
 //
 // flipY: OpenCV has the y axis pointing down. To use directly as an OpenGL
 // texture, it needs to be flipped in the Y direction.
+//
+// normalizeCoordinates: OpenGL and DirectX use [0,1]^2 for texture
+// coordinates. CUDA can use either. If true, the output undistortion map will
+// be in the unit square. Otherwise, it will be in [0, imageSize].
 Array2D< Vector2f > undistortRectifyMap( cv::InputArray cameraMatrix,
     cv::InputArray distCoeffs,
     cv::InputArray R, cv::InputArray newCameraMatrix,
-    cv::Size imageSize, bool shiftHalfPixel = true, bool flipY = true );
+    cv::Size imageSize, bool shiftHalfPixel = true, bool flipY = true,
+    bool normalizeCoordinates = true );
 
 template< typename T >
 bool remap( Array2DView< const T > srcDistorted,

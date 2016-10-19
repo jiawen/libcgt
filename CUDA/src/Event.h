@@ -10,7 +10,7 @@ class Event
 public:
 
     Event();
-    virtual ~Event();
+    ~Event();
 
     // records the start event
     void recordStart( cudaStream_t stream = 0 );

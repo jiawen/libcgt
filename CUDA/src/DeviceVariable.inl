@@ -26,7 +26,8 @@ DeviceVariable< T >::DeviceVariable( DeviceVariable< T >&& move )
 }
 
 template< typename T >
-DeviceVariable< T >& DeviceVariable< T >::operator = ( const DeviceVariable< T >& copy )
+DeviceVariable< T >& DeviceVariable< T >::operator = (
+    const DeviceVariable< T >& copy )
 {
     if( this != &copy )
     {
@@ -36,7 +37,8 @@ DeviceVariable< T >& DeviceVariable< T >::operator = ( const DeviceVariable< T >
 }
 
 template< typename T >
-DeviceVariable< T >& DeviceVariable< T >::operator = ( DeviceVariable< T >&& move )
+DeviceVariable< T >& DeviceVariable< T >::operator = (
+    DeviceVariable< T >&& move )
 {
     if( this != &move )
     {
@@ -65,20 +67,26 @@ template< typename T >
 T DeviceVariable< T >::get() const
 {
     T output;
-    checkCudaErrors( cudaMemcpy( &output, md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToHost ) );
+    checkCudaErrors(
+        cudaMemcpy( &output, md_pDevicePointer, sizeof( T ),
+            cudaMemcpyDeviceToHost ) );
     return output;
 }
 
 template< typename T >
 void DeviceVariable< T >::set( const T& value )
 {
-    checkCudaErrors( cudaMemcpy( md_pDevicePointer, &value, sizeof( T ), cudaMemcpyHostToDevice ) );
+    checkCudaErrors(
+        cudaMemcpy( md_pDevicePointer, &value, sizeof( T ),
+            cudaMemcpyHostToDevice ) );
 }
 
 template< typename T >
 void DeviceVariable< T >::set( const DeviceVariable< T >& value )
 {
-    checkCudaErrors( cudaMemcpy( md_pDevicePointer, value.md_pDevicePointer, sizeof( T ), cudaMemcpyDeviceToDevice ) );
+    checkCudaErrors(
+        cudaMemcpy( md_pDevicePointer, value.md_pDevicePointer, sizeof( T ),
+            cudaMemcpyDeviceToDevice ) );
 }
 
 template< typename T >

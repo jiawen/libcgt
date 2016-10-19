@@ -19,22 +19,27 @@ class DeviceArray1D
 public:
 
     DeviceArray1D() = default;
-    DeviceArray1D( int length );
+    DeviceArray1D( size_t length );
     DeviceArray1D( const DeviceArray1D< T >& copy );
     DeviceArray1D( DeviceArray1D< T >&& move );
     DeviceArray1D< T >& operator = ( const DeviceArray1D< T >& copy );
     DeviceArray1D< T >& operator = ( DeviceArray1D< T >&& move );
-    virtual ~DeviceArray1D();
+    ~DeviceArray1D();
 
     bool isNull() const;
     bool notNull() const;
 
-    int length() const;
+    size_t length() const;
     size_t sizeInBytes() const;
+
+    // This only works if T is a CUDA builtin type such as char, int2, or
+    // float4 (i.e.,
+    // TODO: consider using std::enable_if or thrust::enable_if.
+    cudaResourceDesc resourceDesc() const;
 
     // resizes the vector
     // original data is not preserved
-    void resize( int length );
+    void resize( size_t length );
 
     // sets the vector to 0 (all bytes to 0)
     void clear();
@@ -87,7 +92,7 @@ public:
 
 private:
 
-    int m_length = 0;
+    size_t m_length = 0;
     uint8_t* m_devicePointer = nullptr;
 
     void destroy();

@@ -12,7 +12,7 @@
 #include "DeviceArray2D.h"
 #include "DeviceArray3D.h"
 
-namespace libcgt { namespace cuda { namespace arrayutils {
+namespace libcgt { namespace cuda {
 
 // Host functions (CUDA types).
 bool saveTXT( Array1DView< const int3 > array, const char* filename );
@@ -42,7 +42,5 @@ bool saveTXT( const DeviceArray3D< ushort2 >& array, const char* filename );
 bool saveTXT( const DeviceArray3D< int2 >& array, const char* filename );
 bool saveTXT( const DeviceArray3D< int3 >& array, const char* filename );
 bool saveTXT( const DeviceArray3D< int4 >& array, const char* filename );
-
-};
 
 } } // cuda, libcgt

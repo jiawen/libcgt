@@ -24,9 +24,9 @@ public:
 
     explicit Matrix4f( float fill );
 
-    // Construct 4x4 matrix directly from elements
-    // elements are written in row-major order for human-readability
-    // (and stored column major, as usual)
+    // Construct 4x4 matrix directly from elements.
+    // Elements are written in row-major order for human-readability
+    // (and stored column major, as usual).
     Matrix4f( float m00, float m01, float m02, float m03,
         float m10, float m11, float m12, float m13,
         float m20, float m21, float m22, float m23,
@@ -34,11 +34,12 @@ public:
 
     // setColumns = true ==> sets the columns of the matrix to be [v0 v1 v2 v3]
     // otherwise, sets the rows
-    Matrix4f( const Vector4f& v0, const Vector4f& v1, const Vector4f& v2, const Vector4f& v3, bool setColumns = true );
+    Matrix4f( const Vector4f& v0, const Vector4f& v1,
+        const Vector4f& v2, const Vector4f& v3,
+        bool setColumns = true );
 
     Matrix4f( const Matrix4f& m ) = default;
     Matrix4f& operator = ( const Matrix4f& m ) = default;
-    // no destructor necessary
 
     // read / write element (i,j)
     const float& operator () ( int i, int j ) const;
@@ -83,10 +84,12 @@ public:
 
     std::string toString() const;
 
-    // uses this to transform a point v (appends a homogeneous coordinate 1, transforms, then extracts xy)
+    // Uses this to transform a point v.
+    // Appends a homogeneous coordinate 1, transforms, then extracts xy.
     Vector3f transformPoint( const Vector3f& p ) const;
 
-    // uses this to transform a vector v (appends a homogeneous coordinate 0, transforms, then extracts xy)
+    // Uses this to transform a vector v.
+    // Appends a homogeneous coordinate 0, transforms, then extracts xy.
     Vector3f transformVector( const Vector3f& v ) const;
 
     // uses this to transform a normal vector n
@@ -103,14 +106,17 @@ public:
     static Matrix4f scaling( const Vector3f& xyz );
     static Matrix4f uniformScaling( float s );
     static Matrix4f translation( const Vector3f& xyz );
-    static Matrix4f scaleTranslate( const Vector3f& srcOrigin, const Vector3f& srcSize,
+    static Matrix4f scaleTranslate(
+        const Vector3f& srcOrigin, const Vector3f& srcSize,
         const Vector3f& dstOrigin, const Vector3f& dstSize );
 
-    // Construct a Euclidean transformation matrix from a rotation vector and a translation.
+    // Construct a Euclidean transformation matrix from a rotation vector and a
+    // translation.
     // E = [R|t]. Rotation is applied first, then translation.
-    // The rotation vector's direction is the axis,
-    // its norm is the number of radians, counterclockwise.
-    static Matrix4f euclidean( const Vector3f& rotationVector, const Vector3f& translation );
+    // The rotation vector's direction is the axis, its norm is the number of
+    // radians, counterclockwise.
+    static Matrix4f euclidean( const Vector3f& rotationVector,
+        const Vector3f& translation );
 
     // Invert a Euclidean transformation.
     // If it is known that tr is a Euclidean transformation: M = T*R = [R|t]

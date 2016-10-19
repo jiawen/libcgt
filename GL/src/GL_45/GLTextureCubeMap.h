@@ -50,25 +50,25 @@ public:
     // Only accepts RGBA and BGRA for now.
     bool set( GLCubeMapFace face, Array2DView< const uint8x4 > data,
         GLImageFormat format = GLImageFormat::RGBA,
-        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = Vector2i{ 0 } );
 
 #if 0
     // Data must be packed().
     // Only accepts RGB and BGR for now.
     bool set( Array2DView< const uint8x3 > data,
         GLImageFormat format = GLImageFormat::RGB,
-        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = Vector2i{ 0 } );
 
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
     bool set( Array2DView< const uint8x4 > data,
         GLImageFormat format = GLImageFormat::RGBA,
-        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = Vector2i{ 0 } );
 
     // Data must be packed().
     bool set( Array2DView< const float > data,
         GLImageFormat format = GLImageFormat::RED,
-        const Vector2i& dstOffset = Vector2i{ 0, 0 } );
+        const Vector2i& dstOffset = Vector2i{ 0 } );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.

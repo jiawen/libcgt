@@ -4,6 +4,7 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
+#include <common/Array2D.h>
 #include <common/Array2DView.h>
 
 #include "KernelArray2D.h"
@@ -21,7 +22,7 @@ public:
     DeviceArray2D( DeviceArray2D< T >&& move );
     DeviceArray2D< T >& operator = ( const DeviceArray2D< T >& copy );
     DeviceArray2D< T >& operator = ( DeviceArray2D< T >&& move );
-    virtual ~DeviceArray2D();
+    ~DeviceArray2D();
 
     bool isNull() const;
     bool notNull() const;
@@ -42,6 +43,13 @@ public:
 
     // Total size of the data in bytes (counting alignment)
     size_t sizeInBytes() const;
+
+    // This only works if T is a CUDA builtin type such as char, int2, or
+    // float4 (i.e.,
+    // TODO: consider using std::enable_if or thrust::enable_if.
+    //
+    // TODO: make this part of DeviceArray2DView once KernelArray2D is renamed.
+    cudaResourceDesc resourceDesc() const;
 
     // resizes the vector
     // original data is not preserved
@@ -71,6 +79,8 @@ public:
 
     // Copy from host array src to this.
     // This is automatically resized.
+    // TODO: make this a free function that requires sizes to be exact.
+    // No resizing.
     bool copyFromHost( Array2DView< const T > src );
 
     // copy from this to host array dst
@@ -99,8 +109,9 @@ public:
 
 private:
 
-    Vector2i m_size;
-    Vector2i m_stride; // TODO(jiawen): stride should be a Vector2<uint64_t>.
+    Vector2i m_size = Vector2i{ 0 };
+    // TODO(jiawen): stride should be a Vector2<uint64_t>.
+    Vector2i m_stride = Vector2i{ 0 };
 
     uint8_t* m_devicePointer = nullptr;
 

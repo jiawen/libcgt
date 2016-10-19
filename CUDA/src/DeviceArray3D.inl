@@ -23,8 +23,8 @@ DeviceArray3D< T >::DeviceArray3D( DeviceArray3D< T >&& move )
     m_extent = move.m_extent;
 
     move.m_size = Vector3i{ 0 };
-    move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
-    move.m_extent = make_cudaExtent( 0, 0, 0 );
+    move.m_pitchedPointer = {};
+    move.m_extent = {};
 }
 
 template< typename T >
@@ -49,14 +49,13 @@ DeviceArray3D< T >& DeviceArray3D< T >::operator = ( DeviceArray3D< T >&& move )
         m_extent = move.m_extent;
 
         move.m_size = Vector3i{ 0 };
-        move.m_pitchedPointer = make_cudaPitchedPtr( nullptr, 0, 0, 0 );
-        move.m_extent = make_cudaExtent( 0, 0, 0 );
+        move.m_pitchedPointer = {};
+        move.m_extent = {};
     }
     return *this;
 }
 
 template< typename T >
-// virtual
 DeviceArray3D< T >::~DeviceArray3D()
 {
     destroy();

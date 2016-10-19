@@ -23,11 +23,13 @@ public:
     DeviceOpaqueArray2D() = default;
     DeviceOpaqueArray2D( const Vector2i& size );
     ~DeviceOpaqueArray2D();
+    // TODO: move constructors and assignment operator.
 
     bool isNull() const;
     bool notNull() const;
 
-    cudaChannelFormatDesc channelFormatDescription() const;
+    const cudaChannelFormatDesc& channelFormatDescription() const;
+    const cudaResourceDesc& resourceDescription() const;
 
     int width() const;
     int height() const;
@@ -56,6 +58,7 @@ private:
 
     Vector2i m_size = Vector2i{ 0 };
     cudaChannelFormatDesc m_cfd = {};
+    cudaResourceDesc m_resourceDesc = {};
     size_t m_sizeInBytes = 0;
     cudaArray* m_deviceArray = nullptr;
 

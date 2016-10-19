@@ -175,15 +175,7 @@ Matrix4f Camera::viewMatrix() const
 
 Matrix4f Camera::inverseViewMatrix() const
 {
-    Matrix4f m0 = inverse( m_cameraFromWorld ).asMatrix();
-    Matrix4f m1 = viewMatrix().inverse();
-
-    printf( "m0 = %s\n", m0.toString().c_str() );
-    printf( "m1 = %s\n", m1.toString().c_str() );
-    printf( "m0 - m1 = %s\n", ( m0 - m1 ).toString().c_str() );
-
-    //return inverse( m_cameraFromWorld ).asMatrix();
-    return m1;
+    return inverse( m_cameraFromWorld ).asMatrix();
 }
 
 Matrix4f Camera::jitteredViewMatrix( float eyeX, float eyeY ) const

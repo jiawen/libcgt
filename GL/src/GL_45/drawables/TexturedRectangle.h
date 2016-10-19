@@ -7,6 +7,11 @@
 #include <vecmath/Vector4f.h>
 #include <PlanarVertexBufferCalculator.h>
 
+// The default textured rectangle has vertices from (-1, -1) to (1, 1) and
+// texture coordinates from (0, 0) to (1, 1). Which means you can draw a full
+// screen rectangle without any projection * modelview matrix: the vertices are
+// already in clip space. To place it anywhere on the screen, just set the
+// viewport.
 class TexturedRectangle : public GLDrawable
 {
 public:

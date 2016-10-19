@@ -5,8 +5,8 @@
 #include <common/ArrayUtils.h>
 #include <geometry/RectangleUtils.h>
 
-using libcgt::core::geometry::rectangleutils::writeScreenAlignedTriangleStripPositions;
-using libcgt::core::geometry::rectangleutils::writeScreenAlignedTriangleStripTextureCoordinates;
+using libcgt::core::geometry::writeScreenAlignedTriangleStripPositions;
+using libcgt::core::geometry::writeScreenAlignedTriangleStripTextureCoordinates;
 
 TexturedRectangle::TexturedRectangle( const Rect2f& positionRect,
     const Rect2f& texCoordsRect ) :

@@ -6,7 +6,7 @@
 #include <GLPrimitiveType.h>
 
 using libcgt::core::arrayutils::fill;
-using libcgt::core::geometry::boxutils::writeWireframe;
+using libcgt::core::geometry::writeWireframe;
 
 WireframeBox::WireframeBox( const Box3f& box, const Vector4f& color ) :
     GLDrawable( GLPrimitiveType::LINES, calculator() )

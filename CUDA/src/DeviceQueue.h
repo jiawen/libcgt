@@ -19,11 +19,11 @@ class DeviceQueue
 {
 public:
 
-    // initializes a null queue
+    // nitializes a null queue
     DeviceQueue();
 
-    // initializes a queue with a fixed capacity
-    DeviceQueue( int capacity );
+    // nitializes a queue with a fixed capacity
+    DeviceQueue( size_t capacity );
 
     DeviceQueue( const DeviceQueue< T >& copy );
     DeviceQueue( DeviceQueue< T >&& move );
@@ -34,8 +34,8 @@ public:
     bool isNull() const;
     bool notNull() const;
 
-    // returns the maximum number of elements the queue can hold
-    int capacity() const;
+    // Returns the maximum number of elements the queue can hold.
+    size_t capacity() const;
 
     // returns the total size of the queue in bytes, including overhead
     size_t sizeInBytes() const;
@@ -43,7 +43,7 @@ public:
     // resizes the queue:
     //   destroys the existing data
     //   and clears the queue in the process (head and tail pointers are set to 0)
-    void resize( int capacity );
+    void resize( size_t capacity );
 
     // clears the queue by setting head and tail absolute indices back to 0
     // does not actually touch the data

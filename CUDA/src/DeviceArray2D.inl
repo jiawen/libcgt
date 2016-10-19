@@ -1,5 +1,3 @@
-#include <common/Array2D.h>
-
 template< typename T >
 DeviceArray2D< T >::DeviceArray2D( const Vector2i& size )
 {
@@ -55,7 +53,6 @@ DeviceArray2D< T >& DeviceArray2D< T >::operator = (
 }
 
 template< typename T >
-// virtual
 DeviceArray2D< T >::~DeviceArray2D()
 {
     destroy();
@@ -119,6 +116,19 @@ template< typename T >
 size_t DeviceArray2D< T >::sizeInBytes() const
 {
     return m_stride.y * m_size.y;
+}
+
+template< typename T >
+cudaResourceDesc DeviceArray2D< T >::resourceDesc() const
+{
+    cudaResourceDesc desc = {};
+    desc.resType = cudaResourceTypePitch2D;
+    desc.res.pitch2D.devPtr = m_devicePointer;
+    desc.res.pitch2D.width = m_size.x;
+    desc.res.pitch2D.height = m_size.y;
+    desc.res.pitch2D.pitchInBytes = m_stride.y;
+    desc.res.pitch2D.desc = cudaCreateChannelDesc< T >();
+    return desc;
 }
 
 template< typename T >

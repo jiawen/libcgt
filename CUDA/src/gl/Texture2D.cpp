@@ -2,6 +2,11 @@
 
 #include <cassert>
 
+#include "../DeviceArray1D.h"
+#include "../DeviceOpaqueArray2D.h"
+#include "../DeviceArray2D.h"
+#include "../DeviceArray3D.h"
+
 namespace libcgt { namespace cuda { namespace gl {
 
 Texture2D::Texture2D( GLTexture2D&& texture, MapFlags mapFlags ) :

@@ -62,6 +62,7 @@ Vector2i operator * ( const Vector2i& v0, const Vector2i& v1 );
 // component-wise division
 Vector2i operator / ( const Vector2i& v0, const Vector2i& v1 );
 Vector2i operator / ( const Vector2i& v, int c );
+Vector2f operator / ( const Vector2i& v, float f );
 
 bool operator == ( const Vector2i& v0, const Vector2i& v1 );
 bool operator != ( const Vector2i& v0, const Vector2i& v1 );

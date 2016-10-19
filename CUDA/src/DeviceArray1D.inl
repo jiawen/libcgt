@@ -1,7 +1,7 @@
 #include <common/Array1D.h>
 
 template< typename T >
-DeviceArray1D< T >::DeviceArray1D( int length )
+DeviceArray1D< T >::DeviceArray1D( size_t length )
 {
     resize( length );
 }
@@ -68,7 +68,7 @@ bool DeviceArray1D< T >::notNull() const
 }
 
 template< typename T >
-int DeviceArray1D< T >::length() const
+size_t DeviceArray1D< T >::length() const
 {
     return m_length;
 }
@@ -80,7 +80,18 @@ size_t DeviceArray1D< T >::sizeInBytes() const
 }
 
 template< typename T >
-void DeviceArray1D< T >::resize( int length )
+cudaResourceDesc DeviceArray1D< T >::resourceDesc() const
+{
+    cudaResourceDesc desc = {};
+    desc.resType = cudaResourceTypeLinear;
+    desc.res.linear.devPtr = m_devicePointer;
+    desc.res.linear.sizeInBytes = sizeInBytes();
+    desc.res.linear.desc = cudaCreateChannelDesc< T >();
+    return desc;
+}
+
+template< typename T >
+void DeviceArray1D< T >::resize( size_t length )
 {
     if( m_length == length )
     {
@@ -100,7 +111,6 @@ void DeviceArray1D< T >::resize( int length )
         )
     );
 }
-
 
 template< typename T >
 void DeviceArray1D< T >::clear()

@@ -7,7 +7,7 @@ DeviceQueue< T >::DeviceQueue()
 }
 
 template< typename T >
-DeviceQueue< T >::DeviceQueue( int capacity )
+DeviceQueue< T >::DeviceQueue( size_t capacity )
 {
     resize( capacity );
 }
@@ -67,7 +67,7 @@ bool DeviceQueue< T >::notNull() const
 }
 
 template< typename T >
-int DeviceQueue< T >::capacity() const
+size_t DeviceQueue< T >::capacity() const
 {
     return md_ringBuffer.length();
 }
@@ -79,7 +79,7 @@ size_t DeviceQueue< T >::sizeInBytes() const
 }
 
 template< typename T >
-void DeviceQueue< T >::resize( int capacity )
+void DeviceQueue< T >::resize( size_t capacity )
 {
     md_ringBuffer.resize( capacity );
     clear();

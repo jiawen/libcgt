@@ -7,7 +7,7 @@
 #include <vecmath/Box3f.h>
 #include <vecmath/Vector4f.h>
 
-using libcgt::core::geometry::boxutils::corners;
+using libcgt::core::geometry::corners;
 
 // virtual
 Matrix3f DirectionalLight::lightBasis() const

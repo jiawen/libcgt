@@ -7,7 +7,7 @@
 // static
 FrustumUtils::IntersectionResult FrustumUtils::intersectBoundingBox( const Box3f& box, const Plane3f planes[ 6 ] )
 {
-    auto boxCorners = libcgt::core::geometry::boxutils::corners( box );
+    auto boxCorners = libcgt::core::geometry::corners( box );
 
     // by default, we assume the box is completely inside
     IntersectionResult result = IntersectionResult::INSIDE;

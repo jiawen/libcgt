@@ -145,21 +145,6 @@ Vector3i Vector3i::cross( const Vector3i& v0, const Vector3i& v1 )
     };
 }
 
-bool operator == ( const Vector3i& v0, const Vector3i& v1 )
-{
-    return
-    (
-        v0.x == v1.x &&
-        v0.y == v1.y &&
-        v0.z == v1.z
-    );
-}
-
-bool operator != ( const Vector3i& v0, const Vector3i& v1 )
-{
-    return !( v0 == v1 );
-}
-
 Vector3i operator + ( const Vector3i& v0, const Vector3i& v1 )
 {
     return{ v0.x + v1.x, v0.y + v1.y, v0.z + v1.z };
@@ -200,12 +185,42 @@ Vector3f operator * ( const Vector3i& v, float f )
     return Vector3f( f * v.x, f * v.y, f * v.z );
 }
 
-Vector3i operator / ( const Vector3i& v, int c )
-{
-    return{ v.x / c, v.y / c, v.z / c };
-}
-
 Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 )
 {
     return{ v0.x / v1.x, v0.y / v1.y, v0.z / v1.z };
+}
+
+Vector3i operator / ( const Vector3i& v, int i )
+{
+    return{ v.x / i, v.y / i, v.z / i };
+}
+
+Vector3f operator / ( const Vector3i& v, float f )
+{
+    return{ v.x / f, v.y / f, v.z / f };
+}
+
+Vector3i operator / ( int i, const Vector3i& v )
+{
+    return{ i / v.x, i / v.y, i / v.z };
+}
+
+Vector3f operator / ( float f, const Vector3i& v )
+{
+    return{ f / v.x, f / v.y, f / v.z };
+}
+
+bool operator == ( const Vector3i& v0, const Vector3i& v1 )
+{
+    return
+    (
+        v0.x == v1.x &&
+        v0.y == v1.y &&
+        v0.z == v1.z
+    );
+}
+
+bool operator != ( const Vector3i& v0, const Vector3i& v1 )
+{
+    return !( v0 == v1 );
 }

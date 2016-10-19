@@ -6,7 +6,7 @@
 #include <GLPrimitiveType.h>
 
 using libcgt::core::arrayutils::fill;
-using libcgt::core::geometry::boxutils::writeTriangleListPositions;
+using libcgt::core::geometry::writeTriangleListPositions;
 
 SolidBox::SolidBox( const Box3f& box, const Vector4f& color ) :
     GLDrawable( GLPrimitiveType::TRIANGLES, calculator() )

@@ -14,7 +14,9 @@ public:
     DeviceVariable( DeviceVariable< T >&& move );
     DeviceVariable< T >& operator = ( const DeviceVariable< T >& copy );
     DeviceVariable< T >& operator = ( DeviceVariable< T >&& move );
-    DeviceVariable< T >& operator = ( const T& copy ); // copy from host, same as set()
+
+    // Copy from host, same as set().
+    DeviceVariable< T >& operator = ( const T& copy );
     ~DeviceVariable();
 
     // copy device --> host

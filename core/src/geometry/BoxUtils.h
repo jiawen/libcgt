@@ -10,14 +10,14 @@
 #include "vecmath/Vector3i.h"
 #include "vecmath/Vector4f.h"
 
-namespace libcgt { namespace core { namespace geometry { namespace boxutils {
+namespace libcgt { namespace core { namespace geometry {
 
 // TODO(jiawen): return an error if the buffer isn't big enough?
 // Writes a triangle list tesselation of the 6 faces of the box into
 // "vertexPositions".
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 vertices.
 // This function is equivalent to combining corners() and
-// solidTriangleListIndices().
+// solidBoxTriangleListIndices().
 void writeTriangleListPositions( const Box3f& box,
     Array1DView< Vector4f > positions );
 
@@ -25,7 +25,7 @@ void writeTriangleListPositions( const Box3f& box,
 // "worldFromBox", into "vertexPositions".
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 vertices.
 // This function is equivalent to combining corners() and
-// solidTriangleListIndices().
+// solidBoxTriangleListIndices().
 void writeTriangleListPositions( const Box3f& box, const Matrix4f& worldFromBox,
     Array1DView< Vector4f > positions );
 
@@ -46,7 +46,7 @@ void writeAxisAlignedSolidTextureCoordinates(
 // Writes a line list of the 12 edges of the box into "vertexPositions".
 // 12 edges * 2 vertices / edge = 24 vertices.
 // This function is equivalent to combining corners() and
-// wireframeLineListIndices().
+// wireframeBoxLineListIndices().
 void writeWireframe( const Box3f& box,
     Array1DView< Vector4f > vertexPositions );
 
@@ -54,7 +54,7 @@ void writeWireframe( const Box3f& box,
 // "worldFromBox", into "vertexPositions".
 // 12 edges * 2 vertices / edge = 24 vertices.
 // This function is equivalent to combining corners() and
-// wireframeLineListIndices().
+// wireframeBoxLineListIndices().
 void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
     Array1DView< Vector4f > vertexPositions );
 
@@ -83,8 +83,11 @@ void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
 void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
     const Matrix4f& worldFromBox, Array1DView< Vector4f > vertexPositions );
 
-// Returns a standard box (cube) with the given center and side length.
-Box3f makeCube( const Vector3f& center, float sideLength );
+// Returns a cube with the given center and side length.
+Box3f makeBox( const Vector3f& center, float sideLength );
+
+// Make a box given a center and side lengths.
+Box3f makeBox( const Vector3f& center, const Vector3f& sideLengths );
 
 // Returns the 8 corners of the box in hypercube order:
 // x changes most frequently, y next, then z least frequently.
@@ -101,10 +104,10 @@ Array1D< Vector3f > cornerNormalsDiagonal( const Box3f& b );
 
 // Returns the indices in corners() of a solid box with triangle list topology.
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 indices.
-Array1D< int > solidTriangleListIndices();
+Array1D< int > solidBoxTriangleListIndices();
 
 // Returns the indices in corners() of a solid box with line list topology.
 // 12 edges * 2 vertices / edge = 24 vertices.
-Array1D< int > wireframeLineListIndices();
+Array1D< int > wireframeBoxLineListIndices();
 
-} } } } // boxutils, geometry, core, libcgt
+} } } // geometry, core, libcgt

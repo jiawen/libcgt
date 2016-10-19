@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cassert>
 
-namespace libcgt { namespace core { namespace geometry { namespace rectangleutils {
+namespace libcgt { namespace core { namespace geometry {
 
 Rect2i bestFitKeepAR( float imageAspectRatio, const Rect2i& window )
 {
@@ -167,7 +167,7 @@ void writeScreenAlignedTriangleStripPositions(
     float z, float w )
 {
     Array1D< Vector4f > pos = corners( rect, z, w );
-    Array1D< int > idx = solidTriangleStripIndices();
+    Array1D< int > idx = solidRectTriangleStripIndices();
 
     for( int i = 0; i < idx.size(); ++i )
     {
@@ -186,12 +186,17 @@ void writeScreenAlignedTriangleStripTextureCoordinates(
     textureCoordinates[ 3 ] = rect.rightTop();
 }
 
-Rect2f makeSquare( const Vector2f& center, float sideLength )
+Rect2f makeRect( const Vector2f& center, float sideLength )
+{
+    return makeRect( center, Vector2f{ sideLength } );
+}
+
+Rect2f makeRect( const Vector2f& center, const Vector2f& sideLengths )
 {
     return
     {
-        center - 0.5f * Vector2f( sideLength ),
-        Vector2f( sideLength )
+        center - 0.5f * sideLengths,
+        sideLengths
     };
 }
 
@@ -221,19 +226,19 @@ Array1D< Vector4i > corners( const Rect2i& r, int z, int w )
     };
 }
 
-Array1D< int > solidTriangleListIndices()
+Array1D< int > solidRectTriangleListIndices()
 {
     return{ 0, 1, 3, 3, 1, 2 };
 }
 
-Array1D< int > solidTriangleStripIndices()
+Array1D< int > solidRectTriangleStripIndices()
 {
     return{ 0, 1, 3, 2 };
 }
 
-Array1D< int > wireframeLineListIndices()
+Array1D< int > wireframeRectLineListIndices()
 {
     return{ 0, 1, 1, 2, 2, 3, 3, 1 };
 }
 
-} } } } // rectangleutils, geometry, core, libcgt
+} } } // geometry, core, libcgt

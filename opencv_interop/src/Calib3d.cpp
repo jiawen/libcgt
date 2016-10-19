@@ -16,7 +16,7 @@ namespace
 
 Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
     const cv::Mat_< float >& map1,
-    bool shiftHalfPixel, bool flipY )
+    bool shiftHalfPixel, bool flipY, bool normalizeCoordinates )
 {
     Array2DView< const float > map0View =
         cvMatAsArray2DView< const float >( map0 );
@@ -25,6 +25,12 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
 
     Array2D< Vector2f > undistortMap( map0View.size() );
 
+    Vector2f normalization{ 1.0f };
+    if( normalizeCoordinates )
+    {
+        normalization = 1.0f / Vector2f( map0View.size() );
+    }
+
     if( flipY )
     {
         Array2DView < Vector2f > dst = ::flipY( undistortMap.writeView() );
@@ -32,7 +38,7 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
         {
             for2D( dst.size(), [&] ( const Vector2i& xy )
             {
-                dst[ xy ] = Vector2f
+                dst[ xy ] = normalization * Vector2f
                 {
                     map0View[ xy ] + 0.5f,
                     dst.height() - ( map1View[ xy ] + 0.5f )
@@ -43,7 +49,7 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
         {
             for2D( dst.size(), [&] ( const Vector2i& xy )
             {
-                dst[ xy ] = Vector2f
+                dst[ xy ] = normalization * Vector2f
                 {
                     map0View[ xy ],
                     dst.height() - map1View[ xy ]
@@ -57,7 +63,7 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
         {
             for2D( undistortMap.size(), [&] ( const Vector2i& xy )
             {
-                undistortMap[ xy ] = Vector2f
+                undistortMap[ xy ] = normalization * Vector2f
                 {
                     map0View[ xy ] + 0.5f,
                     map1View[ xy ] + 0.5f
@@ -71,6 +77,14 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
                 sizeof( float ) );
             copy( map0View, dstX );
             copy( map1View, dstY );
+
+            if( normalizeCoordinates )
+            {
+                for2D( undistortMap.size(), [&] ( const Vector2i& xy )
+                {
+                    undistortMap[ xy ] = normalization * undistortMap[ xy ];
+                } );
+            }
         }
     }
 
@@ -127,13 +141,14 @@ Array2D< Vector2f > undistortRectifyMap( cv::InputArray cameraMatrix,
     cv::InputArray distCoeffs,
     cv::InputArray R, cv::InputArray newCameraMatrix,
     cv::Size imageSize,
-    bool shiftHalfPixel, bool flipY )
+    bool shiftHalfPixel, bool flipY, bool normalizeCoordinates )
 {
     cv::Mat map0;
     cv::Mat map1;
     cv::initUndistortRectifyMap( cameraMatrix, distCoeffs, R,
         newCameraMatrix, imageSize, CV_32FC1, map0, map1 );
-    return undistortMapsAsRG( map0, map1, shiftHalfPixel, flipY );
+    return undistortMapsAsRG( map0, map1,
+        shiftHalfPixel, flipY, normalizeCoordinates );
 }
 
 } } // opencv_interop, libcgt
