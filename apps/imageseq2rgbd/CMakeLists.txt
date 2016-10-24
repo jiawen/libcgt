@@ -17,8 +17,13 @@ else()
 	find_package(gflags REQUIRED)
 endif()
 
-file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
-file( GLOB_RECURSE SOURCES src/*.cpp )
+# pystring
+include_directories( ${LIBCGT_DIR} )
+set( HEADERS "${LIBCGT_DIR}/third_party/pystring/pystring.h" )
+set( SOURCES "${LIBCGT_DIR}/third_party/pystring/pystring.cpp" )
+
+# main
+list( APPEND SOURCES src/main.cpp )
 
 add_executable( imageseq2rgbd ${HEADERS} ${SOURCES} )
 set_property( TARGET imageseq2rgbd PROPERTY CXX_STANDARD 11 )

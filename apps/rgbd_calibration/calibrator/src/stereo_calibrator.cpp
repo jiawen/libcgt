@@ -8,11 +8,12 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <third_party/pystring/pystring.h>
+
 #include <core/vecmath/EuclideanTransform.h>
 #include <core/vecmath/Matrix3f.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <opencv_interop/VecmathUtils.h>
-#include <third_party/pystring.h>
 
 #include "common.h"
 

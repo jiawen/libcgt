@@ -1,7 +1,8 @@
 #include "common/Parameters.h"
 
 #include <fstream>
-#include <pystring.h>
+
+#include <third_party/pystring/pystring.h>
 
 // static
 Parameters* Parameters::instance()

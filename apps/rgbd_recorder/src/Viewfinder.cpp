@@ -3,15 +3,15 @@
 #include <QBrush>
 #include <QPainter>
 #include <QTimer>
-
 #include <QThread>
+
+#include <third_party/pystring/pystring.h>
 
 #include <core/common/ArrayUtils.h>
 #include <core/imageproc/ColorMap.h>
 #include <core/imageproc/Swizzle.h>
 #include <core/io/File.h>
 #include <qt_interop/qimage.h>
-#include <third_party/pystring.h>
 
 using libcgt::core::arrayutils::copy;
 using libcgt::core::imageproc::linearRemapToLuminance;

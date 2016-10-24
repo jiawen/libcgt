@@ -2,9 +2,10 @@
 
 #include <opencv2/highgui.hpp>
 
+#include <third_party/pystring/pystring.h>
+
 #include <core/io/File.h>
 #include <core/io/NumberedFilenameBuilder.h>
-#include <third_party/pystring.h>
 
 std::vector< cv::Mat > readImages( const std::string& dir,
     const std::string& filenamePrefix )

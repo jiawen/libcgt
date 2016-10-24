@@ -8,19 +8,19 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <third_party/pystring/pystring.h>
+
 #include <camera_wrappers/Kinect1x/KinectCamera.h>
 #include <camera_wrappers/OpenNI2/OpenNI2Camera.h>
 #include <core/common/ArrayUtils.h>
 #include <core/io/NumberedFilenameBuilder.h>
+#include <core/io/PNGIO.h>
 #include <core/io/PortableFloatMapIO.h>
 #include <core/imageproc/Swizzle.h>
 #include <core/math/ArrayOps.h>
 #include <opencv_interop/ArrayUtils.h>
 #include <opencv_interop/Calib3d.h>
 #include <opencv_interop/VecmathUtils.h>
-#include <third_party/pystring.h>
-
-#include <core/io/PNGIO.h>
 
 #include "common.h"
 

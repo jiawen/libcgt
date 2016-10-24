@@ -1,3 +1,9 @@
 [submodule "third_party/gflags"]
 	path = third_party/gflags
 	url = https://github.com/gflags/gflags.git
+[submodule "third_party/lodepng"]
+	path = third_party/lodepng
+	url = https://github.com/lvandeve/lodepng
+[submodule "third_party/pystring"]
+	path = third_party/pystring
+	url = https://github.com/imageworks/pystring

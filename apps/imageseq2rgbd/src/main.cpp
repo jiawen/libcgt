@@ -8,7 +8,7 @@
 #include <core/io/PNGIO.h>
 #include <core/vecmath/Range1i.h>
 #include <camera_wrappers/RGBDStream.h>
-#include <third_party/pystring.h>
+#include <third_party/pystring/pystring.h>
 
 using namespace libcgt::camera_wrappers;
 using namespace libcgt::core;

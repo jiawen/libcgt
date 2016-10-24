@@ -24,10 +24,16 @@ set( CMAKE_AUTOMOC ON )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Widgets REQUIRED )
 
-file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
-file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
+# pystring
+include_directories( ${LIBCGT_DIR} )
+set( HEADERS "${LIBCGT_DIR}/third_party/pystring/pystring.h" )
+set( SOURCES "${LIBCGT_DIR}/third_party/pystring/pystring.cpp" )
 
-add_executable( rgbd_recorder ${HEADERS} ${SOURCES_CPP} )
+# main
+list( APPEND HEADERS src/Viewfinder.h )
+list( APPEND SOURCES src/main.cpp src/Viewfinder.cpp )
+
+add_executable( rgbd_recorder ${HEADERS} ${SOURCES} )
 set_property( TARGET rgbd_recorder PROPERTY CXX_STANDARD 11 )
 
 target_link_libraries( rgbd_recorder

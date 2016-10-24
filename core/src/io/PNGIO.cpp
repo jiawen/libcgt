@@ -1,6 +1,6 @@
 #include "io/PNGIO.h"
 
-#include "../third_party/lodepng.h"
+#include <third_party/lodepng/lodepng.h>
 
 #include <common/Array1DView.h>
 #include <common/ArrayUtils.h>

@@ -23,11 +23,18 @@ endif()
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
+# pystring
+include_directories( ${LIBCGT_DIR} )
+set( PYSTRING_HEADERS "${LIBCGT_DIR}/third_party/pystring/pystring.h" )
+set( PYSTRING_SOURCES "${LIBCGT_DIR}/third_party/pystring/pystring.cpp" )
+
 add_executable( intrinsics_calibrator
+	${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
 	src/common.h src/common.cpp src/intrinsics_calibrator.cpp )
 set_property( TARGET intrinsics_calibrator PROPERTY CXX_STANDARD 11 )
 
 add_executable( stereo_calibrator
+${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
 	src/common.h src/common.cpp src/stereo_calibrator.cpp )
 set_property( TARGET stereo_calibrator PROPERTY CXX_STANDARD 11 )
 

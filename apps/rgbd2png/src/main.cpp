@@ -1,10 +1,11 @@
+#include <third_party/pystring/pystring.h>
+
 #include <core/common/BasicTypes.h>
 #include <core/imageproc/ColorMap.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/io/PNGIO.h>
 #include <core/vecmath/Range1i.h>
 #include <camera_wrappers/RGBDStream.h>
-#include <third_party/pystring.h>
 
 using libcgt::camera_wrappers::RGBDInputStream;
 using libcgt::camera_wrappers::PixelFormat;

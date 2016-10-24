@@ -1,14 +1,11 @@
 #include "io/OBJLoader.h"
 
 #include <fstream>
-#include <pystring.h>
+
+#include <third_party/pystring/pystring.h>
 
 #include "io/OBJData.h"
 #include "io/OBJGroup.h"
-
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
 
 // static
 std::unique_ptr< OBJData > OBJLoader::loadFile( const std::string& objFilename,
@@ -29,11 +26,6 @@ std::unique_ptr< OBJData > OBJLoader::loadFile( const std::string& objFilename,
 
     return pOBJData;
 }
-
-
-//////////////////////////////////////////////////////////////////////////
-// Private
-//////////////////////////////////////////////////////////////////////////
 
 // static
 bool OBJLoader::parseOBJ( const std::string& objFilename, OBJData* pOBJData )
