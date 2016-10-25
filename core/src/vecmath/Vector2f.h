@@ -1,7 +1,11 @@
 #pragma once
 
+#include <cassert>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 #include <string>
 
 class Vector2d;
@@ -69,8 +73,12 @@ public:
 };
 
 Vector2f operator + ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator + ( const Vector2f& v, float f );
+Vector2f operator + ( float f, const Vector2f& v );
 
 Vector2f operator - ( const Vector2f& v0, const Vector2f& v1 );
+Vector2f operator - ( const Vector2f& v, float f );
+Vector2f operator - ( float f, const Vector2f& v );
 // negate
 Vector2f operator - ( const Vector2f& v );
 
@@ -90,4 +98,6 @@ Vector2f operator / ( float f, const Vector2f& v );
 bool operator == ( const Vector2f& v0, const Vector2f& v1 );
 bool operator != ( const Vector2f& v0, const Vector2f& v1 );
 
+#include "Vector2d.h"
+#include "Vector2i.h"
 #include "Vector2f.inl"

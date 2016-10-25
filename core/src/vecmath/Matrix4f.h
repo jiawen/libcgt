@@ -103,6 +103,7 @@ public:
     static Matrix4f rotateY( float radians );
     static Matrix4f rotateZ( float radians );
     static Matrix4f rotation( const Vector3f& axis, float radians );
+    static Matrix4f rotation( const Vector3f& axisAngle );
     static Matrix4f scaling( const Vector3f& xyz );
     static Matrix4f uniformScaling( float s );
     static Matrix4f translation( const Vector3f& xyz );
@@ -118,13 +119,29 @@ public:
     static Matrix4f euclidean( const Vector3f& rotationVector,
         const Vector3f& translation );
 
+    // Construct a Similarity transformation matrix from a uniform scale, a
+    // rotation vector and a translation.
+    // S = [sR|t]. Rotation is applied first, then scale, then translation.
+    // The rotation vector's direction is the axis, its norm is the number of
+    // radians, counterclockwise.
+    static Matrix4f similarity( const Vector3f& rotationVector,
+        float scale, const Vector3f& translation );
+
     // Invert a Euclidean transformation.
-    // If it is known that tr is a Euclidean transformation: M = T*R = [R|t]
-    // (apply R, then T), computes inv(M):
+    // If E is a Euclidean transformation: E = T*R = [R|t]
+    // (apply R, then T), computes inv(E):
     // inv(T*R) = inv(R)*inv(T)
     //          = transpose(R) * (-T)    (apply -T, then transpose(R))
     //          = [R'|-R'*t]
-    static Matrix4f inverseEuclidean( const Matrix4f& tr );
+    static Matrix4f inverseEuclidean( const Matrix4f& e );
+
+    // Invert a Euclidean transformation.
+    // If S is a Euclidean transformation: S = T*s*R = [sR|t]
+    // (apply R, then s, then T), computes inv(S):
+    // inv(T*s*R) = inv(R)*inv(s)*inv(T)
+    //          = transpose(R) * (1/s) * (-T)    (apply -T, then 1/s, then R')
+    //          = similarity(
+    static Matrix4f inverseSimilarity( const Matrix4f& s );
 
     static Matrix4f lookAt( const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 
@@ -155,8 +172,8 @@ public:
     static Matrix4f viewport( float x0, float y0, float width, float height, bool directX );
     static Matrix4f viewport( const Rect2f& rect, bool directX );
 
-    // Returns the rotation matrix represented by a quaternion
-    // (method will normalize q first)
+    // Construct a rotation matrix represented by a unit quaternion (does not
+    // normalize q).
     static Matrix4f fromQuat( const Quat4f& q );
 
     // returns an orthogonal matrix that's a uniformly distributed rotation

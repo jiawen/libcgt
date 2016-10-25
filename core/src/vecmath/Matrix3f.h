@@ -102,6 +102,9 @@ public:
     // normalize q).
     static Matrix3f fromQuat( const Quat4f& q );
 
+    // static
+    Matrix3f randomRotation( float u0, float u1, float u2 );
+
     union
     {
         struct

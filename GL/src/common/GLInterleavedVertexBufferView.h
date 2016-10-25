@@ -60,7 +60,7 @@ GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView( int nVertices
             T::s_relativeOffsets[ i ] );
     }
 
-    m_pVAO->attachBuffer( 0, m_pVBO.get( ), m_offsetBytes, sizeof( T ) );
+    m_pVAO->attachBuffer( 0, m_pVBO.get(), m_offsetBytes, sizeof( T ) );
 }
 
 template< typename T >

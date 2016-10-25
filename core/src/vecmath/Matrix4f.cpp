@@ -440,27 +440,18 @@ Matrix4f Matrix4f::rotateZ( float radians )
 // static
 Matrix4f Matrix4f::rotation( const Vector3f& axis, float radians )
 {
-    if( axis.normSquared() == 0 || radians == 0 )
-    {
-        return Matrix4f::identity();
-    }
+    Matrix4f output;
+    output.setSubmatrix3x3( 0, 0, Matrix3f::rotation( axis, radians ) );
+    output( 3, 3 ) = 1.0f;
+    return output;
+}
 
-    Vector3f normalizedDirection = axis.normalized();
-
-    float cosTheta = cos( radians );
-    float sinTheta = sin( radians );
-
-    float x = normalizedDirection.x;
-    float y = normalizedDirection.y;
-    float z = normalizedDirection.z;
-
-    return Matrix4f
-    (
-        x * x * ( 1.0f - cosTheta ) + cosTheta,         y * x * ( 1.0f - cosTheta ) - z * sinTheta,     z * x * ( 1.0f - cosTheta ) + y * sinTheta,     0.0f,
-        x * y * ( 1.0f - cosTheta ) + z * sinTheta,     y * y * ( 1.0f - cosTheta ) + cosTheta,         z * y * ( 1.0f - cosTheta ) - x * sinTheta,     0.0f,
-        x * z * ( 1.0f - cosTheta ) - y * sinTheta,     y * z * ( 1.0f - cosTheta ) + x * sinTheta,     z * z * ( 1.0f - cosTheta ) + cosTheta,         0.0f,
-        0.0f,                                           0.0f,                                           0.0f,                                           1.0f
-    );
+// static
+Matrix4f Matrix4f::rotation( const Vector3f& axisAngle )
+{
+    float radians;
+    Vector3f axis = axisAngle.normalized( radians );
+    return rotation( axis, radians );
 }
 
 // static
@@ -507,27 +498,59 @@ Matrix4f Matrix4f::scaleTranslate( const Vector3f& srcOrigin, const Vector3f& sr
 }
 
 // static
-Matrix4f Matrix4f::euclidean( const Vector3f& rotationVector, const Vector3f& translation )
+Matrix4f Matrix4f::euclidean( const Vector3f& rotationVector,
+    const Vector3f& translation )
 {
     Matrix4f output;
 
-    output.setSubmatrix3x3( 0, 0, Matrix3f::rotation( rotationVector.normalized(), rotationVector.norm() ) );
+    output.setSubmatrix3x3( 0, 0, Matrix3f::rotation( rotationVector ) );
     output.setCol( 3, Vector4f( translation, 1 ) );
 
     return output;
 }
 
 // static
-Matrix4f Matrix4f::inverseEuclidean( const Matrix4f& tr )
+Matrix4f Matrix4f::similarity( const Vector3f& rotationVector, float scale,
+    const Vector3f& translation )
+{
+    Matrix4f m;
+    m.setSubmatrix3x3( 0, 0, scale * Matrix3f::rotation( rotationVector ) );
+    m.setCol( 3, { translation, 1 } );
+    return m;
+}
+
+// static
+Matrix4f Matrix4f::inverseEuclidean( const Matrix4f& e )
 {
     Matrix4f output;
 
-    Matrix3f rTranspose = tr.getSubmatrix3x3( ).transposed( );
+    Matrix3f rTranspose = e.getSubmatrix3x3().transposed();
     output.setSubmatrix3x3( 0, 0, rTranspose );
 
-    Vector3f t = tr.getCol( 3 ).xyz;
+    Vector3f t = e.getCol( 3 ).xyz;
     Vector3f minusRTransposeT = -rTranspose * t;
     output.setCol( 3, Vector4f( minusRTransposeT, 1 ) );
+
+    return output;
+}
+
+// static
+Matrix4f Matrix4f::inverseSimilarity( const Matrix4f& s )
+{
+    Matrix4f output;
+
+    Matrix3f r = s.getSubmatrix3x3();
+    float us = r.getRow( 0 ).norm();
+    Vector3f t = s.getCol( 3 ).xyz;
+
+    Matrix3f rTranspose = r.transposed();
+    float invUs = 1.0f / us;
+
+    Vector3f invT = invUs * invUs * rTranspose * -t;
+    Matrix3f invR = invUs * invUs * rTranspose;
+
+    output.setSubmatrix3x3( 0, 0, invR );
+    output.setCol( 3, { invT, 1.0f } );
 
     return output;
 }
@@ -776,28 +799,10 @@ Matrix4f Matrix4f::viewport( const Rect2f& rect, bool directX )
 // static
 Matrix4f Matrix4f::fromQuat( const Quat4f& q )
 {
-    Quat4f qq = q.normalized();
-
-    float xx = qq.x * qq.x;
-    float yy = qq.y * qq.y;
-    float zz = qq.z * qq.z;
-
-    float xy = qq.x * qq.y;
-    float zw = qq.z * qq.w;
-
-    float xz = qq.x * qq.z;
-    float yw = qq.y * qq.w;
-
-    float yz = qq.y * qq.z;
-    float xw = qq.x * qq.w;
-
-    return Matrix4f
-        (
-        1.0f - 2.0f * ( yy + zz ),      2.0f * ( xy - zw ),             2.0f * ( xz + yw ),             0.0f,
-        2.0f * ( xy + zw ),             1.0f - 2.0f * ( xx + zz ),      2.0f * ( yz - xw ),             0.0f,
-        2.0f * ( xz - yw ),             2.0f * ( yz + xw ),             1.0f - 2.0f * ( xx + yy ),      0.0f,
-        0.0f,                           0.0f,                           0.0f,                           1.0f
-        );
+    Matrix4f output;
+    output.setSubmatrix3x3( 0, 0, Matrix3f::fromQuat( q ) );
+    output( 3, 3 ) = 1.0f;
+    return output;
 }
 
 Matrix4f operator + ( const Matrix4f& x, const Matrix4f& y )

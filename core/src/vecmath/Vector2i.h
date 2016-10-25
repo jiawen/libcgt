@@ -1,5 +1,11 @@
 #pragma once
 
+#include <cassert>
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 #include <string>
 
 class Vector2f;
@@ -46,8 +52,16 @@ public:
 };
 
 Vector2i operator + ( const Vector2i& v0, const Vector2i& v1 );
+Vector2i operator + ( const Vector2i& v, int i );
+Vector2i operator + ( int i, const Vector2i& v );
+Vector2f operator + ( const Vector2i& v, float f );
+Vector2f operator + ( float f, const Vector2i& v );
 
 Vector2i operator - ( const Vector2i& v0, const Vector2i& v1 );
+Vector2i operator - ( const Vector2i& v, int i );
+Vector2i operator - ( int i, const Vector2i& v );
+Vector2f operator - ( const Vector2i& v, float f );
+Vector2f operator - ( float f, const Vector2i& v );
 // negate
 Vector2i operator - ( const Vector2i& v );
 
@@ -67,34 +81,5 @@ Vector2f operator / ( const Vector2i& v, float f );
 bool operator == ( const Vector2i& v0, const Vector2i& v1 );
 bool operator != ( const Vector2i& v0, const Vector2i& v1 );
 
-inline Vector2i& Vector2i::operator += ( const Vector2i& v )
-{
-    x += v.x;
-    y += v.y;
-
-    return *this;
-}
-
-inline Vector2i& Vector2i::operator -= ( const Vector2i& v )
-{
-    x -= v.x;
-    y -= v.y;
-
-    return *this;
-}
-
-inline Vector2i& Vector2i::operator *= ( int s )
-{
-    x *= s;
-    y *= s;
-
-    return *this;
-}
-
-inline Vector2i& Vector2i::operator /= ( int s )
-{
-    x /= s;
-    y /= s;
-
-    return *this;
-}
+#include "Vector2f.h"
+#include "Vector2i.inl"

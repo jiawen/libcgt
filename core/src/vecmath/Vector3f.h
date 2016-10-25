@@ -1,6 +1,11 @@
 #pragma once
 
 #include <cassert>
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 #include <string>
 
 #include "Vector2f.h"
@@ -52,6 +57,8 @@ public:
 
     void normalize();
     Vector3f normalized() const;
+    // Decompose a vector into its scalar norm and unit direction.
+    Vector3f normalized( float& normOut ) const;
 
     void homogenize();
     Vector3f homogenized() const;
@@ -96,8 +103,12 @@ public:
 };
 
 Vector3f operator + ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator + ( const Vector3f& v, float f );
+Vector3f operator + ( float f, const Vector3f& v );
 
 Vector3f operator - ( const Vector3f& v0, const Vector3f& v1 );
+Vector3f operator - ( const Vector3f& v, float f );
+Vector3f operator - ( float f, const Vector3f& v );
 // Negate.
 Vector3f operator - ( const Vector3f& v );
 
@@ -117,4 +128,6 @@ Vector3f operator / ( float f, const Vector3f& v );
 bool operator == ( const Vector3f& v0, const Vector3f& v1 );
 bool operator != ( const Vector3f& v0, const Vector3f& v1 );
 
+#include "Vector3d.h"
+#include "Vector3i.h"
 #include "Vector3f.inl"

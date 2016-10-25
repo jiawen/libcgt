@@ -21,9 +21,12 @@ public:
     bool close();
 
     // T must be a primitive type or a struct without pointer members.
+    // Returns false on error or once end of file is reached.
     template< typename T >
     bool read( T& output );
 
+    // T must be a primitive type or a struct without pointer members.
+    // Returns false on error or once end of file is reached.
     template< typename T >
     bool readArray( Array1DView< T > output );
 

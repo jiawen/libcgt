@@ -1,5 +1,10 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 #include <string>
 
 #include "Vector2i.h"
@@ -69,14 +74,22 @@ public:
 };
 
 Vector3i operator + ( const Vector3i& v0, const Vector3i& v1 );
-Vector3i operator - ( const Vector3i& v0, const Vector3i& v1 );
-Vector3i operator * ( const Vector3i& v0, const Vector3i& v1 );
-Vector3i operator / ( const Vector3i& v0, const Vector3i& v1 );
+Vector3i operator + ( const Vector3i& v, int i );
+Vector3i operator + ( int i, const Vector3i& v );
+Vector3f operator + ( const Vector3i& v, float f );
+Vector3f operator + ( float f, const Vector3i& v );
 
+Vector3i operator - ( const Vector3i& v0, const Vector3i& v1 );
+Vector3i operator - ( const Vector3i& v, int i );
+Vector3i operator - ( int i, const Vector3i& v );
+Vector3f operator - ( float f, const Vector3i& v );
+Vector3f operator - ( const Vector3i& v, float f );
+// Negate.
 Vector3i operator - ( const Vector3i& v );
+
+Vector3i operator * ( const Vector3i& v0, const Vector3i& v1 );
 Vector3i operator * ( int c, const Vector3i& v );
 Vector3i operator * ( const Vector3i& v, int c );
-
 Vector3f operator * ( float f, const Vector3i& v );
 Vector3f operator * ( const Vector3i& v, float f );
 
@@ -91,3 +104,6 @@ Vector3f operator / ( float f, const Vector3i& v );
 
 bool operator == ( const Vector3i& v0, const Vector3i& v1 );
 bool operator != ( const Vector3i& v0, const Vector3i& v1 );
+
+#include "Vector3f.h"
+#include "Vector3i.inl"

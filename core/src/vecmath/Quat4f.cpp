@@ -17,12 +17,11 @@ const Quat4f Quat4f::IDENTITY = Quat4f( 1, 0, 0, 0 );
 // static
 Quat4f Quat4f::fromAxisAngle( const Vector3f& axisAngle )
 {
-    // TODO: decompose vector into norm and unit vector.
-    float radians = axisAngle.norm();
+    float radians;
+    Vector3f axis = axisAngle.normalized( radians );
     float halfRadians = 0.5f * radians;
     float c = cos( halfRadians );
-    float s = sin(halfRadians);
-    Vector3f axis = axisAngle.normalized();
+    float s = sin( halfRadians );
 
     return Quat4f( c, axis * s );
 }

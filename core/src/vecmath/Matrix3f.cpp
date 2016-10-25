@@ -266,11 +266,11 @@ float Matrix3f::determinant3x3( float m00, float m01, float m02,
                                float m20, float m21, float m22 )
 {
     return
-        (
-              m00 * ( m11 * m22 - m12 * m21 )
-            - m01 * ( m10 * m22 - m12 * m20 )
-            + m02 * ( m10 * m21 - m11 * m20 )
-        );
+    (
+            m00 * ( m11 * m22 - m12 * m21 )
+        - m01 * ( m10 * m22 - m12 * m20 )
+        + m02 * ( m10 * m21 - m11 * m20 )
+    );
 }
 
 // static
@@ -289,56 +289,6 @@ Matrix3f Matrix3f::identity()
     m( 2, 2 ) = 1;
 
     return m;
-}
-
-// static
-Matrix3f Matrix3f::rotation( const Vector3f& axis, float radians )
-{
-    float c = cos( radians );
-    float s = sin( radians );
-    float omc = 1.0f - c;
-
-    float x = axis.x;
-    float y = axis.y;
-    float z = axis.z;
-
-    return Matrix3f
-    (
-        x * x * omc + c,         y * x * omc - z * s,     z * x * omc + y * s,
-        x * y * omc + z * s,     y * y * omc + c,         z * y * omc - x * s,
-        x * z * omc - y * s,     y * z * omc + x * s,     z * z * omc + c
-    );
-}
-
-// static
-Matrix3f Matrix3f::rotation( const Vector3f& axisAngle )
-{
-    // TODO: decompose axis angle in one function.
-    return rotation( axisAngle.normalized(), axisAngle.norm() );
-}
-
-// static
-Matrix3f Matrix3f::fromQuat( const Quat4f& q )
-{
-    float xx = q.x * q.x;
-    float yy = q.y * q.y;
-    float zz = q.z * q.z;
-
-    float xy = q.x * q.y;
-    float zw = q.z * q.w;
-
-    float xz = q.x * q.z;
-    float yw = q.y * q.w;
-
-    float yz = q.y * q.z;
-    float xw = q.x * q.w;
-
-    return Matrix3f
-    (
-        1.0f - 2.0f * ( yy + zz ),      2.0f * ( xy - zw ),             2.0f * ( xz + yw ),
-        2.0f * ( xy + zw ),             1.0f - 2.0f * ( xx + zz ),      2.0f * ( yz - xw ),
-        2.0f * ( xz - yw ),             2.0f * ( yz + xw ),             1.0f - 2.0f * ( xx + yy )
-    );
 }
 
 // static
@@ -381,6 +331,33 @@ Matrix3f Matrix3f::rotateZ( float radians )
         s, c, 0,
         0, 0, 1
     );
+}
+
+// static
+Matrix3f Matrix3f::rotation( const Vector3f& axis, float radians )
+{
+    float c = cos( radians );
+    float s = sin( radians );
+    float omc = 1.0f - c;
+
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    return Matrix3f
+    (
+        x * x * omc + c, y * x * omc - z * s, z * x * omc + y * s,
+        x * y * omc + z * s, y * y * omc + c, z * y * omc - x * s,
+        x * z * omc - y * s, y * z * omc + x * s, z * z * omc + c
+    );
+}
+
+// static
+Matrix3f Matrix3f::rotation( const Vector3f& axisAngle )
+{
+    float radians;
+    Vector3f axis = axisAngle.normalized( radians );
+    return rotation( axis, radians );
 }
 
 // static
@@ -430,6 +407,36 @@ Matrix3f Matrix3f::scaleTranslate( const Vector2f& srcOrigin, const Vector2f& sr
     Matrix3f t1 = Matrix3f::translation( dstOrigin );
 
     return t1 * s * t0;
+}
+
+// static
+Matrix3f Matrix3f::fromQuat( const Quat4f& q )
+{
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
+
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
+
+    float xz = q.x * q.z;
+    float yw = q.y * q.w;
+
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
+
+    return Matrix3f
+    (
+        1.0f - 2.0f * ( yy + zz ), 2.0f * ( xy - zw ), 2.0f * ( xz + yw ),
+        2.0f * ( xy + zw ), 1.0f - 2.0f * ( xx + zz ), 2.0f * ( yz - xw ),
+        2.0f * ( xz - yw ), 2.0f * ( yz + xw ), 1.0f - 2.0f * ( xx + yy )
+    );
+}
+
+// static
+Matrix3f Matrix3f::randomRotation( float u0, float u1, float u2 )
+{
+    return Matrix3f::fromQuat( Quat4f::randomRotation( u0, u1, u2 ) );
 }
 
 Matrix3f operator + ( const Matrix3f& x, const Matrix3f& y )

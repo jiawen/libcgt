@@ -77,7 +77,7 @@ Matrix4f DirectionalLight::lightMatrix( const Camera& camera, const Box3f& scene
     // finally, compute the full light matrix
     Matrix4f lightMatrix;
     lightMatrix.setSubmatrix3x3( 0, 0, lightLinear );
-    Vector3f origin = 0.5 * ( minCorner + maxCorner );
+    Vector3f origin = 0.5f * ( minCorner + maxCorner );
     origin[2] = minCorner[2];
     lightMatrix.setCol( 3, Vector4f( -origin, 1.f ) - Vector4f( lightLinear * eye, 0.f ) );
     for(int i = 0; i < 3; ++i)

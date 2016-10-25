@@ -129,7 +129,7 @@ Vector4f operator / ( const Vector4f& v, float f );
 // reciprocal of each component
 Vector4f operator / ( float f, const Vector4f& v );
 
-inline bool operator == ( const Vector4f& v0, const Vector4f& v1 );
-inline bool operator != ( const Vector4f& v0, const Vector4f& v1 );
+bool operator == ( const Vector4f& v0, const Vector4f& v1 );
+bool operator != ( const Vector4f& v0, const Vector4f& v1 );
 
 #include "Vector4f.inl"

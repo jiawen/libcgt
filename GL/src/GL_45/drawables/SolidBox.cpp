@@ -8,10 +8,11 @@
 using libcgt::core::arrayutils::fill;
 using libcgt::core::geometry::writeTriangleListPositions;
 
-SolidBox::SolidBox( const Box3f& box, const Vector4f& color ) :
+SolidBox::SolidBox( const Box3f& box, const Matrix4f& worldFromBox,
+    const Vector4f& color ) :
     GLDrawable( GLPrimitiveType::TRIANGLES, calculator() )
 {
-    updatePositions( box );
+    updatePositions( box, worldFromBox );
     updateColors( color );
 }
 

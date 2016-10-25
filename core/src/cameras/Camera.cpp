@@ -260,8 +260,7 @@ Vector4f Camera::screenFromWorld( const Vector4f& world,
 Vector4f Camera::eyeFromScreen( const Vector2i& xy,
     float depth, const Vector2f& screenSize ) const
 {
-    return eyeFromScreen( Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        depth, screenSize );
+    return eyeFromScreen( xy + 0.5f, depth, screenSize );
 }
 
 // virtual
@@ -308,8 +307,7 @@ Vector4f Camera::eyeFromScreen( const Vector2f& xy,
 Vector4f Camera::worldFromScreen( const Vector2i& xy, float depth,
     const Vector2f& screenSize ) const
 {
-    return worldFromScreen( Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        depth, screenSize );
+    return worldFromScreen( xy + 0.5f, depth, screenSize );
 }
 
 Vector4f Camera::worldFromScreen( const Vector2f& xy, float depth,
@@ -330,21 +328,13 @@ Vector3f Camera::eyeDirectionFromScreen( const Vector2f& xy,
 Vector3f Camera::eyeDirectionFromScreen( const Vector2i& xy,
     const Vector2f& screenSize ) const
 {
-    return eyeDirectionFromScreen
-    (
-        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        screenSize
-    );
+    return eyeDirectionFromScreen( xy + 0.5f, screenSize );
 }
 
 Vector3f Camera::worldDirectionFromScreen( const Vector2i& xy,
     const Vector2f& screenSize ) const
 {
-    return worldDirectionFromScreen
-    (
-        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        screenSize
-    );
+    return worldDirectionFromScreen( xy + 0.5f, screenSize );
 }
 
 Vector3f Camera::worldDirectionFromScreen( const Vector2f& xy,
@@ -365,11 +355,7 @@ Vector2f Camera::ndcFromScreen( const Vector2f& xy,
 Vector2f Camera::ndcFromScreen( const Vector2i& xy,
     const Vector2f& screenSize )
 {
-    return ndcFromScreen
-    (
-        Vector2f{ xy.x + 0.5f, xy.y + 0.5f },
-        screenSize
-    );
+    return ndcFromScreen( xy + 0.5f, screenSize );
 }
 
 // static

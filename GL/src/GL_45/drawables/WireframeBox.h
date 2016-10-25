@@ -12,6 +12,7 @@ class WireframeBox : public GLDrawable
 public:
 
     WireframeBox( const Box3f& box = Box3f( { 1, 1, 1 } ),
+        const Matrix4f& worldFromBox = Matrix4f::identity(),
         const Vector4f& color = Vector4f( 1.0f ) );
 
     void updatePositions( const Box3f& box,

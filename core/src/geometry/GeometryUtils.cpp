@@ -103,7 +103,7 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangle( const Vector2f& v0, con
 
     for2D( bbox.minimum(), bbox.size, [&]( const Vector2i& xy )
     {
-        Vector2f p = { xy.x + 0.5f, xy.y + 0.5f };
+        Vector2f p = xy + 0.5f;
 
         if( pointInTriangle( p, v0, v1, v2 ) )
         {
@@ -159,9 +159,9 @@ std::vector< Vector2f > GeometryUtils::pixelsInTriangleConservative(
     std::vector< Vector2f > pointsInside;
     pointsInside.reserve( bbox.area() );
 
-    for2D( bbox.minimum(), bbox.size, [ & ]( const Vector2i& xy )
+    for2D( bbox.minimum(), bbox.size, [&]( const Vector2i& xy )
     {
-        Vector2f p = { xy.x + 0.5f, xy.y + 0.5f };
+        Vector2f p = xy + 0.5f;
 
         float passed01 = edgeTestConservative( normal01, v0, p );
         float passed12 = edgeTestConservative( normal12, v1, p );
