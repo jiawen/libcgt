@@ -1,6 +1,5 @@
 namespace libcgt { namespace core { namespace imageproc {
 
-// TODO: Check over the rounding.
 inline float toFloat( uint8_t x )
 {
     return x / 255.f;
@@ -53,12 +52,12 @@ inline Vector2f toFloat( int8x2 v )
 
 inline Vector3f toFloat( int8x3 v )
 {
-    return Vector3f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) );
+    return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ) };
 }
 
 inline Vector4f toFloat( int8x4 v )
 {
-    return Vector4f( toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) );
+    return{ toFloat( v.x ), toFloat( v.y ), toFloat( v.z ), toFloat( v.w ) };
 }
 
 inline int8_t toSInt8( float x )
@@ -131,12 +130,7 @@ inline float rgbToLuminance( Vector3f rgb )
 
 inline float rgbToLuminance( uint8x3 rgb )
 {
-    return
-    (
-        0.3279f * toFloat( rgb.x ) +
-        0.6557f * toFloat( rgb.y ) +
-        0.0164f * toFloat( rgb.z )
-    );
+    return rgbToLuminance( toFloat( rgb ) );
 }
 
 inline Vector3f rgb2xyz( Vector3f rgb )
@@ -231,7 +225,7 @@ inline Vector3f hsv2rgb( Vector3f hsv )
     }
 }
 
-inline Vector4f hsva2rgba( Vector4f hsva )
+inline Vector4f hsv2rgb( Vector4f hsva )
 {
     return Vector4f( hsv2rgb( hsva.xyz ), hsva.w );
 }

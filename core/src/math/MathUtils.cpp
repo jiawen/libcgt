@@ -336,25 +336,6 @@ Vector4i maximum( const Vector4i& v0, const Vector4i& v1 )
     return{ std::max( v0.x, v1.x ), std::max( v0.y, v1.y ), std::max( v0.z, v1.z ), std::max( v0.w, v1.w ) };
 }
 
-void rescaleRangeToScaleOffset( float inputMin, float inputMax,
-    float outputMin, float outputMax,
-    float& scale, float& offset )
-{
-    float inputRange = inputMax - inputMin;
-    float outputRange = outputMax - outputMin;
-
-    // y = outputMin + [ ( x - inputMin ) / inputRange ] * outputRange
-    //   = outputMin + ( x * outputRange / inputRange ) - ( inputMin * outputRange / inputRange )
-    //
-    // -->
-    //
-    // scale = outputRange / inputRange
-    // offset = outputMin - inputMin * outputRange / inputRange
-
-    scale = outputRange / inputRange;
-    offset = outputMin - inputMin * scale;
-}
-
 float distanceSquared( float x0, float y0, float x1, float y1 )
 {
     float dx = x1 - x0;

@@ -78,20 +78,21 @@ Vector3f xyz2lab( Vector3f xyz,
 // Convert RGB to the CIE-Lab color space.
 Vector3f rgb2lab( Vector3f rgb );
 
+// Convert a pixel from HSV to RGB.
 Vector3f hsv2rgb( Vector3f hsv );
 
-// alpha is preserved
-Vector4f hsva2rgba( Vector4f hsva );
+// Convert a pixel from HSV to RGB, preserving alpha.
+Vector4f hsv2rgb( Vector4f hsv );
 
 // Given x in [0,1], returns an RGBA color like MATLAB's "jet" colormap.
 // Values outside of [0,1] are undefined.
 Vector4f colorMapJet( float x );
 
-// returns the logarithm of the L channel of an Lab image
-// offset by LOG_LAB_EPSILON and rescaled between 0 and 100
+// Returns the logarithm of the L channel of a pixel in Lab space,
+// offset by LOG_LAB_EPSILON and rescaled between 0 and 100.
 float logL( float l );
 
-// returns the anti-logarithm of the L channel of an Lab image
+// Returns the anti-logarithm of the L channel of an Lab image
 // offset by LOG_LAB_EPSILON and rescaled between 0 and 100
 float expL( float ll );
 

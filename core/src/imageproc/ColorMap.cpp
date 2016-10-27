@@ -1,13 +1,14 @@
 #include <imageproc/ColorMap.h>
 
 #include <common/ArrayUtils.h>
+#include <geometry/RangeUtils.h>
 #include <imageproc/ColorUtils.h>
 #include <math/MathUtils.h>
 
 using libcgt::core::arrayutils::map;
 using libcgt::core::math::clamp;
 using libcgt::core::math::fraction;
-using libcgt::core::math::rescale;
+using libcgt::core::geometry::rescale;
 
 namespace libcgt { namespace core { namespace imageproc {
 

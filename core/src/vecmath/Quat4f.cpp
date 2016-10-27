@@ -80,7 +80,8 @@ Quat4f Quat4f::fromRotationMatrix( const Matrix3f& m )
 }
 
 // static
-Quat4f Quat4f::fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vector3f& z )
+Quat4f Quat4f::fromRotatedBasis(
+    const Vector3f& x, const Vector3f& y, const Vector3f& z )
 {
     return fromRotationMatrix( Matrix3f( x, y, z ) );
 }
@@ -89,8 +90,8 @@ Quat4f Quat4f::fromRotatedBasis( const Vector3f& x, const Vector3f& y, const Vec
 Quat4f Quat4f::randomRotation( float u0, float u1, float u2 )
 {
     float z = u0;
-    float theta = 2.0f * libcgt::core::math::PI * u1;
-    float r = sqrt( 1.f - z * z );
+    float theta = libcgt::core::math::TWO_PI * u1;
+    float r = sqrt( 1.0f - z * z );
     float w = libcgt::core::math::PI * u2;
 
     return Quat4f
@@ -175,23 +176,12 @@ float& Quat4f::operator [] ( int i )
 
 Vector3f Quat4f::xyz() const
 {
-    return Vector3f
-    (
-        x,
-        y,
-        z
-    );
+    return{ x, y, z };
 }
 
 Vector4f Quat4f::wxyz() const
 {
-    return Vector4f
-    (
-        w,
-        x,
-        y,
-        z
-    );
+    return{ w, x, y, z };
 }
 
 float Quat4f::norm() const
@@ -227,13 +217,6 @@ Quat4f Quat4f::normalized() const
     return q;
 }
 
-void Quat4f::conjugate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-}
-
 Quat4f Quat4f::conjugated() const
 {
     return Quat4f
@@ -243,16 +226,6 @@ Quat4f Quat4f::conjugated() const
         -y,
         -z
     );
-}
-
-void Quat4f::invert()
-{
-    Quat4f inverse = conjugated() * ( 1.0f / normSquared() );
-
-    w = inverse.w;
-    x = inverse.x;
-    y = inverse.y;
-    z = inverse.z;
 }
 
 Quat4f Quat4f::inverse() const
@@ -359,7 +332,8 @@ Quat4f Quat4f::lerp( const Quat4f& q0, const Quat4f& q1, float alpha )
 }
 
 // static
-Quat4f Quat4f::slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip )
+Quat4f Quat4f::slerp( const Quat4f& a, const Quat4f& b, float t,
+    bool allowFlip )
 {
     float cosAngle = Quat4f::dot( a, b );
 
@@ -397,7 +371,8 @@ Quat4f Quat4f::slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip 
 }
 
 // static
-Quat4f Quat4f::squad( const Quat4f& a, const Quat4f& tanA, const Quat4f& tanB, const Quat4f& b, float t )
+Quat4f Quat4f::squad( const Quat4f& a, const Quat4f& tanA, const Quat4f& tanB,
+    const Quat4f& b, float t )
 {
     Quat4f ab = Quat4f::slerp( a, b, t );
     Quat4f tangent = Quat4f::slerp( tanA, tanB, t, false );
@@ -405,7 +380,9 @@ Quat4f Quat4f::squad( const Quat4f& a, const Quat4f& tanA, const Quat4f& tanB, c
 }
 
 // static
-Quat4f Quat4f::cubicInterpolate( const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3, float t )
+Quat4f Quat4f::cubicInterpolate(
+    const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3,
+    float t )
 {
     // geometric construction:
     //            t
@@ -434,7 +411,8 @@ Quat4f Quat4f::logDifference( const Quat4f& a, const Quat4f& b )
 }
 
 // static
-Quat4f Quat4f::squadTangent( const Quat4f& before, const Quat4f& center, const Quat4f& after )
+Quat4f Quat4f::squadTangent( const Quat4f& before, const Quat4f& center,
+    const Quat4f& after )
 {
     Quat4f l1 = Quat4f::logDifference( center, before );
     Quat4f l2 = Quat4f::logDifference( center, after );

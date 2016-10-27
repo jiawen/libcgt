@@ -163,27 +163,6 @@ float fraction( float x, const Range1f& range );
 // clamped.
 float fraction( int x, const Range1i& range );
 
-// TODO(jiawen): Move this into RangeUtils.
-
-// given an input range [inputMin, inputMax]
-// and an output range [outputMin, outputMax]
-//
-// Computes the parameters scale and offset such that:
-// for x \in [inputMin, inputMax]
-// scale * x + offset is in the range [outputMin, outputMax].
-// Call this transformBetween() just like for Rect2f.
-void rescaleRangeToScaleOffset( float inputMin, float inputMax,
-    float outputMin, float outputMax,
-    float& scale, float& offset );
-
-float rescale( float x, const Range1f& src, const Range1f& dst );
-
-int rescale( float x, const Range1f& src, const Range1i& dst );
-
-float rescale( int x, const Range1i& src, const Range1f& dst );
-
-int rescale( int x, const Range1i& src, const Range1i& dst );
-
 // ----- Cubic spline interpolation -----
 
 // TODO: this is Catmull-Rom?

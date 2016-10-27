@@ -1,65 +1,63 @@
-inline Vector3f::Vector3f()
+inline Vector3f::Vector3f() :
+    x( 0 ),
+    y( 0 ),
+    z( 0 )
 {
-    x = 0;
-    y = 0;
-    z = 0;
 }
 
-inline Vector3f::Vector3f( float f )
+inline Vector3f::Vector3f( float f ) :
+    x( f ),
+    y( f ),
+    z( f )
 {
-    x = f;
-    y = f;
-    z = f;
 }
 
-inline Vector3f::Vector3f( float _x, float _y, float _z )
+inline Vector3f::Vector3f( float _x, float _y, float _z ) :
+    x( _x ),
+    y( _y ),
+    z( _z )
 {
-    x = _x;
-    y = _y;
-    z = _z;
 }
 
-inline Vector3f::Vector3f( const Vector2f& _xy, float _z )
+inline Vector3f::Vector3f( const Vector2f& _xy, float _z ) :
+    xy( _xy ),
+    z( _z )
 {
-    xy = _xy;
-    z = _z;
 }
 
-inline Vector3f::Vector3f( float _x, const Vector2f& _yz )
+inline Vector3f::Vector3f( float _x, const Vector2f& _yz ) :
+    x( _x ),
+    yz( _yz )
 {
-    x = _x;
-    yz = _yz;
 }
 
-inline Vector3f::Vector3f( const Vector3d& v )
+inline Vector3f::Vector3f( const Vector3d& v ) :
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) ),
+    z( static_cast< float >( v.z ) )
 {
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-    z = static_cast< float >( v.z );
 }
 
-inline Vector3f::Vector3f( const Vector3i& v )
+inline Vector3f::Vector3f( const Vector3i& v ) :
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) ),
+    z( static_cast< float >( v.z ) )
 {
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-    z = static_cast< float >( v.z );
 }
 
 inline Vector3f& Vector3f::operator = ( const Vector3d& v )
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) ),
+    z( static_cast< float >( v.z ) )
 {
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-    z = static_cast< float >( v.z );
-
     return *this;
 }
 
 inline Vector3f& Vector3f::operator = ( const Vector3i& v )
+    x( static_cast< float >( v.x ) ),
+    y( static_cast< float >( v.y ) ),
+    z( static_cast< float >( v.z ) )
 {
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-    z = static_cast< float >( v.z );
-
     return *this;
 }
 

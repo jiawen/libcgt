@@ -37,7 +37,9 @@ Vector2f normalizedCoordinatesWithinRectangle( const Vector2f& p,
 // Returns a Matrix4f that takes a point in the from rectangle and
 // maps it to a point in the to rectangle with scale and translation only.
 // from.origin --> to.origin
-// from.limit --> to.limit
+// from.origin + size --> to.origin + size.
+//
+// p is represented as (x, y, 0, 1).
 Matrix4f transformBetween( const Rect2f& from, const Rect2f& to );
 
 // Translate (moves) r: r.origin += delta.

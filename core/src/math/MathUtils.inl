@@ -115,45 +115,6 @@ inline float fraction( int x, const Range1i& range )
     return static_cast< float >( x - range.origin ) / ( range.size );
 }
 
-inline float rescale( float x, const Range1f& src, const Range1f& dst )
-{
-    assert( src.isStandard() );
-    assert( !src.isEmpty() );
-    assert( dst.isStandard() );
-    assert( !dst.isEmpty() );
-
-    return lerp( dst, fraction( x, src ) );
-}
-
-inline int rescale( float x, const Range1f& src, const Range1i& dst )
-{
-    assert( src.isStandard() );
-    assert( !src.isEmpty() );
-    assert( dst.isStandard() );
-    assert( !dst.isEmpty() );
-
-    return roundToInt( lerp( dst, fraction( x, src ) ) );
-}
-
-inline float rescale( int x, const Range1i& src, const Range1f& dst )
-{
-    assert( src.isStandard() );
-    assert( !src.isEmpty() );
-    assert( dst.isStandard() );
-    assert( !dst.isEmpty() );
-
-    return lerp( dst, fraction( x, src ) );
-}
-
-inline int rescale( int x, const Range1i& src, const Range1i& dst )
-{
-    assert( src.isStandard() );
-    assert( !src.isEmpty() );
-    assert( dst.isStandard() );
-    assert( !dst.isEmpty() );
-
-    return roundToInt( lerp( dst, fraction( x, src ) ) );
-}
 
 inline float oo_0( float x )
 {

@@ -61,10 +61,10 @@ public:
     void normalize();
     Quat4f normalized() const;
 
-    void conjugate();
     Quat4f conjugated() const;
 
-    void invert();
+    // Recall that the inverse of a quaternion q is conj(q) / norm(q).
+    // If q is a unit quaternion, its inverse is its conjugate.
     Quat4f inverse() const;
 
     // log and exponential maps
@@ -89,30 +89,37 @@ public:
     // ---- Utility ----
     void print();
 
-     // quaternion dot product (a la vector)
+    // Quaternion dot product, computed just like for vectors.
     static float dot( const Quat4f& q0, const Quat4f& q1 );
 
-    // linear (stupid) interpolation
+    // Linear (stupid) interpolation.
     static Quat4f lerp( const Quat4f& q0, const Quat4f& q1, float alpha );
 
     // spherical linear interpolation
-    static Quat4f slerp( const Quat4f& a, const Quat4f& b, float t, bool allowFlip = true );
+    static Quat4f slerp( const Quat4f& a, const Quat4f& b, float t,
+        bool allowFlip = true );
 
-    // spherical quadratic interpolation between a and b at point t
-    // given quaternion tangents tanA and tanB (can be computed using squadTangent)
-    static Quat4f squad( const Quat4f& a, const Quat4f& tanA, const Quat4f& tanB, const Quat4f& b, float t );
+    // Spherical quadratic interpolation between a and b at point t.
+    // The quaternion tangents tanA and tanB can be computed using
+    // squadTangent().
+    static Quat4f squad( const Quat4f& a, const Quat4f& tanA,
+        const Quat4f& tanB, const Quat4f& b,
+        float t );
+
+    // Computes a tangent at center, defined by the before and after quaternions
+    // Useful for squad()
+    static Quat4f squadTangent( const Quat4f& before, const Quat4f& center,
+        const Quat4f& after );
 
     // spherical cubic interpolation: given control points q[i] and parameter t
     // computes the interpolated quaternion
-    static Quat4f cubicInterpolate( const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3, float t );
+    static Quat4f cubicInterpolate(
+        const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3,
+        float t );
 
     // Log-difference between a and b, used for squadTangent
     // returns log( a^-1 b )
     static Quat4f logDifference( const Quat4f& a, const Quat4f& b );
-
-    // Computes a tangent at center, defined by the before and after quaternions
-    // Useful for squad()
-    static Quat4f squadTangent( const Quat4f& before, const Quat4f& center, const Quat4f& after );
 
     union
     {
