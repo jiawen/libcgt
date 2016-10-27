@@ -46,18 +46,18 @@ inline Vector3f::Vector3f( const Vector3i& v ) :
 }
 
 inline Vector3f& Vector3f::operator = ( const Vector3d& v )
-    x( static_cast< float >( v.x ) ),
-    y( static_cast< float >( v.y ) ),
-    z( static_cast< float >( v.z ) )
 {
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
     return *this;
 }
 
 inline Vector3f& Vector3f::operator = ( const Vector3i& v )
-    x( static_cast< float >( v.x ) ),
-    y( static_cast< float >( v.y ) ),
-    z( static_cast< float >( v.z ) )
 {
+    x = static_cast< float >( v.x );
+    y = static_cast< float >( v.y );
+    z = static_cast< float >( v.z );
     return *this;
 }
 
