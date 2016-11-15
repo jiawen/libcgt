@@ -19,7 +19,7 @@ void jet( Array2DView< const float > src, const Range1f& srcRange,
         [&] ( float z )
         {
             z = saturate( fraction( z, srcRange ) );
-            return toUInt8( colorMapJet( z ) );
+            return toUInt8( jet( z ) );
         }
     );
 }
@@ -31,7 +31,7 @@ void jet( Array2DView< const float > src, const Range1f& srcRange,
         [&] ( float z )
         {
             z = saturate( fraction( z, srcRange ) );
-            return colorMapJet( z );
+            return jet( z );
         }
     );
 }
@@ -66,6 +66,17 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
                 rgba.w = 1;
             }
             return rgba;
+        }
+    );
+}
+
+void mapRGBToLuminance( Array2DView< const uint8x3 > src,
+    Array2DView< uint8_t > dst )
+{
+    map( src, dst,
+        [&] ( uint8x3 rgb )
+        {
+            return rgbToLuminance( rgb );
         }
     );
 }

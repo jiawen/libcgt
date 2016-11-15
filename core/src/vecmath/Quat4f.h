@@ -16,7 +16,10 @@ public:
 
     // Construct a quaternion from an axis-angle representation, where
     // axisAngle.norm() is the rotation angle in radians and
-    // axisAngle.normalized() is the direction.
+    // axisAngle.normalized() is the direction. This function is numerically
+    // robust near zero.
+    //
+    // This is equivalent to exp( axisAngle ).
     static Quat4f fromAxisAngle( const Vector3f& axisAngle );
 
     // Given a rotation matrix m, returns its unit quaternion representation
@@ -53,9 +56,6 @@ public:
     const float& operator [] ( int i ) const;
     float& operator [] ( int i );
 
-    Vector3f xyz() const;
-    Vector4f wxyz() const;
-
     float norm() const;
     float normSquared() const;
     void normalize();
@@ -67,20 +67,19 @@ public:
     // If q is a unit quaternion, its inverse is its conjugate.
     Quat4f inverse() const;
 
-    // log and exponential maps
-    Quat4f log() const;
+    // TODO: deprecate this.
     Quat4f exp() const;
 
-    // returns unit vector for rotation and radians about the unit vector
-    // The angle is guaranteed to be in [0,pi]
-    // Returns axis = (0,0,0) and angle = 0 for the identity quaternion (1,0,0,0)
-    Vector3f getAxisAngle( float* radiansOut ) const;
+    // TODO: deprecate this.
+    Quat4f log() const;
 
-    // returns a Vector4f, with xyz = axis, and w = angle
-    // axis is a unit vector, angle is in radians
-    // The angle is guaranteed to be in [0,pi]
-    // Returns axis = (0,0,0) and angle = 0 for the identity quaternion (1,0,0,0)
-    Vector4f getAxisAngle() const;
+    // If this is a unit quaternion, returns the unit vector for rotation and
+    // separately, the radians about the unit vector.
+    //
+    // The angle is guaranteed to be in [0, pi].
+    // If this is the identity quaternion (1, 0, 0, 0), returns
+    // axis = (1, 0, 0) and angle = 0.
+    Vector3f getAxisAngle( float* radiansOut ) const;
 
     // If this is a unit quaternion, rotates a vector v as:
     // v' = q * quat(v) * conj(q), where quat(v) is the quaternion [0 v.xyz].
@@ -107,7 +106,8 @@ public:
         float t );
 
     // Computes a tangent at center, defined by the before and after quaternions
-    // Useful for squad()
+    // Useful for squad().
+    // TODO: deprecate and rewrite in terms of exp() and log().
     static Quat4f squadTangent( const Quat4f& before, const Quat4f& center,
         const Quat4f& after );
 
@@ -117,18 +117,26 @@ public:
         const Quat4f& q0, const Quat4f& q1, const Quat4f& q2, const Quat4f& q3,
         float t );
 
-    // Log-difference between a and b, used for squadTangent
-    // returns log( a^-1 b )
-    static Quat4f logDifference( const Quat4f& a, const Quat4f& b );
-
     union
     {
+        // Individual element access.
         struct
         {
             float w;
             float x;
             float y;
             float z;
+        };
+        // Vector3
+        struct
+        {
+            float __padding0;
+            Vector3f xyz;
+        };
+        // Vector4
+        struct
+        {
+            Vector4f wxyz;
         };
         float m_elements[ 4 ];
     };
@@ -141,3 +149,29 @@ Quat4f operator - ( const Quat4f& q );
 Quat4f operator * ( const Quat4f& q0, const Quat4f& q1 );
 Quat4f operator * ( float f, const Quat4f& q );
 Quat4f operator * ( const Quat4f& q, float f );
+
+// The exponential map from R^3 --> S^3 sends:
+// (0,0,0)^T --> Quat(1, (0, 0, 0))
+// v --> Quat(cos(theta/2), sin(theta/2) normalize(v))
+//
+// This function is numerically robust in the vicinity of 0.
+Quat4f exp( const Vector3f& axisAngle );
+
+// TODO: implement Jacobians. If R is a rotation matrix, q is its quaternion
+// representation, and v its rotation vector representation:
+//
+// dR/dv = dR/dq dq/dv
+//
+// Note that dq/dv is a 4x3 matrix D[l, n], where l is the range over the
+// quaternion and n is over the vector.
+// You need to be careful with dq/dv numerically.
+
+// The log map from S^3 --> R^3.
+// v = 2 * acos(q.w) * normalize(v).
+//
+// This function is numerically robust in the vicinity of a rotation of 0 or
+// 2pi: it will return the zero vector.
+Vector3f log( const Quat4f& q );
+
+// TODO: implement time derivatives. If v is a rotation vector, compute
+// dv/dt as a function of dq/dt. dq/dt = 0.5f * Quat4f(0, omega) * q.

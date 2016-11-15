@@ -27,6 +27,11 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
 void normalsToRGBA( Array2DView< const Vector4f > src,
     Array2DView< Vector4f > dst );
 
+// TODO: this has a weird name because of overload issues.
+// Once ArrayReadView and ArrayWriteView are in place, try again.
+void mapRGBToLuminance( Array2DView< const uint8x3 > src,
+    Array2DView< uint8_t > dst );
+
 // Linearly remap every pixel in src from srcRange to dstRange, clamp to
 // [0, 255], then convert to a luminance value in dst.
 void linearRemapToLuminance( Array2DView< const uint16_t > src,

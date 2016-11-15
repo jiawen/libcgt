@@ -180,27 +180,27 @@ bool OpenNI2Camera::setAutoWhiteBalanceEnabled( bool enabled )
     return m_impl->setAutoExposureEnabled( enabled );
 }
 
-bool OpenNI2Camera::pollColor( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2Camera::pollColor( FrameView& frame, int timeoutMS )
 {
     return m_impl->pollColor( frame, timeoutMS );
 }
 
-bool OpenNI2Camera::pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2Camera::pollDepth( FrameView& frame, int timeoutMS )
 {
     return m_impl->pollDepth( frame, timeoutMS );
 }
 
-bool OpenNI2Camera::pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2Camera::pollInfrared( FrameView& frame, int timeoutMS )
 {
     return m_impl->pollInfrared( frame, timeoutMS );
 }
 
-bool OpenNI2Camera::pollOne( Frame& frame, int timeoutMS )
+bool OpenNI2Camera::pollOne( FrameView& frame, int timeoutMS )
 {
     return m_impl->pollOne( frame, timeoutMS );
 }
 
-bool OpenNI2Camera::pollAll( Frame& frame, int timeoutMS )
+bool OpenNI2Camera::pollAll( FrameView& frame, int timeoutMS )
 {
     return m_impl->pollAll( frame, timeoutMS );
 }

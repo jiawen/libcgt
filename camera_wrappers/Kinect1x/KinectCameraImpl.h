@@ -146,8 +146,9 @@ public:
     // Returns {{0, 0}, {0, 0}} if not configured.
     Intrinsics depthIntrinsics() const;
 
-    // TODO(jiawen): get rid of extended depth as a flag. Just have the client
+    // TODO: get rid of extended depth as a flag. Just have the client
     // pass in a non-null buffer.
+    // TODO: clean up the interface.
 
     // Block until one of the input streams is available. This function blocks
     // for up to waitIntervalMilliseconds for data to be available. If
@@ -155,7 +156,7 @@ public:
     // is available or not).
     //
     // The "updated" flag in "frame" corresponding to the channel will be set.
-    bool pollOne( KinectCamera::Frame& frame,
+    bool pollOne( KinectCamera::FrameView& frame,
         bool useExtendedDepth = true,
         int waitIntervalMilliseconds = INFINITE );
 
@@ -165,7 +166,7 @@ public:
     // is available or not).
     //
     // The "updated" flag in "frame" corresponding to the channels will be set.
-    bool pollAll( KinectCamera::Frame& frame,
+    bool pollAll( KinectCamera::FrameView& frame,
         bool useExtendedDepth = true,
         int waitIntervalMilliseconds = INFINITE );
 
@@ -206,33 +207,33 @@ private:
 
     // Helper function for pollOne() and pollAll() to populate "frame" once
     // event "eventIndex" has been signaled. Returns whether it was successful.
-    bool handleEvent( KinectCamera::Frame& frame, bool useExtendedDepth,
+    bool handleEvent( KinectCamera::FrameView& frame, bool useExtendedDepth,
         DWORD eventIndex );
 
-    // TODO(jiawen): pass in different formats?
+    // TODO: pass in different formats?
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetColorFrame( DWORD millisecondsToWait,
+    bool pollColor( DWORD millisecondsToWait,
         Array2DView< uint8x4 > bgra,
-        int64_t& timestamp, int& frameNumber );
+        int64_t& timestampNS, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetInfraredFrame( DWORD millisecondsToWait,
+    bool pollInfrared( DWORD millisecondsToWait,
         Array2DView< uint16_t > ir,
-        int64_t& timestamp, int& frameNumber );
+        int64_t& timestampNS, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetExtendedDepthFrame( DWORD millisecondsToWait,
+    bool pollExtendedDepth( DWORD millisecondsToWait,
         Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
-        int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode );
+        int64_t& timestampNS, int& frameNumber, bool& capturedWithNearMode );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
-    bool handleGetPackedDepthFrame( DWORD millisecondsToWait,
+    bool pollPackedDepth( DWORD millisecondsToWait,
         Array2DView< uint16_t > depth,
-        int64_t& timestamp, int& frameNumber );
+        int64_t& timestampNS, int& frameNumber );
 
     // Convert data into recognizable formats.
     bool handleGetSkeletonFrame( DWORD millisecondsToWait,

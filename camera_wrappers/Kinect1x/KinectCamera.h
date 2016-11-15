@@ -62,8 +62,8 @@ public:
     // "depthUpdated", and/or "skeletonUpdated" will be set to true indicating
     // which was updated.
     //
-    // timestamps are milliseconds since the most recent NuiInitialize() call.
-    struct Frame
+    // timestamps are nanoseconds since the most recent NuiInitialize() call.
+    struct FrameView
     {
         // Only one of color or infrared will be populated, depending on which
         // color format was configured.
@@ -72,7 +72,7 @@ public:
         bool infraredUpdated;
 
         // ----- Color stream -----
-        int64_t colorTimestamp;
+        int64_t colorTimestampNS;
         int colorFrameNumber;
         // color will always have alpha set to 0.
         Array2DView< uint8x4 > color;
@@ -83,13 +83,13 @@ public:
         // populated, depending on whether player tracking is enabled, and
         // whether the client requested packed or extended depth.
 
-        int64_t depthTimestamp;
+        int64_t depthTimestampNS;
         int depthFrameNumber;
         bool depthCapturedWithNearMode; // Not updated if using packed depth.
 
         // ----- Infrared stream -----
 
-        int64_t infraredTimestamp;
+        int64_t infraredTimestampNS;
         int infraredFrameNumber;
         // The infrared stream has data only in the top 10 bits. Bits 5:0 are 0.
         Array2DView< uint16_t > infrared;
@@ -284,7 +284,7 @@ public:
     // forever.
     //
     // The "updated" flag in "frame" corresponding to the channel will be set.
-    bool pollOne( Frame& frame,
+    bool pollOne( FrameView& frame,
         bool useExtendedDepth = true,
         int waitIntervalMilliseconds = 0 );
 
@@ -295,7 +295,7 @@ public:
     // forever.
     //
     // The "updated" flag in "frame" corresponding to the channels will be set.
-    bool pollAll( Frame& frame,
+    bool pollAll( FrameView& frame,
         bool useExtendedDepth = true,
         int waitIntervalMilliseconds = 0 );
 

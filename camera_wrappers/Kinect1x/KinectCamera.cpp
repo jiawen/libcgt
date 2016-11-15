@@ -400,14 +400,14 @@ Intrinsics KinectCamera::depthIntrinsics() const
     return m_impl->depthIntrinsics();
 }
 
-bool KinectCamera::pollOne( Frame& frame,
+bool KinectCamera::pollOne( FrameView& frame,
     bool useExtendedDepth, int waitIntervalMilliseconds )
 {
     return m_impl->pollOne(
         frame, useExtendedDepth, waitIntervalMilliseconds );
 }
 
-bool KinectCamera::pollAll( Frame& frame,
+bool KinectCamera::pollAll( FrameView& frame,
     bool useExtendedDepth, int waitIntervalMilliseconds )
 {
     return m_impl->pollAll(

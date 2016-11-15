@@ -1,4 +1,4 @@
-namespace libcgt { namespace core { namespace timeutils {
+namespace libcgt { namespace core { namespace time {
 
 template< typename TimePoint >
 int64_t dtMS( TimePoint t0, TimePoint t1 )
@@ -21,4 +21,19 @@ int64_t dtNS( TimePoint t0, TimePoint t1 )
         ( t1 - t0 ).count();
 }
 
-} } } // timeutils, core, libcgt
+inline int64_t msToNS( int64_t ms )
+{
+    return ms * 1000000;
+}
+
+inline int64_t msToUS( int64_t ms )
+{
+    return ms * 1000;
+}
+
+inline int64_t usToNS( int64_t us )
+{
+    return us * 1000;
+}
+
+} } } // time, core, libcgt

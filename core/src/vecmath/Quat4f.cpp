@@ -14,21 +14,32 @@ const Quat4f Quat4f::ZERO = Quat4f( 0, 0, 0, 0 );
 // static
 const Quat4f Quat4f::IDENTITY = Quat4f( 1, 0, 0, 0 );
 
+// TODO: get rid of this.
+namespace
+{
+
+// Log-difference between a and b, used for squadTangent
+// returns log( a^-1 b )
+Quat4f logDifference( const Quat4f& a, const Quat4f& b )
+{
+    Quat4f diff = a.inverse() * b;
+    diff.normalize();
+    return diff.log();
+}
+
+}
+
 // static
 Quat4f Quat4f::fromAxisAngle( const Vector3f& axisAngle )
 {
-    float radians;
-    Vector3f axis = axisAngle.normalized( radians );
-    float halfRadians = 0.5f * radians;
-    float c = cos( halfRadians );
-    float s = sin( halfRadians );
-
-    return Quat4f( c, axis * s );
+    return ::exp( axisAngle );
 }
 
 // static
 Quat4f Quat4f::fromRotationMatrix( const Matrix3f& m )
 {
+    const float EPSILON = 1e-6f;
+
     float x;
     float y;
     float z;
@@ -37,7 +48,7 @@ Quat4f Quat4f::fromRotationMatrix( const Matrix3f& m )
     // Compute one plus the trace of the matrix
     float onePlusTrace = 1.0f + m( 0, 0 ) + m( 1, 1 ) + m( 2, 2 );
 
-    if( onePlusTrace > 1e-5 )
+    if( onePlusTrace > EPSILON )
     {
         // Direct computation
         float s = sqrt( onePlusTrace ) * 2.0f;
@@ -174,16 +185,6 @@ float& Quat4f::operator [] ( int i )
     return m_elements[ i ];
 }
 
-Vector3f Quat4f::xyz() const
-{
-    return{ x, y, z };
-}
-
-Vector4f Quat4f::wxyz() const
-{
-    return{ w, x, y, z };
-}
-
 float Quat4f::norm() const
 {
     return sqrt( normSquared() );
@@ -278,32 +279,15 @@ Quat4f Quat4f::exp() const
 
 Vector3f Quat4f::getAxisAngle( float* radiansOut ) const
 {
-    Vector4f axisAngle = getAxisAngle();
-    *radiansOut = axisAngle.w;
-    return axisAngle.xyz;
-}
-
-Vector4f Quat4f::getAxisAngle() const
-{
-    float theta = acos( w ) * 2;
-
-    float vectorNormSquared = x * x + y * y + z * z;
-    if( vectorNormSquared > 0 )
+    Vector3f l = ::log( *this );
+    *radiansOut = l.norm();
+    if( *radiansOut == 0.0f )
     {
-        float vectorNorm = sqrt( vectorNormSquared );
-        float reciprocalVectorNorm = 1.f / vectorNorm;
-
-        return Vector4f
-        (
-            x * reciprocalVectorNorm,
-            y * reciprocalVectorNorm,
-            z * reciprocalVectorNorm,
-            theta
-        );
+        return{ 1.0f, 0.0f, 0.0f };
     }
     else
     {
-        return Vector4f( 0, 0, 0, 0 );
+        return l.normalized();
     }
 }
 
@@ -403,19 +387,11 @@ Quat4f Quat4f::cubicInterpolate(
 }
 
 // static
-Quat4f Quat4f::logDifference( const Quat4f& a, const Quat4f& b )
-{
-    Quat4f diff = a.inverse() * b;
-    diff.normalize();
-    return diff.log();
-}
-
-// static
 Quat4f Quat4f::squadTangent( const Quat4f& before, const Quat4f& center,
     const Quat4f& after )
 {
-    Quat4f l1 = Quat4f::logDifference( center, before );
-    Quat4f l2 = Quat4f::logDifference( center, after );
+    Quat4f l1 = logDifference( center, before );
+    Quat4f l2 = logDifference( center, after );
 
     Quat4f e;
     for( int i = 0; i < 4; ++i )
@@ -429,7 +405,7 @@ Quat4f Quat4f::squadTangent( const Quat4f& before, const Quat4f& center,
 
 Vector3f Quat4f::rotateVector( const Vector3f& v )
 {
-    return ( ( *this ) * Quat4f( v ) * conjugated() ).xyz();
+    return ( ( *this ) * Quat4f( v ) * conjugated() ).xyz;
 }
 
 Quat4f operator + ( const Quat4f& q0, const Quat4f& q1 )
@@ -490,4 +466,69 @@ Quat4f operator * ( const Quat4f& q, float f )
         f * q.y,
         f * q.z
     );
+}
+
+Quat4f exp( const Vector3f& axisAngle )
+{
+    // sin(theta/2) normalize(v) =
+    // sin(theta/2) v / theta
+    // (1/theta) sin(theta/2) v.
+    // The Taylor expansion of sin(theta/2) is:
+    //     theta/2 - (theta/2)^3 / 3! + (theta/2)^5 / 5! - ...
+    //   = theta/2 - theta^3 / 48 + theta^5 / 3840 - ...
+    // Divide by theta to get:
+    //     1/2 - theta^2 / 48 + theta^4 / 3840
+    //
+    // We can drop the theta^4 term when theta <= 4th_root(machine_precision).
+    // float has a machine epsilon of 2^-24.
+    // --> when theta <= 2^(-6) = 0.015625
+
+    float theta = axisAngle.norm();
+    float halfRadians = 0.5f * theta;
+    if( theta <= 0.015625f )
+    {
+        float c = cos( halfRadians );
+        // sin(theta/2)/theta = 0.5f + theta^2 / 48
+        float s = 0.5f + theta * theta / 48.0f;
+        return Quat4f( c, axisAngle * s );
+    }
+    else
+    {
+        Vector3f axis = axisAngle / theta;
+        float c = cos( halfRadians );
+        float s = sin( halfRadians );
+        return Quat4f( c, axis * s );
+    }
+}
+
+Vector3f log( const Quat4f& q )
+{
+    // v = log(q) = 2 acos(q.w) normalize(q.xyz)
+    // = (2 acos(q.w) / norm(q.xyz)) * q.xyz
+    //
+    // norm(q.xyz) = sqrt(x^2 + y^2 + z^2)
+    // But if q is a unit quaternion, then w^2 + x^2 + y^2 + z^2 = 1, so
+    // x^2 + y^2 + z^2 = 1 - w^2.
+    // Therefore, norm(q.xyz) = sqrt(1 - w^2).
+    //
+    // Singularities:
+    // If q.w is near -1, then theta/2 = acos(-1) = pi --> theta = 2pi.
+    // If q.w is near +1, then theta/2 = acos(1) = 0 --> theta = 0.
+    //   For a unit quaternion, this also implies norm(q.xyz) = 0, which is in
+    //   the denominator. Fortunately, this is the identity rotation and we
+    //   should return the zero vector.
+    assert( q.w >= -1.0f );
+    assert( q.w <= 1.0f );
+    const float EPSILON = 1e-6f;
+
+    float theta = acos( q.w );
+    float s = sqrt( 1 - q.w * q.w );
+    if( s < EPSILON )
+    {
+        return Vector3f{ 0.0f };
+    }
+    else
+    {
+        return ( 2 * theta / s ) * q.xyz;
+    }
 }

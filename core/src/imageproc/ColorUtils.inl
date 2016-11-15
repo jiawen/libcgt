@@ -22,7 +22,7 @@ inline Vector4f toFloat( uint8x4 v )
 
 inline uint8_t toUInt8( float x )
 {
-    return static_cast< uint8_t >( 255.0f * x );
+    return static_cast< uint8_t >( 255.0f * x + 0.5f );
 }
 
 inline uint8x2 toUInt8( Vector2f v )
@@ -128,9 +128,12 @@ inline float rgbToLuminance( Vector3f rgb )
     return( 0.3279f * rgb.x + 0.6557f * rgb.y + 0.0164f * rgb.z );
 }
 
-inline float rgbToLuminance( uint8x3 rgb )
+inline uint8_t rgbToLuminance( uint8x3 rgb )
 {
-    return rgbToLuminance( toFloat( rgb ) );
+    uint16_t lr = (  84 * static_cast< uint16_t >( rgb.x ) ) >> 8;
+    uint16_t lg = ( 167 * static_cast< uint16_t >( rgb.y ) ) >> 8;
+    uint16_t lb = (   4 * static_cast< uint16_t >( rgb.z ) ) >> 8;
+    return static_cast< uint8_t >( lr + lg + lb );
 }
 
 inline Vector3f rgb2xyz( Vector3f rgb )
@@ -230,7 +233,7 @@ inline Vector4f hsv2rgb( Vector4f hsva )
     return Vector4f( hsv2rgb( hsva.xyz ), hsva.w );
 }
 
-inline Vector4f colorMapJet( float x )
+inline Vector4f jet( float x )
 {
     float fourX = 4 * x;
     float r = std::min( fourX - 1.5f, -fourX + 4.5f );

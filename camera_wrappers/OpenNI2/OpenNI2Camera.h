@@ -30,31 +30,28 @@ public:
     // returned by the camera. When polling from the camera, "colorUpdated" or
     // "depthUpdated" will be set to true indicating which was updated.
     //
-    // Timestamps are in microseconds from an arbitrary zero.
-    struct Frame
+    // Timestamps are in nanoseconds from an arbitrary zero.
+    struct FrameView
     {
-        // ----- Color stream -----
-        // Only one of rgb or infrared will be populated, depending on which
-        // color format was configured.
         bool colorUpdated;
+        bool infraredUpdated;
+        bool depthUpdated;
 
-        int64_t colorTimestamp;
+        // ----- Color stream -----
+        // Either rgb or infrared will be populated but not both. The driver
+        // has a limitation where the color and infrared data are delivered
+        // over the same stream and only one can be activate at a time.
+        int64_t colorTimestampNS;
         int colorFrameNumber;
-        Array2DView< uint8x3 > rgb;
+        Array2DView< uint8x3 > color;
         // TODO(jiawen): YUV formats.
 
-        bool infraredUpdated;
-        int64_t infraredTimestamp;
+        int64_t infraredTimestampNS;
         int infraredFrameNumber;
         Array2DView< uint16_t > infrared;
 
         // ----- Depth stream -----
-        // Only one of packedDepth or (extendedDepth and playerIndex) will be
-        // populated, depending on whether player tracking is enabled, and
-        // whether the client requested packed or extended depth.
-        bool depthUpdated;
-
-        int64_t depthTimestamp;
+        int64_t depthTimestampNS;
         int depthFrameNumber;
         Array2DView< uint16_t > depth;
     };
@@ -140,17 +137,17 @@ public:
     bool getAutoWhiteBalanceEnabled();
     bool setAutoWhiteBalanceEnabled( bool enabled );
 
-    bool pollColor( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+    bool pollColor( FrameView& frame, int timeoutMS = 0 );
 
-    bool pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+    bool pollDepth( FrameView& frame, int timeoutMS = 0 );
 
-    bool pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS = 0 );
+    bool pollInfrared( FrameView& frame, int timeoutMS = 0 );
 
-    bool pollOne( Frame& frame, int timeoutMS = 0 );
+    bool pollOne( FrameView& frame, int timeoutMS = 0 );
 
     // Poll all registered streams.
     // Returns true if all succeeded.
-    bool pollAll( Frame& frame, int timeoutMS = 0 );
+    bool pollAll( FrameView& frame, int timeoutMS = 0 );
 
 private:
 

@@ -8,12 +8,14 @@
 
 #include <common/ArrayUtils.h>
 #include <imageproc/Swizzle.h>
+#include <time/TimeUtils.h>
 
 #include "KinectUtils.h"
 
 using libcgt::core::arrayutils::componentView;
 using libcgt::core::arrayutils::copy;
 using libcgt::core::cameras::Intrinsics;
+using libcgt::core::time::msToNS;
 using libcgt::core::vecmath::EuclideanTransform;
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
@@ -235,7 +237,7 @@ KinectCamera::Event KinectCameraImpl::pollOne(
 }
 #endif
 
-bool KinectCameraImpl::pollOne( KinectCamera::Frame& frame,
+bool KinectCameraImpl::pollOne( KinectCamera::FrameView& frame,
     bool useExtendedDepth, int waitIntervalMilliseconds )
 {
     frame.colorUpdated = false;
@@ -245,42 +247,42 @@ bool KinectCameraImpl::pollOne( KinectCamera::Frame& frame,
 
     if( colorFormat() == NUI_IMAGE_TYPE_COLOR )
     {
-        frame.colorUpdated = handleGetColorFrame( waitIntervalMilliseconds,
+        frame.colorUpdated = pollColor( waitIntervalMilliseconds,
             frame.color,
-            frame.colorTimestamp, frame.colorFrameNumber );
+            frame.colorTimestampNS, frame.colorFrameNumber );
         return frame.colorUpdated;
     }
     else if( isUsingDepth() )
     {
         if( useExtendedDepth )
         {
-            frame.depthUpdated = handleGetExtendedDepthFrame(
+            frame.depthUpdated = pollExtendedDepth(
                 waitIntervalMilliseconds,
                 frame.extendedDepth, frame.playerIndex,
-                frame.depthTimestamp, frame.depthFrameNumber,
+                frame.depthTimestampNS, frame.depthFrameNumber,
                 frame.depthCapturedWithNearMode );
         }
         else
         {
-            frame.depthUpdated = handleGetPackedDepthFrame(
+            frame.depthUpdated = pollPackedDepth(
                 waitIntervalMilliseconds,
                 frame.packedDepth,
-                frame.depthTimestamp, frame.depthFrameNumber );
+                frame.depthTimestampNS, frame.depthFrameNumber );
         }
         return frame.depthUpdated;
     }
     else if( colorFormat() == NUI_IMAGE_TYPE_COLOR_INFRARED )
     {
-        frame.infraredUpdated = handleGetInfraredFrame(
+        frame.infraredUpdated = pollInfrared(
             waitIntervalMilliseconds,
             frame.infrared,
-            frame.infraredTimestamp, frame.infraredFrameNumber );
+            frame.infraredTimestampNS, frame.infraredFrameNumber );
         return frame.infraredUpdated;
     }
 	return false;
 }
 
-bool KinectCameraImpl::pollAll( KinectCamera::Frame& frame,
+bool KinectCameraImpl::pollAll( KinectCamera::FrameView& frame,
     bool useExtendedDepth, int waitIntervalMilliseconds )
 {
     frame.colorUpdated = false;
@@ -293,16 +295,16 @@ bool KinectCameraImpl::pollAll( KinectCamera::Frame& frame,
     {
         if( colorFormat() == NUI_IMAGE_TYPE_COLOR )
         {
-            frame.colorUpdated = handleGetColorFrame( waitIntervalMilliseconds,
+            frame.colorUpdated = pollColor( waitIntervalMilliseconds,
                 frame.color,
-                frame.colorTimestamp, frame.colorFrameNumber );
+                frame.colorTimestampNS, frame.colorFrameNumber );
         }
         else if( colorFormat() == NUI_IMAGE_TYPE_COLOR_INFRARED )
         {
-            frame.colorUpdated = handleGetInfraredFrame(
+            frame.colorUpdated = pollInfrared(
                 waitIntervalMilliseconds,
                 frame.infrared,
-                frame.colorTimestamp, frame.colorFrameNumber );
+                frame.colorTimestampNS, frame.colorFrameNumber );
         }
         allSucceeded &= frame.colorUpdated;
     }
@@ -311,18 +313,18 @@ bool KinectCameraImpl::pollAll( KinectCamera::Frame& frame,
     {
         if( useExtendedDepth )
         {
-            frame.depthUpdated = handleGetExtendedDepthFrame(
+            frame.depthUpdated = pollExtendedDepth(
                 waitIntervalMilliseconds,
                 frame.extendedDepth, frame.playerIndex,
-                frame.depthTimestamp, frame.depthFrameNumber,
+                frame.depthTimestampNS, frame.depthFrameNumber,
                 frame.depthCapturedWithNearMode );
         }
         else
         {
-            frame.depthUpdated = handleGetPackedDepthFrame(
+            frame.depthUpdated = pollPackedDepth(
                 waitIntervalMilliseconds,
                 frame.packedDepth,
-                frame.depthTimestamp, frame.depthFrameNumber );
+                frame.depthTimestampNS, frame.depthFrameNumber );
         }
         allSucceeded &= frame.depthUpdated;
     }
@@ -339,7 +341,7 @@ bool KinectCameraImpl::pollAll( KinectCamera::Frame& frame,
     return allSucceeded;
 }
 
-bool KinectCameraImpl::handleEvent( KinectCamera::Frame& frame,
+bool KinectCameraImpl::handleEvent( KinectCamera::FrameView& frame,
     bool useExtendedDepth,
     DWORD eventIndex )
 {
@@ -884,10 +886,9 @@ void KinectCameraImpl::close()
     m_deviceIndex = -1;
 }
 
-// TODO(jiawen): rename to pollColor.
-bool KinectCameraImpl::handleGetColorFrame( DWORD millisecondsToWait,
+bool KinectCameraImpl::pollColor( DWORD millisecondsToWait,
     Array2DView< uint8x4 > bgra,
-    int64_t& timestamp, int& frameNumber )
+    int64_t& timestampNS, int& frameNumber )
 {
     if( bgra.isNull() )
     {
@@ -921,7 +922,7 @@ bool KinectCameraImpl::handleGetColorFrame( DWORD millisecondsToWait,
             { sizeof( uint8x4 ), lockedRect.Pitch } );
         copy( srcBGR0, bgra );
 
-        timestamp = imageFrame.liTimeStamp.QuadPart;
+        timestampNS = msToNS( imageFrame.liTimeStamp.QuadPart );
         frameNumber = imageFrame.dwFrameNumber;
     }
     imageFrame.pFrameTexture->UnlockRect( 0 );
@@ -930,9 +931,9 @@ bool KinectCameraImpl::handleGetColorFrame( DWORD millisecondsToWait,
     return valid;
 }
 
-bool KinectCameraImpl::handleGetInfraredFrame( DWORD millisecondsToWait,
+bool KinectCameraImpl::pollInfrared( DWORD millisecondsToWait,
     Array2DView< uint16_t > ir,
-    int64_t& timestamp, int& frameNumber )
+    int64_t& timestampNS, int& frameNumber )
 {
     if( ir.isNull() )
     {
@@ -966,7 +967,7 @@ bool KinectCameraImpl::handleGetInfraredFrame( DWORD millisecondsToWait,
             { sizeof( uint16_t ), lockedRect.Pitch } );
         copy( src, ir );
 
-        timestamp = imageFrame.liTimeStamp.QuadPart;
+        timestampNS = msToNS( imageFrame.liTimeStamp.QuadPart );
         frameNumber = imageFrame.dwFrameNumber;
     }
     imageFrame.pFrameTexture->UnlockRect( 0 );
@@ -975,9 +976,9 @@ bool KinectCameraImpl::handleGetInfraredFrame( DWORD millisecondsToWait,
     return valid;
 }
 
-bool KinectCameraImpl::handleGetExtendedDepthFrame( DWORD millisecondsToWait,
+bool KinectCameraImpl::pollExtendedDepth( DWORD millisecondsToWait,
     Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
-    int64_t& timestamp, int& frameNumber, bool& capturedWithNearMode )
+    int64_t& timestampNS, int& frameNumber, bool& capturedWithNearMode )
 {
     // If both are null, then do nothing.
     if( depth.isNull() && playerIndex.isNull() )
@@ -1052,7 +1053,7 @@ bool KinectCameraImpl::handleGetExtendedDepthFrame( DWORD millisecondsToWait,
             copy( srcPlayerIndexView, playerIndex );
         }
 
-        timestamp = imageFrame.liTimeStamp.QuadPart;
+        timestampNS = msToNS( imageFrame.liTimeStamp.QuadPart );
         frameNumber = imageFrame.dwFrameNumber;
         capturedWithNearMode = ( nearMode != 0 );
     }
@@ -1063,9 +1064,9 @@ bool KinectCameraImpl::handleGetExtendedDepthFrame( DWORD millisecondsToWait,
 }
 
 
-bool KinectCameraImpl::handleGetPackedDepthFrame( DWORD millisecondsToWait,
+bool KinectCameraImpl::pollPackedDepth( DWORD millisecondsToWait,
     Array2DView< uint16_t > packedDepth,
-    int64_t& timestamp, int& frameNumber )
+    int64_t& timestampNS, int& frameNumber )
 {
     // If depth is null, do nothing.
     if( packedDepth.isNull() )
@@ -1108,7 +1109,7 @@ bool KinectCameraImpl::handleGetPackedDepthFrame( DWORD millisecondsToWait,
             );
             copy( src, packedDepth );
 
-            timestamp = imageFrame.liTimeStamp.QuadPart;
+            timestampNS = msToNS( imageFrame.liTimeStamp.QuadPart );
             frameNumber = imageFrame.dwFrameNumber;
         }
         imageFrame.pFrameTexture->UnlockRect( 0 );

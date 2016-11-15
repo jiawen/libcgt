@@ -1,6 +1,7 @@
 #include "OpenNI2CameraImpl.h"
 
 #include <common/ArrayUtils.h>
+#include <time/TimeUtils.h>
 #include <cameras/CameraUtils.h>
 
 using namespace openni;
@@ -8,6 +9,7 @@ using libcgt::core::arrayutils::copy;
 using libcgt::core::arrayutils::componentView;
 using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
 using libcgt::core::cameras::Intrinsics;
+using libcgt::core::time::usToNS;
 using libcgt::core::vecmath::EuclideanTransform;
 
 namespace libcgt { namespace camera_wrappers { namespace openni2 {
@@ -273,7 +275,7 @@ bool OpenNI2CameraImpl::setAutoWhiteBalanceEnabled( bool enabled )
     return false;
 }
 
-bool OpenNI2CameraImpl::copyColor( OpenNI2Camera::Frame& frame )
+bool OpenNI2CameraImpl::copyColor( OpenNI2Camera::FrameView& frame )
 {
     frame.colorUpdated = false;
 
@@ -284,16 +286,16 @@ bool OpenNI2CameraImpl::copyColor( OpenNI2Camera::Frame& frame )
         Array2DView< const uint8x3 > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint8x3 ), src.getStrideInBytes() } );
-        frame.colorTimestamp =
-            static_cast< int64_t >( src.getTimestamp() );
+        frame.colorTimestampNS =
+            usToNS( static_cast< int64_t >( src.getTimestamp() ) );
         frame.colorFrameNumber = src.getFrameIndex();
-        frame.colorUpdated = copy( srcData, frame.rgb );
+        frame.colorUpdated = copy( srcData, frame.color );
         return frame.colorUpdated;
     }
     return false;
 }
 
-bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::Frame& frame )
+bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::FrameView& frame )
 {
     frame.depthUpdated = false;
 
@@ -304,8 +306,8 @@ bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::Frame& frame )
         Array2DView< const uint16_t > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint16_t ), src.getStrideInBytes() } );
-        frame.depthTimestamp =
-            static_cast< int64_t >( src.getTimestamp() );
+        frame.depthTimestampNS =
+            usToNS( static_cast< int64_t >( src.getTimestamp() ) );
         frame.depthFrameNumber = src.getFrameIndex();
         frame.depthUpdated = copy( srcData, frame.depth );
         return frame.depthUpdated;
@@ -313,7 +315,7 @@ bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::Frame& frame )
     return false;
 }
 
-bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::Frame& frame )
+bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::FrameView& frame )
 {
     frame.infraredUpdated = false;
 
@@ -324,8 +326,8 @@ bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::Frame& frame )
         Array2DView< const uint16_t > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint16_t ), src.getStrideInBytes() } );
-        frame.infraredTimestamp =
-            static_cast< int64_t >( src.getTimestamp() );
+        frame.infraredTimestampNS =
+            usToNS( static_cast< int64_t >( src.getTimestamp() ) );
         frame.infraredFrameNumber = src.getFrameIndex();
         frame.infraredUpdated = copy( srcData, frame.infrared );
         return frame.infraredUpdated;
@@ -333,7 +335,7 @@ bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::Frame& frame )
     return false;
 }
 
-bool OpenNI2CameraImpl::pollColor( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2CameraImpl::pollColor( OpenNI2Camera::FrameView& frame, int timeoutMS )
 {
     if( !m_colorStream.isValid() )
     {
@@ -351,7 +353,7 @@ bool OpenNI2CameraImpl::pollColor( OpenNI2Camera::Frame& frame, int timeoutMS )
     return false;
 }
 
-bool OpenNI2CameraImpl::pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2CameraImpl::pollDepth( OpenNI2Camera::FrameView& frame, int timeoutMS )
 {
     if( !m_depthStream.isValid() )
     {
@@ -369,7 +371,7 @@ bool OpenNI2CameraImpl::pollDepth( OpenNI2Camera::Frame& frame, int timeoutMS )
     return false;
 }
 
-bool OpenNI2CameraImpl::pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2CameraImpl::pollInfrared( OpenNI2Camera::FrameView& frame, int timeoutMS )
 {
     if( !m_infraredStream.isValid() )
     {
@@ -387,7 +389,7 @@ bool OpenNI2CameraImpl::pollInfrared( OpenNI2Camera::Frame& frame, int timeoutMS
     return false;
 }
 
-bool OpenNI2CameraImpl::pollOne( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2CameraImpl::pollOne( OpenNI2Camera::FrameView& frame, int timeoutMS )
 {
     frame.colorUpdated = false;
     frame.depthUpdated = false;
@@ -421,7 +423,7 @@ bool OpenNI2CameraImpl::pollOne( OpenNI2Camera::Frame& frame, int timeoutMS )
     return false;
 }
 
-bool OpenNI2CameraImpl::pollAll( OpenNI2Camera::Frame& frame, int timeoutMS )
+bool OpenNI2CameraImpl::pollAll( OpenNI2Camera::FrameView& frame, int timeoutMS )
 {
     frame.colorUpdated = false;
     frame.depthUpdated = false;

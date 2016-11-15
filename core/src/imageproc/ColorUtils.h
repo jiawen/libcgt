@@ -16,6 +16,9 @@
 
 namespace libcgt { namespace core { namespace imageproc {
 
+// TODO: consider renaming these to ConciseCasts and u8, f32, etc.
+// TODO: consider putting const & back in.
+
 // the epsilon used when converting to the log domain
 // and then input is "luminance" from rgbToLuminance()
 // value is 1 / 256
@@ -61,7 +64,7 @@ Vector4f saturate( Vector4f v );
 
 // Convert RGB to luminance (gray).
 float rgbToLuminance( Vector3f rgb );
-float rgbToLuminance( uint8x3 rgb );
+uint8_t rgbToLuminance( uint8x3 rgb );
 
 // Convert RGB to the XYZ color space.
 Vector3f rgb2xyz( Vector3f rgb );
@@ -86,7 +89,7 @@ Vector4f hsv2rgb( Vector4f hsv );
 
 // Given x in [0,1], returns an RGBA color like MATLAB's "jet" colormap.
 // Values outside of [0,1] are undefined.
-Vector4f colorMapJet( float x );
+Vector4f jet( float x );
 
 // Returns the logarithm of the L channel of a pixel in Lab space,
 // offset by LOG_LAB_EPSILON and rescaled between 0 and 100.
