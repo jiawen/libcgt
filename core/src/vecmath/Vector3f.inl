@@ -20,14 +20,16 @@ inline Vector3f::Vector3f( float _x, float _y, float _z ) :
 }
 
 inline Vector3f::Vector3f( const Vector2f& _xy, float _z ) :
-    xy( _xy ),
+    x( _xy.x ),
+    y( _xy.y ),
     z( _z )
 {
 }
 
 inline Vector3f::Vector3f( float _x, const Vector2f& _yz ) :
     x( _x ),
-    yz( _yz )
+    y( _yz.x ),
+    z( _yz.y )
 {
 }
 

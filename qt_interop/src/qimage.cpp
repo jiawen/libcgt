@@ -4,6 +4,7 @@
 
 namespace libcgt { namespace qt_interop {
 
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 ) )
 Array2DWriteView< uint8_t > viewGrayscale8( QImage& q )
 {
     if( q.format() != QImage::Format_Grayscale8 )
@@ -14,6 +15,7 @@ Array2DWriteView< uint8_t > viewGrayscale8( QImage& q )
     return Array2DWriteView< uint8_t >( q.bits(),
         { q.width(), q.height() }, { 1, q.bytesPerLine() } );
 }
+#endif
 
 Array2DWriteView< uint8x3 > viewRGB32AsBGR( QImage& q )
 {
@@ -60,6 +62,7 @@ QImage wrapAsQImage( Array2DWriteView< uint8x4 > view )
         QImage::Format_ARGB32 );
 }
 
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 ) )
 QImage wrapAsQImage( Array2DWriteView< uint8_t > view )
 {
     if( view.isNull() || !view.elementsArePacked() )
@@ -71,5 +74,6 @@ QImage wrapAsQImage( Array2DWriteView< uint8_t > view )
         view.width(), view.height(), view.rowStrideBytes(),
         QImage::Format_Grayscale8 );
 }
+#endif
 
 } } // qt_interop, libcgt

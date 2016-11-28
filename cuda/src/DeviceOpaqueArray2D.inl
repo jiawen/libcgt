@@ -91,7 +91,7 @@ bool DeviceOpaqueArray2D< T >::copyFromHost( Array2DReadView< T > src,
     const Vector2i& dstOffset )
 {
     // TODO: Vector< 2, size_t >
-    if( src.size() != size() - dstOffset() )
+    if( src.size() != size() - dstOffset )
     {
         return false;
     }

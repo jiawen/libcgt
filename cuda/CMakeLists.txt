@@ -8,8 +8,8 @@ set( CUDA_SEPARABLE_COMPILATION ON )
 
 # Add include to the set of compiler include paths
 include_directories( ../core/src )
-include_directories( ../gl/src/common )
-include_directories( ../gl/src/GL_45 )
+include_directories( ../GL/src/common )
+include_directories( ../GL/src/GL_45 )
 
 # Define CUDA_SAMPLES_ROOT:
 if( WIN32 )

@@ -16,28 +16,31 @@ core:
 GL:
 
   * GPU drivers with OpenGL >= 4.5.
-  * GLEW >= 1.13.0.
+  * GLEW >= 2.0.0.
 
-CUDA:
+cuda:
 
   * NVIDIA CUDA Toolkit 7.5.
   * NVIDIA CUDA Samples (for cutil).
 
-Kinect1x:
+camera_wrappers/Kinect1x:
 
   * Microsoft Kinect SDK 1.8.
-  * Qt (soon to be removed).
+
+camera_wrappers/OpenNI2:
+
+  * OpenNI 2.2.0.33 Beta.
 
 QDirectX:
 
   * Qt 5.
   * Microsoft DirectX SDK (10 depends on 10, 11 depends on 11)
 
-QtInterop:
+qt_interop:
 
   * Qt 5.
 
-OpenCVInterop:
+opencv_interop:
 
   * OpenCV 3.0 or 3.1.
 
@@ -59,22 +62,22 @@ video:
 Building for Desktop
 ====================
 
-On desktop, libcgt uses CMake 3.1+.
+On desktop, libcgt uses CMake 3.4.3+.
 
 Windows
 -------
 
 Set the `CMAKE_PREFIX_PATH` environment variable to where dependencies live. For
-example, I put all my libraries under c:\work\libraries. To find GLEW, do the
-following:
+example, I put all my libraries under c:\opt\local, which have as subdirectories
+bin, include, and lib. To find GLEW, do the following:
 
-`set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;c:\work\libraries\glew-1.13.0;c:\work\libraries\glew-1.13.0\lib\Release\x64`
+`set CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%;c:\opt\local`
 
-To find OpenCV, use:  
-`set OpenCV_DIR=c:\work\libraries\opencv-3.1.0\build`
+To find OpenCV, use:
+`set OpenCV_DIR=c:\opt\local\opencv-3.1.0\build`
 
 By CMake convention, you should put the generated Visual Studio solution in a build directory:
-`$ mkdir build`  
+`$ mkdir build`
 `$ cmake-gui ..`
 
 OS X
@@ -84,7 +87,7 @@ MacPorts versions of all dependencies work great out of the box. CMake is able
 to find them from /opt.
 
 By CMake convention, you should put the generated Xcode project or Makefiles in a build directory:
-`$ mkdir build`  
+`$ mkdir build`
 `$ cmake-gui ..`
 
 Ubuntu 14.04
@@ -94,33 +97,33 @@ Qt 5 from the default repository is sufficient.
 `$ sudo aptitude install qt5-default`
 
 You will need download and build more recent versions of GLEW and OpenCV. I put
-these libraries under ~/work/libs. I built glew under ~/work/libs/glew-1.13.0,
-which contains as subdirectories bin, include, and lib. Add the following to
-your .bashrc:
+these libraries under `~/opt/local`. I built GLEW under `~/opt/local`, which
+contains as subdirectories `bin`, `include`, and `lib`. Add the following to
+your `.bashrc`:
 
-`set CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:~/work/libs/glew-1.13.0`
+`export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:~/opt/local`
 
 To build and install OpenCV:
 
-`cd <opencv_dir>`  
-`mkdir build`  
-`cd build`  
-`cmake-gui -D CMAKE_INSTALL_PREFIX=~/work/libs/opencv-3.1.0 ..`  
+`cd <opencv_dir>`
+`mkdir build`
+`cd build`
+`cmake-gui -D CMAKE_INSTALL_PREFIX=~/opt/local ..`
 `make -j32`
 
-~/work/libs/opencv-3.1.0 should contain as subdirectories bin, include, lib, and
-share.
+`~/opt/local` should contain as subdirectories `bin`, `include`, `lib`, and
+`share`.
 
 `set OpenCV_DIR=~/work/libs/opencv-3.1.0`
 
 Apparently, gcc-4.8 has trouble building libcgt. We use Clang 3.5+ instead:
 
-`mkdir build`  
-`cd build`  
-`CC=/usr/bin/clang-3.5 CXX=/usr/bin/clang++-3.5 cmake-gui-3.4.3 -DCMAKE_INSTALL_PREFIX=/mnt/ssd840/work/libs ..`
+`mkdir build`
+`cd build`
+`cmake -DCMAKE_CXX_COMPILER=clang++-3.5 -DCMAKE_INSTALL_PREFIX=~/opt/local ..`
 
 Building for Android
 ====================
 
-`cd build_android`  
+`cd build_android`
 `./build.sh`

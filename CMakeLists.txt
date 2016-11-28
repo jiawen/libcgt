@@ -6,6 +6,7 @@ if( APPLE )
     # Clang only
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
 elseif( UNIX )
+    message( "CMAKE_CXX_COMPILER_ID is: ${CMAKE_CXX_COMPILER_ID}" )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
         # Use libc++ with Clang.
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
@@ -55,7 +56,7 @@ endif()
 
 option( BUILD_CUDA "Build CUDA module." ON )
 if( BUILD_CUDA )
-    add_subdirectory( CUDA )
+    add_subdirectory( cuda )
 endif()
 
 option( BUILD_OPENCV_INTEROP "Build OpenCV Interop module." ON )

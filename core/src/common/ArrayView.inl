@@ -107,7 +107,7 @@ bool Array1DReadView< T >::packed() const
 template< typename T >
 Array1DWriteView< T >::Array1DWriteView( void* pointer,
     size_t size ) :
-    Array1DReadView( pointer, size ),
+    Array1DReadView< T >( pointer, size ),
     m_write_pointer( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
@@ -116,7 +116,7 @@ Array1DWriteView< T >::Array1DWriteView( void* pointer,
 template< typename T >
 Array1DWriteView< T >::Array1DWriteView( void* pointer,
     size_t size, std::ptrdiff_t stride ) :
-    Array1DReadView( pointer, size ),
+    Array1DReadView< T >( pointer, size, stride ),
     m_write_pointer( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
@@ -138,7 +138,7 @@ template< typename T >
 T* Array1DWriteView< T >::elementPointer( size_t x ) const
 {
     return reinterpret_cast< T* >(
-        &( m_write_pointer[ x * elementStrideBytes() ] ) );
+        &( m_write_pointer[ x * this->elementStrideBytes() ] ) );
 }
 
 template< typename T >
@@ -307,7 +307,7 @@ Array1DReadView< T > Array2DReadView< T >::column( int x )
 template< typename T >
 Array2DWriteView< T >::Array2DWriteView( void* pointer,
     const Vector2i& size ) :
-    Array2DReadView( pointer, size ),
+    Array2DReadView< T >( pointer, size ),
     m_write_pointer( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
@@ -316,7 +316,7 @@ Array2DWriteView< T >::Array2DWriteView( void* pointer,
 template< typename T >
 Array2DWriteView< T >::Array2DWriteView( void* pointer,
     const Vector2i& size, const Vector2i& stride ) :
-    Array2DReadView( pointer, size ),
+    Array2DReadView< T >( pointer, size, stride ),
     m_write_pointer( reinterpret_cast< uint8_t* >( pointer ) )
 {
 
@@ -338,13 +338,14 @@ template< typename T >
 T* Array2DWriteView< T >::elementPointer( const Vector2i& xy ) const
 {
     return reinterpret_cast< T* >(
-        &( m_write_pointer[ Vector2i::dot( xy, stride() ) ] ) );
+        &( m_write_pointer[ Vector2i::dot( xy, this->stride() ) ] ) );
 }
 
 template< typename T >
 T* Array2DWriteView< T >::rowPointer( int y ) const
 {
-    return reinterpret_cast< T* >( &( m_write_pointer[ y * stride().y ] ) );
+    return reinterpret_cast< T* >(
+        &( m_write_pointer[ y * this->stride().y ] ) );
 }
 
 template< typename T >
@@ -352,7 +353,7 @@ T& Array2DWriteView< T >::operator [] ( int k ) const
 {
     int x;
     int y;
-    Indexing::indexToSubscript2D( k, size().x, x, y );
+    Indexing::indexToSubscript2D( k, this->size().x, x, y );
     return ( *this )[ { x, y } ];
 }
 
@@ -365,12 +366,13 @@ T& Array2DWriteView< T >::operator [] ( const Vector2i& xy ) const
 template< typename T >
 Array1DWriteView< T > Array2DWriteView< T >::row( int y )
 {
-    return Array1DWriteView< T >( rowPointer( y ), size().x, stride().x );
+    return Array1DWriteView< T >( rowPointer( y ),
+        this->size().x, this->stride().x );
 }
 
 template< typename T >
 Array1DWriteView< T > Array2DWriteView< T >::column( int x )
 {
     return Array1DWriteView< T >( elementPointer( { x, 0 } ),
-        size().y, stride().y );
+        this->size().y, this->stride().y );
 }
