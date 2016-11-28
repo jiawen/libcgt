@@ -2,8 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array1D.h>
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <vecmath/Vector4f.h>
 
@@ -107,7 +106,7 @@ public:
     // Set the fraembuffer's draw buffers [0, 1, ... attachments.size())
     // to [attachments[0], attachments[1], ...)
     // attachments must be packed.
-    void setDrawBuffers( Array1DView< const GLenum > attachments );
+    void setDrawBuffers( Array1DReadView< GLenum > attachments );
 
     void setReadBuffer( GLenum attachment );
 

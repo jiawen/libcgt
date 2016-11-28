@@ -2,7 +2,7 @@
 
 namespace libcgt { namespace opencv_interop {
 
-const cv::Mat array2DViewAsCvMat( Array2DView< const uint8x3 > view )
+const cv::Mat array2DViewAsCvMat( Array2DReadView< uint8x3 > view )
 {
     // Use const_cast because OpenCV wants a void* even if it's const.
     return cv::Mat
@@ -12,7 +12,7 @@ const cv::Mat array2DViewAsCvMat( Array2DView< const uint8x3 > view )
     );
 }
 
-cv::Mat array2DViewAsCvMat( Array2DView< uint8x3 > view )
+cv::Mat array2DViewAsCvMat( Array2DWriteView< uint8x3 > view )
 {
     return cv::Mat
     (

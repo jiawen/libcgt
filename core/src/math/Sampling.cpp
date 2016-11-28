@@ -13,7 +13,7 @@ void Sampling::latinHypercubeSampling( Random& random, SamplingPatternND* pPatte
 {
     int nDimensions = pPattern->getNumDimensions();
     int nSamples = pPattern->getNumSamples();
-    Array1DView< float > samples = pPattern->rawSamples();
+    Array1DWriteView< float > samples = pPattern->rawSamples();
 
     // generate samples along diagonal boxes
     float delta = 1.0f / nSamples;

@@ -4,7 +4,7 @@
 
 #include <cuda_runtime.h>
 
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 
 // TODO: create an Interop version.
 // TODO: support CUDA surfaces: bindSurface()
@@ -42,13 +42,13 @@ public:
     // For the copy to succeed, sizes must be exact:
     //   src.size() == size() - dstOffset
     // In addition, src.elementsArePacked() or src.packed() must be true.
-    bool copyFromHost( Array2DView< const T > src,
+    bool copyFromHost( Array2DReadView< T > src,
         const Vector2i& dstOffset = Vector2i{ 0 } );
 
     // For the copy to succeed, sizes must be exact:
     //   size() - dstOffset == dst.size()
     // In addition, dst.elementsArePacked() or dst.packed() must be true.
-    bool copyToHost( Array2DView< T > dst,
+    bool copyToHost( Array2DWriteView< T > dst,
         const Vector2i& srcOffset = Vector2i{ 0 } ) const;
 
     const cudaArray* deviceArray() const;

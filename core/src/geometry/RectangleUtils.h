@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <common/Array1D.h>
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include <vecmath/Rect2i.h>
 #include <vecmath/Rect2f.h>
 #include <vecmath/Matrix4f.h>
@@ -110,8 +110,8 @@ Rect2i inset( const Rect2i& r, int delta );
 Rect2i inset( const Rect2i& r, const Vector2i& xy );
 
 void writeScreenAlignedTriangleStrip(
-    Array1DView< Vector4f > positions,
-    Array1DView< Vector2f > textureCoordinates,
+    Array1DWriteView< Vector4f > positions,
+    Array1DWriteView< Vector2f > textureCoordinates,
     const Rect2f& positionRectangle = Rect2f{ { -1, -1 }, { 2, 2 } },
     float z = 0.f, float w = 1.f,
     const Rect2f& textureRectangle = Rect2f{ { 1, 1 } }
@@ -127,7 +127,7 @@ void writeScreenAlignedTriangleStrip(
 // then the projection matrix should be:
 // orthographicProjection( 0, 0, width, height ).
 void writeScreenAlignedTriangleStripPositions(
-    Array1DView< Vector4f > positions,
+    Array1DWriteView< Vector4f > positions,
     const Rect2f& rect = Rect2f{ { -1, -1 }, { 2, 2 } },
     float z = 0.f, float w = 1.f
 );
@@ -135,7 +135,7 @@ void writeScreenAlignedTriangleStripPositions(
 // For a DirectX style rectangle,
 // pass in Rect2f( 0, 1, 1, -1 )
 void writeScreenAlignedTriangleStripTextureCoordinates(
-    Array1DView< Vector2f > textureCoordinates,
+    Array1DWriteView< Vector2f > textureCoordinates,
     const Rect2f& rect = Rect2f{ { 1, 1 } }
 );
 

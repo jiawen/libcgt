@@ -3,10 +3,6 @@
 
 #include "GLBufferObject.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 // static
 bool GLBufferObject::copy( GLBufferObject* pSource,
     GLBufferObject* pDestination, GLintptr sourceOffsetBytes,
@@ -36,7 +32,7 @@ GLBufferObject::GLBufferObject( GLsizeiptr nBytes,
     glNamedBufferStorage( m_id, nBytes, nullptr, glStorageFlags() );
 }
 
-GLBufferObject::GLBufferObject( Array1DView< uint8_t > data,
+GLBufferObject::GLBufferObject( Array1DReadView< uint8_t > data,
     GLBufferObject::StorageFlags flags ) :
     m_id( 0 ),
     m_nBytes( data.size() ),
@@ -73,10 +69,10 @@ GLbitfield GLBufferObject::glStorageFlags() const
     return ::glStorageFlags( m_storageFlags );
 }
 
-Array1DView< uint8_t > GLBufferObject::mapRange( GLintptr offsetBytes,
+Array1DWriteView< uint8_t > GLBufferObject::mapRange( GLintptr offsetBytes,
     GLsizeiptr sizeBytes, GLBufferObject::MapRangeAccess access )
 {
-    return Array1DView< uint8_t >(
+    return Array1DWriteView< uint8_t >(
         glMapNamedBufferRange( m_id, offsetBytes, sizeBytes,
             glBufferMapRangeAccess( access ) ),
         sizeBytes
@@ -103,7 +99,7 @@ void GLBufferObject::unmap()
     glUnmapNamedBuffer( m_id );
 }
 
-bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
+bool GLBufferObject::get( GLintptr srcOffset, Array1DWriteView< uint8_t > dst )
 {
     if( srcOffset + dst.size() > m_nBytes )
     {
@@ -114,7 +110,7 @@ bool GLBufferObject::get( GLintptr srcOffset, Array1DView< uint8_t > dst )
     return true;
 }
 
-bool GLBufferObject::set( Array1DView< const uint8_t > src, GLintptr dstOffset )
+bool GLBufferObject::set( Array1DReadView< uint8_t > src, GLintptr dstOffset )
 {
     if( !( src.packed() ) )
     {

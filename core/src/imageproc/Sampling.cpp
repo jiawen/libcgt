@@ -12,7 +12,7 @@ using namespace libcgt::core::math;
 namespace
 {
 template< typename T >
-T bilerp( Array2DView< const T > view, float x, float y )
+T bilerp( Array2DReadView< T > view, float x, float y )
 {
     // TODO: check this math, it can be simplified.
     // Use rect and 2d math.
@@ -46,29 +46,29 @@ T bilerp( Array2DView< const T > view, float x, float y )
 namespace libcgt { namespace core { namespace imageproc {
 
 template< typename T >
-T bilinearSample( Array2DView< const T > view, const Vector2f& xy )
+T bilinearSample( Array2DReadView< T > view, const Vector2f& xy )
 {
     return bilerp< T >( view, xy.x, xy.y );
 }
 
 // static
-float bilinearSampleNormalized( Array2DView< const float > view,
+float bilinearSampleNormalized( Array2DReadView< float > view,
     const Vector2f& xy )
 {
     return bilinearSample( view, xy * view.size() );
 }
 
 // Explicit instantiation.
-template float bilinearSample< float >( Array2DView< const float > view,
+template float bilinearSample< float >( Array2DReadView< float > view,
     const Vector2f& xy );
 template Vector2f bilinearSample< Vector2f >(
-    Array2DView< const Vector2f > view, const Vector2f& xy );
+    Array2DReadView< Vector2f > view, const Vector2f& xy );
 template Vector3f bilinearSample< Vector3f >(
-    Array2DView< const Vector3f > view, const Vector2f& xy );
+    Array2DReadView< Vector3f > view, const Vector2f& xy );
 template Vector4f bilinearSample< Vector4f >(
-    Array2DView< const Vector4f > view, const Vector2f& xy );
+    Array2DReadView< Vector4f > view, const Vector2f& xy );
 template uint8x3 bilinearSample< uint8x3 >(
-    Array2DView< const uint8x3 > view, const Vector2f& xy );
+    Array2DReadView< uint8x3 > view, const Vector2f& xy );
 
 
 } } } // imageproc, core, libcgt

@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include <common/BasicTypes.h>
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 #include <vecmath/Matrix4f.h>
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
@@ -44,8 +44,8 @@ Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame );
 //     and the player index on the bottom 3 bits d[2:0]
 //
 //
-void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
-    Array2DView< float > outputMeters, bool flipX = true, bool flipY = true,
-    int rightShift = 0 );
+void rawDepthMapToMeters( Array2DReadView< uint16_t > rawDepth,
+    Array2DWriteView< float > outputMeters,
+    bool flipX = true, bool flipY = true, int rightShift = 0 );
 
 } } } // kinect1x, camera_wrappers, libcgt

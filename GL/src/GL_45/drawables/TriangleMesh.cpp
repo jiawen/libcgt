@@ -7,7 +7,7 @@ TriangleMeshDrawable::TriangleMeshDrawable( const TriangleMesh& mesh ) :
 {
     {
         auto mb = mapAttribute< Vector3f >( 0 );
-        Array1DView< Vector3f > positions = mb.view();
+        Array1DWriteView< Vector3f > positions = mb.view();
         for( int f = 0; f < mesh.numFaces(); ++f )
         {
             Vector3i positionIndices = mesh.faces()[ f ];
@@ -22,7 +22,7 @@ TriangleMeshDrawable::TriangleMeshDrawable( const TriangleMesh& mesh ) :
 
     {
         auto mb = mapAttribute< Vector3f >( 1 );
-        Array1DView< Vector3f > normals = mb.view();
+        Array1DWriteView< Vector3f > normals = mb.view();
         for( int f = 0; f < mesh.numFaces(); ++f )
         {
             Vector3i normalIndices = mesh.faces()[ f ];

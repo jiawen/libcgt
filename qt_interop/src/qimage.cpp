@@ -4,51 +4,51 @@
 
 namespace libcgt { namespace qt_interop {
 
-Array2DView< uint8_t > viewGrayscale8( QImage& q )
+Array2DWriteView< uint8_t > viewGrayscale8( QImage& q )
 {
     if( q.format() != QImage::Format_Grayscale8 )
     {
-        return Array2DView< uint8_t >();
+        return Array2DWriteView< uint8_t >();
     }
 
-    return Array2DView< uint8_t >( q.bits(),
+    return Array2DWriteView< uint8_t >( q.bits(),
         { q.width(), q.height() }, { 1, q.bytesPerLine() } );
 }
 
-Array2DView< uint8x3 > viewRGB32AsBGR( QImage& q )
+Array2DWriteView< uint8x3 > viewRGB32AsBGR( QImage& q )
 {
     if( q.format() != QImage::Format_RGB32 )
     {
-        return Array2DView< uint8x3 >();
+        return Array2DWriteView< uint8x3 >();
     }
 
-    return Array2DView< uint8x3 >( q.bits(),
+    return Array2DWriteView< uint8x3 >( q.bits(),
         { q.width(), q.height() }, { 4, q.bytesPerLine() } );
 }
 
-Array2DView< uint8x4 > viewRGB32AsBGRX( QImage& q )
+Array2DWriteView< uint8x4 > viewRGB32AsBGRX( QImage& q )
 {
     if( q.format() != QImage::Format_RGB32 )
     {
-        return Array2DView< uint8x4 >();
+        return Array2DWriteView< uint8x4 >();
     }
 
-    return Array2DView< uint8x4 >( q.bits(),
+    return Array2DWriteView< uint8x4 >( q.bits(),
         { q.width(), q.height() }, { 4, q.bytesPerLine() } );
 }
 
-Array2DView< uint8x4 > viewARGB32AsBGRA( QImage& q )
+Array2DWriteView< uint8x4 > viewARGB32AsBGRA( QImage& q )
 {
     if( q.format() != QImage::Format_ARGB32 )
     {
-        return Array2DView< uint8x4 >();
+        return Array2DWriteView< uint8x4 >();
     }
 
-    return Array2DView< uint8x4 >( q.bits(),
+    return Array2DWriteView< uint8x4 >( q.bits(),
         { q.width(), q.height() }, { 4, q.bytesPerLine() } );
 }
 
-QImage wrapAsQImage( Array2DView< uint8x4 > view )
+QImage wrapAsQImage( Array2DWriteView< uint8x4 > view )
 {
     if( view.isNull() || !view.elementsArePacked() )
     {
@@ -60,7 +60,7 @@ QImage wrapAsQImage( Array2DView< uint8x4 > view )
         QImage::Format_ARGB32 );
 }
 
-QImage wrapAsQImage( Array2DView< uint8_t > view )
+QImage wrapAsQImage( Array2DWriteView< uint8_t > view )
 {
     if( view.isNull() || !view.elementsArePacked() )
     {

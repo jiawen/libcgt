@@ -7,7 +7,8 @@ using libcgt::core::arrayutils::map;
 namespace libcgt { namespace core { namespace imageproc {
 
 // TODO: return bool (just return map()).
-void RGBAToBGRA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
+void RGBAToBGRA( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 rgba )
@@ -17,7 +18,8 @@ void RGBAToBGRA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
     );
 }
 
-void RGBAToARGB( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
+void RGBAToARGB( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 rgba )
@@ -27,7 +29,8 @@ void RGBAToARGB( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
     );
 }
 
-void RGBAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
+void RGBAToRGB( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x3 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 rgba )
@@ -37,7 +40,8 @@ void RGBAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
     );
 }
 
-void RGBAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
+void RGBAToBGR( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x3 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 rgba )
@@ -47,7 +51,8 @@ void RGBAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
     );
 }
 
-void BGRAToRGBA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
+void BGRAToRGBA( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 bgra )
@@ -57,7 +62,8 @@ void BGRAToRGBA( Array2DView< const uint8x4 > src, Array2DView< uint8x4 > dst )
     );
 }
 
-void BGRAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
+void BGRAToBGR( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x3 > dst )
 {
     map( src, dst,
         [&]( uint8x4 bgra )
@@ -67,7 +73,8 @@ void BGRAToBGR( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
     );
 }
 
-void BGRAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
+void BGRAToRGB( Array2DReadView< uint8x4 > src,
+    Array2DWriteView< uint8x3 > dst )
 {
     map( src, dst,
         [&] ( uint8x4 bgra )
@@ -77,8 +84,8 @@ void BGRAToRGB( Array2DView< const uint8x4 > src, Array2DView< uint8x3 > dst )
     );
 }
 
-void BGRToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
-    uint8_t alpha )
+void BGRToRGBA( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8x4 > dst, uint8_t alpha )
 {
     map( src, dst,
         [&] ( uint8x3 bgr )
@@ -88,8 +95,8 @@ void BGRToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
     );
 }
 
-void BGRToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
-    uint8_t alpha )
+void BGRToBGRA( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8x4 > dst, uint8_t alpha )
 {
     map( src, dst,
         [&] ( uint8x3 bgr )
@@ -99,8 +106,8 @@ void BGRToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
     );
 }
 
-void RGBToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
-    uint8_t alpha )
+void RGBToBGRA( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8x4 > dst, uint8_t alpha )
 {
     map( src, dst,
         [&] ( uint8x3 rgb )
@@ -110,8 +117,8 @@ void RGBToBGRA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
     );
 }
 
-void RGBToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
-    uint8_t alpha )
+void RGBToRGBA( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8x4 > dst, uint8_t alpha )
 {
     map( src, dst,
         [&] ( uint8x3 rgb )
@@ -121,7 +128,8 @@ void RGBToRGBA( Array2DView< const uint8x3 > src, Array2DView< uint8x4 > dst,
     );
 }
 
-void RGBToBGR( Array2DView< const uint8x3 > src, Array2DView< uint8x3 > dst )
+void RGBToBGR( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8x3 > dst )
 {
     map( src, dst,
         [&] ( uint8x3 rgb )

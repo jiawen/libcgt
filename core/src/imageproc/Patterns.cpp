@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-void libcgt::core::imageproc::patterns::createRandom( Array2DView< float > image, Random& random )
+namespace libcgt { namespace core { namespace imageproc {
+
+void createRandom( Array2DWriteView< float > image, Random& random )
 {
     for( int i = 0; i < image.width() * image.height(); ++i )
     {
@@ -10,7 +12,7 @@ void libcgt::core::imageproc::patterns::createRandom( Array2DView< float > image
     }
 }
 
-void libcgt::core::imageproc::patterns::createRandom( Array2DView< Vector4f > image, Random& random )
+void createRandom( Array2DWriteView< Vector4f > image, Random& random )
 {
     for( int i = 0; i < image.width() * image.height(); ++i )
     {
@@ -18,3 +20,4 @@ void libcgt::core::imageproc::patterns::createRandom( Array2DView< Vector4f > im
     }
 }
 
+} } } // imageproc, core, libcgt

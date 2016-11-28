@@ -87,7 +87,7 @@ int DeviceOpaqueArray2D< T >::numElements() const
 }
 
 template< typename T >
-bool DeviceOpaqueArray2D< T >::copyFromHost( Array2DView< const T > src,
+bool DeviceOpaqueArray2D< T >::copyFromHost( Array2DReadView< T > src,
     const Vector2i& dstOffset )
 {
     // TODO: Vector< 2, size_t >
@@ -122,7 +122,7 @@ bool DeviceOpaqueArray2D< T >::copyFromHost( Array2DView< const T > src,
 }
 
 template< typename T >
-bool DeviceOpaqueArray2D< T >::copyToHost( Array2DView< T > dst,
+bool DeviceOpaqueArray2D< T >::copyToHost( Array2DWriteView< T > dst,
     const Vector2i& srcOffset ) const
 {
     // TODO: Vector< 2, size_t >

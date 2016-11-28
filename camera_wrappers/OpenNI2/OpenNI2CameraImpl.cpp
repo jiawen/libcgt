@@ -283,7 +283,7 @@ bool OpenNI2CameraImpl::copyColor( OpenNI2Camera::FrameView& frame )
     Status rc = m_colorStream.readFrame( &src );
     if( rc == STATUS_OK )
     {
-        Array2DView< const uint8x3 > srcData( src.getData(),
+        Array2DReadView< uint8x3 > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint8x3 ), src.getStrideInBytes() } );
         frame.colorTimestampNS =
@@ -303,7 +303,7 @@ bool OpenNI2CameraImpl::copyDepth( OpenNI2Camera::FrameView& frame )
     Status rc = m_depthStream.readFrame( &src );
     if( rc == STATUS_OK )
     {
-        Array2DView< const uint16_t > srcData( src.getData(),
+        Array2DReadView< uint16_t > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint16_t ), src.getStrideInBytes() } );
         frame.depthTimestampNS =
@@ -323,7 +323,7 @@ bool OpenNI2CameraImpl::copyInfrared( OpenNI2Camera::FrameView& frame )
     Status rc = m_infraredStream.readFrame( &src );
     if( rc == STATUS_OK )
     {
-        Array2DView< const uint16_t > srcData( src.getData(),
+        Array2DReadView< uint16_t > srcData( src.getData(),
             { src.getWidth(), src.getHeight() },
             { sizeof( uint16_t ), src.getStrideInBytes() } );
         frame.infraredTimestampNS =

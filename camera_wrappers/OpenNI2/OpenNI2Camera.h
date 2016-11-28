@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <cameras/Intrinsics.h>
 #include <vecmath/EuclideanTransform.h>
@@ -43,17 +43,17 @@ public:
         // over the same stream and only one can be activate at a time.
         int64_t colorTimestampNS;
         int colorFrameNumber;
-        Array2DView< uint8x3 > color;
+        Array2DWriteView< uint8x3 > color;
         // TODO(jiawen): YUV formats.
 
         int64_t infraredTimestampNS;
         int infraredFrameNumber;
-        Array2DView< uint16_t > infrared;
+        Array2DWriteView< uint16_t > infrared;
 
         // ----- Depth stream -----
         int64_t depthTimestampNS;
         int depthFrameNumber;
-        Array2DView< uint16_t > depth;
+        Array2DWriteView< uint16_t > depth;
     };
 
     // 800 mm.

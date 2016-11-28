@@ -7,19 +7,13 @@
 
 #include <GL/glew.h>
 
-#include <common/Array2DView.h>
-#include <vecmath/Vector3f.h>
-
 #include "GLSamplerObject.h"
 #include "GLTextureCubeMap.h"
 #include "GLUtilities.h"
 
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
-
 // TODO: support mip maps
-GLTextureCubeMap::GLTextureCubeMap( int sideLength, GLImageInternalFormat internalFormat ) :
+GLTextureCubeMap::GLTextureCubeMap( int sideLength,
+    GLImageInternalFormat internalFormat ) :
     GLTexture( GLTexture::Target::TEXTURE_CUBE_MAP, internalFormat, 1 ),
     m_sideLength( sideLength )
 {
@@ -51,8 +45,7 @@ void GLTextureCubeMap::clear( const Vector4f& clearValue )
 }
 
 bool GLTextureCubeMap::set( GLCubeMapFace face,
-    Array2DView< const uint8x4 > data,
-    GLImageFormat format,
+    Array2DReadView< uint8x4 > data, GLImageFormat format,
     const Vector2i& dstOffset )
 {
     if( dstOffset.x + data.width() > sideLength() ||
@@ -272,7 +265,8 @@ bool GLTextureCubeMap::get( Array2DView< Vector4f > output )
 #endif
 
 
-bool GLTextureCubeMap::get( GLCubeMapFace face, Array2DView< uint8x4 > output, GLImageFormat format )
+bool GLTextureCubeMap::get( GLCubeMapFace face,
+    Array2DWriteView< uint8x4 > output, GLImageFormat format )
 {
     // TODO: glPixelStorei allows some packing?
     // GL_PACK_ALIGNMENT

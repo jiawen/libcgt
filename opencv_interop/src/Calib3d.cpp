@@ -18,10 +18,8 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
     const cv::Mat_< float >& map1,
     bool shiftHalfPixel, bool flipY, bool normalizeCoordinates )
 {
-    Array2DView< const float > map0View =
-        cvMatAsArray2DView< const float >( map0 );
-    Array2DView< const float > map1View =
-        cvMatAsArray2DView< const float >( map1 );
+    Array2DReadView< float > map0View = cvMatAsArray2DView< float >( map0 );
+    Array2DReadView< float > map1View = cvMatAsArray2DView< float >( map1 );
 
     Array2D< Vector2f > undistortMap( map0View.size() );
 
@@ -33,7 +31,7 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
 
     if( flipY )
     {
-        Array2DView < Vector2f > dst = ::flipY( undistortMap.writeView() );
+        Array2DWriteView< Vector2f > dst = ::flipY( undistortMap.writeView() );
         if( shiftHalfPixel )
         {
             for2D( dst.size(), [&] ( const Vector2i& xy )
@@ -73,8 +71,7 @@ Array2D< Vector2f > undistortMapsAsRG( const cv::Mat_< float >& map0,
         else
         {
             auto dstX = componentView< float >( undistortMap.writeView(), 0 );
-            auto dstY = componentView< float >( undistortMap.writeView(),
-                sizeof( float ) );
+            auto dstY = componentView< float >( undistortMap.writeView(), sizeof( float ) );
             copy( map0View, dstX );
             copy( map1View, dstY );
 

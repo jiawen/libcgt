@@ -218,8 +218,8 @@ void GLUtilities::saveTextureToFile( GLTexture2D* pTexture, const std::string& f
     {
         Array2D< Vector4f > rgba32f( pTexture->size() );
         pTexture->get( rgba32f );
-        Array2DView< Vector3f > rgb32f =
-            componentView< Vector3f >( rgba32f.writeView(), 0 );
+        Array2DReadView< Vector3f > rgb32f =
+            componentView< Vector3f >( rgba32f.readView(), 0 );
         PortableFloatMapIO::write( filename, rgb32f );
     }
 }

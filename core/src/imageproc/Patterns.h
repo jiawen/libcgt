@@ -1,32 +1,24 @@
 #pragma once
 
-#include "common/Array2DView.h"
-#include "math/Random.h"
-#include "vecmath/Vector2i.h"
-#include "vecmath/Vector4f.h"
+#include <common/ArrayView.h>
+#include <math/Random.h>
+#include <vecmath/Vector2i.h>
+#include <vecmath/Vector4f.h>
 
-namespace libcgt
-{
-namespace core
-{
-namespace imageproc
-{
-namespace patterns
-{
-    template< typename T >
-    void createCheckerboard( Array2DView< T > image,
-        const Vector2i& checkerSize,
-        const T& blackColor = T( 0 ), const T& whiteColor = T( 1 ) );
-
-    void createRandom( Array2DView< float > image, Random& random );
-    void createRandom( Array2DView< Vector4f> image, Random& random );
-}
-}
-}
-}
+namespace libcgt { namespace core { namespace imageproc {
 
 template< typename T >
-void libcgt::core::imageproc::patterns::createCheckerboard( Array2DView< T > image,
+void createCheckerboard( Array2DWriteView< T > image,
+    const Vector2i& checkerSize,
+    const T& blackColor = T( 0 ), const T& whiteColor = T( 1 ) );
+
+void createRandom( Array2DWriteView< float > image, Random& random );
+void createRandom( Array2DWriteView< Vector4f > image, Random& random );
+
+} } } // imageproc, core, libcgt
+
+template< typename T >
+void libcgt::core::imageproc::createCheckerboard( Array2DWriteView< T > image,
     const Vector2i& checkerSize, const T& blackColor, const T& whiteColor )
 {
     int nBlocksX = 1 + image.width() / checkerSize.x;

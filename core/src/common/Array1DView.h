@@ -16,7 +16,7 @@ public:
     // T --> uint8_t*. const T --> const uint8_t*.
     using UInt8Pointer = typename WrapConstPointerT< T, uint8_t >::pointer;
 
-    // The null Array2DView:
+    // The null Array1DView:
     // pointer = nullptr, width = 0.
     Array1DView() = default;
 

@@ -6,16 +6,16 @@ template< typename T >
 GLDrawable::MappedBuffer< T > GLDrawable::mapAttribute( int i )
 {
     GLDrawable* drawable = nullptr;
-    Array1DView< T > buffer;
+    Array1DWriteView< T > buffer;
     if( m_calculator.vertexSizeOf( i ) == sizeof( T ) )
     {
         buffer = m_vbo.mapRangeAs< T >
-            (
+        (
             m_calculator.offsetOf( i ),
             m_calculator.arraySizeOf( i ),
             GLBufferObject::MapRangeAccess::WRITE_BIT |
             GLBufferObject::MapRangeAccess::INVALIDATE_RANGE_BIT
-            );
+        );
         if( buffer.notNull() )
         {
             drawable = this;

@@ -99,7 +99,8 @@ Vector2i GLTexture2D::size() const
     return m_size;
 }
 
-bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat dstFormat )
+bool GLTexture2D::get( Array2DWriteView< uint8_t > output,
+    GLImageFormat dstFormat )
 {
     if( !output.packed() )
     {
@@ -109,7 +110,7 @@ bool GLTexture2D::get( Array2DView< uint8_t > output, GLImageFormat dstFormat )
     return get2D( 0, dstFormat, dstType, output.size(), output.pointer() );
 }
 
-bool GLTexture2D::get( Array2DView< uint8x2 > output )
+bool GLTexture2D::get( Array2DWriteView< uint8x2 > output )
 {
     if( !output.packed() )
     {
@@ -120,7 +121,7 @@ bool GLTexture2D::get( Array2DView< uint8x2 > output )
     return get2D( 0, dstFormat, dstType, output.size(), output.pointer() );
 }
 
-bool GLTexture2D::get( Array2DView< uint8x3 > output,
+bool GLTexture2D::get( Array2DWriteView< uint8x3 > output,
                       GLImageFormat dstFormat )
 {
     if( !output.packed() )
@@ -137,7 +138,7 @@ bool GLTexture2D::get( Array2DView< uint8x3 > output,
 
 }
 
-bool GLTexture2D::get( Array2DView< uint8x4 > output,
+bool GLTexture2D::get( Array2DWriteView< uint8x4 > output,
                       GLImageFormat dstFormat )
 {
     if( !output.packed() )
@@ -153,7 +154,7 @@ bool GLTexture2D::get( Array2DView< uint8x4 > output,
     return get2D( 0, dstFormat, dstType, output.size(), output.pointer() );
 }
 
-bool GLTexture2D::get( Array2DView< float > output,
+bool GLTexture2D::get( Array2DWriteView< float > output,
                       GLImageFormat dstFormat )
 {
     if( !output.packed() )
@@ -172,7 +173,7 @@ bool GLTexture2D::get( Array2DView< float > output,
 
 }
 
-bool GLTexture2D::get( Array2DView< Vector2f > output )
+bool GLTexture2D::get( Array2DWriteView< Vector2f > output )
 {
     if( !output.packed() )
     {
@@ -184,7 +185,7 @@ bool GLTexture2D::get( Array2DView< Vector2f > output )
 
 }
 
-bool GLTexture2D::get( Array2DView< Vector3f > output,
+bool GLTexture2D::get( Array2DWriteView< Vector3f > output,
                       GLImageFormat dstFormat )
 {
     if( !output.packed() )
@@ -199,7 +200,7 @@ bool GLTexture2D::get( Array2DView< Vector3f > output,
     return get2D( 0, dstFormat, dstType, output.size(), output.pointer() );
 }
 
-bool GLTexture2D::get( Array2DView< Vector4f > output,
+bool GLTexture2D::get( Array2DWriteView< Vector4f > output,
                       GLImageFormat dstFormat )
 {
     if( !output.packed() )
@@ -216,7 +217,7 @@ bool GLTexture2D::get( Array2DView< Vector4f > output,
 
 }
 
-bool GLTexture2D::set( Array2DView< const uint8_t > srcData,
+bool GLTexture2D::set( Array2DReadView< uint8_t > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -236,7 +237,7 @@ bool GLTexture2D::set( Array2DView< const uint8_t > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const uint8x2 > srcData,
+bool GLTexture2D::set( Array2DReadView< uint8x2 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -253,7 +254,7 @@ bool GLTexture2D::set( Array2DView< const uint8x2 > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const uint8x3 > srcData,
+bool GLTexture2D::set( Array2DReadView< uint8x3 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -271,7 +272,7 @@ bool GLTexture2D::set( Array2DView< const uint8x3 > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const uint8x4 > srcData,
+bool GLTexture2D::set( Array2DReadView< uint8x4 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -288,7 +289,7 @@ bool GLTexture2D::set( Array2DView< const uint8x4 > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const float > srcData,
+bool GLTexture2D::set( Array2DReadView< float > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -308,7 +309,7 @@ bool GLTexture2D::set( Array2DView< const float > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const Vector2f > srcData,
+bool GLTexture2D::set( Array2DReadView< Vector2f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -325,7 +326,7 @@ bool GLTexture2D::set( Array2DView< const Vector2f > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const Vector3f > srcData,
+bool GLTexture2D::set( Array2DReadView< Vector3f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -342,7 +343,7 @@ bool GLTexture2D::set( Array2DView< const Vector3f > srcData,
                  dstOffset );
 }
 
-bool GLTexture2D::set( Array2DView< const Vector4f > srcData,
+bool GLTexture2D::set( Array2DReadView< Vector4f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {

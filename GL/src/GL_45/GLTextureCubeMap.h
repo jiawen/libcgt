@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <vecmath/Rect2f.h>
 #include <vecmath/Vector2i.h>
@@ -24,12 +24,13 @@ enum class GLCubeMapFace
     NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
 
-// When attached to a layered framebuffer, layers are mapped 0...6 to correspond to
-// +x, -x, +y, -y, +z, -z.
+// When attached to a layered framebuffer, layers are numbered 0 through 5 and
+// correspond to +x, -x, +y, -y, +z, -z.
 // If it's a mipmapped cube map:
 // array_layer = floor(layer / 6).
 // face_index = layer % 6.
-// (faces are packed all together. [ layer0( f0 ... f5 ), layer1( f0 ... f5 ), ... ]
+// I.e., faces are packed all together as:
+// [ layer0( f0 ... f5 ), layer1( f0 ... f5 ), ... ]
 class GLTextureCubeMap : public GLTexture
 {
 public:
@@ -48,7 +49,7 @@ public:
 
     // Data must be packed().
     // Only accepts RGBA and BGRA for now.
-    bool set( GLCubeMapFace face, Array2DView< const uint8x4 > data,
+    bool set( GLCubeMapFace face, Array2DReadView< uint8x4 > data,
         GLImageFormat format = GLImageFormat::RGBA,
         const Vector2i& dstOffset = Vector2i{ 0 } );
 
@@ -85,7 +86,7 @@ public:
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // Also returns false if format isn't RGBA or BGRA.
-    bool get( GLCubeMapFace face, Array2DView< uint8x4 > output,
+    bool get( GLCubeMapFace face, Array2DWriteView< uint8x4 > output,
         GLImageFormat format = GLImageFormat::RGBA );
 
 private:

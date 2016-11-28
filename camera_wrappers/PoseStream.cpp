@@ -61,7 +61,7 @@ const PoseStreamMetadata& PoseInputStream::metadata() const
     return m_metadata;
 }
 
-Array1DView< const uint8_t > PoseInputStream::read( int& frameIndex,
+Array1DReadView< uint8_t > PoseInputStream::read( int& frameIndex,
     int64_t& timestamp )
 {
     bool ok;
@@ -73,16 +73,17 @@ Array1DView< const uint8_t > PoseInputStream::read( int& frameIndex,
             ok = m_stream.read( timestamp );
             if( ok )
             {
-                ok = m_stream.readArray( m_buffer.writeView() );
+                Array1DWriteView< uint8_t > wv = m_buffer;
+                ok = m_stream.readArray( wv );
                 if( ok )
                 {
-                    return m_buffer.readView();
+                    return m_buffer;
                 }
             }
         }
     }
 
-    return Array1DView< const uint8_t >();
+    return Array1DReadView< uint8_t >();
 }
 
 PoseOutputStream::PoseOutputStream( PoseStreamMetadata metadata,

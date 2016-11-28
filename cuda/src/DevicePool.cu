@@ -5,7 +5,7 @@
 #include <thrust/sequence.h>
 
 // libcgt
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 
 DevicePool::DevicePool() :
 
@@ -87,7 +87,7 @@ std::vector< uint8_t > DevicePool::getElement( int index ) const
     std::vector< uint8_t > output( elementSizeBytes() );
 
     // view it as a byte array
-    Array1DView< uint8_t > view( output.data(), elementSizeBytes() );
+    Array1DWriteView< uint8_t > view( output.data(), elementSizeBytes() );
 
     // copy it to the host
     md_backingStore.copyToHost( view, index * elementSizeBytes() );

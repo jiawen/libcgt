@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <vecmath/Rect2f.h>
 #include <vecmath/Vector2i.h>
@@ -58,69 +58,69 @@ public:
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // dstFormat must be RED, GREEN, BLUE, or ALPHA.
-    bool get( Array2DView< uint8_t > output,
+    bool get( Array2DWriteView< uint8_t > output,
              GLImageFormat dstFormat = GLImageFormat::RED );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
-    bool get( Array2DView< uint8x2 > output );
+    bool get( Array2DWriteView< uint8x2 > output );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // dstFormat must be RGB or BGR.
-    bool get( Array2DView< uint8x3 > output,
+    bool get( Array2DWriteView< uint8x3 > output,
              GLImageFormat dstFormat = GLImageFormat::RGB );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // dstFormat must be RGBA or BGRA.
-    bool get( Array2DView< uint8x4 > output,
+    bool get( Array2DWriteView< uint8x4 > output,
              GLImageFormat dstFormat = GLImageFormat::RGBA );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
-    bool get( Array2DView< float > output,
+    bool get( Array2DWriteView< float > output,
              GLImageFormat dstFormat = GLImageFormat::RED );
 
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
-    bool get( Array2DView< Vector2f > output );
+    bool get( Array2DWriteView< Vector2f > output );
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // dstFormat must be RGB or BGR.
-    bool get( Array2DView< Vector3f > output,
+    bool get( Array2DWriteView< Vector3f > output,
              GLImageFormat dstFormat = GLImageFormat::RGB );
     // Retrieves the entire texture.
     // Returns false if output isNull(), is not packed, or has the wrong size.
     // dstFormat must be RGBA or BGRA.
-    bool get( Array2DView< Vector4f > output,
+    bool get( Array2DWriteView< Vector4f > output,
              GLImageFormat dstFormat = GLImageFormat::RGBA );
 
     // dstOffset + dstData.size must be < size().
     // srcFormat must be compatible with the texture's internal format.
     // srcData must be packed().
-    bool set( Array2DView< const uint8_t > srcData,
+    bool set( Array2DReadView< uint8_t > srcData,
              GLImageFormat srcFormat = GLImageFormat::RED,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const uint8x2 > srcData,
+    bool set( Array2DReadView< uint8x2 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RG,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const uint8x3 > srcData,
+    bool set( Array2DReadView< uint8x3 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGB,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const uint8x4 > srcData,
+    bool set( Array2DReadView< uint8x4 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGBA,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const float > srcData,
+    bool set( Array2DReadView< float > srcData,
              GLImageFormat srcFormat = GLImageFormat::RED,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const Vector2f > srcData,
+    bool set( Array2DReadView< Vector2f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RG,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const Vector3f > srcData,
+    bool set( Array2DReadView< Vector3f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGB,
              const Vector2i& dstOffset = { 0, 0 } );
-    bool set( Array2DView< const Vector4f > srcData,
+    bool set( Array2DReadView< Vector4f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGBA,
              const Vector2i& dstOffset = { 0, 0 } );
 

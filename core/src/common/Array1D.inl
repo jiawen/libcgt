@@ -247,6 +247,18 @@ Array1D< T >::operator Array1DView< T >()
 }
 
 template< typename T >
+Array1D< T >::operator Array1DReadView< T >() const
+{
+    return Array1DReadView< T >( m_data, m_size, m_stride );
+}
+
+template< typename T >
+Array1D< T >::operator Array1DWriteView< T >()
+{
+    return Array1DWriteView< T >( m_data, m_size, m_stride );
+}
+
+template< typename T >
 Array1D< T >::operator const T* () const
 {
     return reinterpret_cast< const T* >( m_data );

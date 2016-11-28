@@ -60,7 +60,7 @@ public:
 
     const PoseStreamMetadata& metadata() const;
 
-    Array1DView< const uint8_t > read( int& frameIndex, int64_t& timestamp );
+    Array1DReadView< uint8_t > read( int& frameIndex, int64_t& timestamp );
 
 private:
 

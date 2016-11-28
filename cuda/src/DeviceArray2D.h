@@ -5,7 +5,7 @@
 #include <helper_cuda.h>
 
 #include <common/Array2D.h>
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 
 #include "KernelArray2D.h"
 
@@ -81,11 +81,11 @@ public:
     // This is automatically resized.
     // TODO: make this a free function that requires sizes to be exact.
     // No resizing.
-    bool copyFromHost( Array2DView< const T > src );
+    bool copyFromHost( Array2DReadView< T > src );
 
     // copy from this to host array dst
     // dst is automatically resized
-    bool copyToHost( Array2DView< T > dst ) const;
+    bool copyToHost( Array2DWriteView< T > dst ) const;
 
     // copy from cudaArray src to this
     void copyFromArray( cudaArray* src );

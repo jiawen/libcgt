@@ -61,7 +61,7 @@ int GLTexture1D::size() const
     return m_width;
 }
 
-bool GLTexture1D::set( Array1DView< const uint8_t > srcData,
+bool GLTexture1D::set( Array1DReadView< uint8_t > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -81,7 +81,7 @@ bool GLTexture1D::set( Array1DView< const uint8_t > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const uint8x2 > srcData,
+bool GLTexture1D::set( Array1DReadView< uint8x2 > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -98,7 +98,7 @@ bool GLTexture1D::set( Array1DView< const uint8x2 > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const uint8x3 > srcData,
+bool GLTexture1D::set( Array1DReadView< uint8x3 > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -116,7 +116,7 @@ bool GLTexture1D::set( Array1DView< const uint8x3 > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const uint8x4 > srcData,
+bool GLTexture1D::set( Array1DReadView< uint8x4 > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -133,7 +133,7 @@ bool GLTexture1D::set( Array1DView< const uint8x4 > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const float > srcData,
+bool GLTexture1D::set( Array1DReadView< float > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -153,7 +153,7 @@ bool GLTexture1D::set( Array1DView< const float > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const Vector2f > srcData,
+bool GLTexture1D::set( Array1DReadView< Vector2f > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -170,7 +170,7 @@ bool GLTexture1D::set( Array1DView< const Vector2f > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const Vector3f > srcData,
+bool GLTexture1D::set( Array1DReadView< Vector3f > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {
@@ -187,7 +187,7 @@ bool GLTexture1D::set( Array1DView< const Vector3f > srcData,
                  dstOffset );
 }
 
-bool GLTexture1D::set( Array1DView< const Vector4f > srcData,
+bool GLTexture1D::set( Array1DReadView< Vector4f > srcData,
                       GLImageFormat srcFormat,
                       int dstOffset )
 {

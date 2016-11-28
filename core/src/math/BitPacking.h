@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "common/Array1DView.h"
+#include "common/ArrayView.h"
 #include "vecmath/Vector2i.h"
 #include "vecmath/Vector3i.h"
 
@@ -45,8 +45,8 @@ public:
     static uint64_t byteSwap64( uint64_t x );
 
     // Efficiently performs 16-bit byte swapping on an Array1DView.
-    static bool byteSwap16( Array1DView< const uint16_t > src,
-        Array1DView< uint16_t > dst );
+    static bool byteSwap16( Array1DReadView< uint16_t > src,
+        Array1DWriteView< uint16_t > dst );
 
     // packs 16-bit (x,y) into a 32-bit Morton curve index
     // From: http://graphics.stanford.edu/~seander/bithacks.html
@@ -78,4 +78,4 @@ public:
     // http://and-what-happened.blogspot.co.uk/2011/08/fast-2d-and-3d-hilbert-curves-and.html
 };
 
-#include "math/BitPacking.inl"
+#include "BitPacking.inl"

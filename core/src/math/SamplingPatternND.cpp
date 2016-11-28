@@ -7,7 +7,7 @@ SamplingPatternND::SamplingPatternND( int nSamples, int nDimensions ) :
 {
 }
 
-void SamplingPatternND::getSample( int j, Array1DView< float > sample )
+void SamplingPatternND::getSample( int j, Array1DWriteView< float > sample )
 {
     int sampleStartIndex = j * m_nDimensions;
     for( int i = 0; i < m_nDimensions; ++i )
@@ -26,7 +26,7 @@ int SamplingPatternND::getNumDimensions() const
     return m_nDimensions;
 }
 
-Array1DView< float > SamplingPatternND::rawSamples()
+Array1DWriteView< float > SamplingPatternND::rawSamples()
 {
     return m_samples;
 }

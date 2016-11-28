@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Array1D.h"
-#include "common/Array1DView.h"
+#include "common/ArrayView.h"
 #include "vecmath/Box3f.h"
 #include "vecmath/Box3i.h"
 #include "vecmath/Matrix4f.h"
@@ -19,7 +19,7 @@ namespace libcgt { namespace core { namespace geometry {
 // This function is equivalent to combining corners() and
 // solidBoxTriangleListIndices().
 void writeTriangleListPositions( const Box3f& box,
-    Array1DView< Vector4f > positions );
+    Array1DWriteView< Vector4f > positions );
 
 // Writes a triangle list tesselation of the 6 faces of the box, transformed by
 // "worldFromBox", into "vertexPositions".
@@ -27,13 +27,13 @@ void writeTriangleListPositions( const Box3f& box,
 // This function is equivalent to combining corners() and
 // solidBoxTriangleListIndices().
 void writeTriangleListPositions( const Box3f& box, const Matrix4f& worldFromBox,
-    Array1DView< Vector4f > positions );
+    Array1DWriteView< Vector4f > positions );
 
 void writeTriangleListNormals( const Box3f& box,
-    Array1DView< Vector3f > normals );
+    Array1DWriteView< Vector3f > normals );
 
 void writeTriangleListNormals( const Box3f& box,
-    const Matrix4f& worldFromBox, Array1DView< Vector3f > normals );
+    const Matrix4f& worldFromBox, Array1DWriteView< Vector3f > normals );
 
 // Assign somewhat arbitrary texture coordinates to each face of a cube.
 // Each face is assigned the same [0,1]^2 domain. The front, right, back, and
@@ -41,14 +41,14 @@ void writeTriangleListNormals( const Box3f& box,
 // u mapped to x and v mapped to y. The top face has u mapped to x and v mapped
 // to -z. The bottom face has u mapped to x and v mapped to z.
 void writeAxisAlignedSolidTextureCoordinates(
-    Array1DView< Vector2f > vertexTextureCoordinates );
+    Array1DWriteView< Vector2f > vertexTextureCoordinates );
 
 // Writes a line list of the 12 edges of the box into "vertexPositions".
 // 12 edges * 2 vertices / edge = 24 vertices.
 // This function is equivalent to combining corners() and
 // wireframeBoxLineListIndices().
 void writeWireframe( const Box3f& box,
-    Array1DView< Vector4f > vertexPositions );
+    Array1DWriteView< Vector4f > vertexPositions );
 
 // Writes a line list of the 12 edges of the box, transformed by
 // "worldFromBox", into "vertexPositions".
@@ -56,7 +56,7 @@ void writeWireframe( const Box3f& box,
 // This function is equivalent to combining corners() and
 // wireframeBoxLineListIndices().
 void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
-    Array1DView< Vector4f > vertexPositions );
+    Array1DWriteView< Vector4f > vertexPositions );
 
 // Writes a line list of a 3D grid subdividing the box divided into
 // resolution.xyz bins along each direction.
@@ -68,7 +68,7 @@ void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
 //       + ( resolution.z + 1 ) * ( resolution.x + 1 )
 //     )
 void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
-    Array1DView< Vector4f > vertexPositions );
+    Array1DWriteView< Vector4f > vertexPositions );
 
 // Writes a line list of a 3D grid subdividing the box divided into
 // resolution.xyz bins along each direction. Each coordinate is transformed by
@@ -81,7 +81,7 @@ void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
 //       + ( resolution.z + 1 ) * ( resolution.x + 1 )
 //     )
 void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
-    const Matrix4f& worldFromBox, Array1DView< Vector4f > vertexPositions );
+    const Matrix4f& worldFromBox, Array1DWriteView< Vector4f > vertexPositions );
 
 // Returns a cube with the given center and side length.
 Box3f makeBox( const Vector3f& center, float sideLength );

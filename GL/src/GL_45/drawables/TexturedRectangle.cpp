@@ -28,7 +28,7 @@ void TexturedRectangle::updatePositions(
     assert( positions.size() >= 4 );
 
     auto mb = mapAttribute< Vector4f >( 0 );
-    Array1DView< Vector4f > dst = mb.view();
+    Array1DWriteView< Vector4f > dst = mb.view();
     dst[ 0 ] = { positions[ 0 ], 1.0f };
     dst[ 1 ] = { positions[ 1 ], 1.0f };
     dst[ 2 ] = { positions[ 2 ], 1.0f };
@@ -39,7 +39,7 @@ void TexturedRectangle::updatePositions(
     const std::vector< Vector4f >& positions )
 {
     auto mb = mapAttribute< Vector4f >( 0 );
-    Array1DView< Vector4f > dst = mb.view();
+    Array1DWriteView< Vector4f > dst = mb.view();
     dst[ 0 ] = positions[ 0 ];
     dst[ 1 ] = positions[ 1 ];
     dst[ 2 ] = positions[ 2 ];

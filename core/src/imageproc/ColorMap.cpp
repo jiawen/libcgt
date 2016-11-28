@@ -12,8 +12,10 @@ using libcgt::core::geometry::rescale;
 
 namespace libcgt { namespace core { namespace imageproc {
 
-void jet( Array2DView< const float > src, const Range1f& srcRange,
-    Array2DView< uint8x4 > dst )
+// TODO: u8_sat()
+
+void jet( Array2DReadView< float > src, const Range1f& srcRange,
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( float z )
@@ -24,20 +26,16 @@ void jet( Array2DView< const float > src, const Range1f& srcRange,
     );
 }
 
-void jet( Array2DView< const float > src, const Range1f& srcRange,
-    Array2DView< Vector4f > dst )
+void jet( Array2DReadView< float > src, const Range1f& srcRange,
+    Array2DWriteView< Vector4f > dst )
 {
     map( src, dst,
-        [&] ( float z )
-        {
-            z = saturate( fraction( z, srcRange ) );
-            return jet( z );
-        }
+        [&] ( float z ) { return jet( saturate( fraction( z, srcRange ) ) ); }
     );
 }
 
-void normalsToRGBA( Array2DView< const Vector4f > src,
-    Array2DView< uint8x4 > dst )
+void normalsToRGBA( Array2DReadView< Vector4f > src,
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( const Vector4f& normal )
@@ -53,8 +51,8 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
     );
 }
 
-void normalsToRGBA( Array2DView< const Vector4f > src,
-    Array2DView< Vector4f > dst )
+void normalsToRGBA( Array2DReadView< Vector4f > src,
+    Array2DWriteView< Vector4f > dst )
 {
     map( src, dst,
         [&] ( const Vector4f& normal )
@@ -70,22 +68,17 @@ void normalsToRGBA( Array2DView< const Vector4f > src,
     );
 }
 
-void mapRGBToLuminance( Array2DView< const uint8x3 > src,
-    Array2DView< uint8_t > dst )
+void rgbToLuminance( Array2DReadView< uint8x3 > src,
+    Array2DWriteView< uint8_t > dst )
 {
-    map( src, dst,
-        [&] ( uint8x3 rgb )
-        {
-            return rgbToLuminance( rgb );
-        }
-    );
+    uint8_t ( *f )( uint8x3 ) = &rgbToLuminance;
+    map( src, dst, f );
 }
 
-void linearRemapToLuminance( Array2DView< const uint16_t > src,
+void linearRemapToLuminance( Array2DReadView< uint16_t > src,
     const Range1i& srcRange, const Range1i& dstRange,
-    Array2DView< uint8_t > dst )
+    Array2DWriteView< uint8_t > dst )
 {
-    float srcSize = static_cast< float >( srcRange.size );
     map( src, dst,
         [&] ( uint16_t z )
         {
@@ -95,11 +88,10 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const uint16_t > src,
+void linearRemapToLuminance( Array2DReadView< uint16_t > src,
     const Range1i& srcRange, const Range1i& dstRange,
-    Array2DView< uint8x3 > dst )
+    Array2DWriteView< uint8x3 > dst )
 {
-    float srcSize = static_cast< float >( srcRange.size );
     map( src, dst,
         [&] ( uint16_t z )
         {
@@ -110,9 +102,9 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const float > src,
+void linearRemapToLuminance( Array2DReadView< float > src,
     const Range1f& srcRange, const Range1f& dstRange,
-    Array2DView< uint8_t > dst )
+    Array2DWriteView< uint8_t > dst )
 {
     map( src, dst,
         [&] ( float z )
@@ -123,11 +115,10 @@ void linearRemapToLuminance( Array2DView< const float > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const uint16_t > src,
+void linearRemapToLuminance( Array2DReadView< uint16_t > src,
     const Range1i& srcRange, const Range1i& dstRange,
-    uint8_t dstAlpha, Array2DView< uint8x4 > dst )
+    uint8_t dstAlpha, Array2DWriteView< uint8x4 > dst )
 {
-    float srcSize = static_cast< float >( srcRange.size );
     map( src, dst,
         [&] ( uint16_t z )
         {
@@ -138,9 +129,9 @@ void linearRemapToLuminance( Array2DView< const uint16_t > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const float > src,
+void linearRemapToLuminance( Array2DReadView< float > src,
     const Range1f& srcRange, const Range1f& dstRange,
-    Array2DView< uint8x4 > dst )
+    Array2DWriteView< uint8x4 > dst )
 {
     map( src, dst,
         [&] ( float z )
@@ -152,9 +143,9 @@ void linearRemapToLuminance( Array2DView< const float > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const float > src,
+void linearRemapToLuminance( Array2DReadView< float > src,
     const Range1f& srcRange, const Range1f& dstRange,
-    Array2DView< float > dst )
+    Array2DWriteView< float > dst )
 {
     map( src, dst,
         [&] ( float z )
@@ -165,9 +156,9 @@ void linearRemapToLuminance( Array2DView< const float > src,
     );
 }
 
-void linearRemapToLuminance( Array2DView< const float > src,
+void linearRemapToLuminance( Array2DReadView< float > src,
     const Range1f& srcRange, const Range1f& dstRange,
-    Array2DView< Vector4f > dst )
+    Array2DWriteView< Vector4f > dst )
 {
     map( src, dst,
         [&] ( float z )

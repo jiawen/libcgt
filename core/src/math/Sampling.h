@@ -11,10 +11,11 @@ class Sampling
 {
 public:
 
-    // TODO(VS2015): return an Array1DView< Vector< float, dim > > or
+    // TODO(VS2015): return an Array1DReadView< Vector< float, dim > > or
     // something.
     // populates pPattern with a latin hypercube sampling pattern
-    static void latinHypercubeSampling( Random& random, SamplingPatternND* pPattern );
+    static void latinHypercubeSampling( Random& random,
+        SamplingPatternND* pPattern );
 
     // Given uniform random numbers u0, u1 in [0,1]
     // Returns a point uniformly sampled

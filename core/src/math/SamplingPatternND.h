@@ -10,7 +10,7 @@ public:
 
     // get the jth sample
     // sample[] should have length of at least nDimensions
-    void getSample( int j, Array1DView< float > sample );
+    void getSample( int j, Array1DWriteView< float > sample );
 
     int getNumSamples() const;
     int getNumDimensions() const;
@@ -22,7 +22,7 @@ public:
     // mem: 01234 56780 ABCDE
     //      00000 11111 22222
     //      s0    s1    s2
-    Array1DView< float > rawSamples();
+    Array1DWriteView< float > rawSamples();
 
 private:
 

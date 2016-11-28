@@ -5,10 +5,10 @@
 #include <cstring>
 #include <utility>
 
-#include "common/Array2DView.h"
-#include "common/NewDeleteAllocator.h"
-#include "math/Indexing.h"
-#include "vecmath/Vector2i.h"
+#include "ArrayView.h"
+#include "NewDeleteAllocator.h"
+#include <math/Indexing.h>
+#include <vecmath/Vector2i.h>
 
 // TODO: use Vector2< size_t > when the new Vector class is ready.
 // Then, we can get rid of all the static_casts.
@@ -51,7 +51,7 @@ public:
     // Relinquish the underlying pointer by invalidating this Array2D and
     // returning the pointer and allocator. This object continues to point
     // to the existing allocator.
-    std::pair< Array2DView< T >, Allocator* > relinquish();
+    std::pair< Array2DWriteView< T >, Allocator* > relinquish();
 
     // Makes this array null and frees the underlying memory.
     // Dimensions are set to 0.
@@ -94,11 +94,11 @@ public:
     const T* rowPointer( size_t y ) const;
     T* rowPointer( size_t y );
 
-    Array2DView< const T > readView() const;
-    Array2DView< T > writeView() const;
+    Array2DReadView< T > readView() const;
+    Array2DWriteView< T > writeView();
 
-    operator Array2DView< const T >() const;
-    operator Array2DView< T >();
+    operator Array2DReadView< T >() const;
+    operator Array2DWriteView< T >();
 
     operator const T* () const;
     operator T* ();

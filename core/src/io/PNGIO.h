@@ -3,8 +3,8 @@
 #include <string>
 
 #include <common/BasicTypes.h>
+#include <common/ArrayView.h>
 #include <common/Array2D.h>
-#include <common/Array2DView.h>
 
 class PNGIO
 {
@@ -33,12 +33,12 @@ public:
     static PNGData read( const std::string& filename );
 
     static bool write( const std::string& filename,
-        Array2DView< const uint8_t > image );
+        Array2DReadView< uint8_t > image );
     static bool write( const std::string& filename,
-        Array2DView< const uint8x3 > image );
+        Array2DReadView< uint8x3 > image );
     static bool write( const std::string& filename,
-        Array2DView< const uint8x4 > image );
+        Array2DReadView< uint8x4 > image );
 
     static bool write( const std::string& filename,
-        Array2DView< const uint16_t > image );
+        Array2DReadView< uint16_t > image );
 };

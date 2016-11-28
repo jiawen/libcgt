@@ -228,7 +228,7 @@ void DeviceArray2D< T >::copyFromDevice( const DeviceArray2D< T >& src )
 }
 
 template< typename T >
-bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
+bool DeviceArray2D< T >::copyFromHost( Array2DReadView< T > src )
 {
     if( src.isNull() )
     {
@@ -239,6 +239,7 @@ bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
         return false;
     }
 
+    // TODO: check if resize ok, then check if memcpy is ok.
     resize( src.size() );
     checkCudaErrors
     (
@@ -255,7 +256,7 @@ bool DeviceArray2D< T >::copyFromHost( Array2DView< const T > src )
 }
 
 template< typename T >
-bool DeviceArray2D< T >::copyToHost( Array2DView< T > dst ) const
+bool DeviceArray2D< T >::copyToHost( Array2DWriteView< T > dst ) const
 {
     if( isNull() || dst.isNull() || m_size != dst.size() )
     {

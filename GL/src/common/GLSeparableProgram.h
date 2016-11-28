@@ -10,7 +10,7 @@
 #include <GL/glew.h>
 #endif
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 
 class Matrix4f;
 class Vector2f;
@@ -67,7 +67,7 @@ public:
     void setUniformHandle( GLint uniformLocation, GLuint64 h );
     // handles must be packed.
     void setUniformHandleArray( GLint uniformLocation,
-        Array1DView< GLuint64 > handles );
+        Array1DReadView< GLuint64 > handles );
     void setUniformInt( GLint uniformLocation, int x );
     void setUniformFloat( GLint uniformLocation, float x );
     void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& m );

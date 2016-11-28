@@ -1,4 +1,4 @@
-#include "io/PortableGrayMapIO.h"
+#include "PortableGrayMapIO.h"
 
 // static
 PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
@@ -95,7 +95,8 @@ PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
 
 
 // static
-bool PortableGrayMapIO::writeBinary( const char* filename, Array2DView< const uint8_t > image )
+bool PortableGrayMapIO::writeBinary( const char* filename,
+    Array2DReadView< uint8_t > image )
 {
     if( image.width() < 0 || image.height() < 0 )
     {
@@ -134,7 +135,8 @@ bool PortableGrayMapIO::writeBinary( const char* filename, Array2DView< const ui
 }
 
 // static
-bool PortableGrayMapIO::writeBinary( const char* filename, Array2DView< const uint16_t > image )
+bool PortableGrayMapIO::writeBinary( const char* filename,
+    Array2DReadView< uint16_t > image )
 {
     if( image.width() < 0 || image.height() < 0 )
     {

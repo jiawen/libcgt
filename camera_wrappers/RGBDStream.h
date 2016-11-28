@@ -35,7 +35,7 @@ public:
 
     const std::vector< StreamMetadata >& metadata() const;
 
-    Array1DView< const uint8_t > read( uint32_t& streamId,
+    Array1DReadView< uint8_t > read( uint32_t& streamId,
         int32_t& frameIndex, int64_t& timestamp );
 
 private:
@@ -68,7 +68,7 @@ public:
     // TODO(jiawen): check that frameIndex and timestamp is monotonically
     // increasing.
     bool write( uint32_t streamId, int32_t frameIndex, int64_t timestamp,
-        Array1DView< const uint8_t > data ) const;
+        Array1DReadView< uint8_t > data ) const;
 
 private:
 

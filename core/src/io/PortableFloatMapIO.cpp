@@ -90,7 +90,8 @@ PortableFloatMapIO::PFMData PortableFloatMapIO::read( const std::string& filenam
 }
 
 // static
-bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const float > image )
+bool PortableFloatMapIO::write( const std::string& filename,
+    Array2DReadView< float > image )
 {
     int w = image.width();
     int h = image.height();
@@ -138,7 +139,7 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
 }
 
 // static
-bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector2f > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DReadView< Vector2f > image )
 {
     int w = image.width();
     int h = image.height();
@@ -190,7 +191,7 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
 
 
 // static
-bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector3f > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DReadView< Vector3f > image )
 {
     int w = image.width();
     int h = image.height();
@@ -238,7 +239,7 @@ bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const 
 }
 
 // static
-bool PortableFloatMapIO::write( const std::string& filename, Array2DView< const Vector4f > image )
+bool PortableFloatMapIO::write( const std::string& filename, Array2DReadView< Vector4f > image )
 {
     int w = image.width();
     int h = image.height();

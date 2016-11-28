@@ -3,8 +3,7 @@
 #include <vector>
 #include <vector_types.h>
 
-#include <common/Array1DView.h>
-#include <common/Array2DView.h>
+#include <common/ArrayView.h>
 #include <common/Array3DView.h>
 #include <vecmath/Vector4f.h>
 
@@ -15,12 +14,12 @@
 namespace libcgt { namespace cuda {
 
 // Host functions (CUDA types).
-bool saveTXT( Array1DView< const int3 > array, const char* filename );
+bool saveTXT( Array1DReadView< int3 > array, const char* filename );
 
-bool saveTXT( Array2DView< const float2 > array, const char* filename );
-bool saveTXT( Array2DView< const float4 > array, const char* filename );
+bool saveTXT( Array2DReadView< float2 > array, const char* filename );
+bool saveTXT( Array2DReadView< float4 > array, const char* filename );
 
-bool saveTXT( Array2DView< const uchar4 > array, const char* filename );
+bool saveTXT( Array2DReadView< uchar4 > array, const char* filename );
 
 bool saveTXT( Array3DView< const ushort2 > array, const char* filename );
 

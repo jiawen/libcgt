@@ -40,14 +40,14 @@ Matrix4f worldToKinect( const NUI_SKELETON_FRAME& frame )
 }
 #endif
 
-void rawDepthMapToMeters( Array2DView< const uint16_t > rawDepth,
-    Array2DView< float > outputMeters, bool flipX, bool flipY,
+void rawDepthMapToMeters( Array2DReadView< uint16_t > rawDepth,
+    Array2DWriteView< float > outputMeters, bool flipX, bool flipY,
     int rightShift )
 {
     int w = static_cast< int >( rawDepth.width() );
     int h = static_cast< int >( rawDepth.height() );
 
-    Array2DView< const uint16_t > src = rawDepth;
+    Array2DReadView< uint16_t > src = rawDepth;
     if( flipX )
     {
         src = libcgt::core::arrayutils::flipX( src );

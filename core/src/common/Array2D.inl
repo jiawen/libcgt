@@ -133,9 +133,9 @@ bool Array2D< T >::notNull() const
 }
 
 template< typename T >
-std::pair< Array2DView< T >, Allocator* > Array2D< T >::relinquish()
+std::pair< Array2DWriteView< T >, Allocator* > Array2D< T >::relinquish()
 {
-    Array2DView< T > view = writeView();
+    Array2DWriteView< T > view = writeView();
 
     m_data = nullptr;
     m_size = { 0, 0 };
@@ -287,27 +287,27 @@ T* Array2D< T >::rowPointer( size_t y )
 }
 
 template< typename T >
-Array2DView< const T > Array2D< T >::readView() const
+Array2DReadView< T > Array2D< T >::readView() const
 {
-    return Array2DView< const T >( m_data, m_size, m_stride );
+    return Array2DReadView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array2DView< T > Array2D< T >::writeView() const
+Array2DWriteView< T > Array2D< T >::writeView()
 {
-    return Array2DView< T >( m_data, m_size, m_stride );
+    return Array2DWriteView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array2D< T >::operator Array2DView< const T >() const
+Array2D< T >::operator Array2DReadView< T >() const
 {
-    return readView();
+    return Array2DReadView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array2D< T >::operator Array2DView< T >()
+Array2D< T >::operator Array2DWriteView< T >()
 {
-    return writeView();
+    return Array2DWriteView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >

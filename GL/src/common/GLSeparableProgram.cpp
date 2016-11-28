@@ -115,7 +115,7 @@ void GLSeparableProgram::setUniformHandle( GLint uniformLocation, GLuint64 h )
 }
 
 void GLSeparableProgram::setUniformHandleArray( GLint uniformLocation,
-    Array1DView< GLuint64 > handles )
+    Array1DReadView< GLuint64 > handles )
 {
     assert( isValid() );
     assert( handles.packed() );

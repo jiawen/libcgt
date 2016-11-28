@@ -8,7 +8,8 @@
 using namespace libcgt::core::imageproc;
 
 // static
-bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< const uint8x3 > image )
+bool PortablePixelMapIO::writeRGB( const std::string& filename,
+    Array2DReadView< uint8x3 > image )
 {
     FILE* fp = fopen( filename.c_str(), "wb" );
     if( fp == nullptr )
@@ -70,7 +71,7 @@ bool PortablePixelMapIO::writeRGB( const std::string& filename, Array2DView< con
 
 // static
 bool PortablePixelMapIO::writeRGBText( const std::string& filename,
-    Array2DView< const uint8x3 > image )
+    Array2DReadView< uint8x3 > image )
 {
     FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == nullptr )

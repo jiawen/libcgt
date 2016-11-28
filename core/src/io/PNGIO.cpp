@@ -1,8 +1,8 @@
-#include "io/PNGIO.h"
+#include "PNGIO.h"
 
 #include <third_party/lodepng/lodepng.h>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include <common/ArrayUtils.h>
 #include <math/BitPacking.h>
 
@@ -114,7 +114,7 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
     // Swap endianness of 16-bit outputs.
     if( output.bitDepth == 16 )
     {
-        Array1DView< uint16_t > bitsView( bits,
+        Array1DWriteView< uint16_t > bitsView( bits,
             output.nComponents * width * height );
         BitPacking::byteSwap16( bitsView, bitsView );
     }
@@ -124,7 +124,7 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
 
 // static
 bool PNGIO::write( const std::string& filename,
-    Array2DView< const uint8_t > image )
+    Array2DReadView< uint8_t > image )
 {
     Array2D< uint8_t > tmpImage;
     const uint8_t* srcPointer;
@@ -148,7 +148,7 @@ bool PNGIO::write( const std::string& filename,
 
 // static
 bool PNGIO::write( const std::string& filename,
-    Array2DView< const uint8x3 > image )
+    Array2DReadView< uint8x3 > image )
 {
     Array2D< uint8x3 > tmpImage;
     const uint8_t* srcPointer;
@@ -172,7 +172,7 @@ bool PNGIO::write( const std::string& filename,
 
 // static
 bool PNGIO::write( const std::string& filename,
-    Array2DView< const uint8x4 > image )
+    Array2DReadView< uint8x4 > image )
 {
     Array2D< uint8x4 > tmpImage;
     const uint8_t* srcPointer;
@@ -196,7 +196,7 @@ bool PNGIO::write( const std::string& filename,
 
 // static
 bool PNGIO::write( const std::string& filename,
-    Array2DView< const uint16_t > image )
+    Array2DReadView< uint16_t > image )
 {
     // TODO: use BitPacking::byteSwap16 on the buffer once it supports a
     // destination.

@@ -35,8 +35,8 @@ uint64_t BitPacking::byteSwap32x2( uint64_t x )
 {
     return
         ( ( x >> 24 ) & 0x000000ff000000ff ) | // [          b7          b3 ]
-        ( ( x >> 8 ) & 0x0000ff000000ff00 ) | // [       b6          b2    ]
-        ( ( x << 8 ) & 0x00ff000000ff0000 ) | // [    b5          b1       ]
+        ( ( x >> 8 ) & 0x0000ff000000ff00 ) |  // [       b6          b2    ]
+        ( ( x << 8 ) & 0x00ff000000ff0000 ) |  // [    b5          b1       ]
         ( ( x << 24 ) & 0xff000000ff000000 );  // [ b4          b0          ]
 }
 
@@ -45,19 +45,19 @@ uint64_t BitPacking::byteSwap32x2( uint64_t x )
 uint64_t BitPacking::byteSwap64( uint64_t x )
 {
     return
-        ( x >> 56 ) | // [  0  0  0  0  0  0  0 b7 ]
+        ( x >> 56 ) |                          // [  0  0  0  0  0  0  0 b7 ]
         ( ( x >> 40 ) & 0x000000000000ff00 ) | // [  0  0  0  0  0  0 b6  0 ]
         ( ( x >> 24 ) & 0x0000000000ff0000 ) | // [  0  0  0  0  0 b5  0  0 ]
-        ( ( x >> 8 ) & 0x00000000ff000000 ) | // [  0  0  0  0 b4  0  0  0 ]
-        ( ( x << 8 ) & 0x000000ff00000000 ) | // [  0  0  0 b3  0  0  0  0 ]
+        ( ( x >> 8 ) & 0x00000000ff000000 ) |  // [  0  0  0  0 b4  0  0  0 ]
+        ( ( x << 8 ) & 0x000000ff00000000 ) |  // [  0  0  0 b3  0  0  0  0 ]
         ( ( x << 24 ) & 0x0000ff0000000000 ) | // [  0  0 b2  0  0  0  0  0 ]
         ( ( x << 40 ) & 0x00ff000000000000 ) | // [  0 b1  0  0  0  0  0  0 ]
         ( ( x << 56 ) & 0xff00000000000000 );  // [ b0  0  0  0  0  0  0  0 ]
 }
 
 // static
-bool BitPacking::byteSwap16( Array1DView< const uint16_t > src,
-    Array1DView< uint16_t > dst )
+bool BitPacking::byteSwap16( Array1DReadView< uint16_t > src,
+    Array1DWriteView< uint16_t > dst )
 {
     if( src.size() != dst.size() )
     {
@@ -67,8 +67,8 @@ bool BitPacking::byteSwap16( Array1DView< const uint16_t > src,
     if( src.packed() && dst.packed() )
     {
         size_t nWords64 = src.size() / 4;
-        Array1DView< const uint64_t > src64( src.pointer(), nWords64 );
-        Array1DView< uint64_t > dst64( dst.pointer(), nWords64 );
+        Array1DReadView< uint64_t > src64( src.pointer(), nWords64 );
+        Array1DWriteView< uint64_t > dst64( dst.pointer(), nWords64 );
         for( size_t i = 0; i < nWords64; ++i )
         {
             dst64[ i ] = byteSwap16x4( src64[ i ] );

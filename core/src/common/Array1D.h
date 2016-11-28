@@ -5,6 +5,7 @@
 #include <cstring>
 #include <memory>
 
+#include "common/ArrayView.h"
 #include "common/Array1DView.h"
 #include "common/NewDeleteAllocator.h"
 
@@ -85,6 +86,9 @@ public:
 
     operator Array1DView< const T >() const;
     operator Array1DView< T >();
+
+    operator Array1DReadView< T >() const;
+    operator Array1DWriteView< T >();
 
     operator const T* () const;
     operator T* ();

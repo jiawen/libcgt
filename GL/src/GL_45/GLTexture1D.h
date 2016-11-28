@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
@@ -45,28 +45,28 @@ public:
 
     // srcFormat must be compatible with the texture's internal format.
     // srcData must be packed().
-    bool set( Array1DView< const uint8_t > srcData,
+    bool set( Array1DReadView< uint8_t > srcData,
              GLImageFormat srcFormat = GLImageFormat::RED,
              int dstOffset = 0 );
-    bool set( Array1DView< const uint8x2 > srcData,
+    bool set( Array1DReadView< uint8x2 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RG,
              int dstOffset = 0 );
-    bool set( Array1DView< const uint8x3 > srcData,
+    bool set( Array1DReadView< uint8x3 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGB,
              int dstOffset = 0 );
-    bool set( Array1DView< const uint8x4 > srcData,
+    bool set( Array1DReadView< uint8x4 > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGBA,
              int dstOffset = 0 );
-    bool set( Array1DView< const float > srcData,
+    bool set( Array1DReadView< float > srcData,
              GLImageFormat srcFormat = GLImageFormat::RED,
              int dstOffset = 0 );
-    bool set( Array1DView< const Vector2f > srcData,
+    bool set( Array1DReadView< Vector2f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RG,
              int dstOffset = 0 );
-    bool set( Array1DView< const Vector3f > srcData,
+    bool set( Array1DReadView< Vector3f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGB,
              int dstOffset = 0 );
-    bool set( Array1DView< const Vector4f > srcData,
+    bool set( Array1DReadView< Vector4f > srcData,
              GLImageFormat srcFormat = GLImageFormat::RGBA,
              int dstOffset = 0 );
 

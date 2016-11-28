@@ -214,25 +214,26 @@ private:
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
     bool pollColor( DWORD millisecondsToWait,
-        Array2DView< uint8x4 > bgra,
+        Array2DWriteView< uint8x4 > bgra,
         int64_t& timestampNS, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
     bool pollInfrared( DWORD millisecondsToWait,
-        Array2DView< uint16_t > ir,
+        Array2DWriteView< uint16_t > ir,
         int64_t& timestampNS, int& frameNumber );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
     bool pollExtendedDepth( DWORD millisecondsToWait,
-        Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
+        Array2DWriteView< uint16_t > depth,
+        Array2DWriteView< uint16_t > playerIndex,
         int64_t& timestampNS, int& frameNumber, bool& capturedWithNearMode );
 
     // Returns false if the input is invalid (incorrect size or format), or
     // on an invalid frame from the sensor.
     bool pollPackedDepth( DWORD millisecondsToWait,
-        Array2DView< uint16_t > depth,
+        Array2DWriteView< uint16_t > depth,
         int64_t& timestampNS, int& frameNumber );
 
     // Convert data into recognizable formats.

@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include <common/Array2D.h>
-#include <common/Array2DView.h>
 
 class PortableGrayMapIO
 {
@@ -31,6 +30,8 @@ public:
     // Otherwise, valid = false.
     static PGMData read( const char* filename );
 
-    static bool writeBinary( const char* filename, Array2DView< const uint8_t > image );
-    static bool writeBinary( const char* filename, Array2DView< const uint16_t > image );
+    static bool writeBinary( const char* filename,
+        Array2DReadView< uint8_t > image );
+    static bool writeBinary( const char* filename,
+        Array2DReadView< uint16_t > image );
 };

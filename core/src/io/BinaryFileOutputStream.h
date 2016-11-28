@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 
 class BinaryFileOutputStream
 {
@@ -31,7 +31,7 @@ public:
     bool write( const T& x ) const;
 
     template< typename T >
-    bool writeArray( Array1DView< const T > data ) const;
+    bool writeArray( Array1DReadView< T > data ) const;
 
 private:
 
@@ -46,7 +46,7 @@ bool BinaryFileOutputStream::write( const T& x ) const
 }
 
 template< typename T >
-bool BinaryFileOutputStream::writeArray( Array1DView< const T > data ) const
+bool BinaryFileOutputStream::writeArray( Array1DReadView< T > data ) const
 {
     if( data.packed() )
     {

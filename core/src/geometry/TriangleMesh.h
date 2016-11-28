@@ -5,7 +5,7 @@
 #include <map>
 #include <list>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include <common/Comparators.h>
 
 #include "io/OBJData.h"
@@ -24,15 +24,15 @@ public:
 
     // Construct a triangle mesh out of a list of positions and
     // and a list of triplets indexing into it.
-    TriangleMesh( Array1DView< const Vector3f > positions,
-        Array1DView< const Vector3i > faces );
+    TriangleMesh( Array1DReadView< Vector3f > positions,
+        Array1DReadView< Vector3i > faces );
 
     // Construct a triangle mesh out of a list of positions and normals,
     // and a list of triplets indexing into them.
     // "positions" and "normals" must have the same size.
-    TriangleMesh( Array1DView< const Vector3f > positions,
-        Array1DView< const Vector3f > normals,
-        Array1DView< const Vector3i > faces );
+    TriangleMesh( Array1DReadView< Vector3f > positions,
+        Array1DReadView< Vector3f > normals,
+        Array1DReadView< Vector3i > faces );
 
     // make a triangle mesh out of data from an OBJ file
     // all groups are merged such that:

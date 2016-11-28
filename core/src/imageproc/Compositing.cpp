@@ -6,9 +6,9 @@
 
 namespace libcgt { namespace core { namespace imageproc {
 
-void over( Array2DView< const Vector4f > foreground,
-    Array2DView< const Vector4f > background,
-    Array2DView< Vector4f > output )
+void over( Array2DReadView< Vector4f > foreground,
+    Array2DReadView< Vector4f > background,
+    Array2DWriteView< Vector4f > output )
 {
     for( int y = 0; y < foreground.height(); ++y )
     {
@@ -28,9 +28,9 @@ void over( Array2DView< const Vector4f > foreground,
     }
 }
 
-void extractBackgroundColor( Array2DView< const Vector4f > composite,
-    Array2DView< const Vector4f > foreground,
-    Array2DView< Vector4f > background )
+void extractBackgroundColor( Array2DReadView< Vector4f > composite,
+    Array2DReadView< Vector4f > foreground,
+    Array2DWriteView< Vector4f > background )
 {
     // red channel:
     // c_r = f_a * f_r + ( 1 - f_a ) * b_r
@@ -53,9 +53,9 @@ void extractBackgroundColor( Array2DView< const Vector4f > composite,
     }
 }
 
-void extractBackgroundColor( Array2DView< const uint8x4 > composite,
-    Array2DView< const uint8x4 > foreground,
-    Array2DView< uint8x4 > background )
+void extractBackgroundColor( Array2DReadView< uint8x4 > composite,
+    Array2DReadView< uint8x4 > foreground,
+    Array2DWriteView< uint8x4 > background )
 {
     for( int y = 0; y < composite.height(); ++y )
     {

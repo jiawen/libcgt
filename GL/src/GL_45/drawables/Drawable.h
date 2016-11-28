@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/ArrayView.h>
+
 #ifdef GL_PLATFORM_45
 #include "../GLBufferObject.h"
 #include "../GLVertexArrayObject.h"
@@ -24,7 +26,7 @@ public:
     {
     public:
 
-        Array1DView< T > view()
+        Array1DWriteView< T > view()
         {
             return m_view;
         }
@@ -40,9 +42,9 @@ public:
     private:
         friend class ::GLDrawable;
         GLDrawable* m_drawable;
-        Array1DView< T > m_view;
+        Array1DWriteView< T > m_view;
 
-        MappedBuffer( GLDrawable* drawable, Array1DView< T > view ) :
+        MappedBuffer( GLDrawable* drawable, Array1DWriteView< T > view ) :
             m_drawable( drawable ),
             m_view( view )
         {

@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 
 class BinaryFileInputStream
 {
@@ -28,7 +28,7 @@ public:
     // T must be a primitive type or a struct without pointer members.
     // Returns false on error or once end of file is reached.
     template< typename T >
-    bool readArray( Array1DView< T > output );
+    bool readArray( Array1DWriteView< T > output );
 
 private:
 
@@ -43,7 +43,7 @@ bool BinaryFileInputStream::read( T& output )
 }
 
 template< typename T >
-bool BinaryFileInputStream::readArray( Array1DView< T > output )
+bool BinaryFileInputStream::readArray( Array1DWriteView< T > output )
 {
     if( output.isNull() || !output.packed() )
     {

@@ -116,8 +116,9 @@ void GLVertexArrayObject::attachBuffer( GLuint bindingIndex,
 }
 
 void GLVertexArrayObject::attachBuffers( GLuint firstBindingIndex,
-    Array1DView< GLBufferObject* > buffers,
-    Array1DView< GLintptr > offsets, Array1DView< GLsizei > strides )
+    Array1DReadView< GLBufferObject* > buffers,
+    Array1DReadView< GLintptr > offsets,
+    Array1DReadView< GLsizei > strides )
 {
     size_t count = buffers.size();
     Array1D< GLuint > ids( count );

@@ -6,7 +6,7 @@
 #include <helper_cuda.h>
 
 // libcgt
-#include <common/Array1DView.h>
+#include <common/Array1D.h>
 
 #include "KernelArray1D.h"
 #include "ErrorChecking.h"
@@ -72,7 +72,7 @@ public:
     // src must be packed()
     //
     // returns false on failure
-    bool copyFromHost( Array1DView< const T > src, int dstOffset = 0 );
+    bool copyFromHost( Array1DReadView< T > src, int dstOffset = 0 );
 
     // copy dst.length() elements from device vector --> host
     // starting from srcOffset
@@ -80,7 +80,7 @@ public:
     // length() - srcOffset must be >= dst.length()
     // dst must be packed()
     // return false on failure
-    bool copyToHost( Array1DView< T > dst, int srcOffset = 0 ) const;
+    bool copyToHost( Array1DWriteView< T > dst, int srcOffset = 0 ) const;
 
     const T* pointer() const;
     T* pointer();

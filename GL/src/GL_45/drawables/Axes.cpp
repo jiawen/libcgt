@@ -5,7 +5,7 @@ Axes::Axes( const Matrix4f& worldFromAxes, float axisLength ) :
 {
     {
         auto mb = mapAttribute< Vector4f >( 0 );
-        Array1DView< Vector4f > positions = mb.view();
+        Array1DWriteView< Vector4f > positions = mb.view();
         positions[ 0 ] = worldFromAxes * Vector4f{ 0, 0, 0, 1 };
         positions[ 1 ] = worldFromAxes * Vector4f{ axisLength, 0, 0, 1 };
         positions[ 2 ] = worldFromAxes * Vector4f{ 0, 0, 0, 1 };
@@ -16,7 +16,7 @@ Axes::Axes( const Matrix4f& worldFromAxes, float axisLength ) :
 
     {
         auto mb = mapAttribute< Vector4f >( 1 );
-        Array1DView< Vector4f > colors = mb.view();
+        Array1DWriteView< Vector4f > colors = mb.view();
         colors[ 0 ] = Vector4f{ 1, 0, 0, 1 };
         colors[ 1 ] = Vector4f{ 1, 0, 0, 1 };
         colors[ 2 ] = Vector4f{ 0, 1, 0, 1 };

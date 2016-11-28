@@ -45,7 +45,7 @@ Vector2i GLTextureRectangle::size() const
     return m_size;
 }
 
-bool GLTextureRectangle::set( Array2DView< const uint8_t > srcData,
+bool GLTextureRectangle::set( Array2DReadView< uint8_t > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -65,7 +65,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8_t > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const uint8x2 > srcData,
+bool GLTextureRectangle::set( Array2DReadView< uint8x2 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -82,7 +82,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x2 > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const uint8x3 > srcData,
+bool GLTextureRectangle::set( Array2DReadView< uint8x3 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -100,7 +100,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x3 > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const uint8x4 > srcData,
+bool GLTextureRectangle::set( Array2DReadView< uint8x4 > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -117,7 +117,7 @@ bool GLTextureRectangle::set( Array2DView< const uint8x4 > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const float > srcData,
+bool GLTextureRectangle::set( Array2DReadView< float > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -137,7 +137,7 @@ bool GLTextureRectangle::set( Array2DView< const float > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const Vector2f > srcData,
+bool GLTextureRectangle::set( Array2DReadView< Vector2f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -154,7 +154,7 @@ bool GLTextureRectangle::set( Array2DView< const Vector2f > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const Vector3f > srcData,
+bool GLTextureRectangle::set( Array2DReadView< Vector3f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {
@@ -171,7 +171,7 @@ bool GLTextureRectangle::set( Array2DView< const Vector3f > srcData,
                  dstOffset );
 }
 
-bool GLTextureRectangle::set( Array2DView< const Vector4f > srcData,
+bool GLTextureRectangle::set( Array2DReadView< Vector4f > srcData,
     GLImageFormat srcFormat,
     const Vector2i& dstOffset )
 {

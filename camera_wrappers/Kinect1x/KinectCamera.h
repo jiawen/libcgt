@@ -75,7 +75,7 @@ public:
         int64_t colorTimestampNS;
         int colorFrameNumber;
         // color will always have alpha set to 0.
-        Array2DView< uint8x4 > color;
+        Array2DWriteView< uint8x4 > color;
         // TODO(jiawen): YUV formats.
 
         // ----- Depth stream -----
@@ -92,21 +92,21 @@ public:
         int64_t infraredTimestampNS;
         int infraredFrameNumber;
         // The infrared stream has data only in the top 10 bits. Bits 5:0 are 0.
-        Array2DView< uint16_t > infrared;
+        Array2DWriteView< uint16_t > infrared;
 
         // Each pixel of packedDepth is populated with a 16-bit value where:
         // - bits 15:3 is depth in millimeters.
         // - If player tracking is enabled, then bits 2:0 are set to the player
         //   index (1-6), or 0 for no player. If tracking is disabled, then
         //   bits 2:0 are set to 0.
-        Array2DView< uint16_t > packedDepth;
+        Array2DWriteView< uint16_t > packedDepth;
 
         // Each pixel of extendedDepth is set to the full sensor depth range in
         // millimeters using the full 16-bit range (no bit shifting).
-        Array2DView< uint16_t > extendedDepth;
+        Array2DWriteView< uint16_t > extendedDepth;
         // If player tracking is enabled, then each pixel is set to the player
         // index (1-6), or 0 for no player.
-        Array2DView< uint16_t > playerIndex;
+        Array2DWriteView< uint16_t > playerIndex;
 
         // TODO(jiawen): wrap skeleton.
         bool skeletonUpdated;

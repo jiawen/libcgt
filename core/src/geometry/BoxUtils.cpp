@@ -5,13 +5,13 @@
 namespace libcgt { namespace core { namespace geometry {
 
 void writeTriangleListPositions( const Box3f& box,
-    Array1DView< Vector4f > positions )
+    Array1DWriteView< Vector4f > positions )
 {
     writeTriangleListPositions( box, Matrix4f::identity(), positions );
 }
 
 void writeTriangleListPositions( const Box3f& box,
-    const Matrix4f& worldFromBox, Array1DView< Vector4f > positions )
+    const Matrix4f& worldFromBox, Array1DWriteView< Vector4f > positions )
 {
     // Hypercube corners.
     Array1D< Vector4f > pos = corners( box );
@@ -24,13 +24,13 @@ void writeTriangleListPositions( const Box3f& box,
 }
 
 void writeTriangleListNormals( const Box3f& box,
-    Array1DView< Vector3f > normals )
+    Array1DWriteView< Vector3f > normals )
 {
     writeTriangleListNormals( box, Matrix4f::identity(), normals );
 }
 
 void writeTriangleListNormals( const Box3f& box,
-    const Matrix4f& worldFromBox, Array1DView< Vector3f > normals )
+    const Matrix4f& worldFromBox, Array1DWriteView< Vector3f > normals )
 {
     Array1D< Vector4f > positions( 36 );
     writeTriangleListPositions( box, worldFromBox, positions );
@@ -48,7 +48,7 @@ void writeTriangleListNormals( const Box3f& box,
 }
 
 void writeAxisAlignedSolidTextureCoordinates(
-    Array1DView< Vector2f > vertexTextureCoordinates )
+    Array1DWriteView< Vector2f > vertexTextureCoordinates )
 {
     Array1D< Vector2f > uv =
     {
@@ -75,13 +75,13 @@ void writeAxisAlignedSolidTextureCoordinates(
 }
 
 void writeWireframe( const Box3f& box,
-    Array1DView< Vector4f > vertexPositions )
+    Array1DWriteView< Vector4f > vertexPositions )
 {
     writeWireframe( box, Matrix4f::identity(), vertexPositions );
 }
 
 void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
-    Array1DView< Vector4f > vertexPositions )
+    Array1DWriteView< Vector4f > vertexPositions )
 {
     // Hypercube corners.
     Array1D< Vector4f > pos = corners( box );
@@ -94,14 +94,14 @@ void writeWireframe( const Box3f& box, const Matrix4f& worldFromBox,
 }
 
 void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
-    Array1DView< Vector4f > vertexPositions )
+    Array1DWriteView< Vector4f > vertexPositions )
 {
     writeWireframeGrid( box, resolution, Matrix4f::identity(),
         vertexPositions );
 }
 
 void writeWireframeGrid( const Box3f& box, const Vector3i& resolution,
-    const Matrix4f& worldFromBox, Array1DView< Vector4f > vertexPositions )
+    const Matrix4f& worldFromBox, Array1DWriteView< Vector4f > vertexPositions )
 {
     Vector3f delta = box.size / resolution;
     Vector3f dx( 1, 0, 0 );

@@ -4,8 +4,8 @@
 
 #include <GL/glew.h>
 
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
-#include <common/Array1DView.h>
 
 #include "GLImageFormat.h"
 #include "GLImageInternalFormat.h"
@@ -70,6 +70,7 @@ public:
         COHERENT_BIT = GL_MAP_COHERENT_BIT
     };
 
+    // TODO: make this a free function
     // Direct copy between two buffer objects.
     // Returns false if either range is out of bounds.
     static bool copy( GLBufferObject* pSource, GLBufferObject* pDestination,
@@ -105,7 +106,7 @@ public:
     // data must be packed().
     // flags is a bitfield, which is an OR combination of elements from
     // StorageFlags.
-    GLBufferObject( Array1DView< uint8_t > data, StorageFlags flags );
+    GLBufferObject( Array1DReadView< uint8_t > data, StorageFlags flags );
 
     virtual ~GLBufferObject();
 
@@ -125,8 +126,8 @@ public:
     //     GL_MAP_INVALIDATE_BUFFER_BIT, GL_MAP_FLUSH_EXPLICIT_BIT,
     //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
     // TODO: make a Range1l class for 64-bit ranges (and use it here).
-    Array1DView< uint8_t > mapRange( GLintptr offsetBytes, GLsizeiptr sizeBytes,
-                                    GLBufferObject::MapRangeAccess access );
+    Array1DWriteView< uint8_t > mapRange( GLintptr offsetBytes,
+        GLsizeiptr sizeBytes, GLBufferObject::MapRangeAccess access );
 
     // Maps a range of this buffer as a pointer into client memory.
     // access is a bitfield, which is an | combination of elements of
@@ -137,8 +138,8 @@ public:
     //     and/or GL_MAP_UNSYNCHRONIZED_BIT.
     // TODO: make a Range1l class for 64-bit ranges (and use it here).
     template< typename T >
-    Array1DView< T > mapRangeAs( GLintptr offsetBytes, GLsizeiptr sizeBytes,
-                                GLBufferObject::MapRangeAccess access );
+    Array1DWriteView< T > mapRangeAs( GLintptr offsetBytes,
+        GLsizeiptr sizeBytes, GLBufferObject::MapRangeAccess access );
 
     // If the buffer was mapped with GL_MAP_FLUSH_EXPLICIT_BIT, flushRange()
     // tells OpenGL that this range should now be visible to calls after this.
@@ -158,13 +159,13 @@ public:
 
     // Copies the data in a subset of this buffer to dst.
     // Returns false if srcOffset + dst.length() > numBytes().
-    bool get( GLintptr srcOffset, Array1DView< uint8_t > dst );
+    bool get( GLintptr srcOffset, Array1DWriteView< uint8_t > dst );
 
     // Copies the data from src into this buffer.
     // Returns false if:
     // The source buffer is not packed(), or
     // if dstOffset + src.length() > numBytes().
-    bool set( Array1DView< const uint8_t > src, GLintptr dstOffset );
+    bool set( Array1DReadView< uint8_t > src, GLintptr dstOffset );
 
     // Fills the entire buffer with 0.
     void clear();
@@ -213,10 +214,10 @@ GLBufferObject::MapRangeAccess& operator |= (
     GLBufferObject::MapRangeAccess& lhs, GLBufferObject::MapRangeAccess rhs );
 
 template< typename T >
-Array1DView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes,
+Array1DWriteView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes,
     GLsizeiptr sizeBytes, GLBufferObject::MapRangeAccess access )
 {
-    return Array1DView< T >(
+    return Array1DWriteView< T >(
         glMapNamedBufferRange( m_id, offsetBytes, sizeBytes,
             glBufferMapRangeAccess( access ) ),
         static_cast< size_t >( sizeBytes / sizeof( T ) ) );

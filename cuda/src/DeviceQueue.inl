@@ -253,7 +253,7 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
     // no wraparound: single copy
     if( hIndex < tIndex )
     {
-        Array1DView< T > dstView( dst.data(), count );
+        Array1DWriteView< T > dstView( dst.data(), count );
         md_ringBuffer.copyToHost( dstView, hIndex );
     }
     // wrap around: two copies
@@ -275,10 +275,12 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
         // copy md_ringBuffer[ 0 ] to output[ 2 ]
 
         int nElementsHeadToEnd = capacity() - hIndex;
-        Array1DView< T > dstHeadToEndView( dst.data(), nElementsHeadToEnd );
+        Array1DWriteView< T > dstHeadToEndView( dst.data(),
+            nElementsHeadToEnd );
         md_ringBuffer.copyToHost( dstHeadToEndView, hIndex );
 
-        Array1DView< T > dstZeroToTailView( dst.data() + nElementsHeadToEnd, count - nElementsHeadToEnd );
+        Array1DWriteView< T > dstZeroToTailView(
+            dst.data() + nElementsHeadToEnd, count - nElementsHeadToEnd );
         md_ringBuffer.copyToHost( dstZeroToTailView, 0 );
     }
 }

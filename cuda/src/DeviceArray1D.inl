@@ -1,5 +1,3 @@
-#include <common/Array1D.h>
-
 template< typename T >
 DeviceArray1D< T >::DeviceArray1D( size_t length )
 {
@@ -23,7 +21,8 @@ DeviceArray1D< T >::DeviceArray1D( DeviceArray1D< T >&& move )
 }
 
 template< typename T >
-DeviceArray1D< T >& DeviceArray1D< T >::operator = ( const DeviceArray1D< T >& copy )
+DeviceArray1D< T >& DeviceArray1D< T >::operator = (
+    const DeviceArray1D< T >& copy )
 {
     if( this != &copy )
     {
@@ -33,7 +32,8 @@ DeviceArray1D< T >& DeviceArray1D< T >::operator = ( const DeviceArray1D< T >& c
 }
 
 template< typename T >
-DeviceArray1D< T >& DeviceArray1D< T >::operator = ( DeviceArray1D< T >&& move )
+DeviceArray1D< T >& DeviceArray1D< T >::operator = (
+    DeviceArray1D< T >&& move )
 {
     if( this != &move )
     {
@@ -175,7 +175,8 @@ void DeviceArray1D< T >::copyFromDevice( const DeviceArray1D< T >& src )
 }
 
 template< typename T >
-bool DeviceArray1D< T >::copyFromHost( Array1DView< const T > src, int dstOffset )
+bool DeviceArray1D< T >::copyFromHost( Array1DReadView< T > src,
+    int dstOffset )
 {
     if( dstOffset < 0 )
     {
@@ -198,7 +199,8 @@ bool DeviceArray1D< T >::copyFromHost( Array1DView< const T > src, int dstOffset
 }
 
 template< typename T >
-bool DeviceArray1D< T >::copyToHost( Array1DView< T > dst, int srcOffset ) const
+bool DeviceArray1D< T >::copyToHost( Array1DWriteView< T > dst,
+    int srcOffset ) const
 {
     if( srcOffset < 0 )
     {

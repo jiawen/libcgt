@@ -2,8 +2,8 @@
 
 #include <string>
 
+#include <common/ArrayView.h>
 #include <common/Array2D.h>
-#include <common/Array2DView.h>
 #include <vecmath/Vector2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
@@ -29,20 +29,20 @@ public:
     // Writes a standard "PFM" format.
     // Header is "Pf" - grayscale.
     static bool write( const std::string& filename,
-        Array2DView< const float > image );
+        Array2DReadView< float > image );
 
     // Writes a *nonstandard* "PFM2" format.
     // The header is "PF2" and is red and green only.
     static bool write( const std::string& filename,
-        Array2DView< const Vector2f > image );
+        Array2DReadView< Vector2f > image );
 
     // Writes a standard "PFM" format.
     // Header is "PF" - rgb.
     static bool write( const std::string& filename,
-        Array2DView< const Vector3f > image );
+        Array2DReadView< Vector3f > image );
 
     // Writes a *nonstandard* "PFM4" format.
     // The header is "PF4", and includes an alpha channel.
     static bool write( const std::string& filename,
-        Array2DView< const Vector4f > image );
+        Array2DReadView< Vector4f > image );
 };

@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array1DView.h>
+#include <common/ArrayView.h>
 #include "GLVertexAttributeType.h"
 
 class GLBufferObject;
@@ -120,10 +120,12 @@ public:
     //   it automatically.
     void attachBuffer( GLuint bindingIndex, GLBufferObject* pBuffer,
         GLintptr offset, GLsizei stride );
-    // Attach count vertex buffers simultaneously. The three Array1DViews must
-    // have the same size.
-    void attachBuffers( GLuint firstBindingIndex, Array1DView< GLBufferObject* > buffers,
-        Array1DView< GLintptr > offsets, Array1DView< GLsizei > strides );
+    // Attach count vertex buffers simultaneously. The three Array1DReadViews
+    // must have the same size.
+    void attachBuffers( GLuint firstBindingIndex,
+        Array1DReadView< GLBufferObject* > buffers,
+        Array1DReadView< GLintptr > offsets,
+        Array1DReadView< GLsizei > strides );
 
     // Attach an index buffer (in OpenGL terminology, an element buffer).
     // There is only one slot.

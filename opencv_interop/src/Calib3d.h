@@ -60,8 +60,8 @@ Array2D< Vector2f > undistortRectifyMap( cv::InputArray cameraMatrix,
     bool normalizeCoordinates = true );
 
 template< typename T >
-bool remap( Array2DView< const T > srcDistorted,
-    Array2DView< const Vector2f > map, Array2DView< T > dstUndistorted )
+bool remap( Array2DReadView< T > srcDistorted, Array2DReadView< Vector2f > map,
+    Array2DWriteView< T > dstUndistorted )
 {
     if( srcDistorted.size() != map.size() ||
         srcDistorted.size() != dstUndistorted.size() )

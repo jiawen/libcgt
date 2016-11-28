@@ -149,8 +149,8 @@ Rect2i inset( const Rect2i& r, const Vector2i& xy )
 }
 
 void writeScreenAlignedTriangleStrip(
-    Array1DView< Vector4f > positions,
-    Array1DView< Vector2f > textureCoordinates,
+    Array1DWriteView< Vector4f > positions,
+    Array1DWriteView< Vector2f > textureCoordinates,
     const Rect2f& positionRectangle,
     float z, float w,
     const Rect2f& textureRectangle )
@@ -162,7 +162,7 @@ void writeScreenAlignedTriangleStrip(
 }
 
 void writeScreenAlignedTriangleStripPositions(
-    Array1DView< Vector4f > positions,
+    Array1DWriteView< Vector4f > positions,
     const Rect2f& rect,
     float z, float w )
 {
@@ -177,7 +177,7 @@ void writeScreenAlignedTriangleStripPositions(
 
 //  static
 void writeScreenAlignedTriangleStripTextureCoordinates(
-    Array1DView< Vector2f > textureCoordinates,
+    Array1DWriteView< Vector2f > textureCoordinates,
     const Rect2f& rect )
 {
     textureCoordinates[ 0 ] = rect.leftBottom();

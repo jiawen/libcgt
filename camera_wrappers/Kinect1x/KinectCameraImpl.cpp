@@ -887,7 +887,7 @@ void KinectCameraImpl::close()
 }
 
 bool KinectCameraImpl::pollColor( DWORD millisecondsToWait,
-    Array2DView< uint8x4 > bgra,
+    Array2DWriteView< uint8x4 > bgra,
     int64_t& timestampNS, int& frameNumber )
 {
     if( bgra.isNull() )
@@ -917,7 +917,7 @@ bool KinectCameraImpl::pollColor( DWORD millisecondsToWait,
     if( valid )
     {
         // Input is BGRA, with A = 0
-        Array2DView< const uint8x4 > srcBGR0( lockedRect.pBits,
+        Array2DReadView< uint8x4 > srcBGR0( lockedRect.pBits,
             m_colorResolutionPixels,
             { sizeof( uint8x4 ), lockedRect.Pitch } );
         copy( srcBGR0, bgra );
@@ -932,7 +932,7 @@ bool KinectCameraImpl::pollColor( DWORD millisecondsToWait,
 }
 
 bool KinectCameraImpl::pollInfrared( DWORD millisecondsToWait,
-    Array2DView< uint16_t > ir,
+    Array2DWriteView< uint16_t > ir,
     int64_t& timestampNS, int& frameNumber )
 {
     if( ir.isNull() )
@@ -962,7 +962,7 @@ bool KinectCameraImpl::pollInfrared( DWORD millisecondsToWait,
     if( valid )
     {
         // Input is BGRA, with A = 0
-        Array2DView< const uint16_t > src( lockedRect.pBits,
+        Array2DReadView< uint16_t > src( lockedRect.pBits,
             m_colorResolutionPixels,
             { sizeof( uint16_t ), lockedRect.Pitch } );
         copy( src, ir );
@@ -977,7 +977,7 @@ bool KinectCameraImpl::pollInfrared( DWORD millisecondsToWait,
 }
 
 bool KinectCameraImpl::pollExtendedDepth( DWORD millisecondsToWait,
-    Array2DView< uint16_t > depth, Array2DView< uint16_t > playerIndex,
+    Array2DWriteView< uint16_t > depth, Array2DWriteView< uint16_t > playerIndex,
     int64_t& timestampNS, int& frameNumber, bool& capturedWithNearMode )
 {
     // If both are null, then do nothing.
@@ -1030,7 +1030,7 @@ bool KinectCameraImpl::pollExtendedDepth( DWORD millisecondsToWait,
     bool valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
     if( valid )
     {
-        Array2DView< NUI_DEPTH_IMAGE_PIXEL > srcView
+        Array2DReadView< NUI_DEPTH_IMAGE_PIXEL > srcView
         (
             lockedRect.pBits,
             m_depthResolutionPixels,
@@ -1039,17 +1039,17 @@ bool KinectCameraImpl::pollExtendedDepth( DWORD millisecondsToWait,
 
         if( depth.notNull() )
         {
-            Array2DView< const uint16_t > srcDepthView =
-                componentView< const uint16_t >
-                ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, depth ) );
+            Array2DReadView< uint16_t > srcDepthView =
+                componentView< uint16_t >( srcView,
+                    offsetof( NUI_DEPTH_IMAGE_PIXEL, depth ) );
             copy( srcDepthView, depth );
         }
 
         if( isUsingPlayerIndex() && playerIndex.notNull() )
         {
-            Array2DView< const uint16_t > srcPlayerIndexView =
-                componentView< const uint16_t >
-                ( srcView, offsetof( NUI_DEPTH_IMAGE_PIXEL, playerIndex ) );
+            Array2DReadView< uint16_t > srcPlayerIndexView =
+                componentView< uint16_t >( srcView,
+                    offsetof( NUI_DEPTH_IMAGE_PIXEL, playerIndex ) );
             copy( srcPlayerIndexView, playerIndex );
         }
 
@@ -1065,7 +1065,7 @@ bool KinectCameraImpl::pollExtendedDepth( DWORD millisecondsToWait,
 
 
 bool KinectCameraImpl::pollPackedDepth( DWORD millisecondsToWait,
-    Array2DView< uint16_t > packedDepth,
+    Array2DWriteView< uint16_t > packedDepth,
     int64_t& timestampNS, int& frameNumber )
 {
     // If depth is null, do nothing.
@@ -1101,7 +1101,7 @@ bool KinectCameraImpl::pollPackedDepth( DWORD millisecondsToWait,
         valid = SUCCEEDED( hr ) && ( lockedRect.Pitch != 0 );
         if( valid )
         {
-            Array2DView< const uint16_t > src
+            Array2DReadView< uint16_t > src
             (
                 lockedRect.pBits,
                 m_depthResolutionPixels,

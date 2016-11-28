@@ -5,7 +5,7 @@
 namespace libcgt { namespace core { namespace arrayutils {
 
 template<>
-bool fill( Array2DView< uint8_t > view, const uint8_t& value )
+bool fill( Array2DWriteView< uint8_t > view, const uint8_t& value )
 {
     if( view.isNull() )
     {
@@ -38,10 +38,15 @@ bool fill( Array2DView< uint8_t > view, const uint8_t& value )
     return true;
 }
 
+Array1DReadView< uint8_t > readViewOf( const std::string& s )
+{
+    return Array1DReadView< uint8_t >( s.data(), s.length() );
+}
+
 } } } // namespace arrayutils, core, libcgt
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const int16_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< int16_t > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -75,7 +80,7 @@ bool ArrayUtils::saveTXT( Array1DView< const int16_t > view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const int32_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< int32_t > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -109,7 +114,7 @@ bool ArrayUtils::saveTXT( Array1DView< const int32_t > view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const float >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< float >& view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -143,7 +148,7 @@ bool ArrayUtils::saveTXT( Array1DView< const float >& view, const char* filename
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const Vector2f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector2f >& view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -177,7 +182,7 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector2f >& view, const char* filen
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const Vector3f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector3f >& view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -211,7 +216,7 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector3f >& view, const char* filen
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DView< const Vector4f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector4f >& view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -245,7 +250,7 @@ bool ArrayUtils::saveTXT( Array1DView< const Vector4f >& view, const char* filen
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const uint8_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< uint8_t > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -284,7 +289,7 @@ bool ArrayUtils::saveTXT( Array2DView< const uint8_t > view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const uint8x4 > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< uint8x4 > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -323,7 +328,7 @@ bool ArrayUtils::saveTXT( Array2DView< const uint8x4 > view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const int16_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< int16_t > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -362,7 +367,7 @@ bool ArrayUtils::saveTXT( Array2DView< const int16_t > view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const float > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< float > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -403,7 +408,7 @@ bool ArrayUtils::saveTXT( Array2DView< const float > view, const char* filename 
 
 
 // static
-bool ArrayUtils::saveTXT( Array2DView< const Vector4f > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )

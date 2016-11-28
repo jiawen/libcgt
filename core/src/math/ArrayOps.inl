@@ -4,7 +4,7 @@
 namespace libcgt { namespace core { namespace math {
 
 template< typename T >
-std::pair< T, T > minMax( Array2DView< const T > src )
+std::pair< T, T > minMax( Array2DReadView< const T > src )
 {
     // Extra parenthesization to get around annoying Win32 min/max nonsense.
     T mn = ( std::numeric_limits< T >::max )();
