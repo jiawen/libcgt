@@ -219,10 +219,8 @@ const T* Array2DReadView< T >::rowPointer( int y ) const
 template< typename T >
 const T& Array2DReadView< T >::operator [] ( int k ) const
 {
-    int x;
-    int y;
-    Indexing::indexToSubscript2D( k, m_size.x, x, y );
-    return ( *this )[ { x, y } ];
+    Vector2i xy = libcgt::core::indexToSubscript2D( k, m_size.x );
+    return ( *this )[ xy ];
 }
 
 template< typename T >
@@ -351,10 +349,8 @@ T* Array2DWriteView< T >::rowPointer( int y ) const
 template< typename T >
 T& Array2DWriteView< T >::operator [] ( int k ) const
 {
-    int x;
-    int y;
-    Indexing::indexToSubscript2D( k, this->size().x, x, y );
-    return ( *this )[ { x, y } ];
+    Vector2i xy = libcgt::core::indexToSubscript2D( k, this->size().x );
+    return ( *this )[ xy ];
 }
 
 template< typename T >

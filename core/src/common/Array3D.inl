@@ -356,23 +356,17 @@ Array3D< T >::operator T* ()
 template< typename T >
 const T& Array3D< T >::operator [] ( int k ) const
 {
-    int x;
-    int y;
-    int z;
-    Indexing::indexToSubscript3D(
-        static_cast< int >( k ), m_size.x, m_size.y, x, y, z );
-    return ( *this )[ { x, y, z } ];
+    Vector3i xyz = libcgt::core::indexToSubscript3D(
+        static_cast< int >( k ), m_size.x, m_size.y );
+    return ( *this )[ xyz ];
 }
 
 template< typename T >
 T& Array3D< T >::operator [] ( int k )
 {
-    int x;
-    int y;
-    int z;
-    Indexing::indexToSubscript3D(
-        static_cast< int >( k ), m_size.x, m_size.y, x, y, z );
-    return ( *this )[ { x, y, z } ];
+    Vector3i xyz = libcgt::core::indexToSubscript3D(
+        static_cast< int >( k ), m_size.x, m_size.y );
+    return ( *this )[ xyz ];
 }
 
 template< typename T >

@@ -85,10 +85,8 @@ T* Array2DView< T >::rowPointer( int y )
 template< typename T >
 T& Array2DView< T >::operator [] ( int k )
 {
-    int x;
-    int y;
-    Indexing::indexToSubscript2D( k, m_size.x, x, y );
-    return ( *this )[ { x, y } ];
+    Vector2i xy = libcgt::core::indexToSubscript2D( k, m_size.x );
+    return ( *this )[ xy ];
 }
 
 template< typename T >
