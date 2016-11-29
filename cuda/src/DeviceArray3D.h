@@ -1,11 +1,12 @@
 #pragma once
 
 #include <cuda_runtime.h>
-//#include <vector_types.h>
+// TODO: replace helper_cuda with our own checks.
 #include <helper_cuda.h>
+#include <thrust/fill.h>
+#include <thrust/execution_policy.h>
 
 #include <common/Array3D.h>
-#include <common/Array3DView.h>
 #include <vecmath/Vector3i.h>
 
 #include "KernelArray3D.h"
@@ -70,11 +71,11 @@ public:
     // Copy from another DeviceArray3D to this
     bool copyFromDevice( const DeviceArray3D< T >& src );
 
-    // copy from host array src to this
-    bool copyFromHost( Array3DView< const T > src );
+    // Copy from host array src to this.
+    bool copyFromHost( Array3DReadView< T > src );
 
-    // copy from this to host array dst
-    bool copyToHost( Array3DView< T > dst ) const;
+    // Copy from this to host array dst.
+    bool copyToHost( Array3DWriteView< T > dst ) const;
 
     const cudaPitchedPtr pitchedPointer() const;
     cudaPitchedPtr pitchedPointer();

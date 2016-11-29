@@ -117,7 +117,7 @@ int main( int argc, char* argv[] )
     uint32_t streamId;
     int frameIndex;
     int64_t timestamp;
-    Array1DView< const uint8_t > src =
+    Array1DReadView< uint8_t > src =
         inputStream.read( streamId, frameIndex, timestamp );
     while( src.notNull() )
     {
@@ -128,7 +128,7 @@ int main( int argc, char* argv[] )
             outputFilename += "_" +
                 toZeroFilledString( timestamp, TIMESTAMP_FIELD_WIDTH ) +
                 ".png";
-            Array2DView< const uint8x3 > src2D( src.pointer(),
+            Array2DReadView< uint8x3 > src2D( src.pointer(),
                 inputStream.metadata()[ colorStream ].size );
             printf( "Writing color frame to %s\n", outputFilename.c_str() );
             PNGIO::write( outputFilename, src2D );
@@ -142,7 +142,7 @@ int main( int argc, char* argv[] )
                 toZeroFilledString( timestamp, TIMESTAMP_FIELD_WIDTH ) +
                 ".png";
 
-            Array2DView< const uint16_t > src2D( src.pointer(),
+            Array2DReadView< uint16_t > src2D( src.pointer(),
                 inputStream.metadata()[ depthStream ].size );
 
             // TODO: dump depth to the right format
@@ -164,7 +164,7 @@ int main( int argc, char* argv[] )
                 toZeroFilledString( timestamp, TIMESTAMP_FIELD_WIDTH ) +
                 ".png";
 
-            Array2DView< const uint16_t > src2D( src.pointer(),
+            Array2DReadView< uint16_t > src2D( src.pointer(),
                 inputStream.metadata()[ infraredStream ].size );
 
             Range1i srcRange( 1024 );

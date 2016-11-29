@@ -27,9 +27,9 @@ public:
     PictureTakerViewfinder( const std::string& dir = "",
         QWidget* parent = nullptr );
 
-    void updateRGB( Array2DView< const uint8x3 > frame );
-    void updateBGRA( Array2DView< const uint8x4 > frame );
-    void updateInfrared( Array2DView< const uint16_t > frame );
+    void updateRGB( Array2DReadView< uint8x3 > frame );
+    void updateBGRA( Array2DReadView< uint8x4 > frame );
+    void updateInfrared( Array2DReadView< uint16_t > frame );
 
 protected:
 

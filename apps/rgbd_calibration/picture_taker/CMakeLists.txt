@@ -15,18 +15,25 @@ else()
     find_package(gflags REQUIRED)
 endif()
 
+# pystring
+include_directories( ${LIBCGT_DIR} )
+set( PYSTRING_HEADERS "${LIBCGT_DIR}/third_party/pystring/pystring.h" )
+set( PYSTRING_SOURCES "${LIBCGT_DIR}/third_party/pystring/pystring.cpp" )
+
 # Qt 5
 set( CMAKE_AUTOMOC ON )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Widgets REQUIRED )
 
 set( PICTURE_TAKER_SRCS
+	${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
 	src/PictureTaker.cpp
 	src/PictureTakerViewfinder.h
 	src/PictureTakerViewfinder.cpp
 )
 
 set( DEPTH_AVERAGER_SRCS
+	${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
 	src/DepthAverager.cpp
 	src/DepthAveragerViewfinder.h
 	src/DepthAveragerViewfinder.cpp

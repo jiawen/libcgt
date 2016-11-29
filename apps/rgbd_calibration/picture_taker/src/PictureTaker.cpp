@@ -1,7 +1,7 @@
 #include <gflags/gflags.h>
 #include <QApplication>
 #include <QDir>
-#include <third_party/pystring.h>
+#include <third_party/pystring/pystring.h>
 
 #include "PictureTakerViewfinder.h"
 

@@ -5,18 +5,24 @@
 #include <QPainter>
 #include <QTimer>
 
+#include <third_party/pystring/pystring.h>
+
 #include <core/common/ArrayUtils.h>
-#include <core/common/Iterators.h>
+#include <core/common/ForND.h>
+#include <core/geometry/RangeUtils.h>
 #include <core/imageproc/ColorMap.h>
 #include <core/imageproc/Swizzle.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/io/PortableFloatMapIO.h>
+#include <core/math/MathUtils.h>
 #include <qt_interop/qimage.h>
-#include <third_party/pystring.h>
 
 DECLARE_int32( start_after );
 
+using libcgt::core::for2D;
 using libcgt::core::imageproc::linearRemapToLuminance;
+using libcgt::core::geometry::rescale;
+using libcgt::core::math::clamp;
 using libcgt::camera_wrappers::kinect1x::KinectCamera;
 using libcgt::camera_wrappers::openni2::OpenNI2Camera;
 using libcgt::camera_wrappers::PixelFormat;
@@ -106,12 +112,7 @@ DepthAveragerViewfinder::DepthAveragerViewfinder( const std::string& dir,
     viewfinderTimer->start();
 }
 
-#include <math/MathUtils.h>
-
-using libcgt::core::math::clamp;
-using libcgt::core::math::rescale;
-
-void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
+void DepthAveragerViewfinder::updateDepth( Array2DReadView< uint16_t > frame )
 {
     if( frame.width() != m_depthImage.width() ||
         frame.height() != m_depthImage.height() )
@@ -125,27 +126,27 @@ void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
     linearRemapToLuminance( frame, srcRange, dstRange, dst );
 
     // Accumulate.
-    Iterators::for2D( frame.size(),
-        [&] ( int x, int y )
+    for2D( frame.size(),
+        [&] ( const Vector2i& xy )
         {
-            uint16_t z = frame[ {x, y} ];
+            uint16_t z = frame[ xy ];
             if( srcRange.contains( z ) )
             {
-                m_depthSum[ {x, y} ] += z;
-                m_depthWeight[ {x, y} ] += 1;
+                m_depthSum[ xy ] += z;
+                m_depthWeight[ xy ] += 1;
             }
         }
     );
 
     // Update average.
     auto averageImageView = viewGrayscale8( m_depthAverageImage );
-    Iterators::for2D( frame.size(),
-        [&] ( int x, int y )
+    for2D( frame.size(),
+        [&] ( const Vector2i& xy )
         {
-            int32_t w = m_depthWeight[ {x, y} ];
+            int32_t w = m_depthWeight[ xy ];
             if( w > 0 )
             {
-                uint64_t srcZ = m_depthSum[ {x, y} ];
+                uint64_t srcZ = m_depthSum[ xy ];
                 uint16_t q16 = srcZ / w;
 
                 uint8_t tonemapped = static_cast< uint8_t >(
@@ -154,9 +155,9 @@ void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
 
                 uint16_t averageZ =
                     static_cast< uint16_t >(
-                        m_depthSum[ {x, y} ] / static_cast< uint64_t >( w )
+                        m_depthSum[ xy ] / static_cast< uint64_t >( w )
                     );
-                averageImageView[ {x, y} ] = static_cast< uint8_t >(
+                averageImageView[ xy ] = static_cast< uint8_t >(
                     clamp( rescale( averageZ, srcRange, dstRange ),
                     Range1i( 256 ) ) );
 
@@ -167,18 +168,19 @@ void DepthAveragerViewfinder::updateDepth( Array2DView< const uint16_t > frame )
                 std::lldiv_t qr = std::lldiv( srcZ, w );
                 float q = static_cast< float >( qr.quot ) +
                     static_cast< float >( qr.rem ) / w;
-                m_depthAverage[ {x, y} ] = q;
+                m_depthAverage[ xy ] = q;
             }
             else
             {
-                averageImageView[ {x, y} ] = 0;
-                m_depthAverage[ {x, y} ] = 0;
+                averageImageView[ xy ] = 0;
+                m_depthAverage[ xy ] = 0;
             }
         }
     );
 }
 
-void DepthAveragerViewfinder::updateInfrared( Array2DView< const uint16_t > frame )
+void DepthAveragerViewfinder::updateInfrared(
+    Array2DReadView< uint16_t > frame )
 {
     if( frame.width() != m_infraredImage.width() ||
         frame.height() != m_infraredImage.height() )
@@ -206,21 +208,21 @@ void DepthAveragerViewfinder::updateInfrared( Array2DView< const uint16_t > fram
     linearRemapToLuminance( frame, srcRange, dstRange, dst );
 
     // Accumulate.
-    Iterators::for2D( frame.size(),
-        [&] ( int x, int y )
+    for2D( frame.size(),
+        [&] ( const Vector2i& xy )
         {
-            m_infraredSum[ {x, y} ] += frame[ {x, y} ];
+            m_infraredSum[ xy ] += frame[ xy ];
         }
     );
     ++m_infraredWeight;
 
     // Update average.
     auto dst2 = viewGrayscale8( m_infraredAverageImage );
-    Iterators::for2D( frame.size(),
-        [&] ( int x, int y )
+    for2D( frame.size(),
+        [&] ( const Vector2i& xy )
         {
-            uint16_t averageV = m_infraredSum[ {x, y} ] / m_infraredWeight;
-            dst2[ {x, y} ] = static_cast< uint8_t >(
+            uint16_t averageV = m_infraredSum[ xy ] / m_infraredWeight;
+            dst2[ xy ] = static_cast< uint8_t >(
                 clamp( rescale( averageV, srcRange, dstRange ),
                 Range1i( 256 ) ) );
         }
@@ -293,9 +295,9 @@ void DepthAveragerViewfinder::onViewfinderTimeout()
 
     if( m_oniCamera != nullptr )
     {
-        OpenNI2Camera::Frame frame;
-        frame.depth = m_depth.writeView();
-        frame.infrared = m_infrared.writeView();
+        OpenNI2Camera::FrameView frame;
+        frame.depth = m_depth;
+        frame.infrared = m_infrared;
         if( m_oniCamera->pollOne( frame ) )
         {
             if( frame.depthUpdated )

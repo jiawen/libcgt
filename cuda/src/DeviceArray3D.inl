@@ -1,6 +1,3 @@
-#include <thrust/fill.h>
-#include <thrust/execution_policy.h>
-
 template< typename T >
 DeviceArray3D< T >::DeviceArray3D( const Vector3i& size )
 {
@@ -226,7 +223,7 @@ bool DeviceArray3D< T >::copyFromDevice( const DeviceArray3D< T >& src )
 }
 
 template< typename T >
-bool DeviceArray3D< T >::copyFromHost( Array3DView< const T > src )
+bool DeviceArray3D< T >::copyFromHost( Array3DReadView< T > src )
 {
     if( isNull() || src.isNull() || m_size != src.size() )
     {
@@ -243,7 +240,8 @@ bool DeviceArray3D< T >::copyFromHost( Array3DView< const T > src )
     // using const_cast since CUDA is stupid and wants a void* instead of
     // const void* for src.
     T* srcPointer = const_cast< T* >( src.pointer() );
-    params.srcPtr = make_cudaPitchedPtr( srcPointer, src.width() * sizeof( T ), src.width(), src.height() );
+    params.srcPtr = make_cudaPitchedPtr(
+        srcPointer, src.width() * sizeof( T ), src.width(), src.height() );
     params.srcArray = NULL; // we're not copying a CUDA array
     params.srcPos = make_cudaPos( 0, 0, 0 );
 
@@ -258,7 +256,7 @@ bool DeviceArray3D< T >::copyFromHost( Array3DView< const T > src )
 }
 
 template< typename T >
-bool DeviceArray3D< T >::copyToHost( Array3DView< T > dst ) const
+bool DeviceArray3D< T >::copyToHost( Array3DWriteView< T > dst ) const
 {
     if( isNull() || dst.isNull() || m_size != dst.size() )
     {
@@ -275,7 +273,8 @@ bool DeviceArray3D< T >::copyToHost( Array3DView< T > dst ) const
 
     // Since the destination (on the host) is not pitched
     // make a pitchedPointer for it
-    params.dstPtr = make_cudaPitchedPtr( dst, dst.width() * sizeof( T ), dst.width(), dst.height() );
+    params.dstPtr = make_cudaPitchedPtr(
+        dst, dst.width() * sizeof( T ), dst.width(), dst.height() );
     params.dstArray = NULL; // we're not copying a CUDA array
     params.dstPos = make_cudaPos( 0, 0, 0 );
 

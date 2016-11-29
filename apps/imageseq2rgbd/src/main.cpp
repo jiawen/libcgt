@@ -92,7 +92,7 @@ int main( int argc, char* argv[] )
 
     float a = static_cast< float >( FLAGS_depth_scale );
     float b = static_cast< float >( FLAGS_depth_offset );
-    Array1DView< const uint8_t > data;
+    Array1DReadView< uint8_t > data;
 
     while( i < nFrames && File::exists( inputFilename.c_str() ) )
     {
@@ -104,7 +104,7 @@ int main( int argc, char* argv[] )
 
         if( FLAGS_output_format == "DEPTH_MM_U16" )
         {
-            data = Array1DView< const uint8_t >( pngInput.gray16,
+            data = Array1DReadView< uint8_t >( pngInput.gray16,
                 resolution.x * resolution.y * sizeof( uint16_t ) );
         }
         else if( FLAGS_output_format == "DEPTH_M_F32" )
@@ -116,7 +116,7 @@ int main( int argc, char* argv[] )
                     return a * zFloat + b;
                 }
             );
-            data = Array1DView< const uint8_t >( tmpFloatBuffer,
+            data = Array1DReadView< uint8_t >( tmpFloatBuffer,
                 resolution.x * resolution.y * sizeof( float ) );
         }
 

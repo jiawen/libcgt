@@ -34,7 +34,7 @@ add_executable( intrinsics_calibrator
 set_property( TARGET intrinsics_calibrator PROPERTY CXX_STANDARD 11 )
 
 add_executable( stereo_calibrator
-${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
+	${PYSTRING_HEADERS} ${PYSTRING_SOURCES}
 	src/common.h src/common.cpp src/stereo_calibrator.cpp )
 set_property( TARGET stereo_calibrator PROPERTY CXX_STANDARD 11 )
 

@@ -4,7 +4,6 @@
 
 #include <GL/glew.h>
 
-
 #include "GLPrimitiveType.h"
 #include "GLVertexArrayObject.h"
 #include "GLBufferObject.h"
@@ -14,10 +13,11 @@ class GLInterleavedVertexBufferView
 {
 public:
 
-    GLInterleavedVertexBufferView( int nVertices, GLPrimitiveType primitiveType,
+    GLInterleavedVertexBufferView( int nVertices,
+        GLPrimitiveType primitiveType,
         std::shared_ptr< GLBufferObject > pBuffer, GLintptr offsetBytes );
 
-    Array1DView< T > mapForWrite();
+    Array1DWriteView< T > mapForWrite();
     void unmap();
 
     // Binds the VAO, calls glDrawArrays(), then unbinds the VAO.
@@ -41,7 +41,8 @@ private:
 };
 
 template< typename T >
-GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView( int nVertices, GLPrimitiveType primitiveType,
+GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView(
+    int nVertices, GLPrimitiveType primitiveType,
     std::shared_ptr< GLBufferObject > pBuffer, GLintptr offsetBytes ) :
     m_nVertices( nVertices ),
     m_primitiveType( primitiveType ),
@@ -64,7 +65,7 @@ GLInterleavedVertexBufferView< T >::GLInterleavedVertexBufferView( int nVertices
 }
 
 template< typename T >
-Array1DView< T > GLInterleavedVertexBufferView< T >::mapForWrite()
+Array1DWriteView< T > GLInterleavedVertexBufferView< T >::mapForWrite()
 {
     return m_pVBO->mapRangeAs< T >( m_offsetBytes, m_nBytes,
         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT );

@@ -77,7 +77,7 @@ Vector3i GLTexture3D::size() const
     return m_size;
 }
 
-bool GLTexture3D::set( Array3DView< const uint8_t > data,
+bool GLTexture3D::set( Array3DReadView< uint8_t > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -96,7 +96,7 @@ bool GLTexture3D::set( Array3DView< const uint8_t > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const uint8x2 > data,
+bool GLTexture3D::set( Array3DReadView< uint8x2 > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -112,7 +112,7 @@ bool GLTexture3D::set( Array3DView< const uint8x2 > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const uint8x3 > data,
+bool GLTexture3D::set( Array3DReadView< uint8x3 > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -128,7 +128,7 @@ bool GLTexture3D::set( Array3DView< const uint8x3 > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const uint8x4 > data,
+bool GLTexture3D::set( Array3DReadView< uint8x4 > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -144,7 +144,7 @@ bool GLTexture3D::set( Array3DView< const uint8x4 > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const float > data,
+bool GLTexture3D::set( Array3DReadView< float > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -163,7 +163,7 @@ bool GLTexture3D::set( Array3DView< const float > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const Vector2f > data,
+bool GLTexture3D::set( Array3DReadView< Vector2f > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -179,7 +179,7 @@ bool GLTexture3D::set( Array3DView< const Vector2f > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const Vector3f > data,
+bool GLTexture3D::set( Array3DReadView< Vector3f > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {
@@ -195,7 +195,7 @@ bool GLTexture3D::set( Array3DView< const Vector3f > data,
     return set3D( data.pointer(), data.size(), format, srcType, dstOffset );
 }
 
-bool GLTexture3D::set( Array3DView< const Vector4f > data,
+bool GLTexture3D::set( Array3DReadView< Vector4f > data,
                       GLImageFormat format,
                       const Vector3i& dstOffset )
 {

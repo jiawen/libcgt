@@ -5,9 +5,8 @@
 #include <cstring>
 #include <memory>
 
-#include "common/ArrayView.h"
-#include "common/Array1DView.h"
-#include "common/NewDeleteAllocator.h"
+#include "ArrayView.h"
+#include "NewDeleteAllocator.h"
 
 // A simple 1D array class.
 template< typename T >
@@ -46,7 +45,7 @@ public:
     // Relinquish the underlying pointer by invalidating this Array2D and
     // returning the pointer and allocator. This object continues to point
     // to the existing allocator.
-    std::pair< Array1DView< T >, Allocator* > relinquish();
+    std::pair< Array1DWriteView< T >, Allocator* > relinquish();
 
     // Makes this array null and frees the underlying memory.
     // Dimensions are set to 0.
@@ -81,17 +80,14 @@ public:
     const T* elementPointer( size_t x ) const;
     T* elementPointer( size_t x );
 
-    Array1DView< const T > readView() const;
-    Array1DView< T > writeView() const;
-
-    operator Array1DView< const T >() const;
-    operator Array1DView< T >();
+    Array1DReadView< T > readView() const;
+    Array1DWriteView< T > writeView() const;
 
     operator Array1DReadView< T >() const;
     operator Array1DWriteView< T >();
 
-    operator const T* () const;
-    operator T* ();
+    operator const T* ( ) const;
+    operator T* ( );
 
     const T& operator [] ( int k ) const; // read
     T& operator [] ( int k ); // write

@@ -313,15 +313,14 @@ int main( int argc, char* argv[] )
         {
             printf( "Undistorting %d of %d\n", i, nImages );
 
-            Array2DView< const uint8x3 > inputImageGLView = flipY(
+            Array2DReadView< uint8x3 > inputImageGLView = flipY(
                 cvMatAsArray2DView< uint8x3 >( images[ i ] ) );
 
             Array2D< uint8x3 > remappedImageGL( inputImageGLView.size() );
-            remap( inputImageGLView, undistortMap.readView(),
+            remap( inputImageGLView, undistortMap,
                 remappedImageGL.writeView() );
 
-            RGBToBGR( remappedImageGL.readView(),
-                remappedImageGL.writeView() );
+            RGBToBGR( remappedImageGL, remappedImageGL );
 
             std::string outputFilename = undistortNFB.filenameForNumber( i );
             printf( "Writing: %s\n", outputFilename.c_str() );

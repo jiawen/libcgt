@@ -6,10 +6,10 @@
 #include <cstring>
 #include <utility>
 
-#include "common/Array3DView.h"
-#include "common/NewDeleteAllocator.h"
-#include "math/Indexing.h"
-#include "vecmath/Vector3i.h"
+#include "ArrayView.h"
+#include "NewDeleteAllocator.h"
+#include <math/Indexing.h>
+#include <vecmath/Vector3i.h>
 
 // TODO: use Vector3< size_t > when the new Vector class is ready.
 // Then, we can get rid of all the static_casts.
@@ -55,7 +55,7 @@ public:
     // Relinquish the underlying pointer by invalidating this Array2D and
     // returning the pointer and allocator. This object continues to point
     // to the existing allocator.
-    std::pair< Array3DView< T >, Allocator* > relinquish();
+    std::pair< Array3DWriteView< T >, Allocator* > relinquish();
 
     // Makes this array null and frees the underlying memory.
     // Dimensions are set to 0.
@@ -107,11 +107,11 @@ public:
     const T* slicePointer( int z ) const;
     T* slicePointer( int z );
 
-    Array3DView< const T > readView() const;
-    Array3DView< T > writeView() const;
+    Array3DReadView< T > readView() const;
+    Array3DWriteView< T > writeView() const;
 
-    operator const Array3DView< const T >() const;
-    operator Array3DView< T >();
+    operator Array3DReadView< T >() const;
+    operator Array3DWriteView< T >();
 
     operator const T* () const;
     operator T* ();

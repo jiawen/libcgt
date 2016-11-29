@@ -118,7 +118,7 @@ bool saveTXT( Array2DReadView< uchar4 > array, const char* filename )
     return true;
 }
 
-bool saveTXT( Array3DView< const ushort2 > array, const char* filename )
+bool saveTXT( Array3DReadView< ushort2 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -161,7 +161,7 @@ bool saveTXT( Array3DView< const ushort2 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DView< const int2 > array, const char* filename )
+bool saveTXT( Array3DReadView< int2 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -204,7 +204,7 @@ bool saveTXT( Array3DView< const int2 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DView< const int3 > array, const char* filename )
+bool saveTXT( Array3DReadView< int3 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -247,7 +247,7 @@ bool saveTXT( Array3DView< const int3 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DView< const int4 > array, const char* filename )
+bool saveTXT( Array3DReadView< int4 > array, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )

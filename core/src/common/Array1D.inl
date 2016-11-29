@@ -105,9 +105,9 @@ bool Array1D< T >::notNull() const
 }
 
 template< typename T >
-std::pair< Array1DView< T >, Allocator* > Array1D< T >::relinquish()
+std::pair< Array1DWriteView< T >, Allocator* > Array1D< T >::relinquish()
 {
-    Array1DView< T > view = writeView();
+    Array1DWriteView< T > view = writeView();
 
     m_data = nullptr;
     m_size = 0;
@@ -223,49 +223,37 @@ T* Array1D< T >::elementPointer( size_t x )
 }
 
 template< typename T >
-Array1DView< const T > Array1D< T >::readView() const
-{
-    return Array1DView< const T >( m_data, m_size, m_stride );
-}
-
-template< typename T >
-Array1DView< T > Array1D< T >::writeView() const
-{
-    return Array1DView< T >( m_data, m_size, m_stride );
-}
-
-template< typename T >
-Array1D< T >::operator Array1DView< const T >() const
-{
-    return readView();
-}
-
-template< typename T >
-Array1D< T >::operator Array1DView< T >()
-{
-    return writeView();
-}
-
-template< typename T >
-Array1D< T >::operator Array1DReadView< T >() const
+Array1DReadView< T > Array1D< T >::readView() const
 {
     return Array1DReadView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array1D< T >::operator Array1DWriteView< T >()
+Array1DWriteView< T > Array1D< T >::writeView() const
 {
     return Array1DWriteView< T >( m_data, m_size, m_stride );
 }
 
 template< typename T >
-Array1D< T >::operator const T* () const
+Array1D< T >::operator Array1DReadView< T >() const
+{
+    return readView();
+}
+
+template< typename T >
+Array1D< T >::operator Array1DWriteView< T >()
+{
+    return writeView();
+}
+
+template< typename T >
+Array1D< T >::operator const T* ( ) const
 {
     return reinterpret_cast< const T* >( m_data );
 }
 
 template< typename T >
-Array1D< T >::operator T* ()
+Array1D< T >::operator T* ( )
 {
     return reinterpret_cast< T* >( m_data );
 }

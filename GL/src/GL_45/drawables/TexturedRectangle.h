@@ -26,7 +26,7 @@ public:
     // of positions.
     void updatePositions( const std::vector< Vector3f >& positions );
 
-    // TODO(jiawen): take Array1DView instead.
+    // TODO(jiawen): take Array1DReadView instead.
     // Updates the vertex positions of this rectangle with the first 4 elements
     // of positions.
     void updatePositions( const std::vector< Vector4f >& positions );

@@ -33,11 +33,19 @@ Array2DWriteView< TOut > cast( Array2DWriteView< TIn > src )
 }
 
 template< typename TOut, typename TIn >
-Array3DView< TOut > cast( Array3DView< TIn > src )
+Array3DReadView< TOut > cast( Array3DReadView< TIn > src )
 {
     static_assert( sizeof( TIn ) == sizeof( TOut ),
         "TIn and TOut must have the same size" );
-    return Array3DView< TOut >( src.pointer(), src.size(), src.stride() );
+    return Array3DReadView< TOut >( src.pointer(), src.size(), src.stride() );
+}
+
+template< typename TOut, typename TIn >
+Array3DWriteView< TOut > cast( Array3DWriteView< TIn > src )
+{
+    static_assert( sizeof( TIn ) == sizeof( TOut ),
+        "TIn and TOut must have the same size" );
+    return Array3DWriteView< TOut >( src.pointer(), src.size(), src.stride() );
 }
 
 template< typename T >
@@ -102,7 +110,7 @@ bool copy( Array2DReadView< T > src, Array2DWriteView< T > dst )
 }
 
 template< typename T >
-bool copy( Array3DView< const T > src, Array3DView< T > dst )
+bool copy( Array3DReadView< T > src, Array3DWriteView< T > dst )
 {
     if( src.isNull() || dst.isNull() )
     {
@@ -132,13 +140,25 @@ bool copy( Array3DView< const T > src, Array3DView< T > dst )
 }
 
 template< typename TOut, typename TIn >
+Array1DReadView< TOut > componentView( Array1DReadView< TIn > src,
+    int componentOffsetBytes )
+{
+    return Array1DReadView< TOut >
+    (
+        reinterpret_cast< const uint8_t* >(
+            src.pointer() ) + componentOffsetBytes,
+            src.size(), src.stride()
+    );
+}
+
+template< typename TOut, typename TIn >
 Array1DWriteView< TOut > componentView( Array1DWriteView< TIn > src,
     int componentOffsetBytes )
 {
     return Array1DWriteView< TOut >
     (
         reinterpret_cast< uint8_t* >( src.pointer() ) + componentOffsetBytes,
-        src.size(), src.stride()
+            src.size(), src.stride()
     );
 }
 
@@ -161,19 +181,30 @@ Array2DWriteView< TOut > componentView( Array2DWriteView< TIn > src,
     return Array2DWriteView< TOut >
     (
         reinterpret_cast< uint8_t* >( src.pointer() ) + componentOffsetBytes,
-        src.size(), src.stride()
+            src.size(), src.stride()
     );
 }
 
 template< typename TOut, typename TIn >
-Array3DView< TOut > componentView( Array3DView< TIn > src,
+Array3DReadView< TOut > componentView( Array3DReadView< TIn > src,
     int componentOffsetBytes )
 {
-    return Array3DView< TOut >
+    return Array3DReadView< TOut >
     (
-        reinterpret_cast< typename Array3DView< TIn >::UInt8Pointer >
+        reinterpret_cast< const uint8_t* >
             ( src.pointer() ) + componentOffsetBytes,
-        src.size(), src.stride()
+            src.size(), src.stride()
+    );
+}
+
+template< typename TOut, typename TIn >
+Array3DWriteView< TOut > componentView( Array3DWriteView< TIn > src,
+    int componentOffsetBytes )
+{
+    return Array3DWriteView< TOut >
+    (
+        reinterpret_cast< uint8_t* >( src.pointer() ) + componentOffsetBytes,
+            src.size(), src.stride()
     );
 }
 
@@ -217,16 +248,16 @@ Array2DWriteView< T > crop( Array2DWriteView< T > view, const Rect2i& rect )
 }
 
 template< typename T >
-Array3DView< T > crop( Array3DView< T > view, const Vector3i& xyz )
+Array3DWriteView< T > crop( Array3DWriteView< T > view, const Vector3i& xyz )
 {
     return crop( view, { xyz, view.size() - xyz } );
 }
 
 template< typename T >
-Array3DView< T > crop( Array3DView< T > view, const Box3i& box )
+Array3DWriteView< T > crop( Array3DWriteView< T > view, const Box3i& box )
 {
     T* cornerPointer = view.elementPointer( box.origin );
-    return Array3DView< T >( cornerPointer, box.size, view.stride() );
+    return Array3DWriteView< T >( cornerPointer, box.size, view.stride() );
 }
 
 template< typename T >
@@ -370,11 +401,11 @@ void flipYInPlace( Array2DWriteView< T > v )
     for( int y = 0; y < v.height() / 2; ++y )
     {
         // Copy row y into tmp.
-        copy( v.row( y ), tmp );
+        copy< T >( v.row( y ), tmp );
         // Copy row (height - y - 1) into y.
-        copy( v.row( v.height() - y - 1 ), v.row( y ) );
+        copy< T >( v.row( v.height() - y - 1 ), v.row( y ) );
         // Copy tmp into row (height - y - 1).
-        copy( tmp, v.row( v.height() - y - 1 ) );
+        copy< T >( tmp, v.row( v.height() - y - 1 ) );
     }
 }
 
@@ -407,40 +438,40 @@ Array2DWriteView< T > transpose( Array2DWriteView< T > src )
 }
 
 template< typename T >
-Array3DView< T > flipX( Array3DView< T > src )
+Array3DWriteView< T > flipX( Array3DWriteView< T > src )
 {
     Vector3i stride = src.stride();
     stride.x = -stride.x;
 
-    return Array3DView< T >
+    return Array3DWriteView< T >
     (
-        src.elementPointer( { src.width() - 1, 0 } ),
+        src.elementPointer( { src.width() - 1, 0, 0 } ),
         src.size(),
         stride
     );
 }
 
 template< typename T >
-Array3DView< T > flipY( Array3DView< T > src )
+Array3DWriteView< T > flipY( Array3DWriteView< T > src )
 {
     Vector3i stride = src.stride();
     stride.y = -stride.y;
 
-    return Array3DView< T >
+    return Array3DWriteView< T >
     (
-        src.rowPointer( src.height() - 1 ),
+        src.rowPointer( { src.height() - 1, 0 } ),
         src.size(),
         stride
     );
 }
 
 template< typename T >
-Array3DView< T > flipZ( Array3DView< T > src )
+Array3DWriteView< T > flipZ( Array3DWriteView< T > src )
 {
     Vector3i stride = src.stride();
     stride.z = -stride.z;
 
-    return Array2DView< T >
+    return Array3DWriteView< T >
     (
         src.slicePointer( src.depth() - 1 ),
         src.size(),
@@ -517,7 +548,7 @@ bool map( Array2DReadView< TSrc > src, Array2DWriteView< TDst > dst, Func f )
 }
 
 template< typename TSrc, typename TDst, typename Func >
-bool map3( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f )
+bool map( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst, Func f )
 {
     if( src.isNull() || dst.isNull() )
     {
@@ -590,6 +621,34 @@ bool mapIndexed( Array2DReadView< TSrc > src, Array2DWriteView< TDst > dst,
     return true;
 }
 
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst,
+    Func f )
+{
+    if( src.isNull() || dst.isNull() )
+    {
+        return false;
+    }
+
+    if( src.size() != dst.size() )
+    {
+        return false;
+    }
+
+    for( int z = 0; z < src.depth(); ++z )
+    {
+        for( int y = 0; y < src.height(); ++y )
+        {
+            for( int x = 0; x < src.width(); ++x )
+            {
+                dst[ { x, y, z } ] = f( { x, y, z }, src[ { x, y, z } ] );
+            }
+        }
+    }
+
+    return true;
+}
+
 template< typename T >
 Array1DWriteView< T > reshape( Array2DWriteView< T > src )
 {
@@ -607,7 +666,7 @@ Array1DWriteView< T > reshape( Array2DWriteView< T > src )
 }
 
 template< typename T >
-Array1DWriteView< T > reshape( Array3DView< T > src )
+Array1DWriteView< T > reshape( Array3DWriteView< T > src )
 {
     if( src.isNull() || !src.rowsArePacked() || !src.slicesArePacked() )
     {

@@ -448,7 +448,7 @@ bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view, const char* filename
 }
 
 // static
-bool ArrayUtils::saveTXT( Array3DView< const float > view, const char* filename )
+bool ArrayUtils::saveTXT( Array3DReadView< float > view, const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -492,7 +492,8 @@ bool ArrayUtils::saveTXT( Array3DView< const float > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array3DView< const Vector2f > view, const char* filename )
+bool ArrayUtils::saveTXT( Array3DReadView< Vector2f > view,
+    const char* filename )
 {
     FILE* fp = fopen( filename, "w" );
     if( fp == NULL )
@@ -502,7 +503,8 @@ bool ArrayUtils::saveTXT( Array3DView< const Vector2f > view, const char* filena
 
     int retVal;
 
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", view.width(), view.height(), view.depth() );
+    retVal = fprintf( fp, "Size: %d x %d x %d\n",
+        view.width(), view.height(), view.depth() );
     if( retVal < 0 )
     {
         return false;

@@ -26,10 +26,10 @@ public:
     Viewfinder( const std::vector< StreamConfig >& streamConfig,
         const std::string& dir, QWidget* parent = nullptr );
 
-    void updateRGB( Array2DView< const uint8x3 > frame );
-    void updateBGRA( Array2DView< const uint8x4 > frame );
-    void updateDepth( Array2DView< const uint16_t > frame );
-    void updateInfrared( Array2DView< const uint16_t > frame );
+    void updateRGB( Array2DReadView< uint8x3 > frame );
+    void updateBGRA( Array2DReadView< uint8x4 > frame );
+    void updateDepth( Array2DReadView< uint16_t > frame );
+    void updateInfrared( Array2DReadView< uint16_t > frame );
 
 signals:
 
@@ -76,7 +76,7 @@ private:
     const QPen m_yellowPen = QPen{ Qt::yellow };
     const QBrush m_whiteBrush = QBrush{ Qt::white };
 
-    void writeFrame( OpenNI2Camera::Frame frame );
+    void writeFrame( OpenNI2Camera::FrameView frame );
 
     libcgt::camera_wrappers::RGBDOutputStream m_outputStream;
 

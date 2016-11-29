@@ -5,12 +5,13 @@
 #include <QPainter>
 #include <QTimer>
 
+#include <third_party/pystring/pystring.h>
+
 #include <core/common/ArrayUtils.h>
 #include <core/imageproc/ColorMap.h>
 #include <core/imageproc/Swizzle.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <qt_interop/qimage.h>
-#include <third_party/pystring.h>
 
 DECLARE_int32( start_after );
 DECLARE_string( mode );
@@ -58,14 +59,18 @@ const std::vector< StreamConfig > INFRARED_ONLY_CONFIG =
 
 const std::vector< StreamConfig > COLOR_DEPTH_CONFIG =
 {
-    StreamConfig{ StreamType::COLOR, { 640, 480 }, PixelFormat::RGB_U888, 30, false },
-    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
+    StreamConfig{StreamType::COLOR, { 640, 480 }, PixelFormat::RGB_U888,
+        30, false },
+    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16,
+        30, false },
 };
 
 const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
 {
-    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
-    StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
+    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16,
+        30, false },
+    StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16,
+        30, false }
 };
 
 PictureTakerViewfinder::PictureTakerViewfinder( const std::string& dir,
@@ -155,7 +160,7 @@ PictureTakerViewfinder::PictureTakerViewfinder( const std::string& dir,
     }
 }
 
-void PictureTakerViewfinder::updateRGB( Array2DView< const uint8x3 > frame )
+void PictureTakerViewfinder::updateRGB( Array2DReadView< uint8x3 > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -167,7 +172,7 @@ void PictureTakerViewfinder::updateRGB( Array2DView< const uint8x3 > frame )
     RGBToBGRA( frame, dst ); // HACK: need RGBToBGRA
 }
 
-void PictureTakerViewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
+void PictureTakerViewfinder::updateBGRA( Array2DReadView< uint8x4 > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -179,7 +184,8 @@ void PictureTakerViewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
     copy( frame, dst );
 }
 
-void PictureTakerViewfinder::updateInfrared( Array2DView< const uint16_t > frame )
+void PictureTakerViewfinder::updateInfrared(
+    Array2DReadView< uint16_t > frame )
 {
     if( frame.width() != m_image.width() ||
         frame.height() != m_image.height() )
@@ -244,33 +250,34 @@ void PictureTakerViewfinder::onViewfinderTimeout()
 {
     if( m_kinect1xCamera != nullptr )
     {
-        KinectCamera::Frame frame;
-        frame.color = flipX( m_bgra.writeView() );
-        frame.infrared = flipX( m_infrared.writeView() );
+        KinectCamera::FrameView frame;
+        frame.color = flipX< uint8x4 >( m_bgra );
+        frame.infrared = flipX< uint16_t >( m_infrared );
         if( m_kinect1xCamera->pollOne( frame ) )
         {
             if( m_isColor )
             {
-                updateBGRA( flipX( frame.color ) );
+                // TODO: HACK: why do I have to flip it twice?
+                updateBGRA( flipX< uint8x4 >( frame.color ) );
                 update();
             }
             else
             {
-                updateInfrared( flipX( frame.infrared ) );
+                updateInfrared( flipX< uint16_t >( frame.infrared ) );
                 update();
             }
         }
     }
     else if( m_oniCamera != nullptr )
     {
-        OpenNI2Camera::Frame frame;
-        frame.rgb = m_rgb.writeView();
-        frame.infrared = m_infrared.writeView();
+        OpenNI2Camera::FrameView frame;
+        frame.color = m_rgb;
+        frame.infrared = m_infrared;
         if( m_oniCamera->pollOne( frame ) )
         {
             if( m_isColor )
             {
-                updateRGB( frame.rgb );
+                updateRGB( frame.color );
                 update();
             }
             else
@@ -301,12 +308,15 @@ void PictureTakerViewfinder::maybeSaveShot()
     {
         if( m_isColor )
         {
-            m_image.save( QString::fromStdString( m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
+            m_image.save( QString::fromStdString(
+                m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
             ++m_nextColorImageIndex;
         }
         else
         {
-            m_image.save( QString::fromStdString( m_infraredNFB.filenameForNumber( m_nextInfraredImageIndex ) ) );
+            m_image.save( QString::fromStdString(
+                m_infraredNFB.filenameForNumber(
+                    m_nextInfraredImageIndex ) ) );
             ++m_nextInfraredImageIndex;
         }
     }

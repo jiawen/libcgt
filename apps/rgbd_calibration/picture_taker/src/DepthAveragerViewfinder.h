@@ -9,8 +9,8 @@
 #include <camera_wrappers/kinect1x/KinectCamera.h>
 #include <camera_wrappers/OpenNI2/OpenNI2Camera.h>
 
+#include <core/common/ArrayView.h>
 #include <core/common/BasicTypes.h>
-#include <core/common/Array2DView.h>
 #include <core/io/NumberedFilenameBuilder.h>
 #include <core/vecmath/Vector2i.h>
 
@@ -27,8 +27,8 @@ public:
     DepthAveragerViewfinder( const std::string& dir = "",
         QWidget* parent = nullptr );
 
-    void updateDepth( Array2DView< const uint16_t > frame );
-    void updateInfrared( Array2DView< const uint16_t > frame );
+    void updateDepth( Array2DReadView< uint16_t > frame );
+    void updateInfrared( Array2DReadView< uint16_t > frame );
 
 protected:
 

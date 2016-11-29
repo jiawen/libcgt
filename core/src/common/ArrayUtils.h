@@ -7,7 +7,6 @@
 #include "Array1D.h"
 #include "Array2D.h"
 #include "Array3D.h"
-#include "Array3DView.h"
 #include "ArrayView.h"
 #include "BasicTypes.h" // TODO: uint8x4 --> Vector<4, uint8_t>
 
@@ -42,10 +41,15 @@ Array2DReadView< TOut > cast( Array2DReadView< TIn > src );
 template< typename TOut, typename TIn >
 Array2DWriteView< TOut > cast( Array2DWriteView< TIn > src );
 
-// Cast from Array3DView< TIn > --> Array3DView< TOut >.
+// Cast from Array3DReadView< TIn > --> Array3DReadView< TOut >.
 // sizeof( TIn ) must be equal sizeof( TOut ).
 template< typename TOut, typename TIn >
-Array3DView< TOut > cast( Array3DView< TIn > src );
+Array3DReadView< TOut > cast( Array3DReadView< TIn > src );
+
+// Cast from Array3DWriteView< TIn > --> Array3DWriteView< TOut >.
+// sizeof( TIn ) must be equal sizeof( TOut ).
+template< typename TOut, typename TIn >
+Array3DWriteView< TOut > cast( Array3DWriteView< TIn > src );
 
 // Copy between two 1D views, with potentially varying stride.
 // If both are packed(), uses memcpy to do a single fast copy.
@@ -68,9 +72,17 @@ bool copy( Array2DReadView< T > src, Array2DWriteView< T > dst );
 // Otherwise, iterates the copy one element at a time.
 // Returns false if the dimensions don't match, or if either is null.
 template< typename T >
-bool copy( Array3DView< const T > src, Array3DView< T > dst );
+bool copy( Array3DReadView< T > src, Array3DWriteView< T > dst );
 
 // TODO: rename this to sliceChannel()?
+// Given an existing Array1DReadView< TIn >, returns a
+// Array1DReadView< TOut > with the same stride, but with elements of type
+// TOut where TOut is a component of TIn and is at offset
+// "componentOffsetBytes" within TIn.
+template< typename TOut, typename TIn >
+Array1DReadView< TOut > componentView( Array1DReadView< TIn > src,
+    int componentOffsetBytes );
+
 // Given an existing Array1DWriteView< TIn >, returns a
 // Array1DWriteView< TOut > with the same stride, but with elements of type
 // TOut where TOut is a component of TIn and is at offset
@@ -95,11 +107,12 @@ template< typename TOut, typename TIn >
 Array2DWriteView< TOut > componentView( Array2DWriteView< TIn > src,
     int componentOffsetBytes );
 
-// Given an existing Array3DView< TIn >, returns a Array3DView< TOut > with the
-// same stride, but with elements of type TOut where TOut is a component of
-// TIn and is at offset "componentOffsetBytes" within TIn.
+// Given an existing Array3DWriteView< TIn >, returns a
+// Array3DWriteView< TOut > with the same stride, but with elements of type
+// TOut where TOut is a component of TIn and is at offset
+// "componentOffsetBytes" within TIn.
 template< typename TOut, typename TIn >
-Array3DView< TOut > componentView( Array3DView< TIn > src,
+Array3DWriteView< TOut > componentView( Array3DWriteView< TIn > src,
     int componentOffsetBytes );
 
 // Get a linear subset of a 1D view, starting at x.
@@ -128,11 +141,11 @@ Array2DWriteView< T > crop( Array2DWriteView< T > view, const Rect2i& rect );
 
 // Get a box subset of a 3D view, starting at xyz.
 template< typename T >
-Array3DView< T > crop( Array3DView< T > view, const Vector3i& xyz );
+Array3DWriteView< T > crop( Array3DWriteView< T > view, const Vector3i& xyz );
 
 // Get a box subset of a 3D view.
 template< typename T >
-Array3DView< T > crop( Array3DView< T > view, const Box3i& box );
+Array3DWriteView< T > crop( Array3DWriteView< T > view, const Box3i& box );
 
 // TODO: implement clear() using fill(), specialize fill() on uint8_t
 // use specialized view if isPacked() and T == 0?
@@ -193,17 +206,17 @@ Array2DWriteView< T > transpose( Array2DWriteView< T > src );
 // Create a view that is flipped left <--> right from src.
 // Flipping twice is the identity.
 template< typename T >
-Array3DView< T > flipX( Array3DView< T > src );
+Array3DWriteView< T > flipX( Array3DWriteView< T > src );
 
 // Create a view that is flipped up <--> down from src.
 // Flipping twice is the identity.
 template< typename T >
-Array3DView< T > flipY( Array3DView< T > src );
+Array3DWriteView< T > flipY( Array3DWriteView< T > src );
 
 // Create a view that is flipped front <--> back from src.
 // Flipping twice is the identity.
 template< typename T >
-Array3DView< T > flipZ( Array3DView< T > src );
+Array3DWriteView< T > flipZ( Array3DWriteView< T > src );
 
 // Get a view of the first n elements of src.
 // Returns null if src has less than n elements.
@@ -228,7 +241,7 @@ bool map( Array2DReadView< TSrc > src, Array2DWriteView< TDst > dst, Func f );
 // Classical "map" function: dst[ xyz ] = f( src[ xyz ] ).
 // f should be a function object that mapping TSrc -> TDst.
 template< typename TSrc, typename TDst, typename Func >
-bool map3( Array3DView< const TSrc > src, Array3DView< TDst > dst, Func f );
+bool map( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst, Func f );
 
 // Variant of map that also passes the index to f:
 // dst[ x ] = f( x, src[ x ] )
@@ -242,11 +255,17 @@ template< typename TSrc, typename TDst, typename Func >
 bool mapIndexed( Array2DReadView< TSrc > src, Array2DWriteView< TDst > dst,
     Func f );
 
+// Variant of map that also passes the index to f:
+// dst[ xyz ] = f( xyz, src[ xyz ] )
+template< typename TSrc, typename TDst, typename Func >
+bool mapIndexed( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst,
+    Func f );
+
 template< typename T >
 Array1DWriteView< T > reshape( Array2DWriteView< T > src );
 
 template< typename T >
-Array1DWriteView< T > reshape( Array3DView< T > src );
+Array1DWriteView< T > reshape( Array3DWriteView< T > src );
 
 template< typename T >
 Array1DReadView< T > readViewOf( const std::vector< T >& v );
@@ -279,8 +298,8 @@ public:
     static bool saveTXT( Array2DReadView< float > view, const char* filename );
     static bool saveTXT( Array2DReadView< Vector4f > view, const char* filename );
 
-    static bool saveTXT( Array3DView< const float > view, const char* filename );
-    static bool saveTXT( Array3DView< const Vector2f > view, const char* filename );
+    static bool saveTXT( Array3DReadView< float > view, const char* filename );
+    static bool saveTXT( Array3DReadView< Vector2f > view, const char* filename );
 };
 
 #include "ArrayUtils.inl"

@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include <common/Array3DView.h>
+#include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 #include <vecmath/Vector3i.h>
 #include <vecmath/Vector2f.h>
@@ -49,28 +49,28 @@ public:
     // TODO: relax the packing restriction.
 
     // Data must be packed().
-    bool set( Array3DView< const uint8_t > data,
+    bool set( Array3DReadView< uint8_t > data,
              GLImageFormat format = GLImageFormat::RED,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const uint8x2 > data,
+    bool set( Array3DReadView< uint8x2 > data,
              GLImageFormat format = GLImageFormat::RG,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const uint8x3 > data,
+    bool set( Array3DReadView< uint8x3 > data,
              GLImageFormat format = GLImageFormat::RGB,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const uint8x4 > data,
+    bool set( Array3DReadView< uint8x4 > data,
              GLImageFormat format = GLImageFormat::RGBA,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const float > data,
+    bool set( Array3DReadView< float > data,
              GLImageFormat format = GLImageFormat::RED,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const Vector2f > data,
+    bool set( Array3DReadView< Vector2f > data,
              GLImageFormat format = GLImageFormat::RG,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const Vector3f > data,
+    bool set( Array3DReadView< Vector3f > data,
              GLImageFormat format = GLImageFormat::RGB,
              const Vector3i& dstOffset = { 0, 0, 0 } );
-    bool set( Array3DView< const Vector4f > data,
+    bool set( Array3DReadView< Vector4f > data,
              GLImageFormat format = GLImageFormat::RGBA,
              const Vector3i& dstOffset = { 0, 0, 0 } );
 

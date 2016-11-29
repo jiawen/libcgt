@@ -92,7 +92,7 @@ Viewfinder::Viewfinder( const std::vector< StreamConfig >& streamConfig,
     }
 }
 
-void Viewfinder::updateRGB( Array2DView< const uint8x3 > frame )
+void Viewfinder::updateRGB( Array2DReadView< uint8x3 > frame )
 {
     if( frame.width() != m_colorImage.width() ||
         frame.height() != m_colorImage.height() )
@@ -104,7 +104,7 @@ void Viewfinder::updateRGB( Array2DView< const uint8x3 > frame )
     RGBToBGRA( frame, dst );
 }
 
-void Viewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
+void Viewfinder::updateBGRA( Array2DReadView< uint8x4 > frame )
 {
     if( frame.width() != m_colorImage.width() ||
         frame.height() != m_colorImage.height() )
@@ -116,7 +116,7 @@ void Viewfinder::updateBGRA( Array2DView< const uint8x4 > frame )
     copy( frame, dst );
 }
 
-void Viewfinder::updateDepth( Array2DView< const uint16_t > frame )
+void Viewfinder::updateDepth( Array2DReadView< uint16_t > frame )
 {
     if (frame.width() != m_depthImage.width() ||
         frame.height() != m_depthImage.height())
@@ -130,7 +130,7 @@ void Viewfinder::updateDepth( Array2DView< const uint16_t > frame )
     linearRemapToLuminance( frame, srcRange, dstRange, dst );
 }
 
-void Viewfinder::updateInfrared( Array2DView< const uint16_t > frame )
+void Viewfinder::updateInfrared( Array2DReadView< uint16_t > frame )
 {
     if (frame.width() != m_infraredImage.width() ||
         frame.height() != m_infraredImage.height())
@@ -211,16 +211,16 @@ void Viewfinder::onViewfinderTimeout()
 {
     if( m_oniCamera != nullptr )
     {
-        OpenNI2Camera::Frame frame;
-        frame.rgb = m_rgb.writeView();
-        frame.depth = m_depth.writeView();
-        frame.infrared = m_infrared.writeView();
+        OpenNI2Camera::FrameView frame;
+        frame.color = m_rgb;
+        frame.depth = m_depth;
+        frame.infrared = m_infrared;
 
         bool pollResult = m_oniCamera->pollAll( frame, 33 );
         {
             if( frame.colorUpdated )
             {
-                updateRGB( frame.rgb );
+                updateRGB( frame.color );
             }
             if( frame.depthUpdated )
             {
@@ -240,34 +240,34 @@ void Viewfinder::onViewfinderTimeout()
     }
 }
 
-void Viewfinder::writeFrame( OpenNI2Camera::Frame frame )
+void Viewfinder::writeFrame( OpenNI2Camera::FrameView frame )
 {
     QString status = QString( "Writing to: " ) +
         QString::fromStdString( m_filename );
     if( frame.colorUpdated )
     {
         status += QString( " color frame %1 " ).arg( frame.colorFrameNumber );
-        Array1DView< uint8_t > view( frame.rgb,
-            frame.rgb.numElements() * sizeof( uint8x3 ) );
+        Array1DWriteView< uint8_t > view( frame.color,
+            frame.color.numElements() * sizeof( uint8x3 ) );
         m_outputStream.write( m_colorStreamIndex, frame.colorFrameNumber,
-            frame.colorTimestamp, view );
+            frame.colorTimestampNS, view );
     }
     if( frame.depthUpdated )
     {
         status += QString( " depth frame %1 " ).arg( frame.depthFrameNumber );
-        Array1DView< uint8_t > view( frame.depth,
+        Array1DWriteView< uint8_t > view( frame.depth,
             frame.depth.numElements() * sizeof( uint16_t ) );
         m_outputStream.write( m_depthStreamIndex, frame.depthFrameNumber,
-            frame.depthTimestamp, view );
+            frame.depthTimestampNS, view );
     }
     if( frame.infraredUpdated )
     {
         status += QString( " infrared frame %1 " ).arg(
             frame.infraredFrameNumber );
-        Array1DView< uint8_t > view( frame.infrared,
+        Array1DWriteView< uint8_t > view( frame.infrared,
             frame.infrared.numElements() * sizeof( uint16_t ) );
         m_outputStream.write( m_infraredStreamIndex, frame.infraredFrameNumber,
-            frame.infraredTimestamp, view );
+            frame.infraredTimestampNS, view );
     }
     emit statusChanged( status );
 }

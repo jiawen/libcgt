@@ -4,7 +4,6 @@
 #include <vector_types.h>
 
 #include <common/ArrayView.h>
-#include <common/Array3DView.h>
 #include <vecmath/Vector4f.h>
 
 #include "DeviceArray1D.h"
@@ -21,11 +20,11 @@ bool saveTXT( Array2DReadView< float4 > array, const char* filename );
 
 bool saveTXT( Array2DReadView< uchar4 > array, const char* filename );
 
-bool saveTXT( Array3DView< const ushort2 > array, const char* filename );
+bool saveTXT( Array3DReadView< ushort2 > array, const char* filename );
 
-bool saveTXT( Array3DView< const int2 > array, const char* filename );
-bool saveTXT( Array3DView< const int3 > array, const char* filename );
-bool saveTXT( Array3DView< const int4 > array, const char* filename );
+bool saveTXT( Array3DReadView< int2 > array, const char* filename );
+bool saveTXT( Array3DReadView< int3 > array, const char* filename );
+bool saveTXT( Array3DReadView< int4 > array, const char* filename );
 
 // Device functions (CUDA types).
 bool saveTXT( const DeviceArray1D< int3 >& array, const char* filename );

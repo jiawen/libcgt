@@ -44,7 +44,7 @@ public:
     // [ b0 b1 b2 b3 b4 b5 b6 b7 ]
     static uint64_t byteSwap64( uint64_t x );
 
-    // Efficiently performs 16-bit byte swapping on an Array1DView.
+    // Efficiently performs 16-bit byte swapping on 1D ArrayView.
     static bool byteSwap16( Array1DReadView< uint16_t > src,
         Array1DWriteView< uint16_t > dst );
 
@@ -62,7 +62,8 @@ public:
 
     // unpacks a 16-bit Morton curve index
     // into three 5-bit x, y, and z values
-    static void mortonUnpack3D_5bit( uint16_t index, uint8_t& x, uint8_t& y, uint8_t& z );
+    static void mortonUnpack3D_5bit( uint16_t index,
+        uint8_t& x, uint8_t& y, uint8_t& z );
     static Vector3i mortonUnpack3D_5bit( uint16_t index );
 
     // packs 10-bit (x,y,z) into a 32-bit Morton curve index
@@ -70,7 +71,8 @@ public:
 
     // unpacks a 32-bit Morton curve index
     // into three 10-bit x, y, and z values
-    static void mortonUnpack3D_10bit( uint32_t index, uint16_t& x, uint16_t& y, uint16_t& z );
+    static void mortonUnpack3D_10bit( uint32_t index,
+        uint16_t& x, uint16_t& y, uint16_t& z );
     static Vector3i mortonUnpack3D_10bit( uint32_t index );
 
     // TODO: 3d morton (3x21 -> int64)
