@@ -70,13 +70,6 @@ public:
         COHERENT_BIT = GL_MAP_COHERENT_BIT
     };
 
-    // TODO: make this a free function
-    // Direct copy between two buffer objects.
-    // Returns false if either range is out of bounds.
-    static bool copy( GLBufferObject* pSource, GLBufferObject* pDestination,
-        GLintptr sourceOffsetBytes, GLintptr destinationOffsetBytes,
-        GLsizeiptr nBytes );
-
     // Construct a buffer object with access permissions in flags.
     // In the first form, creates a buffer with capacity nBytes and undefined
     // contents.
@@ -222,3 +215,8 @@ Array1DWriteView< T > GLBufferObject::mapRangeAs( GLintptr offsetBytes,
             glBufferMapRangeAccess( access ) ),
         static_cast< size_t >( sizeBytes / sizeof( T ) ) );
 }
+
+// Direct copy between two buffer objects.
+// Returns false if either range is out of bounds.
+bool copy( const GLBufferObject& src, GLBufferObject& dst,
+    GLintptr srcOffsetBytes, GLintptr dstOffsetBytes, GLsizeiptr nBytes );

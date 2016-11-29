@@ -1,27 +1,25 @@
-// static
-uint16_t BitPacking::byteSwap16( uint16_t x )
+namespace libcgt { namespace core { namespace math {
+
+uint16_t byteSwap16( uint16_t x )
 {
     return ( x >> 8 ) | ( x << 8 );
 }
 
-// static
-uint32_t BitPacking::byteSwap16x2( uint32_t x )
+uint32_t byteSwap16x2( uint32_t x )
 {
     return
         ( ( x << 8 ) & 0xff00ff00 ) | // [ b2  0 b0  0 ]
         ( ( x >> 8 ) & 0x00ff00ff );  // [  0 b3  0 b1 ]
 }
 
-// static
-uint64_t BitPacking::byteSwap16x4( uint64_t x )
+uint64_t byteSwap16x4( uint64_t x )
 {
     return
         ( ( x << 8 ) & 0xff00ff00ff00ff00 ) | // [ b6  0 b4  0 b2  0 b0  0 ]
         ( ( x >> 8 ) & 0x00ff00ff00ff00ff );  // [  0 b7  0 b5  0 b3  0 b1 ]
 }
 
-// static
-uint32_t BitPacking::byteSwap32( uint32_t x )
+uint32_t byteSwap32( uint32_t x )
 {
     return
         ( x >> 24 ) | // [  0  0  0 b3 ]
@@ -30,8 +28,7 @@ uint32_t BitPacking::byteSwap32( uint32_t x )
         ( ( x << 24 ) & 0xff000000 );  // [ b0  0  0  0 ]
 }
 
-// static
-uint64_t BitPacking::byteSwap32x2( uint64_t x )
+uint64_t byteSwap32x2( uint64_t x )
 {
     return
         ( ( x >> 24 ) & 0x000000ff000000ff ) | // [          b7          b3 ]
@@ -41,8 +38,7 @@ uint64_t BitPacking::byteSwap32x2( uint64_t x )
 }
 
 
-// static
-uint64_t BitPacking::byteSwap64( uint64_t x )
+uint64_t byteSwap64( uint64_t x )
 {
     return
         ( x >> 56 ) |                          // [  0  0  0  0  0  0  0 b7 ]
@@ -55,8 +51,7 @@ uint64_t BitPacking::byteSwap64( uint64_t x )
         ( ( x << 56 ) & 0xff00000000000000 );  // [ b0  0  0  0  0  0  0  0 ]
 }
 
-// static
-bool BitPacking::byteSwap16( Array1DReadView< uint16_t > src,
+bool byteSwap16( Array1DReadView< uint16_t > src,
     Array1DWriteView< uint16_t > dst )
 {
     if( src.size() != dst.size() )
@@ -96,8 +91,7 @@ bool BitPacking::byteSwap16( Array1DReadView< uint16_t > src,
     return true;
 }
 
-// static
-uint32_t BitPacking::mortonPack2D( uint16_t x, uint16_t y )
+uint32_t mortonPack2D( uint16_t x, uint16_t y )
 {
     static const unsigned int B[] =
         { 0x55555555, 0x33333333, 0x0f0f0f0f, 0x00ff00ff };
@@ -125,8 +119,7 @@ uint32_t BitPacking::mortonPack2D( uint16_t x, uint16_t y )
     return index;
 }
 
-// static
-void BitPacking::mortonUnpack2D( uint32_t index, uint16_t& x, uint16_t& y )
+uint16x2 mortonUnpack2D( uint32_t index )
 {
     uint64_t index64 = index;
 
@@ -142,21 +135,12 @@ void BitPacking::mortonUnpack2D( uint32_t index, uint16_t& x, uint16_t& y )
     w = ( w | ( w >> 4 ) ) & 0x00ff00ff00ff00ff;
     w = ( w | ( w >> 8 ) ) & 0x0000ffff0000ffff;
 
-    x = w & 0x000000000000ffff;
-    y = static_cast< uint16_t >( ( w & 0x0000ffff00000000 ) >> 32 );
-}
-
-// static
-Vector2i BitPacking::mortonUnpack2D( uint32_t index )
-{
-    uint16_t x;
-    uint16_t y;
-    mortonUnpack2D( index, x, y );
+    uint16_t x = w & 0x000000000000ffff;
+    uint16_t y = static_cast< uint16_t >( ( w & 0x0000ffff00000000 ) >> 32 );
     return{ x, y };
 }
 
-// static
-uint16_t BitPacking::mortonPack3D_5bit( uint8_t x, uint8_t y, uint8_t z )
+uint16_t mortonPack3D_5bit( uint8_t x, uint8_t y, uint8_t z )
 {
     uint32_t index0 = x;
     uint32_t index1 = y;
@@ -182,9 +166,7 @@ uint16_t BitPacking::mortonPack3D_5bit( uint8_t x, uint8_t y, uint8_t z )
         ( index0 >> 16 ) | ( index1 >> 15 ) | ( index2 >> 14 ) );
 }
 
-// static
-void BitPacking::mortonUnpack3D_5bit( uint16_t index,
-    uint8_t& x, uint8_t& y, uint8_t& z )
+uint8x3 mortonUnpack3D_5bit( uint16_t index )
 {
     uint32_t value0 = index;
     uint32_t value1 = ( value0 >> 1 );
@@ -212,23 +194,13 @@ void BitPacking::mortonUnpack3D_5bit( uint16_t index,
     value1 &= 0x0000001f;
     value2 &= 0x0000001f;
 
-    x = static_cast< uint8_t >( value0 );
-    y = static_cast< uint8_t >( value1 );
-    z = static_cast< uint8_t >( value2 );
-}
-
-// static
-Vector3i BitPacking::mortonUnpack3D_5bit( uint16_t index )
-{
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
-    mortonUnpack3D_5bit( index, x, y, z );
+    uint8_t x = static_cast< uint8_t >( value0 );
+    uint8_t y = static_cast< uint8_t >( value1 );
+    uint8_t z = static_cast< uint8_t >( value2 );
     return{ x, y, z };
 }
 
-// static
-uint32_t BitPacking::mortonPack3D_10bit( uint16_t x, uint16_t y, uint16_t z )
+uint32_t mortonPack3D_10bit( uint16_t x, uint16_t y, uint16_t z )
 {
     uint32_t index0 = x;
     uint32_t index1 = y;
@@ -265,9 +237,7 @@ uint32_t BitPacking::mortonPack3D_10bit( uint16_t x, uint16_t y, uint16_t z )
     return( index0 | ( index1 << 1 ) | ( index2 << 2 ) );
 }
 
-// static
-void BitPacking::mortonUnpack3D_10bit( uint32_t index,
-    uint16_t& x, uint16_t& y, uint16_t& z )
+uint16x3 mortonUnpack3D_10bit( uint32_t index )
 {
     uint32_t value0 = index;
     uint32_t value1 = ( value0 >> 1 );
@@ -301,21 +271,16 @@ void BitPacking::mortonUnpack3D_10bit( uint32_t index,
     value1 &= 0x000003ff;
     value2 &= 0x000003ff;
 
-    x = value0;
-    y = value1;
-    z = value2;
-}
+    uint16_t x = value0;
+    uint16_t y = value1;
+    uint16_t z = value2;
 
-// static
-Vector3i BitPacking::mortonUnpack3D_10bit( uint32_t index )
-{
-    uint16_t x;
-    uint16_t y;
-    uint16_t z;
-    mortonUnpack3D_10bit( index, x, y, z );
     return{ x, y, z };
 }
 
+} } } // math, core, libcgt
+
+// TODO:
 /*
 // for 32-bit architectures
 // morton1 - extract even bits

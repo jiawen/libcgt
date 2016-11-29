@@ -3,25 +3,6 @@
 
 #include "GLBufferObject.h"
 
-// static
-bool GLBufferObject::copy( GLBufferObject* pSource,
-    GLBufferObject* pDestination, GLintptr sourceOffsetBytes,
-    GLintptr destinationOffsetBytes, GLsizeiptr nBytes )
-{
-    if( sourceOffsetBytes >= pSource->numBytes() ||
-        destinationOffsetBytes >= pDestination->numBytes() ||
-        sourceOffsetBytes + nBytes >= pSource->numBytes() ||
-        destinationOffsetBytes + nBytes >= pDestination->numBytes() )
-    {
-        return false;
-    }
-
-    glCopyNamedBufferSubData( pSource->m_id, pDestination->m_id,
-        sourceOffsetBytes, destinationOffsetBytes,
-        nBytes );
-    return true;
-}
-
 GLBufferObject::GLBufferObject( GLsizeiptr nBytes,
     GLBufferObject::StorageFlags flags ) :
     m_id( 0 ),
@@ -101,7 +82,7 @@ void GLBufferObject::unmap()
 
 bool GLBufferObject::get( GLintptr srcOffset, Array1DWriteView< uint8_t > dst )
 {
-    if( srcOffset + dst.size() > m_nBytes )
+    if( srcOffset + static_cast< GLintptr >( dst.size() ) > m_nBytes )
     {
         return false;
     }
@@ -116,7 +97,7 @@ bool GLBufferObject::set( Array1DReadView< uint8_t > src, GLintptr dstOffset )
     {
         return false;
     }
-    if( dstOffset + src.size() > m_nBytes )
+    if( dstOffset + static_cast< GLintptr >( src.size() ) > m_nBytes )
     {
         return false;
     }
@@ -196,4 +177,20 @@ GLBufferObject::MapRangeAccess& operator |= (
         static_cast< GLbitfield >( lhs ) | static_cast< GLbitfield >( rhs )
     );
     return lhs;
+}
+
+bool copy( const GLBufferObject& src, GLBufferObject& dst,
+    GLintptr srcOffsetBytes, GLintptr dstOffsetBytes, GLsizeiptr nBytes )
+{
+    if( srcOffsetBytes >= static_cast< GLintptr >( src.numBytes() ) ||
+        dstOffsetBytes >= static_cast< GLintptr >( dst.numBytes() ) ||
+        srcOffsetBytes + nBytes >= static_cast< GLintptr >( src.numBytes() ) ||
+        dstOffsetBytes + nBytes >= static_cast< GLintptr >( dst.numBytes() ) )
+    {
+        return false;
+    }
+
+    glCopyNamedBufferSubData( src.id(), dst.id(),
+        srcOffsetBytes, dstOffsetBytes, nBytes );
+    return true;
 }

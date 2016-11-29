@@ -2,9 +2,11 @@
 
 #include <third_party/lodepng/lodepng.h>
 
-#include <common/ArrayView.h>
 #include <common/ArrayUtils.h>
 #include <math/BitPacking.h>
+
+using libcgt::core::arrayutils::copy;
+using libcgt::core::math::byteSwap16;
 
 PNGIO::PNGData PNGIO::read( const std::string& filename )
 {
@@ -116,7 +118,7 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
     {
         Array1DWriteView< uint16_t > bitsView( bits,
             output.nComponents * width * height );
-        BitPacking::byteSwap16( bitsView, bitsView );
+        byteSwap16( bitsView, bitsView );
     }
 
     return output;
@@ -132,7 +134,7 @@ bool PNGIO::write( const std::string& filename,
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        libcgt::core::arrayutils::copy< uint8_t >( image, tmpImage );
+        copy< uint8_t >( image, tmpImage );
         srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
     }
     else
@@ -156,7 +158,7 @@ bool PNGIO::write( const std::string& filename,
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        libcgt::core::arrayutils::copy< uint8x3 >( image, tmpImage );
+        copy< uint8x3 >( image, tmpImage );
         srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
     }
     else
@@ -180,7 +182,7 @@ bool PNGIO::write( const std::string& filename,
     if( !image.packed() )
     {
         tmpImage.resize( image.size() );
-        libcgt::core::arrayutils::copy< uint8x4 >( image, tmpImage );
+        copy< uint8x4 >( image, tmpImage );
         srcPointer = reinterpret_cast< const uint8_t* >( tmpImage.pointer() );
     }
     else
@@ -204,7 +206,7 @@ bool PNGIO::write( const std::string& filename,
     libcgt::core::arrayutils::map( image, tmpImage.writeView(),
         [&] ( uint16_t z )
         {
-            return BitPacking::byteSwap16( z );
+            return byteSwap16( z );
         }
     );
 

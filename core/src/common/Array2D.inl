@@ -324,7 +324,7 @@ template< typename T >
 const T& Array2D< T >::operator [] ( size_t k ) const
 {
     Vector2i xy = libcgt::core::indexToSubscript2D(
-        static_cast< int >( k ), static_cast< int >( m_size.x ) );
+        static_cast< int >( k ), m_size );
     return ( *this )[ xy ];
 }
 
@@ -332,7 +332,7 @@ template< typename T >
 T& Array2D< T >::operator [] ( size_t k )
 {
     Vector2i xy = libcgt::core::indexToSubscript2D(
-        static_cast< int >( k ), static_cast< int >( m_size.x ) );
+        static_cast< int >( k ), m_size );
     return ( *this )[ xy ];
 }
 

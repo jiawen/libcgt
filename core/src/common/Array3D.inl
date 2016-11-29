@@ -357,7 +357,7 @@ template< typename T >
 const T& Array3D< T >::operator [] ( int k ) const
 {
     Vector3i xyz = libcgt::core::indexToSubscript3D(
-        static_cast< int >( k ), m_size.x, m_size.y );
+        static_cast< int >( k ), m_size );
     return ( *this )[ xyz ];
 }
 
@@ -365,7 +365,7 @@ template< typename T >
 T& Array3D< T >::operator [] ( int k )
 {
     Vector3i xyz = libcgt::core::indexToSubscript3D(
-        static_cast< int >( k ), m_size.x, m_size.y );
+        static_cast< int >( k ), m_size );
     return ( *this )[ xyz ];
 }
 

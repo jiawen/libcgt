@@ -6,6 +6,12 @@ inline void indexToSubscript2D( int index, int width, int& x, int& y )
     x = index - y * width;
 }
 
+inline void indexToSubscript2D( int index, const Vector2i& size,
+    int& x, int& y )
+{
+    indexToSubscript2D( index, size.x, x, y );
+}
+
 inline Vector2i indexToSubscript2D( int index, int width )
 {
     int x;
@@ -14,7 +20,13 @@ inline Vector2i indexToSubscript2D( int index, int width )
     return{ x, y };
 }
 
-inline void indexToSubscript3D( int index, int width, int height, int& x, int& y, int& z )
+inline Vector2i indexToSubscript2D( int index, const Vector2i& size )
+{
+    return indexToSubscript2D( index, size.x );
+}
+
+inline void indexToSubscript3D( int index, int width, int height,
+    int& x, int& y, int& z )
 {
     int wh = width * height;
     z = index / wh;
@@ -25,6 +37,12 @@ inline void indexToSubscript3D( int index, int width, int height, int& x, int& y
     x = ky - y * width;
 }
 
+inline void indexToSubscript3D( int index, const Vector3i& size,
+    int& x, int&y, int& z )
+{
+    indexToSubscript3D( index, size.x, size.y, x, y, z );
+}
+
 inline Vector3i indexToSubscript3D( int index, int width, int height )
 {
     int x;
@@ -32,6 +50,11 @@ inline Vector3i indexToSubscript3D( int index, int width, int height )
     int z;
     indexToSubscript3D( index, width, height, x, y, z );
     return{ x, y, z };
+}
+
+inline Vector3i indexToSubscript3D( int index, const Vector3i& size )
+{
+    return indexToSubscript3D( index, size.x, size.y );
 }
 
 inline int subscript2DToIndex( int x, int y, int width )

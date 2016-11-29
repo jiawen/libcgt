@@ -219,7 +219,7 @@ const T* Array2DReadView< T >::rowPointer( int y ) const
 template< typename T >
 const T& Array2DReadView< T >::operator [] ( int k ) const
 {
-    Vector2i xy = libcgt::core::indexToSubscript2D( k, m_size.x );
+    Vector2i xy = libcgt::core::indexToSubscript2D( k, m_size );
     return ( *this )[ xy ];
 }
 
@@ -348,7 +348,7 @@ T* Array2DWriteView< T >::rowPointer( int y ) const
 template< typename T >
 T& Array2DWriteView< T >::operator [] ( int k ) const
 {
-    Vector2i xy = libcgt::core::indexToSubscript2D( k, this->size().x );
+    Vector2i xy = libcgt::core::indexToSubscript2D( k, this->size() );
     return ( *this )[ xy ];
 }
 
@@ -451,7 +451,7 @@ const T* Array3DReadView< T >::slicePointer( int z ) const
 template< typename T >
 const T& Array3DReadView< T >::operator [] ( int k ) const
 {
-    Vector3i xy = libcgt::core::indexToSubscript3D( k, m_size.x );
+    Vector3i xy = libcgt::core::indexToSubscript3D( k, m_size );
     return ( *this )[ xy ];
 }
 
@@ -633,7 +633,7 @@ T* Array3DWriteView< T >::slicePointer( int z ) const
 template< typename T >
 T& Array3DWriteView< T >::operator [] ( int k ) const
 {
-    Vector3i xy = libcgt::core::indexToSubscript3D( k, this->size().x );
+    Vector3i xy = libcgt::core::indexToSubscript3D( k, this->size() );
     return ( *this )[ xy ];
 }
 
