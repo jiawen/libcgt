@@ -4,6 +4,7 @@
 
 #include "math/Indexing.h"
 #include "vecmath/Vector2i.h"
+#include "vecmath/Vector3i.h"
 
 // A 1D array view that wraps around a raw pointer and does not take ownership.
 template< typename T >
@@ -309,7 +310,7 @@ public:
     // Extract 2D slice at a given z coordinate.
     Array2DReadView< T > zSlice( int z );
 
-private:
+protected:
 
     Vector3i m_size;
     Vector3i m_stride;
