@@ -647,40 +647,40 @@ template< typename T >
 Array1DWriteView< T > Array3DWriteView< T >::xySlice( const Vector2i& xy )
 {
     return Array1DWriteView< T >(
-        elementPointer( { xy.x, xy.y, 0 } ), m_size.z );
+        elementPointer( { xy.x, xy.y, 0 } ), this->m_size.z );
 }
 
 template< typename T >
 Array1DWriteView< T > Array3DWriteView< T >::yzSlice( const Vector2i& yz )
 {
     return Array1DWriteView< T >(
-        elementPointer( { 0, yz.x, yz.y } ), m_size.x );
+        elementPointer( { 0, yz.x, yz.y } ), this->m_size.x );
 }
 
 template< typename T >
 Array1DWriteView< T > Array3DWriteView< T >::xzSlice( const Vector2i& xz )
 {
     return Array1DWriteView< T >(
-        elementPointer( { xz.x, 0, xz.y } ), m_size.y );
+        elementPointer( { xz.x, 0, xz.y } ), this->m_size.y );
 }
 
 template< typename T >
 Array2DWriteView< T > Array3DWriteView< T >::xSlice( int x )
 {
     return Array2DWriteView< T >(
-        elementPointer( { x, 0, 0 } ), m_size.yz, m_stride.yz );
+        elementPointer( { x, 0, 0 } ), this->m_size.yz, this->m_stride.yz );
 }
 
 template< typename T >
 Array2DWriteView< T > Array3DWriteView< T >::ySlice( int y )
 {
     return Array2DWriteView< T >(
-        rowPointer( { y, 0 } ), m_size.xz(), m_stride.xz() );
+        rowPointer( { y, 0 } ), this->m_size.xz(), this->m_stride.xz() );
 }
 
 template< typename T >
 Array2DWriteView< T > Array3DWriteView< T >::zSlice( int z )
 {
     return Array2DWriteView< T >(
-        slicePointer( z ), m_size.xy, m_stride.xy );
+        slicePointer( z ), this->m_size.xy, this->m_stride.xy );
 }
