@@ -310,7 +310,7 @@ public:
     // Extract 2D slice at a given z coordinate.
     Array2DReadView< T > zSlice( int z );
 
-protected:
+private:
 
     Vector3i m_size;
     Vector3i m_stride;
