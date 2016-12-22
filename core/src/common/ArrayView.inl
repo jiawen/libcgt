@@ -675,7 +675,7 @@ template< typename T >
 Array2DWriteView< T > Array3DWriteView< T >::ySlice( int y )
 {
     return Array2DWriteView< T >(
-        rowPointer( { y, 0 } ), this->size().xz, this->stride().xz );
+        rowPointer( { y, 0 } ), this->size().xz(), this->stride().xz() );
 }
 
 template< typename T >
