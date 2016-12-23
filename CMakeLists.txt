@@ -1,6 +1,12 @@
 cmake_minimum_required( VERSION 3.4 )
 project( libcgt CXX )
 
+set(LIBCGT_MAJOR_VERSION 0)
+set(LIBCGT_MINOR_VERSION 1)
+set(LIBCGT_PATCH_VERSION 0)
+set(LIBCGT_VERSION
+  ${LIBCGT_MAJOR_VERSION}.${LIBCGT_MINOR_VERSION}.${LIBCGT_PATCH_VERSION})
+
 # Compiler options by platform.
 if( APPLE )
     # Clang only
@@ -16,6 +22,7 @@ elseif( UNIX )
         message( FATAL_ERROR "libcgt currently only compiles with Clang and libc++." )
     endif()
 elseif( WIN32 )
+	# TODO: Switch to use include(GenerateExportHeader) generate_export_header.
     set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true )
 
     # In debug mode, append "d" to the library name.
@@ -45,7 +52,6 @@ if( WIN32 )
     endif()
 endif()
 
-
 # TODO: can get fancy with the options: default to whether dependencies exist.
 add_subdirectory( core )
 
@@ -54,25 +60,25 @@ if( BUILD_GL )
     add_subdirectory( GL )
 endif()
 
-option( BUILD_CUDA "Build CUDA module." ON )
-if( BUILD_CUDA )
-    add_subdirectory( cuda )
-endif()
+#option( BUILD_CUDA "Build CUDA module." ON )
+#if( BUILD_CUDA )
+#    add_subdirectory( cuda )
+#endif()
 
 option( BUILD_OPENCV_INTEROP "Build OpenCV Interop module." ON )
 if( BUILD_OPENCV_INTEROP )
     add_subdirectory( opencv_interop )
 endif()
 
-option( BUILD_QT_INTEROP "Build Qt Interop module." ON )
-if( BUILD_QT_INTEROP )
-    add_subdirectory( qt_interop )
-endif()
-
-option( BUILD_CAMERA_WRAPPERS "Build Camera Wrappers module." ON )
-if( BUILD_CAMERA_WRAPPERS )
-    add_subdirectory( camera_wrappers )
-endif()
+#option( BUILD_QT_INTEROP "Build Qt Interop module." ON )
+#if( BUILD_QT_INTEROP )
+#    add_subdirectory( qt_interop )
+#endif()
+#
+#option( BUILD_CAMERA_WRAPPERS "Build Camera Wrappers module." ON )
+#if( BUILD_CAMERA_WRAPPERS )
+#    add_subdirectory( camera_wrappers )
+#endif()
 
 # TODO: restore D3D11 support
 #    add_subdirectory( QDirectX/D3D11 )
@@ -82,3 +88,53 @@ endif()
 
 # TODO: restore video support
 #add_subdirectory( video )
+
+# Package up the library.
+# =======================
+include( CMakePackageConfigHelpers )
+
+# Write the basic version file.
+# TODO: figure out how to use this
+#write_basic_package_version_file(
+#    "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config-version.cmake"
+#    VERSION ${LIBCGT_VERSION}
+#    COMPATIBILITY AnyNewerVersion
+#)
+
+# Export all targets to the build tree export set. The export set is called
+# libcgt-targets.cmake ??. TODO: understand what the heck it means.
+export( TARGETS cgt_core
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/libcgt-targets.cmake" )
+if( BUILD_GL )
+    export( TARGETS cgt_gl
+        APPEND FILE "${PROJECT_BINARY_DIR}/libcgt-targets.cmake"
+    )
+endif()
+if( BUILD_OPENCV_INTEROP )
+    export( TARGETS cgt_opencv_interop
+        APPEND FILE "${PROJECT_BINARY_DIR}/libcgt-targets.cmake"
+    )
+endif()
+
+# Create the config file (build/libcgt-config.cmake), substituting in
+# variables marked with @.
+configure_file(libcgt-config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config.cmake" @ONLY
+)
+
+# Install the config file.
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config.cmake"
+	    "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config-version.cmake"
+	DESTINATION
+        lib/cmake
+)
+
+# Install the export set (libcgt-targets) for use with the install tree.
+install( EXPORT libcgt-targets
+    DESTINATION lib/cmake )
+
+# Export the package for use from the build tree by registering it with the
+# global CMake registry.
+export( PACKAGE libcgt )
