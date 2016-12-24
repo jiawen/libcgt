@@ -7,11 +7,11 @@
 
 #include <third_party/pystring/pystring.h>
 
-#include <core/common/ArrayUtils.h>
-#include <core/imageproc/ColorMap.h>
-#include <core/imageproc/Swizzle.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <qt_interop/qimage.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/imageproc/ColorMap.h"
+#include "libcgt/core/imageproc/Swizzle.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/qt_interop/qimage.h"
 
 DECLARE_int32( start_after );
 DECLARE_string( mode );

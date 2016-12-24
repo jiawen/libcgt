@@ -4,13 +4,12 @@
 #include <QPen>
 #include <QWidget>
 
-#include <camera_wrappers/RGBDStream.h>
-#include <camera_wrappers/OpenNI2/OpenNI2Camera.h>
-
-#include <core/common/BasicTypes.h>
-#include <core/common/Array2D.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <core/vecmath/Vector2i.h>
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/camera_wrappers/RGBDStream.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
 
 class Viewfinder : public QWidget
 {

@@ -9,7 +9,6 @@
 #include "libcgt/core/io/BinaryFileInputStream.h"
 #include "libcgt/core/io/BinaryFileOutputStream.h"
 #include "libcgt/core/vecmath/Vector2i.h"
-
 #include "libcgt/camera_wrappers/PixelFormat.h"
 #include "libcgt/camera_wrappers/StreamType.h"
 

@@ -7,10 +7,10 @@
 #include <QPushButton>
 #include <QSlider>
 
-#include "Viewfinder.h"
+#include "libcgt/core/vecmath/Box3f.h"
+#include "libcgt/camera_wrappers/StreamConfig.h"
 
-#include <core/vecmath/Box3f.h>
-#include <camera_wrappers/StreamConfig.h>
+#include "Viewfinder.h"
 
 using libcgt::camera_wrappers::PixelFormat;
 using libcgt::camera_wrappers::StreamConfig;

@@ -1,14 +1,15 @@
 #include <gflags/gflags.h>
 
-#include <core/common/ArrayUtils.h>
-#include <core/common/BasicTypes.h>
-#include <core/imageproc/ColorMap.h>
-#include <core/io/File.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <core/io/PNGIO.h>
-#include <core/vecmath/Range1i.h>
-#include <camera_wrappers/RGBDStream.h>
 #include <third_party/pystring/pystring.h>
+
+#include "libcgt/camera_wrappers/RGBDStream.h"
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/imageproc/ColorMap.h"
+#include "libcgt/core/io/File.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/core/io/PNGIO.h"
+#include "libcgt/core/vecmath/Range1i.h"
 
 using namespace libcgt::camera_wrappers;
 using namespace libcgt::core;

@@ -10,10 +10,10 @@
 
 #include <third_party/pystring/pystring.h>
 
-#include <core/vecmath/EuclideanTransform.h>
-#include <core/vecmath/Matrix3f.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <opencv_interop/VecmathUtils.h>
+#include "libcgt/core/vecmath/EuclideanTransform.h"
+#include "libcgt/core/vecmath/Matrix3f.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/opencv_interop/VecmathUtils.h"
 
 #include "common.h"
 

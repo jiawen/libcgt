@@ -2,23 +2,20 @@ cmake_minimum_required( VERSION 3.4 )
 project( picture_taker )
 
 # libcgt
-set( LIBCGT_DIR ${PROJECT_SOURCE_DIR}/../../.. )
-include_directories( ${LIBCGT_DIR}/build/lib/include )
-include_directories( ${LIBCGT_DIR}/build/lib/include/core )
-link_directories( ${LIBCGT_DIR}/build/lib/lib )
+find_package( libcgt REQUIRED )
 
 # gflags
-if( EXISTS "${LIBCGT_DIR}/third_party/gflags/CMakeLists.txt" )
-    add_subdirectory( "${LIBCGT_DIR}/third_party/gflags"
-	    "${PROJECT_SOURCE_DIR}/third_party/gflags" )
+if( EXISTS "../../../third_party/gflags/CMakeLists.txt" )
+    add_subdirectory( "../../../third_party/gflags"
+        "${PROJECT_SOURCE_DIR}/third_party/gflags"
+    )
 else()
-    find_package(gflags REQUIRED)
+    find_package( gflags REQUIRED )
 endif()
 
 # pystring
-include_directories( ${LIBCGT_DIR} )
-set( PYSTRING_HEADERS "${LIBCGT_DIR}/third_party/pystring/pystring.h" )
-set( PYSTRING_SOURCES "${LIBCGT_DIR}/third_party/pystring/pystring.cpp" )
+set( PYSTRING_HEADERS "../../../third_party/pystring/pystring.h" )
+set( PYSTRING_SOURCES "../../../third_party/pystring/pystring.cpp" )
 
 # Qt 5
 set( CMAKE_AUTOMOC ON )
@@ -41,28 +38,22 @@ set( DEPTH_AVERAGER_SRCS
 
 add_executable( picture_taker ${PICTURE_TAKER_SRCS} )
 set_property( TARGET picture_taker PROPERTY CXX_STANDARD 11 )
-
-add_executable( depth_averager ${DEPTH_AVERAGER_SRCS} )
-set_property( TARGET depth_averager PROPERTY CXX_STANDARD 11 )
-
+target_include_directories( picture_taker
+    PRIVATE ../../..
+)
 target_link_libraries( picture_taker
     gflags
     Qt5::Core Qt5::Widgets
-    debug cgt_cored
-    debug cgt_camera_wrappersd
-    debug cgt_qt_interopd
-    optimized cgt_core
-    optimized cgt_camera_wrappers
-    optimized cgt_qt_interop
+    gflags cgt_core cgt_camera_wrappers cgt_qt_interop
 )
 
+add_executable( depth_averager ${DEPTH_AVERAGER_SRCS} )
+set_property( TARGET depth_averager PROPERTY CXX_STANDARD 11 )
+target_include_directories( depth_averager
+    PRIVATE ../../..
+)
 target_link_libraries( depth_averager
     gflags
     Qt5::Core Qt5::Widgets
-    debug cgt_cored
-    debug cgt_camera_wrappersd
-    debug cgt_qt_interopd
-    optimized cgt_core
-    optimized cgt_camera_wrappers
-    optimized cgt_qt_interop
+    gflags cgt_core cgt_camera_wrappers cgt_qt_interop
 )

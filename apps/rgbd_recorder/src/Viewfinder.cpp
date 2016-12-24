@@ -7,11 +7,11 @@
 
 #include <third_party/pystring/pystring.h>
 
-#include <core/common/ArrayUtils.h>
-#include <core/imageproc/ColorMap.h>
-#include <core/imageproc/Swizzle.h>
-#include <core/io/File.h>
-#include <qt_interop/qimage.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/imageproc/ColorMap.h"
+#include "libcgt/core/imageproc/Swizzle.h"
+#include "libcgt/core/io/File.h"
+#include "libcgt/qt_interop/qimage.h"
 
 using libcgt::core::arrayutils::copy;
 using libcgt::core::imageproc::linearRemapToLuminance;

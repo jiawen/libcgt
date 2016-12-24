@@ -10,17 +10,17 @@
 
 #include <third_party/pystring/pystring.h>
 
-#include <camera_wrappers/Kinect1x/KinectCamera.h>
-#include <camera_wrappers/OpenNI2/OpenNI2Camera.h>
-#include <core/common/ArrayUtils.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <core/io/PNGIO.h>
-#include <core/io/PortableFloatMapIO.h>
-#include <core/imageproc/Swizzle.h>
-#include <core/math/ArrayOps.h>
-#include <opencv_interop/ArrayUtils.h>
-#include <opencv_interop/Calib3d.h>
-#include <opencv_interop/VecmathUtils.h>
+#include "libcgt/camera_wrappers/Kinect1x/KinectCamera.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/core/io/PNGIO.h"
+#include "libcgt/core/io/PortableFloatMapIO.h"
+#include "libcgt/core/imageproc/Swizzle.h"
+#include "libcgt/core/math/ArrayOps.h"
+#include "libcgt/opencv_interop/ArrayUtils.h"
+#include "libcgt/opencv_interop/Calib3d.h"
+#include "libcgt/opencv_interop/VecmathUtils.h"
 
 #include "common.h"
 

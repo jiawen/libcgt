@@ -1,6 +1,5 @@
 #include "GLTexture1D.h"
 
-#define _USE_MATH_DEFINES
 #include <algorithm>
 #include <cassert>
 #include <cmath>

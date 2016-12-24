@@ -6,13 +6,12 @@
 #include <QPen>
 #include <QWidget>
 
-#include <camera_wrappers/kinect1x/KinectCamera.h>
-#include <camera_wrappers/OpenNI2/OpenNI2Camera.h>
-
-#include <core/common/ArrayView.h>
-#include <core/common/BasicTypes.h>
-#include <core/io/NumberedFilenameBuilder.h>
-#include <core/vecmath/Vector2i.h>
+#include "libcgt/camera_wrappers/kinect1x/KinectCamera.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/io/NumberedFilenameBuilder.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 class DepthAveragerViewfinder : public QWidget
 {
