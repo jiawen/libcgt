@@ -42,4 +42,4 @@ private:
 
 };
 
-#include "DeviceVariable.inl"
+#include "libcgt/cuda/DeviceVariable.inl"

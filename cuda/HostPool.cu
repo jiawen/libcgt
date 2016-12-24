@@ -1,4 +1,4 @@
-#include "HostPool.h"
+#include "libcgt/cuda/HostPool.h"
 
 // STL
 #include <numeric> // for iota

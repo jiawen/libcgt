@@ -2,10 +2,10 @@
 
 #include <cassert>
 
-#include "../DeviceArray1D.h"
-#include "../DeviceOpaqueArray2D.h"
-#include "../DeviceArray2D.h"
-#include "../DeviceArray3D.h"
+#include "libcgt/cuda/DeviceArray1D.h"
+#include "libcgt/cuda/DeviceOpaqueArray2D.h"
+#include "libcgt/cuda/DeviceArray2D.h"
+#include "libcgt/cuda/DeviceArray3D.h"
 
 namespace libcgt { namespace cuda { namespace gl {
 

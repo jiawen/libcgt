@@ -5,7 +5,7 @@
 #include <vector>
 
 // local
-#include "DeviceQueue.h"
+#include "libcgt/cuda/DeviceQueue.h"
 
 struct KernelPool
 {

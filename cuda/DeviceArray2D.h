@@ -7,7 +7,7 @@
 #include <common/Array2D.h>
 #include <common/ArrayView.h>
 
-#include "KernelArray2D.h"
+#include "libcgt/cuda/KernelArray2D.h"
 
 // Basic 2D array interface around CUDA global memory.
 // Wraps around cudaMallocPitch() (linear allocation with pitch).
@@ -123,4 +123,4 @@ private:
     size_t widthInBytes() const;
 };
 
-#include "DeviceArray2D.inl"
+#include "libcgt/cuda/DeviceArray2D.inl"

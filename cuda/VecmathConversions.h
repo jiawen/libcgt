@@ -4,8 +4,9 @@
 // TODO: get rid of float4x4.
 
 #include <vector_types.h>
-#include "float3x3.h"
-#include "float4x4.h"
+
+#include "libcgt/cuda/float3x3.h"
+#include "libcgt/cuda/float4x4.h"
 
 class Matrix3f;
 class Matrix4f;

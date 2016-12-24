@@ -4,7 +4,7 @@
 #include <vector_functions.h>
 #include <helper_math.h>
 
-#include "MathUtils.h"
+#include "libcgt/cuda/MathUtils.h"
 
 // TODO(jiawen): unify with Box3f.h
 namespace libcgt { namespace cuda {
@@ -81,4 +81,4 @@ bool intersectLine( const float3& origin, const float3& direction,
 
 } } // cuda, libcgt
 
-#include "Box3f.inl"
+#include "libcgt/cuda/Box3f.inl"

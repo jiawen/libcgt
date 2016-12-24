@@ -1,4 +1,4 @@
-#include "Event.h"
+#include "libcgt/cuda/Event.h"
 
 namespace libcgt { namespace cuda {
 

@@ -64,4 +64,4 @@ private:
 
 };
 
-#include "DeviceOpaqueArray2D.inl"
+#include "libcgt/cuda/DeviceOpaqueArray2D.inl"

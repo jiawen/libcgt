@@ -30,23 +30,23 @@ if( UNIX )
 	set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-Xcompiler -fPIC )
 endif()
 
-file( GLOB_RECURSE HEADERS src/*.h src/*.inl src/*.cuh )
-file( GLOB_RECURSE SOURCES_CPP src/*.cpp )
-file( GLOB_RECURSE SOURCES_CU src/*.cu )
+file( GLOB_RECURSE HEADERS *.h *.inl *.cuh )
+file( GLOB_RECURSE SOURCES_CPP *.cpp )
+file( GLOB_RECURSE SOURCES_CU *.cu )
 
 # BUG(CMake): target_include_directories doesn't work with CUDA.
 # https://codeyarns.com/2015/03/26/target_include_directories-does-not-work-with-cuda/
 # https://gitlab.kitware.com/cmake/cmake/issues/14201
 # https://cmake.org/pipermail/cmake-developers/2016-August/029298.html
 include_directories( ../core/src )
+include_directories( ../.. )
 include_directories( ${CUDA_SAMPLES_ROOT}/common/inc )
-include_directories( ${CUDA_SAMPLES_ROOT}/src )
 
 cuda_add_library( cgt_cuda SHARED ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
 target_include_directories( cgt_cuda
     PUBLIC
 		${CUDA_TOOLKIT_ROOT_DIR}/include
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../..>
 		$<BUILD_INTERFACE:${CUDA_SAMPLES_ROOT}/common/inc>
         $<INSTALL_INTERFACE:include>
 )
@@ -62,6 +62,6 @@ install( TARGETS cgt_cuda
 	INCLUDES DESTINATION include
 )
 
-install( DIRECTORY src/ DESTINATION include/libcgt/cuda
+install( DIRECTORY . DESTINATION include/libcgt/cuda
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" PATTERN "*.cuh"
 )

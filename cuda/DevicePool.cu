@@ -1,4 +1,4 @@
-#include "DevicePool.h"
+#include "libcgt/cuda/DevicePool.h"
 
 // thrust
 #include <thrust/device_ptr.h>

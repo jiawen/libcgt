@@ -6,9 +6,9 @@
 #include <common/ArrayView.h>
 #include <vecmath/Vector4f.h>
 
-#include "DeviceArray1D.h"
-#include "DeviceArray2D.h"
-#include "DeviceArray3D.h"
+#include "libcgt/cuda/DeviceArray1D.h"
+#include "libcgt/cuda/DeviceArray2D.h"
+#include "libcgt/cuda/DeviceArray3D.h"
 
 namespace libcgt { namespace cuda {
 

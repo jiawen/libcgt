@@ -2,11 +2,11 @@
 
 #include <cassert>
 
-#include "DeviceVariable.h"
-#include "DeviceArray1D.h"
-
-#include "MathUtils.h"
-#include "KernelQueue.h"
+#include "libcgt/cuda/DeviceArray1D.h"
+#include "libcgt/cuda/DeviceVariable.h"
+#include "libcgt/cuda/ErrorChecking.h"
+#include "libcgt/cuda/KernelQueue.h"
+#include "libcgt/cuda/MathUtils.h"
 
 // TODO: reserveEnqueue( n, bool predicate ), commitEnqueue( n, bool predicate )
 // returns a pointer for each thread, predicate has to eavluate to be true for...
@@ -98,4 +98,4 @@ private:
 
 };
 
-#include "DeviceQueue.inl"
+#include "libcgt/cuda/DeviceQueue.inl"

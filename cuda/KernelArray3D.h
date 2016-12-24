@@ -66,4 +66,4 @@ private:
 
 };
 
-#include "KernelArray3D.inl"
+#include "libcgt/cuda/KernelArray3D.inl"

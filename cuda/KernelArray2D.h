@@ -53,4 +53,4 @@ private:
     size_t m_pitch = 0;
 };
 
-#include "KernelArray2D.inl"
+#include "libcgt/cuda/KernelArray2D.inl"

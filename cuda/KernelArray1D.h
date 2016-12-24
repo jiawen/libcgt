@@ -44,4 +44,4 @@ private:
     std::ptrdiff_t m_stride = 0;
 };
 
-#include "KernelArray1D.inl"
+#include "libcgt/cuda/KernelArray1D.inl"

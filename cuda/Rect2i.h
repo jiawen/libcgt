@@ -72,4 +72,4 @@ bool contains( const Rect2i& r, const int2& p );
 
 } } // cuda, libcgt
 
-#include "Rect2i.inl"
+#include "libcgt/cuda/Rect2i.inl"

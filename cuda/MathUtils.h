@@ -1,10 +1,10 @@
 #pragma once
 
-#include <common/BasicTypes.h>
 #include <helper_math.h>
 
-#include "Rect2i.h"
-#include "VectorFunctions.h"
+#include <common/BasicTypes.h>
+#include "libcgt/cuda/Rect2i.h"
+#include "libcgt/cuda/VectorFunctions.h"
 
 #define MAX_UNSIGNED_SHORT ( 1 << 16 )
 #define SUB2IND( x, y, w ) ( ( y ) * ( w ) + ( x ) )
@@ -371,4 +371,4 @@ int convertToSignedInt( ushort x );
 
 } } } // math, cuda, libcgt
 
-#include "MathUtils.inl"
+#include "libcgt/cuda/MathUtils.inl"

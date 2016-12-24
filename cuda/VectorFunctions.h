@@ -1,9 +1,10 @@
 #pragma once
 
-#include <common/BasicTypes.h>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdint>
+
+#include <common/BasicTypes.h>
 
 __inline__ __host__ __device__
 uchar4 make_uchar4( uint8_t s )

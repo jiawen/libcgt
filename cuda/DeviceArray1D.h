@@ -2,14 +2,13 @@
 
 // CUDA
 #include <cuda_runtime.h>
-#include <helper_functions.h>
 #include <helper_cuda.h>
 
 // libcgt
 #include <common/Array1D.h>
 
-#include "KernelArray1D.h"
-#include "ErrorChecking.h"
+#include "libcgt/cuda/KernelArray1D.h"
+#include "libcgt/cuda/ErrorChecking.h"
 
 // Basic vector interface around CUDA global memory.
 // Wraps around cudaMalloc() (linear allocation).

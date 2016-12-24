@@ -1,4 +1,7 @@
-#include "ThreadMath.cuh"
+#pragma once
+
+#include <cstdint>
+#include "libcgt/cuda/ThreadMath.cuh"
 
 template< typename T >
 struct KernelQueue
@@ -15,7 +18,7 @@ struct KernelQueue
     // returns the index in ringBuffer() where the element was placed
     // TODO: handling queue full is annoying
     __inline__ __device__
-    uint enqueue( const T& val );
+    uint32_t enqueue( const T& val );
 
     // removes an element from the head of the queue
     // (atomically increment the head pointer
@@ -30,14 +33,14 @@ struct KernelQueue
     // (atomically increments the tail pointer by n)
     // TODO: handling queue full is annoying
     __inline__ __device__
-    T* enqueueN( uint n = 1 );
+    T* enqueueN( uint32_t n = 1 );
 
     // dequeues n elements for reading
     // n > 0
     // (atomically increments the tail pointer by n)
     // TODO: handling queue empty is annoying
     __inline__ __device__
-    T* dequeueN( uint n = 1 );
+    T* dequeueN( uint32_t n = 1 );
 
     __inline__ __device__
     int capacity() const;
@@ -57,12 +60,12 @@ struct KernelQueue
     // pointer to the head index
     // &( md_pHeadTailAbsoluteIndices->x )
     __inline__ __device__
-    uint* headIndexPointer();
+        uint32_t* headIndexPointer();
 
     // pointer to the tail index
     // &( md_pHeadTailAbsoluteIndices->y )
     __inline__ __device__
-    uint* tailIndexPointer();
+    uint32_t* tailIndexPointer();
 
 private:
 
@@ -71,4 +74,4 @@ private:
 
 };
 
-#include "KernelQueue.inl"
+#include "libcgt/cuda/KernelQueue.inl"

@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <vector>
 
-#include "DevicePool.h"
+#include "libcgt/cuda/DevicePool.h"
 
 class HostPool
 {

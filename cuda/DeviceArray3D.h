@@ -9,7 +9,7 @@
 #include <common/Array3D.h>
 #include <vecmath/Vector3i.h>
 
-#include "KernelArray3D.h"
+#include "libcgt/cuda/KernelArray3D.h"
 
 // Basic 3D array interface around CUDA global memory.
 // Wraps around cudaMalloc3D() (linear allocation with pitch).
@@ -108,4 +108,4 @@ private:
     void destroy();
 };
 
-#include "DeviceArray3D.inl"
+#include "libcgt/cuda/DeviceArray3D.inl"

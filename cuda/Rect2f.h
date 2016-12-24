@@ -4,8 +4,8 @@
 #include <vector_functions.h>
 #include <helper_math.h>
 
-#include "Rect2i.h"
-#include "MathUtils.h"
+#include "libcgt/cuda/Rect2i.h"
+#include "libcgt/cuda/MathUtils.h"
 
 namespace libcgt { namespace cuda {
 
@@ -78,4 +78,4 @@ private:
 
 } } // cuda, libcgt
 
-#include "Rect2f.inl"
+#include "libcgt/cuda/Rect2f.inl"

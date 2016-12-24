@@ -23,10 +23,10 @@ KernelQueue< T >::KernelQueue( uint2* d_pHeadTailAbsoluteIndices,
 
 template< typename T >
 __inline__ __device__
-uint KernelQueue< T >::enqueue( const T& val )
+uint32_t KernelQueue< T >::enqueue( const T& val )
 {
-    uint absoluteTailIndex = atomicAdd( tailIndexPointer(), 1u );
-    uint tailIndex = absoluteTailIndex % capacity();
+    uint32_t absoluteTailIndex = atomicAdd( tailIndexPointer(), 1u );
+    uint32_t tailIndex = absoluteTailIndex % capacity();
     md_ringBuffer[ tailIndex ] = val;
     return tailIndex;
 }
@@ -35,26 +35,26 @@ template< typename T >
 __inline__ __device__
 T KernelQueue< T >::dequeue()
 {
-    uint absoluteHeadIndex = atomicAdd( headIndexPointer(), 1u );
-    uint headIndex = absoluteHeadIndex % capacity();
+    uint32_t absoluteHeadIndex = atomicAdd( headIndexPointer(), 1u );
+    uint32_t headIndex = absoluteHeadIndex % capacity();
     return md_ringBuffer[ headIndex ];
 }
 
 template< typename T >
 __inline__ __device__
-T* KernelQueue< T >::enqueueN( uint n )
+T* KernelQueue< T >::enqueueN( uint32_t n )
 {
-    uint absoluteTailIndex = atomicAdd( tailIndexPointer(), n );
-    uint tailIndex = absoluteTailIndex % capacity();
+    uint32_t absoluteTailIndex = atomicAdd( tailIndexPointer(), n );
+    uint32_t tailIndex = absoluteTailIndex % capacity();
     return md_ringBuffer.pointer + tailIndex;
 }
 
 template< typename T >
 __inline__ __device__
-T* KernelQueue< T >::dequeueN( uint n )
+T* KernelQueue< T >::dequeueN( uint32_t n )
 {
-    uint absoluteHeadIndex = atomicAdd( headIndexPointer(), n );
-    uint headIndex = absoluteHeadIndex % capacity();
+    uint32_t absoluteHeadIndex = atomicAdd( headIndexPointer(), n );
+    uint32_t headIndex = absoluteHeadIndex % capacity();
     return md_ringBuffer.pointer + headIndex;
 }
 
@@ -113,14 +113,14 @@ KernelArray1D< T >& KernelQueue< T >::ringBuffer()
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::headIndexPointer()
+uint32_t* KernelQueue< T >::headIndexPointer()
 {
     return &( md_pHeadTailAbsoluteIndices->x );
 }
 
 template< typename T >
 __inline__ __device__
-uint* KernelQueue< T >::tailIndexPointer()
+uint32_t* KernelQueue< T >::tailIndexPointer()
 {
     return &( md_pHeadTailAbsoluteIndices->y );
 }
@@ -139,9 +139,9 @@ uint* KernelQueue< T >::tailIndexPointer()
     __inline__ __device__
         bool tryDequeue( T& val )
     {
-        uint tail = *( tailPointer() );
+        uint32_t tail = *( tailPointer() );
         // atomicInc computes:
-        // uint oldHead = *headPointer;
+        // uint32_t oldHead = *headPointer;
         // if( oldHead >= tail )
         // {
         //     return 0;
@@ -151,7 +151,7 @@ uint* KernelQueue< T >::tailIndexPointer()
         //     *headPointer = oldHead + 1
         //     return oldHead;
         // }
-        uint retVal = atomicInc( headPointer(), tail );
+        uint32_t retVal = atomicInc( headPointer(), tail );
         return ( retVal != 0 );
     }
 #endif

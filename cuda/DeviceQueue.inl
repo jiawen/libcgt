@@ -1,5 +1,3 @@
-#include "ErrorChecking.h"
-
 template< typename T >
 DeviceQueue< T >::DeviceQueue()
 {
