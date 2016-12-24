@@ -19,19 +19,14 @@ add_library( cgt_core SHARED ${HEADERS} ${SOURCES} )
 # and
 # https://cmake.org/cmake/help/v3.1/command/target_include_directories.html
 
-# $<BUILD_INTERFACE... is for when you depend on it in build-tree mode.
-# $<INSTALL_INTERFACE... is for when you depend on it in install-tree mode.
-
-# Look here for how to declare third party libraries:
-# https://github.com/google/glog/blob/master/CMakeLists.txt#L400
-
-# http://stackoverflow.com/questions/31537602/how-to-use-cmake-to-find-and-link-to-a-library-using-install-export-and-find-pac
-
-target_include_directories(cgt_core
+target_include_directories( cgt_core
     PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
         $<INSTALL_INTERFACE:include>  # <prefix>/include
+	# When building libcgt itself, need to specify .. so we can pull in
+	# libraries under ../third_party as #include <third_party/...>.
+	PRIVATE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
 )
 
 install( TARGETS cgt_core
@@ -42,6 +37,6 @@ install( TARGETS cgt_core
 	INCLUDES DESTINATION include
 )
 
-install( DIRECTORY src/ DESTINATION include/core
+install( DIRECTORY src/ DESTINATION include/libcgt/core
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )

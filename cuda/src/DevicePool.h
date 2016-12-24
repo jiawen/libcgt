@@ -1,10 +1,8 @@
 #pragma once
 
 // STL
+#include <cstdint>
 #include <vector>
-
-// libcgt
-#include <common/BasicTypes.h>
 
 // local
 #include "DeviceQueue.h"

@@ -25,5 +25,6 @@ install( TARGETS cgt_opencv_interop
 	INCLUDES DESTINATION include
 )
 
-install( DIRECTORY src/ DESTINATION include/opencv_interop
-    FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
+install( DIRECTORY src/ DESTINATION include/libcgt/opencv_interop
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
+)

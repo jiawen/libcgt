@@ -11,8 +11,6 @@ set( GLEW_DEPENDENCY
     "find_dependency( GLEW )" PARENT_SCOPE
 )
 
-add_definitions( -D GL_PLATFORM_45 )
-
 file( GLOB_RECURSE HEADERS
     src/common/*.h src/common/*.inl
     src/GL_45/*.h src/GL_45/*.inl
@@ -26,6 +24,11 @@ file( GLOB_RECURSE SOURCES
 
 add_library( cgt_gl SHARED ${HEADERS} ${SOURCES} )
 set_property( TARGET cgt_gl PROPERTY CXX_STANDARD 11 )
+
+# Declare that We're using OpenGL 4.5 and so should all dependents.
+target_compile_definitions( cgt_gl
+    PUBLIC GL_PLATFORM_45
+)	    
 target_include_directories( cgt_gl
     PUBLIC		
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/common>
@@ -43,9 +46,9 @@ install( TARGETS cgt_gl
 	RUNTIME DESTINATION bin
 	INCLUDES DESTINATION include
 )
-install( DIRECTORY src/common DESTINATION include/GL
+install( DIRECTORY src/common DESTINATION include/libcgt/GL
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )
-install( DIRECTORY src/GL_45 DESTINATION include/GL
+install( DIRECTORY src/GL_45 DESTINATION include/libcgt/GL
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )

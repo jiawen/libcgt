@@ -1,9 +1,10 @@
 #pragma once
 
+#include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-// A simple wrapper for a single device variable
-// T should be a plain old data type or a struct where sizeof() is well defined
+// A simple wrapper for a single device variable.
+// T must be a plain old data type or a struct where sizeof() is well defined.
 template< typename T >
 class DeviceVariable
 {
@@ -19,14 +20,16 @@ public:
     DeviceVariable< T >& operator = ( const T& copy );
     ~DeviceVariable();
 
-    // copy device --> host
+    // Copy device --> host.
     T get() const;
 
-    // copy host --> device
+    // Copy host --> device.
     void set( const T& value );
 
-    // copy device --> device
+    // Copy device --> device.
     void set( const DeviceVariable< T >& value );
+
+    // TODO: add implicit conversions to const T& and T&?
 
     const T* devicePointer() const;
     T* devicePointer();
