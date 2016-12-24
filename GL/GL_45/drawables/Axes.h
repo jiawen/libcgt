@@ -2,7 +2,7 @@
 
 #include "Drawable.h"
 
-#include <vecmath/Matrix4f.h>
+#include "libcgt/core/vecmath/Matrix4f.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 class Axes : public GLDrawable

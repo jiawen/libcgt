@@ -1,6 +1,6 @@
 #include "StandardFramebufferObject.h"
 
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/vecmath/Vector2i.h"
 
 StandardFramebufferObject::StandardFramebufferObject( const Vector2i& size,
     GLImageInternalFormat colorFormat, GLImageInternalFormat depthFormat ) :

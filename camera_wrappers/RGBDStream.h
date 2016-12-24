@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include <common/Array1D.h>
-#include <common/Array2D.h>
-#include <io/BinaryFileInputStream.h>
-#include <io/BinaryFileOutputStream.h>
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/common/Array1D.h"
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/io/BinaryFileInputStream.h"
+#include "libcgt/core/io/BinaryFileOutputStream.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 #include "libcgt/camera_wrappers/PixelFormat.h"
 #include "libcgt/camera_wrappers/StreamType.h"

@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <common/Array1D.h>
+#include "libcgt/core/common/Array1D.h"
 #include "GLBufferObject.h"
 
 // static

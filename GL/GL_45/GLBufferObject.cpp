@@ -1,5 +1,5 @@
 #include <cassert>
-#include <common/ArrayUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
 
 #include "GLBufferObject.h"
 

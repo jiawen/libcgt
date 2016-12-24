@@ -2,9 +2,9 @@
 
 #include "Drawable.h"
 
-#include <vecmath/Rect2f.h>
-#include <vecmath/Vector3f.h>
-#include <vecmath/Vector4f.h>
+#include "libcgt/core/vecmath/Rect2f.h"
+#include "libcgt/core/vecmath/Vector3f.h"
+#include "libcgt/core/vecmath/Vector4f.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 // The default textured rectangle has vertices from (-1, -1) to (1, 1) and

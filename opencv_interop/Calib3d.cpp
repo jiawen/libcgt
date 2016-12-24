@@ -2,8 +2,8 @@
 
 #include <opencv2/imgproc.hpp>
 
-#include <common/ArrayUtils.h>
-#include <common/ForND.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/common/ForND.h"
 #include "libcgt/opencv_interop/ArrayUtils.h"
 
 using namespace libcgt::core;

@@ -5,7 +5,7 @@
 #include <helper_cuda.h>
 
 // libcgt
-#include <common/Array1D.h>
+#include "libcgt/core/common/Array1D.h"
 
 #include "libcgt/cuda/KernelArray1D.h"
 #include "libcgt/cuda/ErrorChecking.h"

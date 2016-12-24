@@ -6,9 +6,9 @@
 #include <conio.h>
 #endif
 
-#include <common/ArrayUtils.h>
-#include <imageproc/Swizzle.h>
-#include <time/TimeUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/imageproc/Swizzle.h"
+#include "libcgt/core/time/TimeUtils.h"
 
 #include "libcgt/camera_wrappers/Kinect1x/KinectUtils.h"
 

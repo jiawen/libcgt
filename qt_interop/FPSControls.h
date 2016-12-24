@@ -2,12 +2,12 @@
 
 #include <QMouseEvent>
 
-#include <common/BasicTypes.h>
-#include <math/Arithmetic.h>
-#include <math/MathUtils.h>
-#include <vecmath/Vector2i.h>
-#include <vecmath/Vector3f.h>
-#include <vecmath/Matrix3f.h>
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/math/Arithmetic.h"
+#include "libcgt/core/math/MathUtils.h"
+#include "libcgt/core/vecmath/Matrix3f.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 using libcgt::core::math::degreesToRadians;
 

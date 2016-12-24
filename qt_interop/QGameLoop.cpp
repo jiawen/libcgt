@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QThread>
 
-#include "math/Arithmetic.h"
+#include "libcgt/core/math/Arithmetic.h"
 
 QGameLoop::QGameLoop( float periodMillis, int nDelaysPerYield, int iMaxFrameSkips, QObject* parent ) :
 

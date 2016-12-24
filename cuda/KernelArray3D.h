@@ -1,7 +1,7 @@
 #pragma once
 
-#include <common/BasicTypes.h>
-#include <common/WrapConstPointerT.h>
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/common/WrapConstPointerT.h"
 
 template< typename T >
 class KernelArray3D

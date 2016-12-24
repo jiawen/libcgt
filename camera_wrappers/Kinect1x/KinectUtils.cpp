@@ -1,7 +1,7 @@
 #include "libcgt/camera_wrappers/Kinect1x/KinectUtils.h"
 
-#include <common/ArrayUtils.h>
-#include <geometry/Plane3f.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/geometry/Plane3f.h"
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 

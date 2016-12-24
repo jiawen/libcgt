@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/vecmath/Vector2i.h"
 #include "libcgt/GL/GLImageInternalFormat.h"
 
 class GLRenderbufferObject

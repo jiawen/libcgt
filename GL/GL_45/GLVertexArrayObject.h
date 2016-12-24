@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-#include <common/ArrayView.h>
+#include "libcgt/core/common/ArrayView.h"
 #include "libcgt/GL/GLVertexAttributeType.h"
 
 class GLBufferObject;

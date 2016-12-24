@@ -4,8 +4,8 @@
 
 #include <GL/glew.h>
 
-#include <common/ArrayView.h>
-#include <common/BasicTypes.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
 
 #include "libcgt/GL/GLImageFormat.h"
 #include "libcgt/GL/GLImageInternalFormat.h"

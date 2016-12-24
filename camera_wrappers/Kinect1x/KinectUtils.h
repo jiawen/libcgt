@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include <common/BasicTypes.h>
-#include <common/ArrayView.h>
-#include <vecmath/Matrix4f.h>
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/vecmath/Matrix4f.h"
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 

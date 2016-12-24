@@ -5,7 +5,7 @@
 #include <thrust/sequence.h>
 
 // libcgt
-#include <common/ArrayView.h>
+#include "libcgt/core/common/ArrayView.h"
 
 DevicePool::DevicePool() :
 

@@ -1,7 +1,7 @@
 #include "SolidBox.h"
 
-#include <common/ArrayUtils.h>
-#include <geometry/BoxUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/geometry/BoxUtils.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
 #include "libcgt/GL/GLPrimitiveType.h"
 

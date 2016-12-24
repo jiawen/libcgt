@@ -10,10 +10,10 @@
 #include <GL/glew.h>
 #endif
 
-#include <vecmath/Matrix4f.h>
-#include <vecmath/Vector2i.h>
-#include <vecmath/Rect2i.h>
-#include <vecmath/Box3f.h>
+#include "libcgt/core/vecmath/Matrix4f.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/core/vecmath/Rect2i.h"
+#include "libcgt/core/vecmath/Box3f.h"
 
 class GLTexture2D;
 

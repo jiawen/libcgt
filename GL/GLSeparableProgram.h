@@ -10,7 +10,7 @@
 #include <GL/glew.h>
 #endif
 
-#include <common/ArrayView.h>
+#include "libcgt/core/common/ArrayView.h"
 
 class Matrix4f;
 class Vector2f;

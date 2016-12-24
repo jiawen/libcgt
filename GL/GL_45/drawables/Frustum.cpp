@@ -1,7 +1,7 @@
 #include "Frustum.h"
 
-#include <common/ArrayUtils.h>
-#include <geometry/RectangleUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/geometry/RectangleUtils.h"
 #include "libcgt/GL/GLPrimitiveType.h"
 
 using libcgt::core::arrayutils::copy;

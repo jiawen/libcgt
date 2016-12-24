@@ -2,8 +2,8 @@
 
 #include <cassert>
 
-#include <common/ArrayUtils.h>
-#include <geometry/RectangleUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/geometry/RectangleUtils.h"
 
 using libcgt::core::geometry::writeScreenAlignedTriangleStripPositions;
 using libcgt::core::geometry::writeScreenAlignedTriangleStripTextureCoordinates;

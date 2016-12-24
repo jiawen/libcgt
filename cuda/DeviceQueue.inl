@@ -208,7 +208,7 @@ bool DeviceQueue< T >::dequeueToHost( T& val )
     return false;
 }
 
-#include <common/ArrayUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
 
 using libcgt::core::arrayutils::readViewOf;
 using libcgt::core::arrayutils::writeViewOf;

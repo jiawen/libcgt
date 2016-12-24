@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include <common/BasicTypes.h>
+#include "libcgt/core/common/BasicTypes.h"
 #include "libcgt/GL/GLImageInternalFormat.h"
 #include "libcgt/GL/GLImageFormat.h"
 

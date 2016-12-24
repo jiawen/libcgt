@@ -4,9 +4,9 @@
 #include <cstdio>
 #include <vector>
 
-#include <math/Arithmetic.h>
-#include <math/MathUtils.h>
-#include <vecmath/Vector3f.h>
+#include "libcgt/core/math/Arithmetic.h"
+#include "libcgt/core/math/MathUtils.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 using libcgt::core::math::log2;
 using libcgt::core::math::maximum;

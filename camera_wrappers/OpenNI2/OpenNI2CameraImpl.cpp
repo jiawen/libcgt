@@ -1,8 +1,8 @@
 #include "libcgt/camera_wrappers/OpenNI2/OpenNI2CameraImpl.h"
 
-#include <common/ArrayUtils.h>
-#include <time/TimeUtils.h>
-#include <cameras/CameraUtils.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/time/TimeUtils.h"
+#include "libcgt/core/cameras/CameraUtils.h"
 
 using namespace openni;
 using libcgt::core::arrayutils::copy;

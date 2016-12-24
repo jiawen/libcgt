@@ -2,8 +2,8 @@
 
 #include "Drawable.h"
 
-#include <geometry/TriangleMesh.h>
-#include <vecmath/Matrix4f.h>
+#include "libcgt/core/geometry/TriangleMesh.h"
+#include "libcgt/core/vecmath/Matrix4f.h"
 
 // TODO(jiawen): add namespaces and rename this
 // libcgt::GL::drawable::TriangleMesh?

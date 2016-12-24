@@ -1,9 +1,9 @@
 #include "ArrayUtils.h"
 
-#include <common/Array1D.h>
-#include <common/Array2D.h>
-#include <common/Array3D.h>
-#include <common/ArrayUtils.h>
+#include "libcgt/core/common/Array1D.h"
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/common/Array3D.h"
+#include "libcgt/core/common/ArrayUtils.h"
 
 // TODO: Array2DReadView<float2> --> Array2DReadView<Vector2f> (use cast())
 

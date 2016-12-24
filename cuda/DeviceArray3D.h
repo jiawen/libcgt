@@ -6,8 +6,8 @@
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
-#include <common/Array3D.h>
-#include <vecmath/Vector3i.h>
+#include "libcgt/core/common/Array3D.h"
+#include "libcgt/core/vecmath/Vector3i.h"
 
 #include "libcgt/cuda/KernelArray3D.h"
 

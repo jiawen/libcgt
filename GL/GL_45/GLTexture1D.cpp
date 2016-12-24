@@ -6,7 +6,7 @@
 #include <cmath>
 #include <cstdio>
 
-#include <math/Arithmetic.h>
+#include "libcgt/core/math/Arithmetic.h"
 
 #include "libcgt/GL/GLUtilities.h"
 

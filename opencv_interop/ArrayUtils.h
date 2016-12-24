@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <opencv2/core.hpp>
 
-#include <common/ArrayView.h>
-#include <common/BasicTypes.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
 
 namespace libcgt { namespace opencv_interop {
 

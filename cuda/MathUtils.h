@@ -2,7 +2,7 @@
 
 #include <helper_math.h>
 
-#include <common/BasicTypes.h>
+#include "libcgt/core/common/BasicTypes.h"
 #include "libcgt/cuda/Rect2i.h"
 #include "libcgt/cuda/VectorFunctions.h"
 

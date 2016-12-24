@@ -2,10 +2,10 @@
 
 #include <opencv2/calib3d.hpp>
 
-#include <common/Array2D.h>
-#include <cameras/Intrinsics.h>
-#include <vecmath/Vector2f.h>
-#include <imageproc/Sampling.h>
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/cameras/Intrinsics.h"
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/imageproc/Sampling.h"
 
 namespace libcgt { namespace opencv_interop {
 

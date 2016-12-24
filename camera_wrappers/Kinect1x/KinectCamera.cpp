@@ -9,8 +9,8 @@
 #include <Windows.h>
 #include <NuiApi.h>
 
-#include <common/ArrayUtils.h>
-#include <imageproc/Swizzle.h>
+#include "libcgt/core/common/ArrayUtils.h"
+#include "libcgt/core/imageproc/Swizzle.h"
 
 #include "libcgt/camera_wrappers/kinect1x/KinectUtils.h"
 #include "libcgt/camera_wrappers/kinect1x/KinectCameraImpl.h"

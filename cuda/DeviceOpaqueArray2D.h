@@ -4,7 +4,7 @@
 
 #include <cuda_runtime.h>
 
-#include <common/ArrayView.h>
+#include "libcgt/core/common/ArrayView.h"
 
 // TODO: create an Interop version.
 // TODO: support CUDA surfaces: bindSurface()

@@ -4,13 +4,13 @@
 #include <memory>
 #include <vector>
 
-#include <cameras/Intrinsics.h>
-#include <common/Array2D.h>
-#include <common/BasicTypes.h>
-#include <vecmath/EuclideanTransform.h>
-#include <vecmath/Range1f.h>
-#include <vecmath/Vector3f.h>
-#include <vecmath/Vector4f.h>
+#include "libcgt/core/cameras/Intrinsics.h"
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/vecmath/EuclideanTransform.h"
+#include "libcgt/core/vecmath/Range1f.h"
+#include "libcgt/core/vecmath/Vector3f.h"
+#include "libcgt/core/vecmath/Vector4f.h"
 
 #include <libcgt/camera_wrappers/StreamConfig.h>
 

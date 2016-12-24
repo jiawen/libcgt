@@ -2,8 +2,8 @@
 
 #include <QtGlobal>
 
-#include <common/ArrayView.h>
-#include <common/BasicTypes.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
 
 class QImage;
 

@@ -2,9 +2,9 @@
 
 #include <GL/glew.h>
 
-#include <common/ArrayView.h>
-#include <common/BasicTypes.h>
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 #include "libcgt/GL/GLPixelType.h"
 #include "libcgt/GL/GL_45/GLTexture.h"

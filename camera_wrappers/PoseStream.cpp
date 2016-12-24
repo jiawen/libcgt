@@ -1,8 +1,8 @@
 #include "libcgt/camera_wrappers/PoseStream.h"
 
 #include <cassert>
-#include <vecmath/Matrix3f.h>
-#include <vecmath/Vector3f.h>
+#include "libcgt/core/vecmath/Matrix3f.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 namespace libcgt { namespace camera_wrappers {
 

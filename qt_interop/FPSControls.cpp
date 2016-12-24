@@ -3,8 +3,8 @@
 #include <cassert>
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <cameras/PerspectiveCamera.h>
-#include <geometry/GeometryUtils.h>
+#include "libcgt/core/cameras/PerspectiveCamera.h"
+#include "libcgt/core/geometry/GeometryUtils.h"
 
 #ifdef WIN32
 #include <Windows.h>

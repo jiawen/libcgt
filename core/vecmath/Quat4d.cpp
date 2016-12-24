@@ -1,0 +1,341 @@
+#include "libcgt/core/vecmath/Quat4d.h"
+
+#include <cmath>
+#include <cstdio>
+
+#include "libcgt/core/math/MathUtils.h"
+#include "libcgt/core/vecmath/Quat4f.h"
+#include "libcgt/core/vecmath/Vector3d.h"
+#include "libcgt/core/vecmath/Vector4d.h"
+
+using libcgt::core::math::PI;
+using std::abs;
+
+Quat4d::Quat4d()
+{
+    m_elements[ 0 ] = 0;
+    m_elements[ 1 ] = 0;
+    m_elements[ 2 ] = 0;
+    m_elements[ 3 ] = 0;
+}
+
+Quat4d::Quat4d( double w, double x, double y, double z )
+{
+    m_elements[ 0 ] = w;
+    m_elements[ 1 ] = x;
+    m_elements[ 2 ] = y;
+    m_elements[ 3 ] = z;
+}
+
+Quat4d::Quat4d( const Quat4d& rq )
+{
+    m_elements[ 0 ] = rq.m_elements[ 0 ];
+    m_elements[ 1 ] = rq.m_elements[ 1 ];
+    m_elements[ 2 ] = rq.m_elements[ 2 ];
+    m_elements[ 3 ] = rq.m_elements[ 3 ];
+}
+
+Quat4d::Quat4d( const Quat4f& rq )
+{
+    m_elements[ 0 ] = rq[ 0 ];
+    m_elements[ 1 ] = rq[ 1 ];
+    m_elements[ 2 ] = rq[ 2 ];
+    m_elements[ 3 ] = rq[ 3 ];
+}
+
+Quat4d& Quat4d::operator = ( const Quat4d& rq )
+{
+    if( this != ( &rq ) )
+    {
+        m_elements[ 0 ] = rq.m_elements[ 0 ];
+        m_elements[ 1 ] = rq.m_elements[ 1 ];
+        m_elements[ 2 ] = rq.m_elements[ 2 ];
+        m_elements[ 3 ] = rq.m_elements[ 3 ];
+    }
+    return( *this );
+}
+
+Quat4d::Quat4d( const Vector3d& v )
+{
+    m_elements[ 0 ] = 0;
+    m_elements[ 1 ] = v[ 0 ];
+    m_elements[ 2 ] = v[ 1 ];
+    m_elements[ 3 ] = v[ 2 ];
+}
+
+Quat4d::Quat4d( const Vector4d& v )
+{
+    m_elements[ 0 ] = v[ 0 ];
+    m_elements[ 1 ] = v[ 1 ];
+    m_elements[ 2 ] = v[ 2 ];
+    m_elements[ 3 ] = v[ 3 ];
+}
+
+const double& Quat4d::operator [] ( int i ) const
+{
+    return m_elements[ i ];
+}
+
+double& Quat4d::operator [] ( int i )
+{
+    return m_elements[ i ];
+}
+
+Vector3d Quat4d::xyz() const
+{
+    return Vector3d
+        (
+        m_elements[ 1 ],
+        m_elements[ 2 ],
+        m_elements[ 3 ]
+    );
+}
+
+Vector4d Quat4d::wxyz() const
+{
+    return Vector4d
+        (
+        m_elements[ 0 ],
+        m_elements[ 1 ],
+        m_elements[ 2 ],
+        m_elements[ 3 ]
+    );
+}
+
+double Quat4d::norm() const
+{
+    return sqrt( normSquared() );
+}
+
+double Quat4d::normSquared() const
+{
+    return
+        (
+        m_elements[ 0 ] * m_elements[ 0 ] +
+        m_elements[ 1 ] * m_elements[ 1 ] +
+        m_elements[ 2 ] * m_elements[ 2 ] +
+        m_elements[ 3 ] * m_elements[ 3 ]
+    );
+}
+
+void Quat4d::normalize()
+{
+    double reciprocalLength = 1.0 / norm();
+
+    m_elements[ 0 ] *= reciprocalLength;
+    m_elements[ 1 ] *= reciprocalLength;
+    m_elements[ 2 ] *= reciprocalLength;
+    m_elements[ 3 ] *= reciprocalLength;
+}
+
+Quat4d Quat4d::normalized() const
+{
+    Quat4d q( *this );
+    q.normalize();
+    return q;
+}
+
+void Quat4d::conjugate()
+{
+    m_elements[ 1 ] = -m_elements[ 1 ];
+    m_elements[ 2 ] = -m_elements[ 2 ];
+    m_elements[ 3 ] = -m_elements[ 3 ];
+}
+
+Quat4d Quat4d::conjugated() const
+{
+    return Quat4d
+        (
+        m_elements[ 0 ],
+        -m_elements[ 1 ],
+        -m_elements[ 2 ],
+        -m_elements[ 3 ]
+    );
+}
+
+void Quat4d::invert()
+{
+    Quat4d inverse = conjugated() * ( 1.0 / normSquared() );
+
+    m_elements[ 0 ] = inverse.m_elements[ 0 ];
+    m_elements[ 1 ] = inverse.m_elements[ 1 ];
+    m_elements[ 2 ] = inverse.m_elements[ 2 ];
+    m_elements[ 3 ] = inverse.m_elements[ 3 ];
+}
+
+Quat4d Quat4d::inverse() const
+{
+    return conjugated() * ( 1.0 / normSquared() );
+}
+
+Vector3d Quat4d::getAxisAngle( double* radiansOut )
+{
+    double theta = acos( w ) * 2;
+    double vectorNorm = sqrt( x * x + y * y + z * z );
+    double reciprocalVectorNorm = 1.0 / vectorNorm;
+
+    *radiansOut = theta;
+    return Vector3d
+    (
+        x * reciprocalVectorNorm,
+        y * reciprocalVectorNorm,
+        z * reciprocalVectorNorm
+    );
+}
+
+void Quat4d::setAxisAngle( double radians, const Vector3d& axis )
+{
+    m_elements[ 0 ] = cos( radians / 2 );
+
+    double sinHalfTheta = sin( radians / 2 );
+    double vectorNorm = axis.norm();
+    double reciprocalVectorNorm = 1.0 / vectorNorm;
+
+    m_elements[ 1 ] = axis.x * sinHalfTheta * reciprocalVectorNorm;
+    m_elements[ 2 ] = axis.y * sinHalfTheta * reciprocalVectorNorm;
+    m_elements[ 3 ] = axis.z * sinHalfTheta * reciprocalVectorNorm;
+}
+
+void Quat4d::print()
+{
+    printf( "< %.2lf + %.2lf i + %.2lf j + %.2lf k >\n",
+        m_elements[ 0 ], m_elements[ 1 ], m_elements[ 2 ], m_elements[ 3 ] );
+}
+
+// static
+double Quat4d::dot( const Quat4d& q0, const Quat4d& q1 )
+{
+    return
+    (
+        q0.w * q1.w +
+        q0.x * q1.x +
+        q0.y * q1.y +
+        q0.z * q1.z
+    );
+}
+
+// static
+Quat4d Quat4d::lerp( const Quat4d& q0, const Quat4d& q1, double alpha )
+{
+    return( ( q0 + alpha * ( q1 - q0 ) ).normalized() );
+}
+
+// static
+Quat4d Quat4d::slerp( const Quat4d& a, const Quat4d& b, float t, bool allowFlip )
+{
+    double cosAngle = Quat4d::dot( a, b );
+
+    double c1;
+    double c2;
+
+    // Linear interpolation for close orientations
+    if( ( 1.0f - std::abs( cosAngle ) ) < 0.01f )
+    {
+        c1 = 1.0f - t;
+        c2 = t;
+    }
+    else
+    {
+        // Spherical interpolation
+        double angle = acos( std::abs( cosAngle ) );
+        double sinAngle = sin( angle );
+        c1 = sin( angle * ( 1.0 - t ) ) / sinAngle;
+        c2 = sin( angle * t ) / sinAngle;
+    }
+
+    // Use the shortest path
+    if( allowFlip && ( cosAngle < 0.0 ) )
+    {
+        c1 = -c1;
+    }
+
+    return Quat4d
+    (
+        c1 * a.w + c2 * b.w,
+        c1 * a.x + c2 * b.x,
+        c1 * a.y + c2 * b.y,
+        c1 * a.z + c2 * b.z
+    );
+}
+
+// static
+Quat4d Quat4d::randomRotation( double u0, double u1, double u2 )
+{
+    double z = u0;
+    double theta = 2.0 * PI * u1;
+    double r = sqrt( 1.0 - z * z );
+    double w = PI * u2;
+
+    return Quat4d
+    (
+        cos( w ),
+        sin( w ) * cos( theta ) * r,
+        sin( w ) * sin( theta ) * r,
+        sin( w ) * z
+    );
+}
+
+Vector3d Quat4d::rotateVector( const Vector3d& v )
+{
+    // return q * v * q^-1
+    return ( ( *this ) * Quat4d( v ) * conjugated() ).xyz();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Operators
+//////////////////////////////////////////////////////////////////////////
+
+Quat4d operator + ( const Quat4d& q0, const Quat4d& q1 )
+{
+    return Quat4d
+    (
+        q0.w + q1.w,
+        q0.x + q1.x,
+        q0.y + q1.y,
+        q0.z + q1.z
+    );
+}
+
+Quat4d operator - ( const Quat4d& q0, const Quat4d& q1 )
+{
+    return Quat4d
+    (
+        q0.w - q1.w,
+        q0.x - q1.x,
+        q0.y - q1.y,
+        q0.z - q1.z
+    );
+}
+
+Quat4d operator * ( const Quat4d& q0, const Quat4d& q1 )
+{
+    return Quat4d
+    (
+        q0.w * q1.w - q0.x * q1.x - q0.y * q1.y - q0.z * q1.z,
+        q0.w * q1.x + q0.x * q1.w + q0.y * q1.z - q0.z * q1.y,
+        q0.w * q1.y - q0.x * q1.z + q0.y * q1.w + q0.z * q1.x,
+        q0.w * q1.z + q0.x * q1.y - q0.y * q1.x + q0.z * q1.w
+    );
+}
+
+Quat4d operator * ( double d, const Quat4d& q )
+{
+    return Quat4d
+    (
+        d * q.w,
+        d * q.x,
+        d * q.y,
+        d * q.z
+    );
+}
+
+Quat4d operator * ( const Quat4d& q, double d )
+{
+    return Quat4d
+    (
+        d * q.w,
+        d * q.x,
+        d * q.y,
+        d * q.z
+    );
+}

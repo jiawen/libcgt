@@ -1,6 +1,6 @@
 #include "DepthFloatFramebufferObject.h"
 
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/vecmath/Vector2i.h"
 
 DepthFloatFramebufferObject::DepthFloatFramebufferObject( const Vector2i& size ) :
     m_depthFloat( size, GLImageInternalFormat::R32F ),

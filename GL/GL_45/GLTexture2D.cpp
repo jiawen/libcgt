@@ -7,9 +7,9 @@
 
 #include <GL/glew.h>
 
-#include <math/Arithmetic.h>
-#include <math/MathUtils.h>
-#include <vecmath/Vector3f.h>
+#include "libcgt/core/math/Arithmetic.h"
+#include "libcgt/core/math/MathUtils.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 #include "libcgt/GL/GLSamplerObject.h"
 

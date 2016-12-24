@@ -3,8 +3,8 @@
 #include <vector>
 #include <vector_types.h>
 
-#include <common/ArrayView.h>
-#include <vecmath/Vector4f.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/vecmath/Vector4f.h"
 
 #include "libcgt/cuda/DeviceArray1D.h"
 #include "libcgt/cuda/DeviceArray2D.h"

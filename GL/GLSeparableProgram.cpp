@@ -2,14 +2,14 @@
 
 #include <cassert>
 
-#include <io/File.h>
-#include <vecmath/Matrix4f.h>
-#include <vecmath/Vector2f.h>
-#include <vecmath/Vector2i.h>
-#include <vecmath/Vector3f.h>
-#include <vecmath/Vector3i.h>
-#include <vecmath/Vector4f.h>
-#include <vecmath/Vector4i.h>
+#include "libcgt/core/io/File.h"
+#include "libcgt/core/vecmath/Matrix4f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/core/vecmath/Vector3f.h"
+#include "libcgt/core/vecmath/Vector3i.h"
+#include "libcgt/core/vecmath/Vector4f.h"
+#include "libcgt/core/vecmath/Vector4i.h"
 
 namespace
 {

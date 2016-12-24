@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vecmath/Vector4f.h>
-#include <vecmath/Vector2f.h>
+#include "libcgt/core/vecmath/Vector4f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
 
 struct VertexPosition4fTexture2f
 {

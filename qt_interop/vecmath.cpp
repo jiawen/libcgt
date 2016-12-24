@@ -5,10 +5,10 @@
 #include <QRect>
 #include <QRectF>
 
-#include <vecmath/Rect2f.h>
-#include <vecmath/Rect2i.h>
-#include <vecmath/Vector2f.h>
-#include <vecmath/Vector2i.h>
+#include <libcgt/core/vecmath/Rect2f.h>
+#include <libcgt/core/vecmath/Rect2i.h>
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 namespace libcgt { namespace qt_interop {
 

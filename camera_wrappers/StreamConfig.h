@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vecmath/Vector2i.h>
+#include "libcgt/core/vecmath/Vector2i.h"
 
 #include "libcgt/camera_wrappers/PixelFormat.h"
 #include "libcgt/camera_wrappers/StreamType.h"

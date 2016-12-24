@@ -3,11 +3,11 @@
 #include <memory>
 #include <vector>
 
-#include <common/ArrayView.h>
-#include <common/BasicTypes.h>
-#include <cameras/Intrinsics.h>
-#include <vecmath/EuclideanTransform.h>
-#include <vecmath/Range1f.h>
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/BasicTypes.h"
+#include "libcgt/core/cameras/Intrinsics.h"
+#include "libcgt/core/vecmath/EuclideanTransform.h"
+#include "libcgt/core/vecmath/Range1f.h"
 
 #include "libcgt/camera_wrappers/StreamConfig.h"
 

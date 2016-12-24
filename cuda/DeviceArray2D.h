@@ -4,8 +4,8 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-#include <common/Array2D.h>
-#include <common/ArrayView.h>
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/common/ArrayView.h"
 
 #include "libcgt/cuda/KernelArray2D.h"
 

@@ -1,10 +1,10 @@
 #include "libcgt/opencv_interop/VecmathUtils.h"
 
-#include <cameras/CameraUtils.h>
-#include <vecmath/Matrix3f.h>
-#include <vecmath/Vector2f.h>
-#include <vecmath/Vector2i.h>
-#include <vecmath/Vector3f.h>
+#include "libcgt/core/cameras/CameraUtils.h"
+#include "libcgt/core/vecmath/Matrix3f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 namespace libcgt { namespace opencv_interop {
 

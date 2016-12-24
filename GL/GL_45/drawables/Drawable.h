@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/ArrayView.h>
+#include "libcgt/core/common/ArrayView.h"
 
 #include "libcgt/GL/GLPrimitiveType.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
