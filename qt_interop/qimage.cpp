@@ -1,4 +1,4 @@
-#include "qimage.h"
+#include "libcgt/qt_interop/qimage.h"
 
 #include <QImage>
 

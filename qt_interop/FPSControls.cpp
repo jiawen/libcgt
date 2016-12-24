@@ -1,4 +1,4 @@
-#include "FPSControls.h"
+#include "libcgt/qt_interop/FPSControls.h"
 
 #include <cassert>
 #define _USE_MATH_DEFINES

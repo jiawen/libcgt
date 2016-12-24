@@ -12,16 +12,13 @@ set( Qt5Widgets_DEPENDENCY
     "find_dependency( Qt5Widgets )" PARENT_SCOPE
 )
 
-# Add include to the set of compiler include paths
-# include_directories( ../core/src )
-
-file( GLOB_RECURSE HEADERS src/*.h src/*.inl )
-file( GLOB_RECURSE SOURCES src/*.cpp )
+file( GLOB_RECURSE HEADERS *.h *.inl )
+file( GLOB_RECURSE SOURCES *.cpp )
 
 add_library( cgt_qt_interop SHARED ${HEADERS} ${SOURCES} )
 target_include_directories( cgt_qt_interop
     PUBLIC		
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../..>
         $<INSTALL_INTERFACE:include>
 )
 target_link_libraries( cgt_qt_interop
@@ -35,6 +32,6 @@ install( TARGETS cgt_qt_interop
 	RUNTIME DESTINATION bin
 	INCLUDES DESTINATION include
 )
-install( DIRECTORY src/ DESTINATION include/libcgt/qt_interop
+install( DIRECTORY . DESTINATION include/libcgt/qt_interop
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )

@@ -1,14 +1,10 @@
-#include "QGameLoop.h"
+#include "libcgt/qt_interop/QGameLoop.h"
 
 #include <cassert>
 #include <QApplication>
 #include <QThread>
 
 #include "math/Arithmetic.h"
-
-//////////////////////////////////////////////////////////////////////////
-// Public
-//////////////////////////////////////////////////////////////////////////
 
 QGameLoop::QGameLoop( float periodMillis, int nDelaysPerYield, int iMaxFrameSkips, QObject* parent ) :
 

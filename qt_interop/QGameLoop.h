@@ -1,5 +1,4 @@
-#ifndef QGAMELOOP_H
-#define QGAMELOOP_H
+#pragma once
 
 #include <QObject>
 #include <QElapsedTimer>
@@ -69,5 +68,3 @@ private:
     float m_period;
     QElapsedTimer m_timer;
 };
-
-#endif // QGAMELOOP_H

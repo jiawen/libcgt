@@ -1,14 +1,14 @@
-#include <vecmath/Rect2f.h>
-#include <vecmath/Rect2i.h>
-#include <vecmath/Vector2f.h>
-#include <vecmath/Vector2i.h>
+#include "libcgt/qt_interop/vecmath.h"
 
 #include <QPoint>
 #include <QPointF>
 #include <QRect>
 #include <QRectF>
 
-#include "vecmath.h"
+#include <vecmath/Rect2f.h>
+#include <vecmath/Rect2i.h>
+#include <vecmath/Vector2f.h>
+#include <vecmath/Vector2i.h>
 
 namespace libcgt { namespace qt_interop {
 
