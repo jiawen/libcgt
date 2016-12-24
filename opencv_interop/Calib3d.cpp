@@ -1,10 +1,10 @@
-#include "Calib3d.h"
+#include "libcgt/opencv_interop/Calib3d.h"
 
 #include <opencv2/imgproc.hpp>
 
 #include <common/ArrayUtils.h>
 #include <common/ForND.h>
-#include "ArrayUtils.h"
+#include "libcgt/opencv_interop/ArrayUtils.h"
 
 using namespace libcgt::core;
 using namespace libcgt::core::arrayutils;

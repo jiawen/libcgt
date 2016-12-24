@@ -1,4 +1,4 @@
-#include "VecmathUtils.h"
+#include "libcgt/opencv_interop/VecmathUtils.h"
 
 #include <cameras/CameraUtils.h>
 #include <vecmath/Matrix3f.h>

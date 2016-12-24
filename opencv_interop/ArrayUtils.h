@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <opencv2/core.hpp>
 
-#include <cstdint>
 #include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 
@@ -30,4 +30,4 @@ Array2DWriteView< S > cvMatAsArray2DView( const cv::Mat_< T >& a );
 
 } } // opencv_interop, libcgt
 
-#include "ArrayUtils.inl"
+#include "libcgt/opencv_interop/ArrayUtils.inl"

@@ -1,4 +1,4 @@
-#include "ArrayUtils.h"
+#include "libcgt/opencv_interop/ArrayUtils.h"
 
 namespace libcgt { namespace opencv_interop {
 
