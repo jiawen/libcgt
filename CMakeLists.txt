@@ -107,7 +107,6 @@ export( EXPORT libcgt-targets
 export( PACKAGE libcgt )
 
 # Write the basic version file.
-# TODO: figure out how to use this
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config-version.cmake"
     VERSION ${libcgt_VERSION}
@@ -117,8 +116,9 @@ write_basic_package_version_file(
 # TODO: use configure_package_config_file 
 # Create the config file (build/libcgt-config.cmake), substituting in
 # variables marked with @.
-configure_file(libcgt-config.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config.cmake" @ONLY
+configure_package_config_file( libcgt-config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/libcgt-config.cmake"
+    INSTALL_DESTINATION ${LIB_INSTALL_DIR}/libcgt/cmake
 )
 
 # Install the config file.
