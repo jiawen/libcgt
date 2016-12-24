@@ -1,4 +1,4 @@
-#include "KinectCameraImpl.h"
+#include "libcgt/camera_wrappers/Kinect1x/KinectCameraImpl.h"
 
 #if KINECT1X_ENABLE_SPEECH
 // For string IO and manipulation.
@@ -10,7 +10,7 @@
 #include <imageproc/Swizzle.h>
 #include <time/TimeUtils.h>
 
-#include "KinectUtils.h"
+#include "libcgt/camera_wrappers/Kinect1x/KinectUtils.h"
 
 using libcgt::core::arrayutils::componentView;
 using libcgt::core::arrayutils::copy;

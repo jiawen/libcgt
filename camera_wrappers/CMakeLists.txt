@@ -3,10 +3,6 @@ project( cgt_camera_wrappers )
 
 # TODO: make BUILD_KINECT and BUILD_OPENNI2 options.
 
-# Add libcgt/core to the set of compiler include paths.
-include_directories( ../core/src )
-include_directories( .. )
-
 set( CAMERA_WRAPPER_HEADERS
     RGBDStream.h PixelFormat.h PoseStream.h StreamConfig.h )
 set( CAMERA_WRAPPER_SOURCES
@@ -35,12 +31,11 @@ if( WIN32 )
             Kinect1x/KinectUtils.cpp )
 
         set( CAMERA_WRAPPER_HEADERS
-            ${CAMERA_WRAPPER_HEADERS} ${KINECT1X_HEADERS} )
+            ${CAMERA_WRAPPER_HEADERS} ${Kinectx_HEADERS} )
         set( CAMERA_WRAPPER_SOURCES
-            ${CAMERA_WRAPPER_SOURCES} ${KINECT1X_SOURCES} )
+            ${CAMERA_WRAPPER_SOURCES} ${Kinect1x_SOURCES} )
         set( LIBRARY_DEPENDENCIES
             ${LIBRARY_DEPENDENCIES} Kinect1x::Kinect1x )
-		message("${LIBRARY_DEPENDENCIES}")
         # TODO: how do we add these into the "additional dependencies" line for the
         # static library project.
         # Apparently, amstrmid.lib and sapi.lib are not used.
@@ -79,12 +74,10 @@ add_library( cgt_camera_wrappers SHARED
     ${CAMERA_WRAPPER_HEADERS} ${CAMERA_WRAPPER_SOURCES} )
 target_include_directories( cgt_camera_wrappers
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../..>
+		$<INSTALL_INTERFACE:include>
 )
-
-target_link_libraries( cgt_camera_wrappers
-    ${LIBRARY_DEPENDENCIES}
-)
+target_link_libraries( cgt_camera_wrappers ${LIBRARY_DEPENDENCIES} )
 
 install( TARGETS cgt_camera_wrappers
 	EXPORT libcgt-targets
@@ -107,11 +100,11 @@ if( Kinect1x_FOUND )
 	#install( FILES Kinect1x/FindKinect1x.cmake
     #    DESTINATION lib/cmake
     #)
-
 endif()
 if( OpenNI2_FOUND )
     # TODO: don't export OpenNI2CameraImpl.h.
     install( DIRECTORY OpenNI2/
         DESTINATION include/libcgt/camera_wrappers/OpenNI2
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.inl" )
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
+    )
 endif()

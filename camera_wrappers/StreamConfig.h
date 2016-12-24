@@ -2,8 +2,8 @@
 
 #include <vecmath/Vector2i.h>
 
-#include "PixelFormat.h"
-#include "StreamType.h"
+#include "libcgt/camera_wrappers/PixelFormat.h"
+#include "libcgt/camera_wrappers/StreamType.h"
 
 namespace libcgt { namespace camera_wrappers {
 

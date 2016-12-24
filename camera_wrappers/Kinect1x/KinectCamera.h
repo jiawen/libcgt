@@ -12,7 +12,7 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
-#include <camera_wrappers/StreamConfig.h>
+#include <libcgt/camera_wrappers/StreamConfig.h>
 
 namespace libcgt { namespace camera_wrappers { namespace kinect1x {
 

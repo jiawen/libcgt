@@ -1,4 +1,4 @@
-#include "PoseStream.h"
+#include "libcgt/camera_wrappers/PoseStream.h"
 
 #include <cassert>
 #include <vecmath/Matrix3f.h>

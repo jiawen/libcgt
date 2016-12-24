@@ -10,7 +10,7 @@
 #include <io/BinaryFileOutputStream.h>
 #include <vecmath/Vector2i.h>
 
-#include "PixelFormat.h"
+#include "libcgt/camera_wrappers/PixelFormat.h"
 
 class Matrix3f;
 class Vector3f;

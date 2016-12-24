@@ -1,6 +1,6 @@
-#include "OpenNI2Camera.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
 
-#include "OpenNI2CameraImpl.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2CameraImpl.h"
 
 using libcgt::core::cameras::Intrinsics;
 using libcgt::core::vecmath::EuclideanTransform;

@@ -1,4 +1,4 @@
-#include "PixelFormat.h"
+#include "libcgt/camera_wrappers/PixelFormat.h"
 
 namespace libcgt { namespace camera_wrappers {
 

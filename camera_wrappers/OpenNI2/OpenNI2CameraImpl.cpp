@@ -1,4 +1,4 @@
-#include "OpenNI2CameraImpl.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2CameraImpl.h"
 
 #include <common/ArrayUtils.h>
 #include <time/TimeUtils.h>

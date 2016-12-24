@@ -1,4 +1,4 @@
-#include "KinectCamera.h"
+#include "libcgt/camera_wrappers/Kinect1x/KinectCamera.h"
 
 #if KINECT1X_ENABLE_SPEECH
 // For string IO and manipulation.
@@ -6,14 +6,14 @@
 #include <conio.h>
 #endif
 
-#include <common/ArrayUtils.h>
-#include <imageproc/Swizzle.h>
-
 #include <Windows.h>
 #include <NuiApi.h>
 
-#include "KinectUtils.h"
-#include "KinectCameraImpl.h"
+#include <common/ArrayUtils.h>
+#include <imageproc/Swizzle.h>
+
+#include "libcgt/camera_wrappers/kinect1x/KinectUtils.h"
+#include "libcgt/camera_wrappers/kinect1x/KinectCameraImpl.h"
 
 using libcgt::core::arrayutils::componentView;
 using libcgt::core::arrayutils::copy;

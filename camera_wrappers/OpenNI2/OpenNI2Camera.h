@@ -9,7 +9,7 @@
 #include <vecmath/EuclideanTransform.h>
 #include <vecmath/Range1f.h>
 
-#include <camera_wrappers/StreamConfig.h>
+#include "libcgt/camera_wrappers/StreamConfig.h"
 
 namespace libcgt { namespace camera_wrappers { namespace openni2 {
 

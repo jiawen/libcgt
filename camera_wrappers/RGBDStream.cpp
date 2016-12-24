@@ -1,4 +1,4 @@
-#include "RGBDStream.h"
+#include "libcgt/camera_wrappers/RGBDStream.h"
 
 #include <cassert>
 

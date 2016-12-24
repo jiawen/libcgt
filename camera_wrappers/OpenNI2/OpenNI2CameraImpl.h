@@ -2,7 +2,7 @@
 
 #include <OpenNI.h>
 
-#include "OpenNI2Camera.h"
+#include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
 
 namespace libcgt { namespace camera_wrappers { namespace openni2 {
 

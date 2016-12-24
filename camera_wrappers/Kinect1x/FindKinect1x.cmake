@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.1 )
 
-# TODO: Kinect Developer Toolkit.
+# TODO: Support the Kinect Developer Toolkit.
 
 if( WIN32 )
     find_path( Kinect1x_ROOT inc/NuiApi.h
@@ -39,7 +39,7 @@ if( WIN32 )
     set( Kinect1x_INCLUDE_DIRS ${Kinect1x_INCLUDE_DIR} )
     set( Kinect1x_LIBRARIES ${Kinect1x_LIBRARY} )
     include( FindPackageHandleStandardArgs )
-    find_package_handle_standard_args( KINECT1X
+    find_package_handle_standard_args( Kinect1x
         REQUIRED_VARS Kinect1x_INCLUDE_DIR Kinect1x_LIBRARIES )
 
     if( Kinect1x_FOUND AND NOT TARGET Kinect1x::Kinect1x )

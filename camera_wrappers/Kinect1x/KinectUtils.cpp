@@ -1,4 +1,4 @@
-#include "KinectUtils.h"
+#include "libcgt/camera_wrappers/Kinect1x/KinectUtils.h"
 
 #include <common/ArrayUtils.h>
 #include <geometry/Plane3f.h>
