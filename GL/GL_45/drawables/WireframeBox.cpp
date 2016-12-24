@@ -2,8 +2,8 @@
 
 #include <common/ArrayUtils.h>
 #include <geometry/BoxUtils.h>
-#include <PlanarVertexBufferCalculator.h>
-#include <GLPrimitiveType.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
+#include "libcgt/GL/GLPrimitiveType.h"
 
 using libcgt::core::arrayutils::fill;
 using libcgt::core::geometry::writeWireframe;

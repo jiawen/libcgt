@@ -1,7 +1,8 @@
 #pragma once
 
-#include <GLTexture2D.h>
 #include <cuda_runtime.h>
+// Must include GLTexture2D.h first so that glew.h is included before gl.h.
+#include "libcgt/GL/GL_45/GLTexture2D.h"
 #include <cuda_gl_interop.h>
 
 namespace libcgt { namespace cuda { namespace gl {

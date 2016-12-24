@@ -1,6 +1,6 @@
 #include "TriangleMesh.h"
 
-#include <GLPrimitiveType.h>
+#include "libcgt/GL/GLPrimitiveType.h"
 
 TriangleMeshDrawable::TriangleMeshDrawable( const TriangleMesh& mesh ) :
     GLDrawable( GLPrimitiveType::TRIANGLES, calculator( mesh ) )

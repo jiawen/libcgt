@@ -1,6 +1,6 @@
 #include "PointCloud.h"
 
-#include <GLPrimitiveType.h>
+#include "libcgt/GL/GLPrimitiveType.h"
 
 PointCloud::PointCloud( int nComponents, int nPoints ) :
     GLDrawable( GLPrimitiveType::POINTS, calculator( nComponents, nPoints ) )

@@ -5,7 +5,7 @@
 #include <vecmath/Rect2f.h>
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 // The default textured rectangle has vertices from (-1, -1) to (1, 1) and
 // texture coordinates from (0, 0) to (1, 1). Which means you can draw a full

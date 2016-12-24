@@ -8,7 +8,7 @@
 
 #include <math/Arithmetic.h>
 
-#include "GLUtilities.h"
+#include "libcgt/GL/GLUtilities.h"
 
 using libcgt::core::math::log2;
 

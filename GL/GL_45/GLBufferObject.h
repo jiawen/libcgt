@@ -7,8 +7,8 @@
 #include <common/ArrayView.h>
 #include <common/BasicTypes.h>
 
-#include "GLImageFormat.h"
-#include "GLImageInternalFormat.h"
+#include "libcgt/GL/GLImageFormat.h"
+#include "libcgt/GL/GLImageInternalFormat.h"
 
 
 // TODO(jiawen): GLBufferObject needs:

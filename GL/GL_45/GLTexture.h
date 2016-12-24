@@ -5,8 +5,8 @@
 #include <GL/glew.h>
 
 #include <common/BasicTypes.h>
-#include "GLImageInternalFormat.h"
-#include "GLImageFormat.h"
+#include "libcgt/GL/GLImageInternalFormat.h"
+#include "libcgt/GL/GLImageFormat.h"
 
 class Vector2f;
 class Vector3f;

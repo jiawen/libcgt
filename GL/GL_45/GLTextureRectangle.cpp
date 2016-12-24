@@ -10,7 +10,7 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
-#include "GLUtilities.h"
+#include "libcgt/GL/GLUtilities.h"
 
 // TODO: support mip maps
 GLTextureRectangle::GLTextureRectangle( const Vector2i& size, GLImageInternalFormat internalFormat ) :

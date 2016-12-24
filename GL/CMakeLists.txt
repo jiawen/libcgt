@@ -11,15 +11,15 @@ set( GLEW_DEPENDENCY
     "find_dependency( GLEW )" PARENT_SCOPE
 )
 
-file( GLOB_RECURSE HEADERS
-    src/common/*.h src/common/*.inl
-    src/GL_45/*.h src/GL_45/*.inl
-    src/GL_45/drawables/*.h src/GL_45/drawables/*.inl
+file( GLOB HEADERS
+    *.h *.inl
+    GL_45/*.h GL_45/*.inl
+    GL_45/drawables/*.h GL_45/drawables/*.inl
 )
-file( GLOB_RECURSE SOURCES
-    src/common/*.cpp
-    src/GL_45/*.cpp
-    src/GL_45/drawables/*.cpp
+file( GLOB SOURCES
+    *.cpp
+    GL_45/*.cpp
+    GL_45/drawables/*.cpp
 )
 
 add_library( cgt_gl SHARED ${HEADERS} ${SOURCES} )
@@ -31,8 +31,7 @@ target_compile_definitions( cgt_gl
 )	    
 target_include_directories( cgt_gl
     PUBLIC		
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/common>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/GL_45>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../..>
         $<INSTALL_INTERFACE:include>
 )
 target_link_libraries( cgt_gl
@@ -46,9 +45,9 @@ install( TARGETS cgt_gl
 	RUNTIME DESTINATION bin
 	INCLUDES DESTINATION include
 )
-install( DIRECTORY src/common DESTINATION include/libcgt/GL
+install( DIRECTORY . DESTINATION include/libcgt/GL
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )
-install( DIRECTORY src/GL_45 DESTINATION include/libcgt/GL
+install( DIRECTORY GL_45 DESTINATION include/libcgt/GL
     FILES_MATCHING PATTERN "*.h" PATTERN "*.inl"
 )

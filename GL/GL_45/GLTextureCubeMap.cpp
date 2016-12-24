@@ -7,9 +7,9 @@
 
 #include <GL/glew.h>
 
-#include "GLSamplerObject.h"
-#include "GLTextureCubeMap.h"
-#include "GLUtilities.h"
+#include "libcgt/GL/GLSamplerObject.h"
+#include "libcgt/GL/GLUtilities.h"
+#include "libcgt/GL/GL_45/GLTextureCubeMap.h"
 
 // TODO: support mip maps
 GLTextureCubeMap::GLTextureCubeMap( int sideLength,

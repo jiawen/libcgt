@@ -1,8 +1,7 @@
 #pragma once
 
-#include "GLImageInternalFormat.h"
-
 #include <vecmath/Vector2i.h>
+#include "libcgt/GL/GLImageInternalFormat.h"
 
 class GLRenderbufferObject
 {

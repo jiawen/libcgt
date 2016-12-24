@@ -11,7 +11,7 @@
 #include <math/MathUtils.h>
 #include <vecmath/Vector3f.h>
 
-#include "GLSamplerObject.h"
+#include "libcgt/GL/GLSamplerObject.h"
 
 using libcgt::core::math::log2;
 using libcgt::core::math::maximum;

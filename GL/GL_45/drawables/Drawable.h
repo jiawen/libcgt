@@ -2,13 +2,10 @@
 
 #include <common/ArrayView.h>
 
-#ifdef GL_PLATFORM_45
-#include "../GLBufferObject.h"
-#include "../GLVertexArrayObject.h"
-#endif
-
-#include <GLPrimitiveType.h>
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/GLPrimitiveType.h"
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
+#include "libcgt/GL/GL_45/GLBufferObject.h"
+#include "libcgt/GL/GL_45/GLVertexArrayObject.h"
 
 // TODO(jiawen): Make a GLDrawableSet class.
 // Initialize it with a bunch of GLDrawable objects.

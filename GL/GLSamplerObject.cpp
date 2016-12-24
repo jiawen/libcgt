@@ -1,4 +1,4 @@
-#include "GLSamplerObject.h"
+#include "libcgt/GL/GLSamplerObject.h"
 
 // static
 GLfloat GLSamplerObject::getLargestSupportedAnisotropy()

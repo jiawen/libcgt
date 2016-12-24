@@ -3,7 +3,7 @@
 #include "Drawable.h"
 
 #include <cameras/PerspectiveCamera.h>
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 class Frustum : public GLDrawable
 {

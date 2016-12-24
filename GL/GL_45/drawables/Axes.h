@@ -3,7 +3,7 @@
 #include "Drawable.h"
 
 #include <vecmath/Matrix4f.h>
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 class Axes : public GLDrawable
 {

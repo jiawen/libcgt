@@ -2,7 +2,7 @@
 
 #include "Drawable.h"
 
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 class PointCloud : public GLDrawable
 {

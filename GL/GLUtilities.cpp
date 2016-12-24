@@ -4,15 +4,15 @@
 #include <windows.h>
 #endif
 
-#include "common/ArrayUtils.h"
-#include "io/PNGIO.h"
-#include "io/PortableFloatMapIO.h"
+#include <common/ArrayUtils.h>
+#include <io/PNGIO.h>
+#include <io/PortableFloatMapIO.h>
 
 #ifdef GL_PLATFORM_ES_31
-#include "../GLES_31/GLTexture2D.h"
+#include "GLES_31/GLTexture2D.h"
 #endif
 #ifdef GL_PLATFORM_45
-#include "../GL_45/GLTexture2D.h"
+#include "GL_45/GLTexture2D.h"
 #endif
 #include "GLUtilities.h"
 

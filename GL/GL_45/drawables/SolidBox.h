@@ -5,7 +5,7 @@
 #include <vecmath/Box3f.h>
 #include <vecmath/Matrix4f.h>
 #include <vecmath/Vector4f.h>
-#include <PlanarVertexBufferCalculator.h>
+#include "libcgt/GL/PlanarVertexBufferCalculator.h"
 
 class SolidBox : public GLDrawable
 {

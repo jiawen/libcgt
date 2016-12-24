@@ -2,7 +2,7 @@
 
 #include <common/ArrayUtils.h>
 #include <geometry/RectangleUtils.h>
-#include <GLPrimitiveType.h>
+#include "libcgt/GL/GLPrimitiveType.h"
 
 using libcgt::core::arrayutils::copy;
 using libcgt::core::arrayutils::fill;

@@ -1,8 +1,8 @@
 #include "GLDynamicTextureUnitAssignment.h"
 
-#include "GLSamplerObject.h"
-#include "GLSeparableProgram.h"
-#include "GLTexture.h"
+#include "libcgt/GL/GLSamplerObject.h"
+#include "libcgt/GL/GLSeparableProgram.h"
+#include "libcgt/GL/GL_45/GLTexture.h"
 
 GLDynamicTextureUnitAssignment::GLDynamicTextureUnitAssignment(
     std::shared_ptr< GLSeparableProgram > program ) :

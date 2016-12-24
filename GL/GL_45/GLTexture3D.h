@@ -11,8 +11,8 @@
 #include <vecmath/Vector3f.h>
 #include <vecmath/Vector4f.h>
 
-#include "GLPixelType.h"
-#include "GLTexture.h"
+#include "libcgt/GL/GLPixelType.h"
+#include "libcgt/GL/GL_45/GLTexture.h"
 
 class GLTexture3D : public GLTexture
 {
