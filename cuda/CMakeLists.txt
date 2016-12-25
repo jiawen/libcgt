@@ -1,5 +1,13 @@
-cmake_minimum_required( VERSION 3.4 )
+cmake_minimum_required( VERSION 3.7 )
 project( cgt_cuda )
+
+# BUG
+message( STATUS
+    "If you get an error about GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM being\
+ undefined, this is due to the fact that CUDA samples includes an older\
+ version of GLEW, which lacks the symbol. As a workaround, replace glew.h and\
+ wglew.h with a newer version until we stop depending on samples."
+)
 
 # CUDA
 find_package( CUDA REQUIRED )
@@ -13,6 +21,9 @@ set( CUDA_SEPARABLE_COMPILATION ON )
 if( WIN32 )
     if( DEFINED ENV{NVCUDASAMPLES_ROOT} )
         set( CUDA_SAMPLES_ROOT $ENV{NVCUDASAMPLES_ROOT} )
+		# Workaround a CMake bug where backslashes are not parsed properly
+		# and we get a scary message.
+        string( REPLACE "\\" "/" CUDA_SAMPLES_ROOT ${CUDA_SAMPLES_ROOT} )
     else()
         message( "Environment variable NVCUDASAMPLES_ROOT must be set." )
         return()
@@ -34,20 +45,16 @@ file( GLOB_RECURSE HEADERS *.h *.inl *.cuh )
 file( GLOB_RECURSE SOURCES_CPP *.cpp )
 file( GLOB_RECURSE SOURCES_CU *.cu )
 
-# BUG(CMake): target_include_directories doesn't work with CUDA.
-# https://codeyarns.com/2015/03/26/target_include_directories-does-not-work-with-cuda/
-# https://gitlab.kitware.com/cmake/cmake/issues/14201
-# https://cmake.org/pipermail/cmake-developers/2016-August/029298.html
-include_directories( ../core/src )
-include_directories( ../.. )
-include_directories( ${CUDA_SAMPLES_ROOT}/common/inc )
-
 cuda_add_library( cgt_cuda SHARED ${HEADERS} ${SOURCES_CPP} ${SOURCES_CU} )
+message( STATUS
+    "You can safely ignore the warning about policy CMP0007. CMake decided\
+ to put two semicolons in a row for some reason when appending to a list."
+)
 target_include_directories( cgt_cuda
     PUBLIC
 		${CUDA_TOOLKIT_ROOT_DIR}/include
+		${CUDA_SAMPLES_ROOT}/common/inc
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../..>
-		$<BUILD_INTERFACE:${CUDA_SAMPLES_ROOT}/common/inc>
         $<INSTALL_INTERFACE:include>
 )
 target_link_libraries( cgt_cuda

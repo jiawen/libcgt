@@ -2,14 +2,17 @@
 
 #include <cassert>
 
+#include "libcgt/core/common/ArrayUtils.h"
 #include "libcgt/cuda/DeviceArray1D.h"
 #include "libcgt/cuda/DeviceVariable.h"
 #include "libcgt/cuda/ErrorChecking.h"
 #include "libcgt/cuda/KernelQueue.h"
 #include "libcgt/cuda/MathUtils.h"
 
-// TODO: reserveEnqueue( n, bool predicate ), commitEnqueue( n, bool predicate )
-// returns a pointer for each thread, predicate has to eavluate to be true for...
+// TODO: Implement reserveEnqueue( n, bool predicate ), and a corresponding
+// commitEnqueue( n, bool predicate ).
+// Reserve returns a pointer for each thread, predicate has to evaluate to be
+// true for...
 // same for dequeue: to relieve pressure on the atomic
 
 // An atomic producer-consumer queue for CUDA
@@ -19,7 +22,7 @@ class DeviceQueue
 {
 public:
 
-    // nitializes a null queue
+    // Initialize a null queue.
     DeviceQueue();
 
     // nitializes a queue with a fixed capacity
@@ -40,9 +43,8 @@ public:
     // returns the total size of the queue in bytes, including overhead
     size_t sizeInBytes() const;
 
-    // resizes the queue:
-    //   destroys the existing data
-    //   and clears the queue in the process (head and tail pointers are set to 0)
+    // Resize the queue. This destroys existing data and clear the queue in the
+    // process (head and tail pointers are set to 0).
     void resize( size_t capacity );
 
     // clears the queue by setting head and tail absolute indices back to 0

@@ -1,8 +1,8 @@
 #include "libcgt/qt_interop/FPSControls.h"
 
 #include <cassert>
-#define _USE_MATH_DEFINES
 #include <cmath>
+
 #include "libcgt/core/cameras/PerspectiveCamera.h"
 #include "libcgt/core/geometry/GeometryUtils.h"
 

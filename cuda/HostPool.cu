@@ -85,7 +85,8 @@ void HostPool::copyFromDevice( const DevicePool& pool )
 
     // TODO(jiawen): use Array1D.
     printf( "Copying backing store...\n" );
-    pool.md_backingStore.copyToHost( writeViewOf( m_backingStore ) );
+    pool.md_backingStore.copyToHost(
+        libcgt::core::arrayutils::writeViewOf( m_backingStore ) );
 }
 
 void HostPool::copyToDevice( DevicePool& pool )
@@ -93,5 +94,6 @@ void HostPool::copyToDevice( DevicePool& pool )
     pool.resize( m_capacity, m_elementSizeBytes );
 
     pool.md_freeList.copyFromHost( m_freeList );
-    pool.md_backingStore.copyFromHost( writeViewOf( m_backingStore ) );
+    pool.md_backingStore.copyFromHost(
+        libcgt::core::arrayutils::writeViewOf( m_backingStore ) );
 }
