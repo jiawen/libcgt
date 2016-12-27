@@ -13,6 +13,8 @@
 #include "libcgt/camera_wrappers/PixelFormat.h"
 
 class Matrix3f;
+class Matrix4f;
+class Quat4f;
 class Vector3f;
 
 namespace libcgt { namespace camera_wrappers {
@@ -60,13 +62,19 @@ public:
 
     const PoseStreamMetadata& metadata() const;
 
-    Array1DReadView< uint8_t > read( int& frameIndex, int64_t& timestamp );
+    // Template explicitly instantiated for formats defined in
+    // PoseStreamFormat except MATRIX_4X4_COL_MAJOR_FLOAT.
+    template< typename RotationType, typename TranslationType >
+    bool read( int32_t& frameIndex, int64_t& timestamp,
+        RotationType& rotation, TranslationType& translation );
+
+    // MATRIX_4X4_COL_MAJOR_FLOAT only.
+    bool read( int32_t& frameIndex, int64_t& timestamp, Matrix4f& pose );
 
 private:
 
     BinaryFileInputStream m_stream;
     PoseStreamMetadata m_metadata;
-    Array1D< uint8_t > m_buffer;
     bool m_valid;
 
 };
@@ -90,8 +98,15 @@ public:
 
     // TODO(jiawen): check that frameIndex and timestamp is monotonically
     // increasing.
-    bool write( int frameIndex, int64_t timestamp,
-        const Matrix3f& rotation, const Vector3f& translation );
+
+    // Template explicitly instantiated for formats defined in
+    // PoseStreamFormat except MATRIX_4X4_COL_MAJOR_FLOAT.
+    template< typename RotationType, typename TranslationType >
+    bool write( int32_t frameIndex, int64_t timestamp,
+        const RotationType& rotation, const TranslationType& translation );
+
+    // MATRIX_4X4_COL_MAJOR_FLOAT only.
+    bool write( int32_t frameIndex, int64_t timestamp, const Matrix4f& pose );
 
 private:
 

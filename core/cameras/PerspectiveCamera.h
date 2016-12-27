@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Camera.h"
+#include "libcgt/core/cameras/Camera.h"
 #include "libcgt/core/math/MathUtils.h"
 
 class PerspectiveCamera : public Camera

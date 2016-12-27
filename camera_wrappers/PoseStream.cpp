@@ -2,28 +2,35 @@
 
 #include <cassert>
 #include "libcgt/core/vecmath/Matrix3f.h"
+#include "libcgt/core/vecmath/Matrix4f.h"
+#include "libcgt/core/vecmath/Quat4f.h"
 #include "libcgt/core/vecmath/Vector3f.h"
 
-namespace libcgt { namespace camera_wrappers {
+namespace
+{
 
-const int FORMAT_VERSION = 1;
-
-int frameSizeBytes( PoseStreamFormat format )
+size_t frameSizeBytes( libcgt::camera_wrappers::PoseStreamFormat format )
 {
     switch( format )
     {
-    case PoseStreamFormat::ROTATION_MATRIX_3X3_COL_MAJOR_AND_TRANSLATION_VECTOR_FLOAT:
+    case libcgt::camera_wrappers::PoseStreamFormat::ROTATION_MATRIX_3X3_COL_MAJOR_AND_TRANSLATION_VECTOR_FLOAT:
         return 12 * sizeof( float );
-    case PoseStreamFormat::MATRIX_4X4_COL_MAJOR_FLOAT:
+    case libcgt::camera_wrappers::PoseStreamFormat::MATRIX_4X4_COL_MAJOR_FLOAT:
         return 16 * sizeof( float );
-    case PoseStreamFormat::ROTATION_QUATERNION_WXYZ_AND_TRANSLATION_VECTOR_FLOAT:
+    case libcgt::camera_wrappers::PoseStreamFormat::ROTATION_QUATERNION_WXYZ_AND_TRANSLATION_VECTOR_FLOAT:
         return 7 * sizeof( float );
-    case PoseStreamFormat::ROTATION_VECTOR_AND_TRANSLATION_VECTOR_FLOAT:
+    case libcgt::camera_wrappers::PoseStreamFormat::ROTATION_VECTOR_AND_TRANSLATION_VECTOR_FLOAT:
         return 6 * sizeof( float );
     default:
         return 0;
     }
 }
+
+}
+
+namespace libcgt { namespace camera_wrappers {
+
+const int32_t FORMAT_VERSION = 1;
 
 PoseInputStream::PoseInputStream( const char* filename ) :
     m_stream( filename )
@@ -32,7 +39,7 @@ PoseInputStream::PoseInputStream( const char* filename ) :
 
     // Read header.
     char magic[ 5 ] = {};
-    int version;
+    int32_t version;
     ok = m_stream.read( magic[ 0 ] );
     ok = m_stream.read( magic[ 1 ] );
     ok = m_stream.read( magic[ 2 ] );
@@ -41,11 +48,7 @@ PoseInputStream::PoseInputStream( const char* filename ) :
 
     if( ok && strcmp( magic, "pose" ) == 0 && version == FORMAT_VERSION )
     {
-        m_stream.read( m_metadata );
-        if( ok )
-        {
-            m_buffer.resize( frameSizeBytes( m_metadata.format ) );
-        }
+        ok = m_stream.read( m_metadata );
     }
 
     m_valid = ok;
@@ -61,11 +64,17 @@ const PoseStreamMetadata& PoseInputStream::metadata() const
     return m_metadata;
 }
 
-Array1DReadView< uint8_t > PoseInputStream::read( int& frameIndex,
-    int64_t& timestamp )
+template< typename RotationType, typename TranslationType >
+bool PoseInputStream::read( int32_t& frameIndex, int64_t& timestamp,
+    RotationType& rotation, TranslationType& translation )
 {
-    bool ok;
-    if( isValid() )
+    bool ok = isValid() &&
+        (
+            ( m_metadata.format == PoseStreamFormat::ROTATION_MATRIX_3X3_COL_MAJOR_AND_TRANSLATION_VECTOR_FLOAT ) ||
+            ( m_metadata.format == PoseStreamFormat::ROTATION_QUATERNION_WXYZ_AND_TRANSLATION_VECTOR_FLOAT ) ||
+            ( m_metadata.format == PoseStreamFormat::ROTATION_VECTOR_AND_TRANSLATION_VECTOR_FLOAT )
+        );
+    if( ok )
     {
         ok = m_stream.read( frameIndex );
         if( ok )
@@ -73,17 +82,47 @@ Array1DReadView< uint8_t > PoseInputStream::read( int& frameIndex,
             ok = m_stream.read( timestamp );
             if( ok )
             {
-                Array1DWriteView< uint8_t > wv = m_buffer;
-                ok = m_stream.readArray( wv );
                 if( ok )
                 {
-                    return m_buffer;
+                    ok = m_stream.read( rotation );
+                    if( ok )
+                    {
+                        ok = m_stream.read( translation );
+                    }
                 }
             }
         }
     }
 
-    return Array1DReadView< uint8_t >();
+    return ok;
+}
+
+// Explicitly instantiate template.
+template bool PoseInputStream::read( int32_t&, int64_t&,
+    Matrix3f&, Vector3f& );
+template bool PoseInputStream::read( int32_t&, int64_t&, Quat4f&, Vector3f& );
+template bool PoseInputStream::read( int32_t&, int64_t&,
+    Vector3f&, Vector3f& );
+
+bool PoseInputStream::read( int32_t& frameIndex, int64_t& timestamp,
+    Matrix4f& pose )
+{
+    bool ok = isValid() &&
+        m_metadata.format == PoseStreamFormat::MATRIX_4X4_COL_MAJOR_FLOAT;
+    if( ok )
+    {
+        ok = m_stream.read( frameIndex );
+        if( ok )
+        {
+            ok = m_stream.read( timestamp );
+            if( ok )
+            {
+                ok = m_stream.read( pose );
+            }
+        }
+    }
+
+    return ok;
 }
 
 PoseOutputStream::PoseOutputStream( PoseStreamMetadata metadata,
@@ -95,7 +134,7 @@ PoseOutputStream::PoseOutputStream( PoseStreamMetadata metadata,
     m_stream.write( 'o' );
     m_stream.write( 's' );
     m_stream.write( 'e' );
-    m_stream.write< int >( FORMAT_VERSION );
+    m_stream.write< int32_t >( FORMAT_VERSION );
 
     m_stream.write( metadata );
 }
@@ -140,8 +179,9 @@ bool PoseOutputStream::close()
     return m_stream.close();
 }
 
-bool PoseOutputStream::write( int frameIndex, int64_t timestamp,
-    const Matrix3f& rotation, const Vector3f& translation )
+template< typename RotationType, typename TranslationType >
+bool PoseOutputStream::write( int32_t frameIndex, int64_t timestamp,
+    const RotationType& rotation, const TranslationType& translation )
 {
     if( !m_stream.write( frameIndex ) )
     {
@@ -159,6 +199,35 @@ bool PoseOutputStream::write( int frameIndex, int64_t timestamp,
     }
 
     if( !m_stream.write( translation ) )
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// Explicitly instantiate template.
+template bool PoseOutputStream::write( int32_t, int64_t,
+    const Matrix3f&, const Vector3f& );
+template bool PoseOutputStream::write( int32_t, int64_t,
+    const Quat4f&, const Vector3f& );
+template bool PoseOutputStream::write( int32_t, int64_t,
+    const Vector3f&, const Vector3f& );
+
+bool PoseOutputStream::write( int32_t frameIndex, int64_t timestamp,
+    const Matrix4f& pose )
+{
+    if( !m_stream.write( frameIndex ) )
+    {
+        return false;
+    }
+
+    if( !m_stream.write( timestamp ) )
+    {
+        return false;
+    }
+
+    if( !m_stream.write( pose ) )
     {
         return false;
     }

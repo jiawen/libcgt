@@ -27,6 +27,11 @@ const GLFrustum& Camera::frustum() const
     return m_frustum;
 }
 
+GLFrustum& Camera::frustum()
+{
+    return m_frustum;
+}
+
 float Camera::aspectRatio() const
 {
     return m_frustum.aspectRatio();

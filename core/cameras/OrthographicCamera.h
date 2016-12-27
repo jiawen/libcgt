@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Camera.h"
+#include "libcgt/core/cameras/Camera.h"
 #include "libcgt/core/vecmath/Matrix4f.h"
 #include "libcgt/core/vecmath/Vector4f.h"
 
