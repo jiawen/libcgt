@@ -21,7 +21,6 @@ public:
 
     using EuclideanTransform = libcgt::core::vecmath::EuclideanTransform;
     using GLFrustum = libcgt::core::cameras::GLFrustum;
-    using Intrinsics = libcgt::core::cameras::Intrinsics;
 
     // TODO(jiawen): remove this.
     bool isDirectX() const;
@@ -29,6 +28,7 @@ public:
     // ---------------- Intrinsics ----------------
 
     const GLFrustum& frustum() const;
+    void setFrustum( const GLFrustum& frustum );
 
     // The image aspect ratio (width divided by height).
     float aspectRatio() const;
@@ -39,13 +39,14 @@ public:
     // The distance to the far plane. May be infinite.
     float zFar() const;
 
+    // Returns true if zFar() is at infinity.
     bool isZFarInfinite() const;
 
-    // Returns the OpenGL / Direct3D style projection matrix,
-    // mapping eye space to clip space.
-    // TODO(jiawen): get it directly from the frustum, instead of virtual.
+    // Returns the OpenGL / Direct3D style projection matrix.
+    // Aka clipFromEye().
     virtual Matrix4f projectionMatrix() const = 0;
 
+    // Inverse of projectionMatrix(). Aka eyeFromClip().
     Matrix4f inverseProjectionMatrix() const;
 
     // Get the 8 corners of the camera frustum.
@@ -54,8 +55,8 @@ public:
     std::vector< Vector3f > frustumCorners() const;
 
     // Get the 6 planes of the camera frustum,
-    // in the order: left, bottom, right, top, near, far
-    // all the planes have normals pointing outward.
+    // in the order: left, bottom, right, top, near, far.
+    // All planes have normals pointing outward.
     std::vector< Plane3f > frustumPlanes() const;
 
     // ---------------- Extrinsics ----------------
@@ -65,7 +66,7 @@ public:
 
     // Set the camera from world (view) matrix directly.
     // This function assumes that cfw is a Euclidean transformation.
-    void setCameraFromWorldMatrix(const Matrix4f& cfw);
+    void setCameraFromWorldMatrix( const Matrix4f& cfw );
 
     EuclideanTransform worldFromCamera() const;
     void setWorldFromCamera( const EuclideanTransform& wfc );
@@ -124,13 +125,6 @@ public:
     Matrix4f viewProjectionMatrix() const;
 
     Matrix4f inverseViewProjectionMatrix() const;
-
-    // Returns the camera intrinsics, a 3x3 matrix mapping eye-space rays to
-    // pixel-space points.
-    //
-    // These intrinsics retain OpenGL-convention right-handed coordinates,
-    // with x-right, y-up, z-towards-viewer.
-    Intrinsics intrinsics( const Vector2f& screenSize ) const;
 
     // ----- projection: world --> eye --> clip --> NDC --> screen -----
 
@@ -253,8 +247,6 @@ public:
     static void copyPose( const Camera& from, Camera& to );
 
 protected:
-
-    void setFrustum( const GLFrustum& frustum );
 
     // TODO(jiawen): remove this.
     void setDirectX( bool directX );

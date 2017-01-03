@@ -42,9 +42,20 @@ enum class PoseStreamTransformDirection : uint32_t
     CAMERA_FROM_WORLD = 1
 };
 
+enum class PoseStreamUnits : uint32_t
+{
+    // Calibrated (metric pose).
+    METERS = 0,
+    MILLIMETERS = 1,
+
+    // Uncalibrated (e.g., from structure from motion or uncalibrated stereo).
+    ARBITRARY = 256
+};
+
 struct PoseStreamMetadata
 {
     PoseStreamFormat format = PoseStreamFormat::INVALID;
+    PoseStreamUnits units = PoseStreamUnits::ARBITRARY;
     PoseStreamTransformDirection direction =
         PoseStreamTransformDirection::WORLD_FROM_CAMERA;
 };

@@ -62,20 +62,28 @@ public:
         float zNear = 1.0f, float zFar = 100.0f,
         bool isDirectX = false );
 
-    void setFrustum( const GLFrustum& frustum );
+    using Camera::setFrustum;
 
-    // Same as below, but uses existing zNear and zFar.
-    void setFrustumFromIntrinsics(
-        const Intrinsics& intrinsics,
-        const Vector2f& imageSize );
+    // Same as setFrustumFromIntrinsics() but uses existing values for zNear
+    // and zFar.
+    void setFrustum( const Intrinsics& intrinsics, const Vector2f& imageSize );
 
-    // Sets this camera's GL-style frustum parameters from camera intrinsics.
-    // focal length, principal point, and image size are in pixels.
-    // The principal point has the y-axis pointing *up* on the image:
-    // this is opposite the usual computer-vision convension.
-    void setFrustumFromIntrinsics(
-        const Intrinsics& intrinsics,
-        const Vector2f& imageSize, float zNear, float zFar );
+    // Sets this camera's GL-style frustum parameters from computer vision
+    // style camera intrinsics. focal length, principal point, and image size
+    // are in units of pixels.
+    //
+    // This function assumes that the principal point's y axis points *up*
+    // on the image plane (GL-style). This is opposite the convention used by
+    // most computer vision libraries.
+    void setFrustum( const Intrinsics& intrinsics, const Vector2f& imageSize,
+        float zNear, float zFar );
+
+    // Returns the camera intrinsics, a 3x3 matrix mapping eye-space rays to
+    // pixel-space points.
+    //
+    // These intrinsics retain OpenGL-convention right-handed coordinates,
+    // with x-right, y-up, z-towards-viewer.
+    Intrinsics intrinsics( const Vector2f& screenSize ) const;
 
     // Returns the OpenGL / Direct3D style projection matrix,
     // mapping eye space to clip space.

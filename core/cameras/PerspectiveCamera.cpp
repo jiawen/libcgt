@@ -13,6 +13,7 @@
 
 using libcgt::core::cameras::focalLengthPixelsToFoVRadians;
 using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
+using libcgt::core::cameras::frustumToIntrinsics;
 using libcgt::core::cameras::intrinsicsToFrustum;
 using libcgt::core::cameras::GLFrustum;
 using libcgt::core::cameras::Intrinsics;
@@ -21,6 +22,7 @@ using libcgt::core::math::degreesToRadians;
 using libcgt::core::math::radiansToDegrees;
 using libcgt::core::math::HALF_PI;
 using libcgt::core::vecmath::EuclideanTransform;
+
 
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
@@ -69,7 +71,7 @@ PerspectiveCamera::PerspectiveCamera(
     bool isDirectX )
 {
     setCameraFromWorld( cameraFromWorld );
-    setFrustumFromIntrinsics( intrinsics, imageSize, zNear, zFar );
+    setFrustum( intrinsics, imageSize, zNear, zFar );
     setDirectX( isDirectX );
 }
 
@@ -85,23 +87,23 @@ PerspectiveCamera::PerspectiveCamera(
     setDirectX( isDirectX );
 }
 
-void PerspectiveCamera::setFrustum( const GLFrustum& frustum )
-{
-    Camera::setFrustum( frustum );
-}
-
-void PerspectiveCamera::setFrustumFromIntrinsics( const Intrinsics& intrinsics,
+void PerspectiveCamera::setFrustum( const Intrinsics& intrinsics,
     const Vector2f& imageSize )
 {
     setFrustum( intrinsicsToFrustum( intrinsics, imageSize,
         frustum().zNear, frustum().zFar ) );
 }
 
-void PerspectiveCamera::setFrustumFromIntrinsics( const Intrinsics& intrinsics,
+void PerspectiveCamera::setFrustum( const Intrinsics& intrinsics,
     const Vector2f& imageSize, float zNear, float zFar )
 {
     assert( zNear > 0 );
     setFrustum( intrinsicsToFrustum( intrinsics, imageSize, zNear, zFar ) );
+}
+
+Intrinsics PerspectiveCamera::intrinsics( const Vector2f& screenSize ) const
+{
+    return frustumToIntrinsics( frustum(), screenSize );
 }
 
 // virtual

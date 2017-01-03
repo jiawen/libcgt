@@ -68,11 +68,13 @@ public:
     // TODO(jiawen): pass in resolution and scale.
     // Retrieve the "default" intrinsics that is approximately correct for all
     // models at 640x480.
+    // Note: the y-axis points up.
     static Intrinsics defaultColorIntrinsics();
 
     // TODO(jiawen): pass in resolution and scale.
     // Retrieve the "default" intrinsics that is approximately correct for all
     // models at 640x480.
+    // Note: the y-axis points up.
     static Intrinsics defaultDepthIntrinsics();
 
     // Get the transformation mapping: color_coord <-- depth_coord.

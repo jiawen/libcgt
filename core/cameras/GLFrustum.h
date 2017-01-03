@@ -56,17 +56,20 @@ public:
 
     // Make a symmetric frustum from field of view (in radians) and image
     // aspect ratio. This is a replacement for gluPerspective().
-    static GLFrustum makeSymmetricPerspective( float fovYRadians, float aspectRatio,
+    static GLFrustum makeSymmetricPerspective( float fovYRadians,
+        float aspectRatio,
         float zNear, float zFar);
 
     // Linear interpolation between two GLFrustum instances.
-    // If either input has zFar = infinity, the result will have zFar = infinity.
+    // If either input has zFar = infinity, the result will have
+    // zFar = infinity.
     static GLFrustum lerp( const GLFrustum& f0, const GLFrustum& f1, float t );
 
     // Cubic interpolation between four GLFrustum instances.
     // If any input zFar = infinity, the result will have zFar = infinity.
     static GLFrustum cubicInterpolate(
-        const GLFrustum& f0, const GLFrustum& f1, const GLFrustum& f2, const GLFrustum& f3,
+        const GLFrustum& f0, const GLFrustum& f1,
+        const GLFrustum& f2, const GLFrustum& f3,
         float t );
 };
 

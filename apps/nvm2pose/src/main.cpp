@@ -47,6 +47,7 @@ int main( int argc, char* argv[] )
     // NVM's direction is camera_from_world.
     PoseStreamMetadata outputMetadata;
     outputMetadata.format = PoseStreamFormat::ROTATION_MATRIX_3X3_COL_MAJOR_AND_TRANSLATION_VECTOR_FLOAT;
+    outputMetadata.units = PoseStreamUnits::ARBITRARY;
     outputMetadata.direction = PoseStreamTransformDirection::CAMERA_FROM_WORLD;
 
     PoseOutputStream outputStream( outputMetadata, FLAGS_output_file.c_str() );

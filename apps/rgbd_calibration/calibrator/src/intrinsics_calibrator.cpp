@@ -12,6 +12,7 @@
 
 #include "libcgt/camera_wrappers/Kinect1x/KinectCamera.h"
 #include "libcgt/camera_wrappers/OpenNI2/OpenNI2Camera.h"
+#include "libcgt/core/cameras/Intrinsics.h"
 #include "libcgt/core/common/ArrayUtils.h"
 #include "libcgt/core/io/NumberedFilenameBuilder.h"
 #include "libcgt/core/io/PNGIO.h"
@@ -26,6 +27,7 @@
 
 using namespace libcgt::camera_wrappers::kinect1x;
 using namespace libcgt::camera_wrappers::openni2;
+using namespace libcgt::core::cameras;
 using namespace libcgt::core::arrayutils;
 using namespace libcgt::core::cameras;
 using namespace libcgt::core::imageproc;
@@ -97,21 +99,6 @@ int main( int argc, char* argv[] )
     const std::string debugImageDir = os::path::join(
         FLAGS_dir, FLAGS_stream + "_debug" );
 
-    // TODO: read default intrinsics by camera and stream type to get initial
-    // guess.
-    cv::Mat defaultIntrinsics;
-
-    if( FLAGS_stream == "color" )
-    {
-        defaultIntrinsics = toCVMatrix3x3(
-            OpenNI2Camera::defaultColorIntrinsics().asMatrix() );
-    }
-    else
-    {
-        defaultIntrinsics = toCVMatrix3x3(
-            OpenNI2Camera::defaultDepthIntrinsics().asMatrix() );
-    }
-
     std::vector< cv::Mat > images =
         readImages( inputImageDir, inputFilenameRoot );
     if( images.size() == 0 )
@@ -122,6 +109,23 @@ int main( int argc, char* argv[] )
 
     int nImages = static_cast< int >( images.size() );
     cv::Size imageSize( images[ 0 ].cols, images[ 0 ].rows );
+
+    // Read default intrinsics by camera and stream type to get initial guess.
+    cv::Mat defaultIntrinsics;
+    float height = static_cast< float >( images[ 0 ].rows );
+
+    if( FLAGS_stream == "color" )
+    {
+        defaultIntrinsics = toCVMatrix3x3(
+            flipY( OpenNI2Camera::defaultColorIntrinsics(), height )
+            .asMatrix() );
+    }
+    else
+    {
+        defaultIntrinsics = toCVMatrix3x3(
+            flipY( OpenNI2Camera::defaultDepthIntrinsics(), height )
+            .asMatrix() );
+    }
 
     auto featuresPerImage = detectFeatures( images, boardSize );
 
@@ -168,7 +172,11 @@ int main( int argc, char* argv[] )
         static_cast< float >( FLAGS_feature_spacing ) );
 
     std::cout << "Calibrating intrinsics...";
-    const int flags = CV_CALIB_USE_INTRINSIC_GUESS;
+    const int flags =
+        CV_CALIB_USE_INTRINSIC_GUESS | // Use initial guess passed in.
+        CV_CALIB_FIX_ASPECT_RATIO |    // Assume the aspect ratio is fixed and only optimize fy.
+        CV_CALIB_ZERO_TANGENT_DIST |   // Set p1 and p2 to 0 and keep them there.
+        CV_CALIB_FIX_K3;
     cv::Mat cameraMatrix = defaultIntrinsics.clone();
     cv::Mat distCoeffs;
     std::vector< cv::Mat > rvecs;

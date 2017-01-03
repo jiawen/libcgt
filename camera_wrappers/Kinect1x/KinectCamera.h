@@ -137,10 +137,12 @@ public:
 
     // The typical factory-calibrated intrinsics of the Kinect color camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
+    // Note: the y axis points up.
     static Intrinsics colorIntrinsics( const Vector2i& resolution );
 
     // The typical factory-calibrated intrinsics of the Kinect depth camera.
     // Returns {{0, 0}, {0, 0}} for an invalid resolution.
+    // Note: the y axis points up.
     static Intrinsics depthIntrinsics( const Vector2i& resolution );
 
     // Get the transformation mapping: color_coord <-- depth_coord.

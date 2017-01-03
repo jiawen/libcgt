@@ -10,9 +10,7 @@
 #include "libcgt/core/vecmath/Quat4f.h"
 
 using libcgt::core::vecmath::EuclideanTransform;
-using libcgt::core::cameras::frustumToIntrinsics;
 using libcgt::core::cameras::GLFrustum;
-using libcgt::core::cameras::Intrinsics;
 using libcgt::core::vecmath::inverse;
 using libcgt::core::vecmath::transformPoint;
 using libcgt::core::vecmath::transformVector;
@@ -23,11 +21,6 @@ bool Camera::isDirectX() const
 }
 
 const GLFrustum& Camera::frustum() const
-{
-    return m_frustum;
-}
-
-GLFrustum& Camera::frustum()
 {
     return m_frustum;
 }
@@ -196,11 +189,6 @@ Matrix4f Camera::viewProjectionMatrix() const
 Matrix4f Camera::inverseViewProjectionMatrix() const
 {
     return viewProjectionMatrix().inverse();
-}
-
-Intrinsics Camera::intrinsics( const Vector2f& screenSize ) const
-{
-    return frustumToIntrinsics( m_frustum, screenSize );
 }
 
 Vector3f Camera::eyeFromWorld( const Vector3f& world ) const
