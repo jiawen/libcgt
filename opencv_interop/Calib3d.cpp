@@ -108,12 +108,15 @@ cv::Mat_< double > makeCameraMatrix( double focalLength,
 cv::Mat_< double > cameraMatrixCVToGL( const cv::Mat_< double >& cameraMatrix,
     cv::Size imageSize, bool shiftHalfPixel )
 {
-    double shift = shiftHalfPixel ? 0.5f : 0.0f;
+    double shift = shiftHalfPixel ? 0.5 : 0.0;
     cv::Mat output = cameraMatrix.clone();
+    // Shift cx by +0.5: pixel center was integer, now half-integer.
     output.at< double >( 0, 2 ) =
-        cameraMatrix.at< double >( 0, 2 ) + shiftHalfPixel;
+        cameraMatrix.at< double >( 0, 2 ) + shift;
+    // Shift cy by +0.5: pixel center was integer, now half-integer.
+    // Then flip in y.
     output.at< double >( 1, 2 ) = imageSize.height -
-        ( cameraMatrix.at< double >( 1, 2 ) + shiftHalfPixel );
+        ( cameraMatrix.at< double >( 1, 2 ) + shift );
     return output;
 }
 

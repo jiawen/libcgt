@@ -23,7 +23,6 @@ using libcgt::core::math::radiansToDegrees;
 using libcgt::core::math::HALF_PI;
 using libcgt::core::vecmath::EuclideanTransform;
 
-
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
     Vector3f( 0, 0, 0 ), Vector3f( 0, 0, -1 ), Vector3f( 0, 1, 0 ),

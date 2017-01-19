@@ -43,17 +43,14 @@ elseif( WIN32 )
     endif()
 endif()
 
-# TODO: this doesn't work.
-# Set CMAKE_INSTALL_PREFIX on Windows.
-#if( WIN32 )
-#    if( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-#        # CACHE means set cache variable instead of internal.
-#        # PATH means use a directory chooser widget.
-#        # The next argument is a docstring.
-#        # FORCE means set it even if it's already set.
-#        set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory" FORCE)
-#    endif()
-#endif()
+# Set CMAKE_INSTALL_PREFIX.
+if( WIN32 )
+    set( CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE
+        PATH "Installation Directory"
+    )
+else()
+    set( CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation Directory")
+endif()
 
 add_subdirectory( core )
 

@@ -7,12 +7,9 @@ set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 find_package( libcgt REQUIRED )
 
 # gflags
-if( EXISTS "../../third_party/gflags/CMakeLists.txt" )
-    add_subdirectory( "../../third_party/gflags"
-	    "${PROJECT_SOURCE_DIR}/third_party/gflags" )
-else()
-	find_package( gflags REQUIRED )
-endif()
+add_subdirectory( "../../third_party/gflags"
+    "${PROJECT_SOURCE_DIR}/third_party/gflags"
+)
 
 # pystring
 set( HEADERS "../../third_party/pystring/pystring.h" )

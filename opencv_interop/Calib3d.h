@@ -10,7 +10,9 @@
 namespace libcgt { namespace opencv_interop {
 
 // Construct a 3x3 OpenCV-style camera matrix given individual intrinsic
-// parameters. The y-axis points down, pixel centers have integer coordinates.
+// parameters. This function copies the input parameters directly into the
+// matrix. Therefore, for both input and output, the y-axis points down, and
+// pixel centers have integer coordinates.
 cv::Mat_< double > makeCameraMatrix( double focalLength,
     double principalPointX, double principalPointY,
     double skew = 0 );
@@ -25,8 +27,8 @@ cv::Mat_< double > cameraMatrixCVToGL( const cv::Mat_< double >& cameraMatrix,
     cv::Size imageSize, bool shiftHalfPixel = true );
 
 // Directly convert an OpenCV-style camera matrix (intrinsics) into a libcgt
-// intrinsics. Does not flip the y axis or shift the coordinates. For that,
-// first call cameraMatrixCVToGL().
+// Intrinsics struct. Does not flip the y axis or shift the coordinates. For
+// that, first call cameraMatrixCVToGL().
 libcgt::core::cameras::Intrinsics cameraMatrixToIntrinsics(
     const cv::Mat_< double >& cameraMatrix );
 
