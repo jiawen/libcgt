@@ -12,7 +12,7 @@ namespace libcgt { namespace cuda { namespace gl {
 Texture2D::Texture2D( GLTexture2D&& texture, MapFlags mapFlags ) :
     m_texture( std::move( texture ) )
 {
-    cudaError_t err = cudaGraphicsGLRegisterImage( &m_resource,
+    cudaError err = cudaGraphicsGLRegisterImage( &m_resource,
         m_texture.id(), GL_TEXTURE_2D,
         static_cast< unsigned int >( mapFlags ) );
     assert( err == cudaSuccess );
@@ -40,7 +40,7 @@ Texture2D::~Texture2D()
 {
     if( m_resource != nullptr )
     {
-        cudaError_t err = cudaGraphicsUnregisterResource( m_resource );
+        cudaError err = cudaGraphicsUnregisterResource( m_resource );
         assert( err == cudaSuccess );
         m_resource = nullptr;
     }
@@ -61,7 +61,7 @@ Texture2D::MappedResource::~MappedResource()
     cudaGraphicsUnmapResources( 1, &m_resource );
 }
 
-cudaArray* Texture2D::MappedResource::array() const
+cudaArray_t Texture2D::MappedResource::array() const
 {
     return m_array;
 }
@@ -69,7 +69,7 @@ cudaArray* Texture2D::MappedResource::array() const
 Texture2D::MappedResource Texture2D::map( unsigned int arrayIndex,
     unsigned int mipLevel, cudaStream_t stream )
 {
-    cudaError_t err;
+    cudaError err;
     MappedResource mr;
     mr.m_resource = m_resource;
 

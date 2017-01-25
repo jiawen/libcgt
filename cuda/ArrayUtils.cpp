@@ -295,56 +295,56 @@ bool saveTXT( Array3DReadView< int4 > array, const char* filename )
 bool saveTXT( const DeviceArray1D< int3 >& array, const char* filename )
 {
     Array1D< int3 > h_array( array.length() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray2D< float >& array, const char* filename )
 {
     Array2D< float > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return ArrayUtils::saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray2D< float2 >& array, const char* filename )
 {
     Array2D< float2 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
 {
     Array2D< float4 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename )
 {
     Array2D< uchar4 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray3D< ushort2 >& array, const char* filename )
 {
     Array3D< ushort2 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray3D< int2 >& array, const char* filename )
 {
     Array3D< int2 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
 bool saveTXT( const DeviceArray3D< int3 >& array, const char* filename )
 {
     Array3D< int3 > h_array( array.size() );
-    array.copyToHost( h_array );
+    copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 

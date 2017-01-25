@@ -216,10 +216,10 @@ inline Vector2f operator / ( const Vector2i& v, float f )
 inline bool operator == ( const Vector2i& v0, const Vector2i& v1 )
 {
     return
-        (
-            v0.x == v1.x &&
-            v0.y == v1.y
-            );
+    (
+        v0.x == v1.x &&
+        v0.y == v1.y
+    );
 }
 
 inline bool operator != ( const Vector2i& v0, const Vector2i& v1 )

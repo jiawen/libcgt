@@ -25,13 +25,13 @@ public:
     public:
 
         ~MappedResource();
-        cudaArray* array() const;
+        cudaArray_t array() const;
 
     private:
 
         friend class libcgt::cuda::gl::Texture2D;
         cudaGraphicsResource* m_resource;
-        cudaArray* m_array = nullptr;
+        cudaArray_t m_array = nullptr;
     };
 
     Texture2D( GLTexture2D&& texture, MapFlags mapFlags = MapFlags::NONE );

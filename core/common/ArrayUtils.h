@@ -267,11 +267,16 @@ Array1DWriteView< T > reshape( Array2DWriteView< T > src );
 template< typename T >
 Array1DWriteView< T > reshape( Array3DWriteView< T > src );
 
+// Get a readView of the contents of the vector v, starting at element
+// (not byte) offset "offset".
 template< typename T >
-Array1DReadView< T > readViewOf( const std::vector< T >& v );
+Array1DReadView< T > readViewOf( const std::vector< T >& v,
+    size_t offset = 0 );
 
+// Get a writeView of the contents of the vector v, starting at element
+// (not byte) offset "offset".
 template< typename T >
-Array1DWriteView< T > writeViewOf( std::vector< T >& v );
+Array1DWriteView< T > writeViewOf( std::vector< T >& v, size_t offset = 0 );
 
 Array1DReadView< uint8_t > readViewOf( const std::string& s );
 

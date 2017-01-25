@@ -74,6 +74,17 @@ Rect2i translate( const Rect2i& r, const Vector2i& delta )
     return r2;
 }
 
+bool contains( const Rect2i& bigRect, const Rect2i& smallRect )
+{
+    return
+    (
+        smallRect.left() >= bigRect.left() &&
+        smallRect.bottom() >= bigRect.bottom() &&
+        smallRect.right() <= bigRect.right() &&
+        smallRect.top() <= bigRect.top()
+    );
+}
+
 Rect2f flipX( const Rect2f& r, float width )
 {
     assert( r.isStandard() );

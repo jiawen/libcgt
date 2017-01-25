@@ -5,7 +5,10 @@
 #include <thrust/sequence.h>
 
 // libcgt
+#include "libcgt/core/common/ArrayUtils.h"
 #include "libcgt/core/common/ArrayView.h"
+
+using libcgt::core::arrayutils::writeViewOf;
 
 DevicePool::DevicePool() :
 
@@ -83,14 +86,11 @@ void DevicePool::clear()
 
 std::vector< uint8_t > DevicePool::getElement( int index ) const
 {
-    // allocate memory for the output
+    // Allocate memory for the output.
     std::vector< uint8_t > output( elementSizeBytes() );
 
-    // view it as a byte array
-    Array1DWriteView< uint8_t > view( output.data(), elementSizeBytes() );
-
-    // copy it to the host
-    md_backingStore.copyToHost( view, index * elementSizeBytes() );
+    // Copy it to the host.
+    copy( md_backingStore, index * elementSizeBytes(), writeViewOf( output ) );
 
     return output;
 }
@@ -102,6 +102,6 @@ KernelPool DevicePool::kernelPool()
         m_capacity,
         m_elementSizeBytes,
         md_freeList.kernelQueue(),
-        md_backingStore.kernelArray1D()
+        md_backingStore.writeView()
     );
 }

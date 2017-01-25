@@ -1,14 +1,11 @@
 #pragma once
 
 #include <cuda_runtime.h>
-// TODO: replace helper_cuda with our own checks.
-#include <helper_cuda.h>
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
 #include "libcgt/core/common/Array3D.h"
 #include "libcgt/core/vecmath/Vector3i.h"
-
 #include "libcgt/cuda/KernelArray3D.h"
 
 // Basic 3D array interface around CUDA global memory.
@@ -35,50 +32,73 @@ public:
     Vector3i size() const;
     int numElements() const;
 
-    // The number of bytes between rows within any slice.
-    size_t rowPitch() const;
+    // The number of bytes between two elements of any row.
+    // In CUDA, this is always sizeof( T ).
+    size_t elementStrideBytes() const;
 
-    // The number of bytes between slices
-    size_t slicePitch() const;
+    // The number of bytes between rows within any slice.
+    size_t rowStrideBytes() const;
+
+    // The number of bytes between slices.
+    // In CUDA, this is always height() * rowStride().
+    size_t sliceStrideBytes() const;
 
     // Total size of the data in bytes (counting alignment)
     size_t sizeInBytes() const;
 
     // Resizes array. Original data is not preserved.
-    void resize( const Vector3i& size );
+    cudaError resize( const Vector3i& size );
 
     // TODO: implement constructors for strided, pitched, slicePitched
 
-    // fills this array with the 0 byte pattern
-    void clear();
+    // Sets this array to 0 (all bytes to 0).
+    cudaError clear();
 
-    // fills this array with value
+    // Fills this array with the given value.
     void fill( const T& value );
 
-    // Get an element of the array from the device.
-    // WARNING: probably slow as it incurs a call to cudaMemcpy().
-    T get( const Vector3i& xyz ) const;
+    // Get an element of the array from the device, returning the value and
+    // its status in err.
+    // WARNING: probably slow as it incurs a cudaMemcpy.
+    T get( const Vector3i& xyz, cudaError& err ) const;
 
-    // Get an element of the array from the device.
-    // WARNING: probably slow as it incurs a call to cudaMemcpy().
+    // Get an element of the array from the device, without a status code.
+    // WARNING: this operation is probably slow as it incurs a cudaMemcpy.
     T operator [] ( const Vector3i& xyz ) const;
 
-    // Set an element of the array with data from the host.
-    // WARNING: probably slow as it incurs a call to cudaMemcpy().
-    void set( const Vector3i& xyz, const T& value );
+    // Sets an element of the array from the host.
+    // WARNING: this operation is probably slow as it incurs a cudaMemcpy.
+    cudaError set( const Vector3i& xyz, const T& value );
 
-    // TODO(jiawen): move these into utility functions.
-    // Copy from another DeviceArray3D to this
-    bool copyFromDevice( const DeviceArray3D< T >& src );
+    // Get a pointer to the first element.
+    const T* pointer() const;
+    T* pointer();
 
-    // Copy from host array src to this.
-    bool copyFromHost( Array3DReadView< T > src );
+    // Get a pointer a particular element.
+    const T* elementPointer( const Vector3i& xyz ) const;
+    T* elementPointer( const Vector3i& xyz );
 
-    // Copy from this to host array dst.
-    bool copyToHost( Array3DWriteView< T > dst ) const;
+    // Returns a pointer to the beginning of the y-th row of the z-th slice
+    const T* rowPointer( int y, int z ) const;
+    T* rowPointer( int y, int z );
+
+    // Returns a pointer to the beginning of the z-th slice
+    const T* slicePointer( int z ) const;
+    T* slicePointer( int z );
 
     const cudaPitchedPtr pitchedPointer() const;
     cudaPitchedPtr pitchedPointer();
+
+    // Create a cudaExtent describing the size of this array.
+    // Since this is (pitched) linear memory, it describe width in bytes,
+    // but height and depth in elements.
+    cudaExtent extent() const;
+
+    // Returns true if there is no space between adjacent rows,
+    // i.e., if rowStrideBytes() == width() * elementStrideBytes().
+    //
+    // Note that null arrays are not packed.
+    bool rowsArePacked() const;
 
     KernelArray3D< const T > readView() const;
     KernelArray3D< T > writeView() const;
@@ -89,23 +109,38 @@ private:
 
     Vector3i m_size;
 
-    // We allocate memory by first making a cudaExtent, which expects:
-    // width in *bytes*, height and depth in elements.
-    cudaExtent m_extent = {};
-
-    // We then pass m_extent to cudaMalloc3D() to allocate a 3D block of
-    // memory. It returns a cudaPitchedPtr, which only knows about 2D pitch.
+    // cudaMalloc3D() allocates a 3D block of memory and returns a
+    // cudaPitchedPtr describing its layout. cudaPitchedPtr can only describe a
+    // 2D layout: (width, height, rowStride). This implies that there is never
+    // any space between elements, or between slices, *but there may be space
+    // between rows*.
     //
-    // The returned pitch is the width of a row in bytes.
+    // The m_pitchedPointer.pitch is the width of a row in bytes.
     // The returned xsize and ysize echo what was passed in:
     //   xsize is the logical width in bytes (not elements).
     //   ysize is the logical height.
     //   depth is not echoed.
-    // There is never any space between slices.
     cudaPitchedPtr m_pitchedPointer = {};
 
     // Frees the memory if this is not null.
-    void destroy();
+    cudaError destroy();
 };
+
+// Copy data from src to dst.
+// src's elements must be packed, but its rows do not have to be.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( Array3DReadView< T > src, DeviceArray3D< T >& dst );
+
+// Copy data from src to dst.
+// dst's elements must be packed, but its rows do not have to be.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( const DeviceArray3D< T >& src, Array3DWriteView< T > dst );
+
+// Copy data from src to dst.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( const DeviceArray3D< T >& src, DeviceArray3D< T >& dst );
 
 #include "libcgt/cuda/DeviceArray3D.inl"

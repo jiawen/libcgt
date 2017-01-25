@@ -28,8 +28,9 @@ Rect2f bestFitKeepAR( float imageAspectRatio, const Rect2f& window );
 // Fit an image inside a rectangle maximizing the resulting area and centering.
 Rect2f bestFitKeepAR( const Vector2f& imageSize, const Rect2f& window );
 
-// Given a point p and a rectangle r, returns the normalized [0,1] coordinates of
-// p inside r. Output is in [0,1]^2 if p is inside r. This function is valid elsewhere.
+// Given a point p and a rectangle r, returns the normalized [0,1] coordinates
+// of p inside r. Output is in [0,1]^2 if p is inside r.
+// This function is valid elsewhere.
 // Equivalent to ( p - r.origin ) / r.size.
 Vector2f normalizedCoordinatesWithinRectangle( const Vector2f& p,
     const Rect2f& r );
@@ -47,6 +48,11 @@ Rect2f translate( const Rect2f& r, const Vector2f& delta );
 
 // Translate (moves) r: r.origin += delta.
 Rect2i translate( const Rect2i& r, const Vector2i& delta );
+
+// [Assumes both bigRect and smallRect are standard].
+// Returns true if small is completely contained inside big, false otherwise.
+// This is defined with >= and <= such that it returns true if small == big.
+bool contains( const Rect2i& bigRect, const Rect2i& smallRect );
 
 // [Requires a standard rectangle].
 // Returns the exact same rectangle as r, but in a coordinate system

@@ -1,12 +1,9 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <helper_functions.h>
-#include <helper_cuda.h>
 
 #include "libcgt/core/common/Array2D.h"
 #include "libcgt/core/common/ArrayView.h"
-
 #include "libcgt/cuda/KernelArray2D.h"
 
 // Basic 2D array interface around CUDA global memory.
@@ -51,47 +48,28 @@ public:
     // TODO: make this part of DeviceArray2DView once KernelArray2D is renamed.
     cudaResourceDesc resourceDesc() const;
 
-    // resizes the vector
-    // original data is not preserved
-    void resize( const Vector2i& size );
+    // Resize this array, destroying its contents.
+    // size.x and size.y must be positive.
+    cudaError resize( const Vector2i& size );
 
-    // sets the vector to 0 (all bytes to 0)
-    void clear();
+    // Sets this array to 0 (all bytes to 0).
+    cudaError clear();
 
-    // fills this array with value
-    void fill( const T& value );
+    // Fills this array with the given value.
+    cudaError fill( const T& value );
 
-    // get an element of the array from the device
-    // WARNING: probably slow as it incurs a cudaMemcpy
-    T get( const Vector2i& xy ) const;
+    // Get an element of the array from the device, returning the value and
+    // its status in err.
+    // WARNING: probably slow as it incurs a cudaMemcpy.
+    T get( const Vector2i& xy, cudaError& err ) const;
 
-    // get an element of the array from the device
-    // WARNING: probably slow as it incurs a cudaMemcpy
+    // Get an element of the array from the device, without a status code.
+    // WARNING: this operation is probably slow as it incurs a cudaMemcpy.
     T operator [] ( const Vector2i& xy ) const;
 
-    // sets an element of the array from the host
-    // WARNING: probably slow as it incurs a cudaMemcpy
-    void set( const Vector2i& xy, const T& value );
-
-    // copy from another DeviceArray2D to this
-    // this is automatically resized
-    void copyFromDevice( const DeviceArray2D< T >& src );
-
-    // Copy from host array src to this.
-    // This is automatically resized.
-    // TODO: make this a free function that requires sizes to be exact.
-    // No resizing.
-    bool copyFromHost( Array2DReadView< T > src );
-
-    // copy from this to host array dst
-    // dst is automatically resized
-    bool copyToHost( Array2DWriteView< T > dst ) const;
-
-    // copy from cudaArray src to this
-    void copyFromArray( cudaArray* src );
-
-    // copy from this to cudaArray dst
-    void copyToArray( cudaArray* dst ) const;
+    // Sets an element of the array from the host.
+    // WARNING: this operation is probably slow as it incurs a cudaMemcpy.
+    cudaError set( const Vector2i& xy, const T& value );
 
     const T* pointer() const;
     T* pointer();
@@ -102,7 +80,7 @@ public:
     const T* rowPointer( size_t y ) const;
     T* rowPointer( size_t y );
 
-    KernelArray2D< const T > readView();
+    KernelArray2D< const T > readView() const;
     KernelArray2D< T > writeView();
 
     void load( const char* filename );
@@ -115,12 +93,55 @@ private:
 
     uint8_t* m_devicePointer = nullptr;
 
-    // frees the memory if this is not null
-    void destroy();
+    // Frees the device memory held by this array, sets its size and stride
+    // to 0, and its pointer to nullptr.
+    cudaError destroy();
 
     // Size of one row in bytes (not counting alignment)
-    // Used for cudaMemset, which requires both a pitch and the original width
+    // Used for cudaMemset, which requires both row stride and the original
+    // width.
     size_t widthInBytes() const;
 };
+
+// TODO: move these into ArrayUtils along with the rest.
+// TODO: consider using Array2DReadView and Array2dWriteView and
+// cudaMemcpyDefault, which can infer the direction.
+
+// Copy data from src to dst.
+// src's elements must be packed, but its rows do not have to be.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( Array2DReadView< T > src, DeviceArray2D< T >& dst );
+
+// Copy data from src to dst.
+// dst's elements must be packed, but its rows do not have to be.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( const DeviceArray2D< T >& src, Array2DWriteView< T > dst );
+
+// Copy data from src to dst.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( const DeviceArray2D< T >& src, DeviceArray2D< T >& dst );
+
+// Copy data from src to dst.
+// T must be a type supported by CUDA arrays (textures).
+template< typename T >
+cudaError copy( cudaArray_t src, DeviceArray2D< T >& dst );
+
+// Copy data from src, starting at position srcXY, to dst.
+// x points right, y points down.
+// T must be a type supported by CUDA arrays (textures).
+template< typename T >
+cudaError copy( cudaArray_t src, const Vector2i& srcXY,
+    DeviceArray2D< T >& dst );
+
+// Copy data from src to dst.
+// T must be a type supported by CUDA arrays (textures).
+// TODO: src should use be an Array2DReadView to allow cropping.
+// TODO: dst should be a DeviceOpaqueArray2D to allow size validation.
+template< typename T >
+cudaError copy( const DeviceArray2D< T >& src, cudaArray_t dst,
+    const Vector2i& dstXY = Vector2i{ 0 } );
 
 #include "libcgt/cuda/DeviceArray2D.inl"

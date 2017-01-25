@@ -7,7 +7,8 @@ DeviceArray1D< T >::DeviceArray1D( size_t length )
 template< typename T >
 DeviceArray1D< T >::DeviceArray1D( const DeviceArray1D< T >& copy )
 {
-    copyFromDevice( copy );
+    resize( copy.size() );
+    ::copy( copy, *this );
 }
 
 template< typename T >
@@ -26,7 +27,8 @@ DeviceArray1D< T >& DeviceArray1D< T >::operator = (
 {
     if( this != &copy )
     {
-        copyFromDevice( copy );
+        resize( copy.size() );
+        ::copy( copy, *this );
     }
     return *this;
 }
@@ -74,6 +76,18 @@ size_t DeviceArray1D< T >::length() const
 }
 
 template< typename T >
+size_t DeviceArray1D< T >::size() const
+{
+    return m_length;
+}
+
+template< typename T >
+size_t DeviceArray1D< T >::numElements() const
+{
+    return m_length;
+}
+
+template< typename T >
 size_t DeviceArray1D< T >::sizeInBytes() const
 {
     return m_length * sizeof( T );
@@ -91,52 +105,52 @@ cudaResourceDesc DeviceArray1D< T >::resourceDesc() const
 }
 
 template< typename T >
-void DeviceArray1D< T >::resize( size_t length )
+cudaError DeviceArray1D< T >::resize( size_t length )
 {
     if( m_length == length )
     {
-        return;
+        return cudaSuccess;
     }
 
-    destroy();
-
-    m_length = length;
-
-    checkCudaErrors
-    (
-        cudaMalloc
-        (
-            reinterpret_cast< void** >( &m_devicePointer ),
-            length * sizeof( T )
-        )
-    );
+    cudaError err = destroy();
+    if( err == cudaSuccess )
+    {
+        if( length > 0 )
+        {
+            err = cudaMalloc(
+                reinterpret_cast< void** >( &m_devicePointer ),
+                length * sizeof( T ) );
+            if( err == cudaSuccess )
+            {
+                m_length = length;
+            }
+        }
+    }
+    return err;
 }
 
 template< typename T >
-void DeviceArray1D< T >::clear()
+cudaError DeviceArray1D< T >::clear()
 {
-    checkCudaErrors( cudaMemset( m_devicePointer, 0, sizeInBytes() ) );
+    return cudaMemset( m_devicePointer, 0, sizeInBytes() );
 }
 
 template< typename T >
 void DeviceArray1D< T >::fill( const T& value )
 {
-    // TODO(jiawen): use thrust::fill().
-    Array1D< T > h_array( length(), value );
-    copyFromHost( h_array );
+    T* begin = elementPointer( 0 );
+    T* end = elementPointer( length() );
+    thrust::fill( thrust::device, begin, end, value );
 }
 
 template< typename T >
-T DeviceArray1D< T >::get( int x ) const
+T DeviceArray1D< T >::get( int x, cudaError& err ) const
 {
     T output;
-    checkCudaErrors
+    err = cudaMemcpy
     (
-        cudaMemcpy
-        (
-            &output, elementPointer( x ), sizeof( T ),
-            cudaMemcpyDeviceToHost
-        )
+        &output, elementPointer( x ), sizeof( T ),
+        cudaMemcpyDeviceToHost
     );
     return output;
 }
@@ -144,82 +158,15 @@ T DeviceArray1D< T >::get( int x ) const
 template< typename T >
 T DeviceArray1D< T >::operator [] ( int x ) const
 {
-    return get( x );
+    cudaError err;
+    return get( x, err );
 }
 
 template< typename T >
-void DeviceArray1D< T >::set( int x, const T& value )
+cudaError DeviceArray1D< T >::set( int x, const T& value )
 {
-    checkCudaErrors
-    (
-        cudaMemcpy
-        (
-            elementPointer( x ), &value, sizeof( T ),
-            cudaMemcpyHostToDevice
-        )
-    );
-}
-
-template< typename T >
-void DeviceArray1D< T >::copyFromDevice( const DeviceArray1D< T >& src )
-{
-    resize( src.length() );
-    checkCudaErrors
-    (
-        cudaMemcpy
-        (
-            m_devicePointer, src.m_devicePointer,
-            src.sizeInBytes(), cudaMemcpyDeviceToDevice
-        )
-    );
-}
-
-template< typename T >
-bool DeviceArray1D< T >::copyFromHost( Array1DReadView< T > src,
-    int dstOffset )
-{
-    if( dstOffset < 0 )
-    {
-        return false;
-    }
-    if( m_devicePointer == nullptr ||
-        !( src.packed() ) ||
-        length() - dstOffset < src.size() )
-    {
-        return false;
-    }
-
-    const T* srcPointer = src.pointer();
-    T* dstPointer = elementPointer( dstOffset );
-    size_t srcSizeBytes = src.size() * sizeof( T );
-
-    cudaError_t err = cudaMemcpy( dstPointer, srcPointer, srcSizeBytes,
+    return cudaMemcpy( elementPointer( x ), &value, sizeof( T ),
         cudaMemcpyHostToDevice );
-    return( err == cudaSuccess );
-}
-
-template< typename T >
-bool DeviceArray1D< T >::copyToHost( Array1DWriteView< T > dst,
-    int srcOffset ) const
-{
-    if( srcOffset < 0 )
-    {
-        return false;
-    }
-    if( dst.pointer() == nullptr ||
-        !( dst.packed() ) ||
-        length() - srcOffset < dst.size() )
-    {
-        return false;
-    }
-
-    T* dstPointer = dst.pointer();
-    const T* srcPointer = elementPointer( srcOffset );
-    size_t dstSizeBytes = dst.size() * sizeof(T);
-
-    cudaError_t err = cudaMemcpy( dstPointer, srcPointer, dstSizeBytes,
-        cudaMemcpyDeviceToHost );
-    return( err == cudaSuccess );
 }
 
 template< typename T >
@@ -235,31 +182,100 @@ T* DeviceArray1D< T >::pointer()
 }
 
 template< typename T >
-const T* DeviceArray1D< T >::elementPointer( int x ) const
+const T* DeviceArray1D< T >::elementPointer( size_t x ) const
 {
     return reinterpret_cast< const T* >( m_devicePointer + x * sizeof( T ) );
 }
 
 template< typename T >
-T* DeviceArray1D< T >::elementPointer( int x )
+T* DeviceArray1D< T >::elementPointer( size_t x )
 {
     return reinterpret_cast< T* >( m_devicePointer + x * sizeof( T ) );
 }
 
 template< typename T >
-KernelArray1D< T > DeviceArray1D< T >::kernelArray1D()
+KernelArray1D< const T > DeviceArray1D< T >::readView() const
+{
+    return KernelArray1D< const T >( pointer(), m_length );
+}
+
+template< typename T >
+KernelArray1D< T > DeviceArray1D< T >::writeView()
 {
     return KernelArray1D< T >( pointer(), m_length );
 }
 
 template< typename T >
-void DeviceArray1D< T >::destroy()
+cudaError DeviceArray1D< T >::destroy()
 {
+    cudaError err = cudaSuccess;
     if( notNull() )
     {
-        checkCudaErrors( cudaFree( m_devicePointer ) );
+        err = cudaFree( m_devicePointer );
         m_devicePointer = nullptr;
     }
 
     m_length = 0;
+
+    return err;
+}
+
+template< typename T >
+cudaError copy( Array1DReadView< T > src, DeviceArray1D< T >& dst,
+    size_t dstOffset )
+{
+    if( dst.isNull() ||
+        !( src.packed() ) ||
+        dst.length() - dstOffset < src.size() )
+    {
+        return cudaErrorInvalidValue;
+    }
+
+    const T* srcPointer = src.pointer();
+    T* dstPointer = dst.elementPointer( dstOffset );
+    size_t srcSizeBytes = src.size() * sizeof( T );
+
+    return cudaMemcpy( dstPointer, srcPointer, srcSizeBytes,
+        cudaMemcpyHostToDevice );
+}
+
+template< typename T >
+cudaError copy( const DeviceArray1D< T >& src, Array1DWriteView< T > dst )
+{
+    return copy( src, 0, dst );
+}
+
+template< typename T >
+cudaError copy( const DeviceArray1D< T >& src, size_t srcOffset,
+    Array1DWriteView< T > dst )
+{
+    if( src.isNull() ||
+        !( dst.packed() ) ||
+        src.length() - srcOffset < dst.size() )
+    {
+        return cudaErrorInvalidValue;
+    }
+
+    const T* srcPointer = src.elementPointer( srcOffset );
+    T* dstPointer = dst.pointer();
+    size_t dstSizeBytes = dst.size() * sizeof( T );
+
+    return cudaMemcpy( dstPointer, srcPointer, dstSizeBytes,
+        cudaMemcpyDeviceToHost );
+}
+
+// Copy data from src to dst.
+// src and dst must have the same size.
+template< typename T >
+cudaError copy( const DeviceArray1D< T >& src, DeviceArray1D< T >& dst )
+{
+    if( src.isNull() ||
+        !( dst.elementsArePacked() ) ||
+        src.size() != dst.size() )
+    {
+        return cudaErrorInvalidValue;
+    }
+
+    return cudaMemcpy( dst.pointer(), src.pointer(), src.sizeInBytes(),
+        cudaMemcpyDeviceToDevice );
 }

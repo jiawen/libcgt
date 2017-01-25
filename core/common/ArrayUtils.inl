@@ -682,15 +682,15 @@ Array1DWriteView< T > reshape( Array3DWriteView< T > src )
 }
 
 template< typename T >
-Array1DReadView< T > readViewOf( const std::vector< T >& v )
+Array1DReadView< T > readViewOf( const std::vector< T >& v, size_t offset )
 {
-    return Array1DReadView< T >( v.data(), v.size() );
+    return Array1DReadView< T >( v.data() + offset, v.size() - offset );
 }
 
 template< typename T >
-Array1DWriteView< T > writeViewOf( std::vector< T >& v )
+Array1DWriteView< T > writeViewOf( std::vector< T >& v, size_t offset )
 {
-    return Array1DWriteView< T >( v.data(), v.size() );
+    return Array1DWriteView< T >( v.data() + offset, v.size() - offset );
 }
 
 } } } // namespace arrayutils, core, libcgt

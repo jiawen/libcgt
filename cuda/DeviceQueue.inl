@@ -149,7 +149,8 @@ void DeviceQueue< T >::setTailAbsoluteIndex( int tailIndex )
 }
 
 template< typename T >
-void DeviceQueue< T >::setHeadAndTailAbsoluteIndices( int headIndex, int tailIndex )
+void DeviceQueue< T >::setHeadAndTailAbsoluteIndices( int headIndex,
+    int tailIndex )
 {
     setHeadAndTailAbsoluteIndices( make_uint2( headIndex, tailIndex ) );
 }
@@ -169,7 +170,8 @@ DeviceArray1D< T >& DeviceQueue< T >::ringBuffer()
 template< typename T >
 KernelQueue< T > DeviceQueue< T >::kernelQueue()
 {
-    return KernelQueue< T >( md_headTailAbsoluteIndices.devicePointer(), md_ringBuffer.kernelArray1D() );
+    return KernelQueue< T >( md_headTailAbsoluteIndices.devicePointer(),
+        md_ringBuffer.writeView() );
 }
 
 template< typename T >
@@ -213,7 +215,7 @@ void DeviceQueue< T >::copyFromHost( const std::vector< T >& src )
 {
     uint32_t length = static_cast< uint32_t >( src.size() );
     resize( length ); // resize clears the queue
-    md_ringBuffer.copyFromHost( libcgt::core::arrayutils::readViewOf( src ) );
+    copy( libcgt::core::arrayutils::readViewOf( src ), md_ringBuffer );
     md_headTailAbsoluteIndices.set( { 0, length } );
 }
 
@@ -226,54 +228,48 @@ void DeviceQueue< T >::copyToHost( std::vector< T >& dst ) const
     int t = ht.y;
     int count = t - h;
 
-#if 0
-    int elementsLength = md_ringBuffer.length();
-
-    dst.clear();
-    dst.reserve( count );
-    for( int i = 0; i < count; ++i )
-    {
-        int ringBufferIndex = ( h + i ) % elementsLength;
-        dst.push_back( h_elements[ ringBufferIndex ] );
-    }
-#endif
-
     dst.resize( count );
 
     int hIndex = h % capacity();
     int tIndex = t % capacity();
 
-    // no wraparound: single copy
+    // No wraparound: single copy.
     if( hIndex < tIndex )
     {
-        Array1DWriteView< T > dstView( dst.data(), count );
-        md_ringBuffer.copyToHost( dstView, hIndex );
+        copy( md_ringBuffer, hIndex,
+            libcgt::core::arrayutils::writeViewOf( dst ) );
     }
-    // wrap around: two copies
+    // Wrap around: two copies.
     else
     {
-        // suppose there was wraparound
+        // Suppose there was wraparound:
         // count = 3, capacity = 5
         // hIndex = 3, tIndex = 1
         // [ 0 1 2 3 4 ]
         //     t   h
         //
         // nElementsHeadToEnd = 5 - 3 = 2
-        // output:
-        // [ 0 1 2 ]
+        // output starts with 3 uninitialized elements:
+        // [ X Y Z ]
         //
-        // copy md_ringBuffer[ 3, 4 ] to output[ 0, 1 ]
+        // Copy md_ringBuffer[ 3, 4 ] to output[ 0, 1 ]:
+        // output is:
+        // [ 3 4 Z ]
         //
-        // count - nElementsHeadToEnd = 3 - 2 = 1
-        // copy md_ringBuffer[ 0 ] to output[ 2 ]
+        // Then compute:
+        // nElementsRemaining = count - nElementsHeadToEnd = 3 - 2 = 1
+        // Copy md_ringBuffer[ 0 ] to output[ 2 ]
+        // output ends with:
+        // [ 3 4 0 ]
 
-        int nElementsHeadToEnd = capacity() - hIndex;
+        size_t nElementsHeadToEnd = capacity() - hIndex;
         Array1DWriteView< T > dstHeadToEndView( dst.data(),
             nElementsHeadToEnd );
-        md_ringBuffer.copyToHost( dstHeadToEndView, hIndex );
+        copy( md_ringBuffer, hIndex, dstHeadToEndView );
 
+        size_t nElementsRemaining = count - nElementsHeadToEnd;
         Array1DWriteView< T > dstZeroToTailView(
-            dst.data() + nElementsHeadToEnd, count - nElementsHeadToEnd );
-        md_ringBuffer.copyToHost( dstZeroToTailView, 0 );
+            dst.data() + nElementsHeadToEnd, nElementsRemaining );
+        copy( md_ringBuffer, 0, dstZeroToTailView );
     }
 }

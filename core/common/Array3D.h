@@ -96,8 +96,8 @@ public:
     const T* pointer() const;
     T* pointer();
 
-    const T* elementPointer( const Vector3i& xy ) const;
-    T* elementPointer( const Vector3i& xy );
+    const T* elementPointer( const Vector3i& xyz ) const;
+    T* elementPointer( const Vector3i& xyz );
 
     // Returns a pointer to the beginning of the y-th row of the z-th slice
     const T* rowPointer( int y, int z ) const;

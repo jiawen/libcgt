@@ -1,9 +1,12 @@
 #include "libcgt/cuda/HostPool.h"
 
 // STL
-#include <numeric> // for iota
+#include <numeric> // for std::iota
 
 #include "libcgt/core/common/ArrayUtils.h"
+
+using libcgt::core::arrayutils::readViewOf;
+using libcgt::core::arrayutils::writeViewOf;
 
 HostPool::HostPool() :
 
@@ -85,8 +88,7 @@ void HostPool::copyFromDevice( const DevicePool& pool )
 
     // TODO(jiawen): use Array1D.
     printf( "Copying backing store...\n" );
-    pool.md_backingStore.copyToHost(
-        libcgt::core::arrayutils::writeViewOf( m_backingStore ) );
+    copy( pool.md_backingStore, writeViewOf( m_backingStore ) );
 }
 
 void HostPool::copyToDevice( DevicePool& pool )
@@ -94,6 +96,5 @@ void HostPool::copyToDevice( DevicePool& pool )
     pool.resize( m_capacity, m_elementSizeBytes );
 
     pool.md_freeList.copyFromHost( m_freeList );
-    pool.md_backingStore.copyFromHost(
-        libcgt::core::arrayutils::writeViewOf( m_backingStore ) );
+    copy( readViewOf( m_backingStore ), pool.md_backingStore );
 }
