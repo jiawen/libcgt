@@ -65,9 +65,11 @@ public:
     Type type() const;
 
     void setUniformHandle( GLint uniformLocation, GLuint64 h );
+
     // handles must be packed.
     void setUniformHandleArray( GLint uniformLocation,
         Array1DReadView< GLuint64 > handles );
+
     void setUniformInt( GLint uniformLocation, int x );
     void setUniformFloat( GLint uniformLocation, float x );
     void setUniformMatrix4f( GLint uniformLocation, const Matrix4f& m );

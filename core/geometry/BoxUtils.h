@@ -104,6 +104,14 @@ Array1D< Vector3f > cornerNormalsDiagonal( const Box3f& b );
 
 // Returns the indices in corners() of a solid box with triangle list topology.
 // 6 faces * 2 triangles / face * 3 vertices / triangle = 36 indices.
+//
+// Triangle list produces faces in the order: -x, +x, -y, +y, -z, +z,
+// Corresponding to "left, right, bottom, top, back, front"
+// (recall that z points out of the screen).
+//
+// Each face, when looked straight on, is composed of the "bottom left"
+// triangle, then the "top right" triangle. Both faces have normals pointing
+// outward.
 Array1D< int > solidBoxTriangleListIndices();
 
 // Returns the indices in corners() of a solid box with line list topology.

@@ -68,6 +68,8 @@ int main( int argc, char* argv[] )
     else
     {
         printf( "Writing outputs to: %s\n", FLAGS_output_dir.c_str() );
+        printf( "Writing doesn't start until after %d seconds\n",
+            FLAGS_start_after );
 
         // Try to create destination directory if it doesn't exist.
         if( FLAGS_mode == "color" || FLAGS_mode == "infrared" )

@@ -306,18 +306,28 @@ void PictureTakerViewfinder::maybeSaveShot()
 {
     if( !m_isDryRun && m_saving )
     {
+        std::string filename;
         if( m_isColor )
         {
-            m_image.save( QString::fromStdString(
-                m_colorNFB.filenameForNumber( m_nextColorImageIndex ) ) );
+            filename = m_colorNFB.filenameForNumber( m_nextColorImageIndex );
             ++m_nextColorImageIndex;
         }
         else
         {
-            m_image.save( QString::fromStdString(
-                m_infraredNFB.filenameForNumber(
-                    m_nextInfraredImageIndex ) ) );
+            filename = m_infraredNFB.filenameForNumber(
+                m_nextInfraredImageIndex );
             ++m_nextInfraredImageIndex;
+        }
+
+        printf( "Saving: %s...", filename.c_str() );
+        bool succeeded = m_image.save( QString::fromStdString( filename ) );
+        if( succeeded )
+        {
+            printf( "ok.\n" );
+        }
+        else
+        {
+            printf( "FAILED.\n" );
         }
     }
 }

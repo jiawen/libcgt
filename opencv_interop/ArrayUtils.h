@@ -8,10 +8,20 @@
 
 namespace libcgt { namespace opencv_interop {
 
-// Interpret "view" as a 3-channel const cv::Mat.
+// Interpret "view" as a const cv::Mat.
+// Returns an empty cv::Mat if view's elements are not packed.
+const cv::Mat array2DViewAsCvMat( Array2DReadView< uint8_t > view );
+
+// Interpret "view" as a cv::Mat.
+// Returns an empty cv::Mat if view's elements are not packed.
+cv::Mat array2DViewAsCvMat( Array2DWriteView< uint8_t > view );
+
+// Interpret "view" as const cv::Mat.
+// Returns an empty cv::Mat if view's elements are not packed.
 const cv::Mat array2DViewAsCvMat( Array2DReadView< uint8x3 > view );
 
-// Interpret "view" as a 3-channel cv::Mat.
+// Interpret "view" as cv::Mat.
+// Returns an empty cv::Mat if view's elements are not packed.
 cv::Mat array2DViewAsCvMat( Array2DWriteView< uint8x3 > view );
 
 // Interpret "a" as an Array2DWriteView over the given type S.

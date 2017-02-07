@@ -89,30 +89,58 @@ void GLTexture::unbind( GLuint textureUnitIndex ) const
     glBindTextureUnit( textureUnitIndex, 0 );
 }
 
-void GLTexture::clear( const uint8x4& clearValue, int level )
+void GLTexture::clear( uint8_t clearValue, GLImageFormat srcFormat, int level )
 {
-    glClearTexImage( id(), level, GL_RGBA, GL_UNSIGNED_BYTE, &clearValue );
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_UNSIGNED_BYTE, &clearValue );
 }
 
-void GLTexture::clear( float clearValue, GLImageFormat format, int level )
+void GLTexture::clear( const uint8x2& clearValue,
+    GLImageFormat srcFormat, int level )
 {
-    glClearTexImage( id(), level, glImageFormat( format ), GL_FLOAT,
-                    &clearValue );
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_UNSIGNED_BYTE, &clearValue );
 }
 
-void GLTexture::clear( const Vector2f& clearValue, int level )
+void GLTexture::clear( const uint8x3& clearValue,
+    GLImageFormat srcFormat, int level )
 {
-    glClearTexImage( id(), level, GL_RG, GL_FLOAT, &clearValue );
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_UNSIGNED_BYTE, &clearValue );
 }
 
-void GLTexture::clear( const Vector3f& clearValue, int level )
+void GLTexture::clear( const uint8x4& clearValue,
+    GLImageFormat srcFormat, int level )
 {
-    glClearTexImage( id(), level, GL_RGB, GL_FLOAT, &clearValue );
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_UNSIGNED_BYTE, &clearValue );
 }
 
-void GLTexture::clear( const Vector4f& clearValue, int level )
+void GLTexture::clear( float clearValue, GLImageFormat srcFormat, int level )
 {
-    glClearTexImage( id(), level, GL_RGBA, GL_FLOAT, &clearValue );
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_FLOAT, &clearValue );
+}
+
+void GLTexture::clear( const Vector2f& clearValue,
+    GLImageFormat srcFormat, int level )
+{
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_FLOAT, &clearValue );
+}
+
+void GLTexture::clear( const Vector3f& clearValue,
+    GLImageFormat srcFormat, int level )
+{
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_FLOAT, &clearValue );
+}
+
+void GLTexture::clear( const Vector4f& clearValue,
+    GLImageFormat srcFormat, int level )
+{
+    glClearTexImage( id(), level, glImageFormat( srcFormat ),
+        GL_FLOAT, &clearValue );
 }
 
 GLuint GLTexture::id() const
@@ -145,6 +173,13 @@ GLsizei GLTexture::numMipMapLevels() const
     return m_nMipMapLevels;
 }
 
+void GLTexture::setSwizzleRGB( GLTexture::SwizzleTarget rgbTarget )
+{
+    setSwizzle( GLTexture::SwizzleSource::RED, rgbTarget );
+    setSwizzle( GLTexture::SwizzleSource::GREEN, rgbTarget );
+    setSwizzle( GLTexture::SwizzleSource::BLUE, rgbTarget );
+}
+
 void GLTexture::setSwizzle( GLTexture::SwizzleSource source,
     GLTexture::SwizzleTarget target )
 {
@@ -152,10 +187,30 @@ void GLTexture::setSwizzle( GLTexture::SwizzleSource source,
         static_cast< GLint >( target ) );
 }
 
+void GLTexture::setSwizzleRGBA( GLTexture::SwizzleTarget target )
+{
+    GLTexture::SwizzleTarget glTargets[ 4 ] =
+        { target, target, target, target };
+    setSwizzleRGBA( glTargets );
+}
+
+void GLTexture::setSwizzleRGBAlpha( GLTexture::SwizzleTarget rgbTarget,
+    GLTexture::SwizzleTarget alphaTarget )
+{
+    GLTexture::SwizzleTarget glTargets[ 4 ] =
+        { rgbTarget, rgbTarget, rgbTarget, alphaTarget };
+    setSwizzleRGBA( glTargets );
+}
+
 void GLTexture::setSwizzleRGBA( GLTexture::SwizzleTarget targets[ 4 ] )
 {
     GLint* glTargets = reinterpret_cast< GLint* >( targets );
     glTextureParameteriv( id(), GL_TEXTURE_SWIZZLE_RGBA, glTargets );
+}
+
+void GLTexture::setSwizzleAlpha( SwizzleTarget target )
+{
+    setSwizzle( GLTexture::SwizzleSource::ALPHA, target );
 }
 
 void GLTexture::generateMipMaps()

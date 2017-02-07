@@ -36,7 +36,7 @@ PlanarVertexBufferCalculator WireframeBox::calculator()
     const int NUM_VERTICES_PER_EDGE = 2;
     const int NUM_VERTICES = NUM_EDGES * NUM_VERTICES_PER_EDGE;
     PlanarVertexBufferCalculator calculator( NUM_VERTICES );
-    calculator.addAttribute( 4, sizeof( float ) );
-    calculator.addAttribute( 4, sizeof( float ) );
+    calculator.addAttribute< Vector4f >();
+    calculator.addAttribute< Vector4f >();
     return calculator;
 }

@@ -9,20 +9,43 @@ GLDrawable::GLDrawable( GLPrimitiveType primitiveType,
 {
     for( int i = 0; i < calculator.numAttributes(); ++i )
     {
-        m_vao.enableAttribute( i );
-        // HACK: type should be stored
-        auto type = GLVertexAttributeType::FLOAT;
-        m_vao.setAttributeFormat
-            (
-            i,
-            calculator.numComponentsOf( i ),
-            type,
-            false, /* normalized */
-            0 /* relativeOffset */
-            );
+        const PlanarVertexBufferCalculator::AttributeInfo& info =
+            calculator.getAttributeInfo( i );
 
-        m_vao.attachBuffer( i, &m_vbo, calculator.offsetOf( i ),
-            calculator.vertexSizeOf( i ) );
+        m_vao.enableAttribute( i );
+        if( info.type == GLVertexAttributeType::DOUBLE )
+        {
+            m_vao.setDoubleAttributeFormat
+            (
+                i,
+                info.nComponents,
+                0 /* relativeOffset. TODO: support this */
+            );
+        }
+        else if( info.isInteger )
+        {
+            m_vao.setIntegerAttributeFormat
+            (
+                i,
+                info.nComponents,
+                info.type,
+                0 /* relativeOffset. TODO: support this */
+            );
+        }
+        else
+        {
+            m_vao.setAttributeFormat
+            (
+                i,
+                info.nComponents,
+                info.type,
+                info.normalized,
+                0 /* relativeOffset. TODO: support this */
+            );
+        }
+
+        m_vao.attachBuffer( i, &m_vbo, info.offset,
+            static_cast< GLsizei >( info.vertexStride ) );
     }
 }
 

@@ -91,7 +91,7 @@ void GLVertexArrayObject::setAttributeFormat( GLuint attributeIndex,
     );
 }
 
-void GLVertexArrayObject::setAttributeIntegerFormat( GLuint attributeIndex,
+void GLVertexArrayObject::setIntegerAttributeFormat( GLuint attributeIndex,
     GLint nComponents, GLVertexAttributeType type, GLuint relativeOffsetBytes )
 {
     glVertexArrayAttribIFormat( m_id, attributeIndex, nComponents,
@@ -99,7 +99,7 @@ void GLVertexArrayObject::setAttributeIntegerFormat( GLuint attributeIndex,
     );
 }
 
-void GLVertexArrayObject::setAttributeDoubleFormat( GLuint attributeIndex,
+void GLVertexArrayObject::setDoubleAttributeFormat( GLuint attributeIndex,
     GLint nComponents, GLuint relativeOffsetBytes )
 {
     glVertexArrayAttribLFormat( m_id, attributeIndex, nComponents,

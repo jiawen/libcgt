@@ -78,12 +78,15 @@ public:
     void mapAttributeIndexToBindingIndex( GLuint attributeIndex,
         GLuint bindingIndex );
 
-    // Set the format of an attribute.
+    // Set the format of an attribute that will be interpreted as a float.
     // nComponents: the number of components per elements (1, 2, 3, or 4).
     // type: the type of data: byte, int, float, etc.
     // normalized: whether or not to normalize fixed point data to float.
-    //   If true and unsigned, 255 --> 1.0f, false: 255 --> 255.0f.
-    //   Signed ranges map [-128, 127] --> [-1.0f, 1.0f].
+    //   If true:
+    //     Unsigned is mapped to [0, 1].
+    //     Signed is mapped to [-1, 1].
+    //   If false:
+    //     value = static_cast< float >( src )
     // relativeOffsetBytes: the number of bytes from the beginning of
     //   each vertex to look for this attribute. This is useful for interleaved
     //   formats.
@@ -97,7 +100,7 @@ public:
     // relativeOffsetBytes: the number of bytes from the beginning of
     //   each vertex to look for this attribute. This is useful for interleaved
     //   formats.
-    void setAttributeIntegerFormat( GLuint attributeIndex, GLint nComponents,
+    void setIntegerAttributeFormat( GLuint attributeIndex, GLint nComponents,
         GLVertexAttributeType type, GLuint relativeOffsetBytes = 0 );
 
     // Set the format of an attribute.
@@ -106,7 +109,7 @@ public:
     // relativeOffsetBytes: the number of bytes from the beginning of
     //   each vertex to look for this attribute. This is useful for interleaved
     //   formats.
-    void setAttributeDoubleFormat( GLuint attributeIndex, GLint nComponents,
+    void setDoubleAttributeFormat( GLuint attributeIndex, GLint nComponents,
         GLuint relativeOffsetBytes = 0 );
 
     // Attach a buffer to a binding index to be used as a vertex buffer.
@@ -120,6 +123,7 @@ public:
     //   it automatically.
     void attachBuffer( GLuint bindingIndex, GLBufferObject* pBuffer,
         GLintptr offset, GLsizei stride );
+
     // Attach count vertex buffers simultaneously. The three Array1DReadViews
     // must have the same size.
     void attachBuffers( GLuint firstBindingIndex,
@@ -137,8 +141,10 @@ public:
     // Corresponds to glGetVertexArrayiv();
     GLint getAttachedIndexBufferId();
 
-    // Detaches any buffer previously attached to the binding index.
+    // Detach any buffer previously attached to the binding index.
     void detachBuffer( GLuint bindingIndex );
+
+    // Detach any buffers attached to the range of binding indices.
     void detachBuffers( GLuint firstBindingIndex, int count );
 
 private:

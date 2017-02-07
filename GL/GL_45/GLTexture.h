@@ -51,7 +51,6 @@ public:
         GREEN = GL_TEXTURE_SWIZZLE_G,
         BLUE = GL_TEXTURE_SWIZZLE_B,
         ALPHA = GL_TEXTURE_SWIZZLE_A
-        // Set RGBA using setSwizzleRGBA().
     };
 
     enum class SwizzleTarget : GLint
@@ -100,11 +99,22 @@ public:
     void unbind( GLuint textureUnitIndex = 0 ) const;
 
     // TODO: other source formats and types.
-    void clear( const uint8x4& clearValue, int level );
-    void clear( float clearValue, GLImageFormat srcFormat, int level );
-    void clear( const Vector2f& clearValue, int level );
-    void clear( const Vector3f& clearValue, int level );
-    void clear( const Vector4f& clearValue, int level );
+    void clear( uint8_t clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RED, int level = 0 );
+    void clear( const uint8x2& clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RG, int level = 0 );
+    void clear( const uint8x3& clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RGB, int level = 0 );
+    void clear( const uint8x4& clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RGBA, int level = 0 );
+    void clear( float clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RED, int level = 0 );
+    void clear( const Vector2f& clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RG, int level = 0 );
+    void clear( const Vector3f& clearValue,
+       GLImageFormat srcFormat = GLImageFormat::RGB, int level = 0 );
+    void clear( const Vector4f& clearValue,
+        GLImageFormat srcFormat = GLImageFormat::RGBA, int level = 0 );
 
     // TODO(multi_bind):
     // glBindTextures( GLuint firstTextureUnitIndex, int count, GLuint* textureIds )
@@ -120,13 +130,32 @@ public:
 
     // TODO(jiawen): get swizzle?
 
-    // Set the texture swizzle, such that a shader or fixed-function fragment
-    // operation reading from source produces the target instead.
+    // Set the texture swizzle for one channel, such that a shader or
+    // fixed-function fragment operation *reading* from source channel produces
+    // the target channel instead.
     void setSwizzle( SwizzleSource source, SwizzleTarget target );
+
+    // Sets RGB source channels simultaneously to the same target.
+    void setSwizzleRGB( SwizzleTarget rgbTarget );
+
+    // Sets all 4 source channels simultaneously to the same value.
+    // This is useful for broadcasting (RED --> RGBA).
+    void setSwizzleRGBA( SwizzleTarget targets );
+
+    // Sets RGB source channels simultaneously to the same target, and alpha
+    // to a separate target.
+    // This is useful for broadcasting (RED --> RGB, ALPHA = separate).
+    void setSwizzleRGBAlpha( SwizzleTarget rgbTarget,
+        SwizzleTarget alphaTarget = SwizzleTarget::ONE );
 
     // Sets all 4 source channels simultaneously.
     void setSwizzleRGBA( SwizzleTarget targets[ 4 ] );
 
+    // Set the swizzle target for just the alpha channel.
+    void setSwizzleAlpha( SwizzleTarget target );
+
+    // Replaces all levels beyond the finest resolution one with lower
+    // resolution images.
     void generateMipMaps();
 
 protected:

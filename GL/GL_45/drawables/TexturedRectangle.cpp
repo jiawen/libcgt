@@ -58,7 +58,7 @@ PlanarVertexBufferCalculator TexturedRectangle::calculator()
 {
     const int NUM_VERTICES = 4;
     PlanarVertexBufferCalculator calculator( NUM_VERTICES );
-    calculator.addAttribute( 4, sizeof( float ) );
-    calculator.addAttribute( 2, sizeof( float ) );
+    calculator.addAttribute< Vector4f >();
+    calculator.addAttribute< Vector2f >();
     return calculator;
 }

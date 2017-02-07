@@ -42,7 +42,7 @@ __host__
 float4x4 make_float4x4( const Matrix4f& m );
 
 __host__
-Matrix3f from_float4x4( const float3x3& m );
+Matrix3f from_float3x3( const float3x3& m );
 
 __host__
 Matrix4f from_float4x4( const float4x4& m );

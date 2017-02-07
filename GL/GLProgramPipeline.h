@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #ifdef GL_PLATFORM_ES_31
@@ -19,16 +20,15 @@ public:
     enum class Stage : GLbitfield
     {
         NO_STAGE = 0,
-        ALL_STAGES = GL_ALL_SHADER_BITS,
 
-        COMPUTE_SHADER_BIT = GL_COMPUTE_SHADER_BIT,
-        FRAGMENT_SHADER_BIT = GL_FRAGMENT_SHADER_BIT,
+        COMPUTE_SHADER = GL_COMPUTE_SHADER_BIT,
+        FRAGMENT_SHADER = GL_FRAGMENT_SHADER_BIT,
 #ifdef GL_PLATFORM_45
-        GEOMETRY_SHADER_BIT = GL_GEOMETRY_SHADER_BIT,
-        TESS_CONTROL_SHADER_BIT = GL_TESS_CONTROL_SHADER_BIT,
-        TESS_EVALUATION_SHADER_BIT = GL_TESS_EVALUATION_SHADER_BIT,
+        GEOMETRY_SHADER = GL_GEOMETRY_SHADER_BIT,
+        TESS_CONTROL_SHADER = GL_TESS_CONTROL_SHADER_BIT,
+        TESS_EVALUATION_SHADER = GL_TESS_EVALUATION_SHADER_BIT,
 #endif
-        VERTEX_SHADER_BIT = GL_VERTEX_SHADER_BIT
+        VERTEX_SHADER = GL_VERTEX_SHADER
     };
 
     GLProgramPipeline();
@@ -42,21 +42,18 @@ public:
     GLuint id() const;
 
     // Attach the program to its corresponding stage.
-    void attachProgram( const GLSeparableProgram& program );
+    void attachProgram( std::shared_ptr< GLSeparableProgram > program );
 
-    // Attach a program to the given stage.
-    //
-    // Note that although Stage is technically a bitfield and OpenGL lets you
-    // attach multiple stages of a separable program to many pipeline stages at
-    // once, it is not really necessary. GLSeparablePrograms are constructed
-    // with a particular shader type and are not linked from traditional shader
-    // objects. They contain at most one stage.
-    //
-    // Also note that using ALL_STAGES here is not what you expect, in that
-    // it sets all stages to what is available in the program. If the program
-    // does not have a vertex shader, it will set the pipeline's vertex shader
-    // to null (rather than leaving it alone)!
-    void attachProgram( const GLSeparableProgram& program, Stage stage );
+    // Retrieve the program attached to the given stage.
+    std::shared_ptr< GLSeparableProgram > programAttachedAt( Stage stage );
+
+    // Convenience function. Equivalent to
+    // programAttachedAt( Stage::VERTEX_SHADER );
+    std::shared_ptr< GLSeparableProgram > vertexProgram();
+
+    // Convenience function. Equivalent to
+    // programAttachedAt( Stage::FRAGMENT_SHADER );
+    std::shared_ptr< GLSeparableProgram > fragmentProgram();
 
     // Detach any program that was attached to the given stage.
     void detachProgram( Stage stage );
@@ -76,6 +73,14 @@ public:
 private:
 
     GLuint m_id;
+
+    // TODO: this is somewhat brittle but I don't know of a better solution.
+#ifdef GL_PLATFORM_45
+    static constexpr int NUM_STAGES = 6;
+#else
+    static constexpr int NUM_STAGES = 3;
+#endif
+    std::shared_ptr< GLSeparableProgram > m_attachedPrograms[ NUM_STAGES ];
 
     void destroy();
 };

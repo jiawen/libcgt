@@ -6,7 +6,7 @@
 #include "libcgt/core/vecmath/Matrix4f.h"
 
 // TODO(jiawen): add namespaces and rename this
-// libcgt::GL::drawable::TriangleMesh?
+// libcgt::GL::drawable::PositionNormalTriangleMesh?
 
 // Simple mesh rendering from position and normals only, no texture mapping.
 // TODO(jiawen): index buffering

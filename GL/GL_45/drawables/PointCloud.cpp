@@ -13,6 +13,6 @@ PlanarVertexBufferCalculator PointCloud::calculator( int nComponents,
     int nPoints )
 {
     PlanarVertexBufferCalculator calculator( nPoints );
-    calculator.addAttribute( nComponents, sizeof( float ) );
+    calculator.addAttribute( GLVertexAttributeType::FLOAT, nComponents );
     return calculator;
 }

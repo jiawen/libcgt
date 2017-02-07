@@ -41,7 +41,7 @@ PlanarVertexBufferCalculator TriangleMeshDrawable::calculator(
 {
     const int nVertices = 3 * mesh.numFaces();
     PlanarVertexBufferCalculator calculator( nVertices );
-    calculator.addAttribute( 3, sizeof( float ) );
-    calculator.addAttribute( 3, sizeof( float ) );
+    calculator.addAttribute< Vector3f >();
+    calculator.addAttribute< Vector3f >();
     return calculator;
 }

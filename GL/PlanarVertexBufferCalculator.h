@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "libcgt/GL/GLVertexAttributeType.h"
+
 // TODO(jiawen):
 // Planar vertex buffers are simple:
 // - There are always exactly n vertices.
@@ -21,82 +23,101 @@ class PlanarVertexBufferCalculator
 {
 public:
 
+    struct AttributeInfo
+    {
+        // If true, fixed-point values passed to the shader directly as
+        // integers without conversion to float. Otherwise, they are converted
+        // to float using either normalization or cast (determined by the
+        // "normalized" field).
+        //
+        // isValidIntegerType( type ) must be true.
+        bool isInteger;
+
+        // Data type.
+        GLVertexAttributeType type;
+
+        // The number of components (1, 2, 3, or 4).
+        int nComponents;
+
+        // If type is not HALF_FLOAT, FLOAT, or DOUBLE, and isInteger is false,
+        // determines whether fixed-point data is normalized
+        // (unsigned to [0, 1], signed to [-1, 1]).
+        bool normalized;
+
+        // The offset from the beginning of the vertex buffer where data
+        // for this attribute starts.
+        size_t offset;
+
+        // The number of bytes between vertices for this attribute.
+        // Equal to nComponents * componentSize.
+        // TODO: support relativeOffset, which is the number of bytes from the
+        // beginning of *each vertex* where the data is sourced.
+        // I.e., the data is stored WXYZ and you only want XYZ. You can set
+        // relativeOffset to 4 bytes (1 float) and vertex stride to 16 bytes.
+        size_t vertexStride;
+
+        // The total number of bytes occupied by all the data for this
+        // attribute.
+        size_t arraySize;
+    };
+
     PlanarVertexBufferCalculator( int nVertices );
 
     // The immutable number of vertices for this calculator.
     int numVertices() const;
 
-    // The number of attributes so far.
-    int numAttributes() const;
+    // The number of attributes added so far.
+    size_t numAttributes() const;
 
     // The total size in bytes for the number of attributes so far.
     size_t totalSizeBytes() const;
 
-    // TODO(jiawen): to support arbitrary formats, add a struct instead:
-    // nComponents, GLVertexAttributeType type, bool normalized.
-    // relativeOffset (bytes from beginning of a vertex where data starts) is 0
-    // since this is planar.
-    // TODO: can optionally add a string name and
-    // a function to go between between index and name.
-
-    // Add a generic vertex attribute, where for each vertex, it consists of
-    // "nComponents" components of "componentSizeBytes" each.
+    // Add a generic vertex attribute.
+    // Each vertex consists of a specific type (an enum), the number of
+    // components (1, 2, 3 or 4), and whether it should be normalized.
     //
-    // Returns the attribute index.
-    int addAttribute( int nComponents, int componentSizeBytes );
+    // normalized:
+    // - Ignored if isInteger is true or isValidIntegerType( type ) is false.
+    // - If true, then unsigned fixed point types are normalized to [0, 1], and
+    //   signed types are normalized to [-1, 1].
+    // - If false, then fixed point values are directly cast to float.
+    //
+    // isInteger:
+    // - Invalid for any
+    //
+    // If the parameter combination is valid, returns the attribute index.
+    // Otherwise, returns -1.
+    //
+    // TODO: add vertexStride
+    // TODO: implement isValidIntegerComponent
+    int addAttribute( GLVertexAttributeType type, int nComponents,
+        bool normalized = true, bool isInteger = false );
 
-    // The number of components for the i-th attribute.
-    int numComponentsOf( int attributeIndex ) const;
+    // Add a generic vertex attribute for common types.
+    //
+    // Supported types:
+    // uint8_t, uint8x2, uint8x3, uint8x4,
+    // uint16_t, uint16x2, uint16x3, uint16x4,
+    // float, Vector2f, Vector3f, Vector4f
+    // double
+    //
+    // TODO: Vector< d, type >
+    // TODO: signed types
+    // TODO: 32-bit types
+    // TODO: VertexAttributeType< T > and numComponents< T >
+    template< typename T >
+    int addAttribute( bool normalized = true );
 
-    // The number of bytes for each component of the i-th attribute.
-    int componentSizeOf( int attributeIndex ) const;
+    // TODO:
+    // template< typename T >
+    // int addIntegerAttribute();
 
-    // Number of bytes between vertices for the i-th attribute.
-    // Equal to numComponentsOf( idx ) * componentSizeOf( idx ).
-    int vertexSizeOf( int attributeIndex ) const;
-
-    // The byte offset from the beginning of the vertex buffer where data for
-    // the i-th attribute starts.
-    int offsetOf( int attributeIndex ) const;
-
-    // The number of bytes occupied by the data for the i-th attribute.
-    int arraySizeOf( int attributeIndex ) const;
+    // Get the info for the index-th attribute added.
+    const AttributeInfo& getAttributeInfo( int index ) const;
 
 private:
 
-    // TODO:
-    // struct AttributeInfo
-    //   string name
-    //   int nComponents;
-    //   int componentSize;
-    //   int offset
-    //   int arraySize;
-    // next attribute index is just std::vector<AttributeInfo> size
-    // total size is just calculated
-
     const int m_nVertices;
 
-    // The number of components for the i-th attribute.
-    // I.e., 1, 2, 3, or 4.
-    std::vector< int > m_nComponents;
-
-    // The size of each component for the i-th attribute
-    // (e.g., sizeof( float ) ). If an attribute if "float3", this stores
-    // sizeof( float ), not 3 * sizeof( float ).
-    std::vector< int > m_componentSizes;
-
-    // Since the data is planar, all elements of one attribute occupy one
-    // contiguous array. Store its offsets from the beginning of the vertex
-    // buffer and its size.
-    // TODO(jiawen): allow an initial byte offset.
-
-    // The byte offset from the beginning of the vertex buffer where data for
-    // the i-th attribute starts.
-    std::vector< int > m_offsets;
-
-    // The number of bytes occupied by the data for the i-th attribute.
-    std::vector< int > m_arraySizes;
-
-    int m_nextAttributeIndex = 0;
-    int m_totalSize = 0;
+    std::vector< AttributeInfo > m_attributeInfo;
 };

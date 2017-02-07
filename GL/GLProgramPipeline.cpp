@@ -2,6 +2,87 @@
 
 #include "GLSeparableProgram.h"
 
+namespace
+{
+
+GLProgramPipeline::Stage shaderStageForType( GLSeparableProgram::Type type )
+{
+    switch( type )
+    {
+    case GLSeparableProgram::Type::COMPUTE_SHADER:
+        return GLProgramPipeline::Stage::COMPUTE_SHADER;
+    case GLSeparableProgram::Type::FRAGMENT_SHADER:
+        return GLProgramPipeline::Stage::FRAGMENT_SHADER;
+#ifdef GL_PLATFORM_45
+    case GLSeparableProgram::Type::GEOMETRY_SHADER:
+        return GLProgramPipeline::Stage::GEOMETRY_SHADER;
+    case GLSeparableProgram::Type::TESS_CONTROL_SHADER:
+        return GLProgramPipeline::Stage::TESS_CONTROL_SHADER;
+    case GLSeparableProgram::Type::TESS_EVALUATION_SHADER:
+        return GLProgramPipeline::Stage::TESS_EVALUATION_SHADER;
+#endif
+    case GLSeparableProgram::Type::VERTEX_SHADER:
+        return GLProgramPipeline::Stage::VERTEX_SHADER;
+    default:
+        return GLProgramPipeline::Stage::NO_STAGE;
+    }
+}
+
+GLbitfield glShaderStage( GLProgramPipeline::Stage stage )
+{
+    switch( stage )
+    {
+    case GLProgramPipeline::Stage::COMPUTE_SHADER:
+        return GL_COMPUTE_SHADER_BIT;
+    case GLProgramPipeline::Stage::FRAGMENT_SHADER:
+        return GL_FRAGMENT_SHADER_BIT;
+#ifdef GL_PLATFORM_45
+    case GLProgramPipeline::Stage::GEOMETRY_SHADER:
+        return GL_GEOMETRY_SHADER_BIT;
+    case GLProgramPipeline::Stage::TESS_CONTROL_SHADER:
+        return GL_TESS_CONTROL_SHADER_BIT;
+    case GLProgramPipeline::Stage::TESS_EVALUATION_SHADER:
+        return GL_TESS_EVALUATION_SHADER_BIT;
+#endif
+    case GLProgramPipeline::Stage::VERTEX_SHADER:
+        return GL_VERTEX_SHADER_BIT;
+    default:
+        return 0;
+    }
+}
+
+int attachedProgramArrayIndexForStage( GLProgramPipeline::Stage stage )
+{
+    switch( stage )
+    {
+#ifdef GL_PLATFORM_45
+    case GLProgramPipeline::Stage::COMPUTE_SHADER:
+        return 0;
+    case GLProgramPipeline::Stage::FRAGMENT_SHADER:
+        return 1;
+    case GLProgramPipeline::Stage::GEOMETRY_SHADER:
+        return 2;
+    case GLProgramPipeline::Stage::TESS_CONTROL_SHADER:
+        return 3;
+    case GLProgramPipeline::Stage::TESS_EVALUATION_SHADER:
+        return 4;
+    case GLProgramPipeline::Stage::VERTEX_SHADER:
+        return 5;
+#else
+    case GLProgramPipeline::Stage::COMPUTE_SHADER:
+        return 0;
+    case GLProgramPipeline::Stage::FRAGMENT_SHADER:
+        return 1;
+    case GLProgramPipeline::Stage::VERTEX_SHADER:
+        return 2;
+#endif
+    default:
+        return -1;
+    }
+}
+
+}
+
 GLProgramPipeline::GLProgramPipeline()
 {
     // These behave exactly the same way, but we might as well use the DSA form
@@ -44,43 +125,60 @@ GLuint GLProgramPipeline::id() const
     return m_id;
 }
 
-void GLProgramPipeline::attachProgram( const GLSeparableProgram& program )
+void GLProgramPipeline::attachProgram(
+    std::shared_ptr< GLSeparableProgram > program )
 {
-    switch( program.type() )
+    if( program->type() == GLSeparableProgram::Type::NO_TYPE )
     {
-    case GLSeparableProgram::Type::COMPUTE_SHADER:
-        attachProgram( program, Stage::COMPUTE_SHADER_BIT );
-        break;
-    case GLSeparableProgram::Type::FRAGMENT_SHADER:
-        attachProgram( program, Stage::FRAGMENT_SHADER_BIT );
-        break;
-#ifdef GL_PLATFORM_45
-    case GLSeparableProgram::Type::GEOMETRY_SHADER:
-        attachProgram( program, Stage::GEOMETRY_SHADER_BIT );
-        break;
-    case GLSeparableProgram::Type::TESS_CONTROL_SHADER:
-        attachProgram( program, Stage::TESS_CONTROL_SHADER_BIT );
-        break;
-    case GLSeparableProgram::Type::TESS_EVALUATION_SHADER:
-        attachProgram( program, Stage::TESS_EVALUATION_SHADER_BIT );
-        break;
-#endif
-    case GLSeparableProgram::Type::VERTEX_SHADER:
-        attachProgram( program, Stage::VERTEX_SHADER_BIT );
-        break;
+        return;
     }
+
+    GLProgramPipeline::Stage stage = shaderStageForType( program->type() );
+    GLbitfield glStage = glShaderStage( stage );
+    glUseProgramStages( id(), glStage, program->id() );
+
+    // Add the shared pointer to the array of attached programs.
+    int idx = attachedProgramArrayIndexForStage( stage );
+    m_attachedPrograms[ idx ] = program;
 }
 
-void GLProgramPipeline::attachProgram( const GLSeparableProgram& program,
-    GLProgramPipeline::Stage stage )
+std::shared_ptr< GLSeparableProgram > GLProgramPipeline::programAttachedAt(
+    Stage stage )
 {
-    glUseProgramStages( id(), static_cast< GLbitfield >( stage ),
-        program.id() );
+    if( stage == GLProgramPipeline::Stage::NO_STAGE )
+    {
+        return nullptr;
+    }
+
+    int idx = attachedProgramArrayIndexForStage( stage );
+    return m_attachedPrograms[ idx ];
+}
+
+std::shared_ptr< GLSeparableProgram > GLProgramPipeline::vertexProgram()
+{
+    return programAttachedAt( GLProgramPipeline::Stage::VERTEX_SHADER );
+}
+
+std::shared_ptr< GLSeparableProgram > GLProgramPipeline::fragmentProgram()
+{
+    return programAttachedAt(
+        GLProgramPipeline::Stage::FRAGMENT_SHADER );
 }
 
 void GLProgramPipeline::detachProgram( GLProgramPipeline::Stage stage )
 {
-    glUseProgramStages( id(), static_cast< GLbitfield >( stage ), 0 );
+    if( stage == GLProgramPipeline::Stage::NO_STAGE )
+    {
+        return;
+    }
+
+    // Tell GL to detach the program.
+    GLbitfield glStage = glShaderStage( stage );
+    glUseProgramStages( id(), glStage, 0 );
+
+    // Remove the shared pointer from the array of attached programs.
+    int idx = attachedProgramArrayIndexForStage( stage );
+    m_attachedPrograms[ idx ] = nullptr;
 }
 
 void GLProgramPipeline::bind()

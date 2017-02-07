@@ -34,7 +34,7 @@ PlanarVertexBufferCalculator Frustum::calculator()
     const int NUM_LINES = 12;
     const int NUM_VERTICES = 2 * NUM_LINES;
     PlanarVertexBufferCalculator calculator( NUM_VERTICES );
-    calculator.addAttribute( 4, sizeof( float ) );
-    calculator.addAttribute( 4, sizeof( float ) );
+    calculator.addAttribute< Vector4f >();
+    calculator.addAttribute< Vector4f >();
     return calculator;
 }

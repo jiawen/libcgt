@@ -207,21 +207,13 @@ Array1D< int > solidBoxTriangleListIndices()
 {
     return Array1D< int >
     {
-        // front
-        4, 5, 6,
-        6, 5, 7,
+        // left
+        0, 4, 2,
+        2, 4, 6,
 
         // right
         5, 1, 7,
         7, 1, 3,
-
-        // back
-        1, 0, 3,
-        3, 0, 2,
-
-        // left
-        0, 4, 2,
-        2, 4, 6,
 
         // bottom
         0, 1, 4,
@@ -229,7 +221,15 @@ Array1D< int > solidBoxTriangleListIndices()
 
         // top
         6, 7, 2,
-        2, 7, 3
+        2, 7, 3,
+
+        // back
+        1, 0, 3,
+        3, 0, 2,
+
+        // front
+        4, 5, 6,
+        6, 5, 7
     };
 }
 

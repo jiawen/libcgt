@@ -36,7 +36,7 @@ PlanarVertexBufferCalculator SolidBox::calculator()
     const int NUM_VERTICES_PER_FACE = 6;
     const int NUM_VERTICES = NUM_FACES * NUM_VERTICES_PER_FACE;
     PlanarVertexBufferCalculator calculator( NUM_VERTICES );
-    calculator.addAttribute( 4, sizeof( float ) );
-    calculator.addAttribute( 4, sizeof( float ) );
+    calculator.addAttribute< Vector4f >();
+    calculator.addAttribute< Vector4f >();
     return calculator;
 }

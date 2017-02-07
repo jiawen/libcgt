@@ -6,13 +6,16 @@ template< typename T >
 GLDrawable::MappedBuffer< T > GLDrawable::mapAttribute( int i )
 {
     GLDrawable* drawable = nullptr;
+    const PlanarVertexBufferCalculator::AttributeInfo& info =
+        m_calculator.getAttributeInfo( i );
     Array1DWriteView< T > buffer;
-    if( m_calculator.vertexSizeOf( i ) == sizeof( T ) )
+
+    // Check that the i-th attribute has the right size.
+    if( info.vertexStride == sizeof( T ) )
     {
         buffer = m_vbo.mapRangeAs< T >
         (
-            m_calculator.offsetOf( i ),
-            m_calculator.arraySizeOf( i ),
+            info.offset, info.arraySize,
             GLBufferObject::MapRangeAccess::WRITE_BIT |
             GLBufferObject::MapRangeAccess::INVALIDATE_RANGE_BIT
         );

@@ -49,7 +49,7 @@ public:
 
     // textureUnitIndex is an unsigned integer index (0, 1, ...)
     // and *not* a GLenum (GL_TEXTURE0, GL_TEXTURE1, ...)
-    void bind( GLuint textureUnitIndex );
+    void bind( GLuint textureUnitIndex = 0 );
 
     // Filter modes.
     GLTextureFilterMode minFilterMode() const;
