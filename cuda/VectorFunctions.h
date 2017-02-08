@@ -5,66 +5,90 @@
 
 #include "libcgt/core/common/BasicTypes.h"
 
+template< typename TDst, typename TSrc >
+__inline__ __host__ __device__
+TDst cast2( const TSrc& v )
+{
+    return
+    {
+        static_cast< TDst >( v.x ),
+        static_cast< TDst >( v.y )
+    };
+}
+
+template< typename TDst, typename TSrc >
+__inline__ __host__ __device__
+TDst cast3( const TSrc& v )
+{
+    return
+    {
+        static_cast< TDst >( v.x ),
+        static_cast< TDst >( v.y ),
+        static_cast< TDst >( v.z )
+    };
+}
+
+template< typename TDst, typename TSrc >
+__inline__ __host__ __device__
+TDst cast4( const TSrc& v )
+{
+    return
+    {
+        static_cast< TDst >( v.x ),
+        static_cast< TDst >( v.y ),
+        static_cast< TDst >( v.z ),
+        static_cast< TDst >( v.w )
+    };
+}
+
 __inline__ __host__ __device__
 uchar4 make_uchar4( uint8_t s )
 {
-    return make_uchar4( s, s, s, s );
+    return{ s, s, s, s };
 }
 
 __inline__ __host__ __device__
-int3 make_int3( const char3& v )
+float4 make_float4( float2 xy, float2 zw )
 {
-    return make_int3( v.x, v.y, v.z );
+    return{ xy.x, xy.y, zw.x, zw.y };
 }
 
+// Flips x and y.
+template< typename T >
 __inline__ __host__ __device__
-char3 make_char3( const int3& v )
+T yx( const T& xy )
 {
-    return make_char3( v.x, v.y, v.z );
-}
-
-// makes an int2 out of a short2
-__inline__ __host__ __device__
-int2 make_int2( const short2& s )
-{
-    return make_int2( s.x, s.y );
-}
-
-// flips x and y
-__inline__ __host__ __device__
-int2 yx( const int2& xy )
-{
-    return make_int2( xy.y, xy.x );
+    return{ xy.y, xy.x };
 }
 
 __inline__ __host__ __device__
 float2 xy( const float3& f )
 {
-    return make_float2( f.x, f.y );
+    return{ f.x, f.y };
 }
 
 __inline__ __host__ __device__
 int3 xyz( const int4& v )
 {
-    return make_int3( v.x, v.y, v.z );
+    return{ v.x, v.y, v.z };
 }
 
 __inline__ __host__ __device__
 float3 xyz( const float4& v )
 {
-    return make_float3( v.x, v.y, v.z );
+    return{ v.x, v.y, v.z };
 }
 
 __inline__ __host__ __device__
-int8_t getComponent( const char3& v, int component )
+signed char getComponent( const char3& v, int component )
 {
-    return reinterpret_cast< const int8_t* >(&v)[component];
+    return reinterpret_cast< const signed char* >( &v )[component];
 }
 
 __inline__ __host__ __device__
-void setComponent( char3& v, int component, int8_t value )
+void setComponent( char3& v, int component, signed char value )
 {
-    reinterpret_cast< int8_t* >( &v )[ component ] = value;
+    reinterpret_cast< signed char* >( &v )[ component ] = value;
 }
 
 __inline__ __host__ __device__
@@ -114,6 +138,7 @@ void setComponent( float4& v, int component, float value )
 {
     reinterpret_cast< float* >( &v )[ component ] = value;
 }
+
 __inline__ __host__ __device__
 float4 homogenized( const float4& f )
 {

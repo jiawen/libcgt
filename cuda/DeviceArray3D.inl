@@ -170,7 +170,7 @@ void DeviceArray3D< T >::fill( const T& value )
 {
     if( rowsArePacked() )
     {
-        T* begin = elementPointer( Vector3i{ 0 } );
+        T* begin = slicePointer( 0 );
         T* end = slicePointer( depth() );
         thrust::fill( thrust::device, begin, end, value );
     }
@@ -236,7 +236,7 @@ T* DeviceArray3D< T >::elementPointer( const Vector3i& xyz )
         p +
         xyz.x * elementStrideBytes() +
         xyz.y * rowStrideBytes() +
-        xyz.x * sliceStrideBytes() );
+        xyz.z * sliceStrideBytes() );
 }
 
 template< typename T >
