@@ -7,3 +7,6 @@
 [submodule "third_party/pystring"]
 	path = third_party/pystring
 	url = https://github.com/imageworks/pystring
+[submodule "third_party/eigen"]
+	path = third_party/eigen
+	url = https://github.com/RLovelett/eigen
