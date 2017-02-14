@@ -2,9 +2,9 @@
 
 #include <string>
 
+#include "libcgt/core/common/ProgressReporter.h"
 #include "libcgt/core/vecmath/Vector2i.h"
 #include "libcgt/core/vecmath/Vector3i.h"
-#include "ProgressReporter.h"
 
 namespace libcgt { namespace core {
 
@@ -50,4 +50,4 @@ void for3D( const Vector3i& first, const Vector3i& count,
 
 } } // core, libcgt
 
-#include "ForND.inl"
+#include "libcgt/core/common/ForND.inl"

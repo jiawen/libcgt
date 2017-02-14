@@ -185,4 +185,4 @@ double oo_0( double x );
 
 } } } // math, core, libcgt
 
-#include "MathUtils.inl"
+#include "libcgt/core/math/MathUtils.inl"

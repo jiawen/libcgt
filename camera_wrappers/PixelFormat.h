@@ -4,6 +4,10 @@
 
 namespace libcgt { namespace camera_wrappers {
 
+// TODO: figure out how to support YUV formats.
+// They don't like pixelSizeBytes as some of them are only 12 bits per pixel.
+// One option is to add a separate ImageFormat enum.
+// Another option is to change pixelSizeBytes() to bufferSize(width, height).
 enum class PixelFormat : uint32_t
 {
     INVALID = 0,

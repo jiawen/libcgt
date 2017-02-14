@@ -102,7 +102,7 @@ Vector2i Rect2i::center() const
 
 Vector2f Rect2i::exactCenter() const
 {
-    return origin + 0.5f * size;
+    return Vector2f( origin ) + 0.5f * Vector2f( size );
 }
 
 bool Rect2i::isEmpty() const
@@ -171,9 +171,11 @@ bool Rect2i::contains( const Vector2i& p )
     );
 }
 
+// TODO: Look into how to overload casts.
+// Consider using a constructor instead.
 Rect2f Rect2i::castToFloat() const
 {
-    return Rect2f( origin, size );
+    return Rect2f( Vector2f( origin ), Vector2f( size ) );
 }
 
 // static

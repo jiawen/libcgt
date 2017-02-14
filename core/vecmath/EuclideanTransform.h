@@ -64,6 +64,11 @@ EuclideanTransform compose( const EuclideanTransform& second,
 // tInv = R^T * (-t)
 EuclideanTransform inverse( const EuclideanTransform& et );
 
+// Linear interpolation between two Euclidean transforms.
+// Independently uses slerp() on the rotations and lerp() on the translations.
+EuclideanTransform lerp( const EuclideanTransform& x,
+    const EuclideanTransform& y, float t );
+
 // Apply the transformation "et" to the point "p": q = R p + t.
 Vector3f transformPoint( const EuclideanTransform& et, const Vector3f& p );
 

@@ -1,4 +1,4 @@
-#include "Axes.h"
+#include "libcgt/GL/GL_45/drawables/Axes.h"
 
 Axes::Axes( const Matrix4f& worldFromAxes, float axisLength ) :
     GLDrawable( GLPrimitiveType::LINES, calculator() )

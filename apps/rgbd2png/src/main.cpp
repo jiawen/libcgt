@@ -1,4 +1,5 @@
 #include <third_party/pystring/pystring.h>
+#include <gflags/gflags.h>
 
 #include "libcgt/camera_wrappers/RGBDStream.h"
 #include "libcgt/core/common/BasicTypes.h"
@@ -10,6 +11,11 @@
 using libcgt::camera_wrappers::RGBDInputStream;
 using libcgt::camera_wrappers::PixelFormat;
 using libcgt::core::imageproc::linearRemapToLuminance;
+
+DEFINE_bool( color, true, "Set true to write color stream (if present)." );
+DEFINE_bool( depth, true, "Set true to write depth stream (if present)." );
+DEFINE_bool( infrared, true,
+    "Set true to write infrared stream  (if present)." );
 
 // --> libcgt::core.
 #include <iomanip>
@@ -24,11 +30,13 @@ std::string toZeroFilledString( T x, int width )
     return stream.str();
 }
 
+
+
 int main( int argc, char* argv[] )
 {
     if( argc < 3 )
     {
-        printf( "Usage: %s <src.rgbd> <output_dir>\n", argv[ 0 ] );
+        printf( "Usage: %s <flags> <src.rgbd> <output_dir>\n", argv[ 0 ] );
         printf( "Files will be saved to <dir>/<src>_<color|depth|infrared>_<frame_index>_<timestamp>.png" );
         return 1;
     }
@@ -121,7 +129,7 @@ int main( int argc, char* argv[] )
         inputStream.read( streamId, frameIndex, timestamp );
     while( src.notNull() )
     {
-        if( streamId == colorStream )
+        if( streamId == colorStream && FLAGS_color )
         {
             std::string outputFilename = colorNFB.filenameForNumber(
                 frameIndex );
@@ -134,7 +142,7 @@ int main( int argc, char* argv[] )
             PNGIO::write( outputFilename, src2D );
         }
 
-        if( streamId == depthStream )
+        if( streamId == depthStream && FLAGS_depth )
         {
             std::string outputFilename = depthNFB.filenameForNumber(
                 frameIndex );
@@ -156,7 +164,7 @@ int main( int argc, char* argv[] )
             PNGIO::write( outputFilename, tonemappedDepth );
         }
 
-        if( streamId == infraredStream )
+        if( streamId == infraredStream && FLAGS_infrared )
         {
             std::string outputFilename = infraredNFB.filenameForNumber(
                 frameIndex );

@@ -1,4 +1,4 @@
-#include "GLTexture3D.h"
+#include "libcgt/GL/GL_45/GLTexture3D.h"
 
 #include <cassert>
 #include <cstdio>

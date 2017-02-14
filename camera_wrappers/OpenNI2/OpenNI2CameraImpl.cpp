@@ -12,6 +12,53 @@ using libcgt::core::cameras::Intrinsics;
 using libcgt::core::time::usToNS;
 using libcgt::core::vecmath::EuclideanTransform;
 
+namespace
+{
+
+// Returns static_cast< openni::PixelFormat >( 0 ) if no match found.
+openni::PixelFormat toOpenNI( libcgt::camera_wrappers::PixelFormat format )
+{
+    switch( format )
+    {
+    case libcgt::camera_wrappers::PixelFormat::DEPTH_MM_U16:
+        return PIXEL_FORMAT_DEPTH_1_MM;
+    case libcgt::camera_wrappers::PixelFormat::RGB_U888:
+        return PIXEL_FORMAT_RGB888;
+    case libcgt::camera_wrappers::PixelFormat::GRAY_U8:
+        return PIXEL_FORMAT_GRAY8;
+    case libcgt::camera_wrappers::PixelFormat::GRAY_U16:
+        return PIXEL_FORMAT_GRAY16;
+    default:
+        return static_cast< openni::PixelFormat >( 0 );
+    }
+}
+
+int findMatchingVideoModeIndex(
+    libcgt::camera_wrappers::StreamConfig config,
+    const Array< VideoMode >& modes )
+{
+    int index = -1;
+    for( int i = 0; i < modes.getSize(); ++i )
+    {
+        const auto& mode = modes[ i ];
+        int width = mode.getResolutionX();
+        int height = mode.getResolutionY();
+        int fps = mode.getFps();
+        auto pixelFormat = mode.getPixelFormat();
+        if( width == config.resolution.x &&
+            height == config.resolution.y &&
+            fps == config.fps &&
+            pixelFormat == toOpenNI( config.pixelFormat ) )
+        {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
+
+}
+
 namespace libcgt { namespace camera_wrappers { namespace openni2 {
 
 bool OpenNI2CameraImpl::s_isOpenNIInitialized = false;
@@ -176,7 +223,6 @@ bool OpenNI2CameraImpl::start()
         Status rc = m_infraredStream.start();
         allSucceeded &= ( rc == STATUS_OK );
     }
-
     return allSucceeded;
 }
 
@@ -395,27 +441,23 @@ bool OpenNI2CameraImpl::pollOne( OpenNI2Camera::FrameView& frame, int timeoutMS 
     frame.depthUpdated = false;
     frame.infraredUpdated = false;
 
-    VideoStream* streams[] =
-    {
-        &m_colorStream,
-        &m_depthStream,
-        &m_infraredStream
-    };
-
     int readyIndex = -1; // Initialized to fail.
-    Status rc =
-        OpenNI::waitForAnyStream( streams, 3, &readyIndex, timeoutMS );
+    Status rc = OpenNI::waitForAnyStream( m_enabledStreams.data(),
+        static_cast< int >( m_enabledStreams.size() ),
+        &readyIndex, timeoutMS );
     if( rc == STATUS_OK )
     {
-        if( readyIndex == 0 ) // color
+        const VideoStream* readyStream = m_enabledStreams[ readyIndex ];
+
+        if( readyStream == &m_colorStream )
         {
             return copyColor( frame );
         }
-        else if( readyIndex == 1 ) // depth
+        else if( readyStream == &m_depthStream )
         {
             return copyDepth( frame );
         }
-        else if( readyIndex == 2 ) // infrared
+        else if( readyStream == &m_infraredStream )
         {
             return copyInfrared( frame );
         }
@@ -443,47 +485,6 @@ bool OpenNI2CameraImpl::pollAll( OpenNI2Camera::FrameView& frame, int timeoutMS 
         allSucceeded &= pollInfrared( frame, timeoutMS );
     }
     return allSucceeded;
-}
-
-// Returns static_cast< openni::PixelFormat >( 0 ) if no match found.
-openni::PixelFormat toOpenNI( PixelFormat format )
-{
-    switch( format )
-    {
-    case PixelFormat::DEPTH_MM_U16:
-        return PIXEL_FORMAT_DEPTH_1_MM;
-    case PixelFormat::RGB_U888:
-        return PIXEL_FORMAT_RGB888;
-    case PixelFormat::GRAY_U8:
-        return PIXEL_FORMAT_GRAY8;
-    case PixelFormat::GRAY_U16:
-        return PIXEL_FORMAT_GRAY16;
-    default:
-        return static_cast< openni::PixelFormat >( 0 );
-    }
-}
-
-int findMatchingVideoModeIndex( StreamConfig config,
-    const Array< VideoMode >& modes )
-{
-    int index = -1;
-    for( int i = 0; i < modes.getSize(); ++i )
-    {
-        const auto& mode = modes[ i ];
-        int width = mode.getResolutionX();
-        int height = mode.getResolutionY();
-        int fps = mode.getFps();
-        auto pixelFormat = mode.getPixelFormat();
-        if( width == config.resolution.x &&
-            height == config.resolution.y &&
-            fps == config.fps &&
-            pixelFormat == toOpenNI( config.pixelFormat ) )
-        {
-            index = i;
-            break;
-        }
-    }
-    return index;
 }
 
 bool OpenNI2CameraImpl::initializeStreams()
@@ -514,6 +515,8 @@ bool OpenNI2CameraImpl::initializeStreams()
         m_colorStream.create( m_device, SENSOR_COLOR );
         m_colorStream.setVideoMode( colorModes[ colorModeIndex ] );
         m_colorStream.setMirroringEnabled( m_colorConfig.mirror );
+
+        m_enabledStreams.push_back( &m_colorStream );
     }
 
     if( depthModeIndex != -1 )
@@ -521,6 +524,8 @@ bool OpenNI2CameraImpl::initializeStreams()
         m_depthStream.create( m_device, SENSOR_DEPTH );
         m_depthStream.setVideoMode( depthModes[ depthModeIndex ] );
         m_depthStream.setMirroringEnabled( m_depthConfig.mirror );
+
+        m_enabledStreams.push_back( &m_depthStream );
     }
 
     if( infraredModeIndex != -1 )
@@ -528,11 +533,11 @@ bool OpenNI2CameraImpl::initializeStreams()
         m_infraredStream.create( m_device, SENSOR_IR );
         m_infraredStream.setVideoMode( infraredModes[ infraredModeIndex ] );
         m_infraredStream.setMirroringEnabled( m_infraredConfig.mirror );
+
+        m_enabledStreams.push_back( &m_infraredStream );
     }
 
-    return( colorModeIndex != -1 ||
-        depthModeIndex != -1 ||
-        infraredModeIndex != -1 );
+    return( m_enabledStreams.size() > 0 );
 }
 
 } } } // openni2, camera_wrappers, libcgt

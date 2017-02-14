@@ -112,7 +112,7 @@ inline Vector3i::operator int* ()
 inline std::string Vector3i::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ", " << z << ")";
+    sstream << "( " << x << ", " << y << ", " << z << " )";
     return sstream.str();
 }
 

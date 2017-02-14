@@ -26,6 +26,11 @@ using libcgt::qt_interop::viewGrayscale8;
 using libcgt::qt_interop::viewRGB32AsBGRX;
 using libcgt::qt_interop::viewRGB32AsBGR;
 
+namespace
+{
+constexpr int POLL_TIMEOUT_MS = 2000;
+}
+
 Viewfinder::Viewfinder( const std::vector< StreamConfig >& streamConfig,
     const std::string& dir, QWidget* parent ) :
     m_nfb( pystring::os::path::join( dir, "recording_" ), ".rgbd" ),
@@ -216,7 +221,7 @@ void Viewfinder::onViewfinderTimeout()
         frame.depth = m_depth;
         frame.infrared = m_infrared;
 
-        bool pollResult = m_oniCamera->pollAll( frame, 33 );
+        bool pollResult = m_oniCamera->pollOne( frame, POLL_TIMEOUT_MS );
         {
             if( frame.colorUpdated )
             {

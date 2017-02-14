@@ -4,9 +4,9 @@
 
 #include <GL/glew.h>
 
-#include "GLPrimitiveType.h"
-#include "GLVertexArrayObject.h"
-#include "GLBufferObject.h"
+#include "libcgt/GL/GLPrimitiveType.h"
+#include "libcgt/GL/GL_45/GLBufferObject.h"
+#include "libcgt/GL/GL_45/GLVertexArrayObject.h"
 
 template< typename T >
 class GLInterleavedVertexBufferView

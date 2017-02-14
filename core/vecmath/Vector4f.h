@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cstdio>
 #include <string>
 
-#include "Vector2f.h"
-#include "Vector3f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/vecmath/Vector3f.h"
 
 class Vector4i;
 class Vector4d;
@@ -13,7 +12,7 @@ class Vector4f
 {
 public:
 
-    Vector4f(); // initialized to 0
+    Vector4f(); // Initialized to 0.
     explicit Vector4f( float f ); // initialized to (f, f, f, f )
     Vector4f( float _x, float _y, float _z, float _w );
 
@@ -25,15 +24,11 @@ public:
     Vector4f( const Vector3f& _xyz, float _w );
     Vector4f( float _x, const Vector3f& _yzw );
 
-    // copy constructors
-    Vector4f( const Vector4d& v );
-    Vector4f( const Vector4i& v );
+    // Cast double to float.
+    explicit Vector4f( const Vector4d& v );
 
-    // assignment operators
-    Vector4f& operator = ( const Vector4d& v );
-    Vector4f& operator = ( const Vector4i& v );
-
-    // no destructor necessary
+    // Cast double to float.
+    explicit Vector4f( const Vector4i& v );
 
     // returns the ith element
     const float& operator [] ( int i ) const;
@@ -132,4 +127,4 @@ Vector4f operator / ( float f, const Vector4f& v );
 bool operator == ( const Vector4f& v0, const Vector4f& v1 );
 bool operator != ( const Vector4f& v0, const Vector4f& v1 );
 
-#include "Vector4f.inl"
+#include "libcgt/core/vecmath/Vector4f.inl"

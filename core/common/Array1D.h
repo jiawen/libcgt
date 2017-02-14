@@ -1,12 +1,13 @@
 #pragma once
 
+#include <algorithm>
+#include <cassert>
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
-#include <memory>
 
-#include "ArrayView.h"
-#include "NewDeleteAllocator.h"
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/NewDeleteAllocator.h"
 
 // A simple 1D array class.
 template< typename T >
@@ -103,4 +104,4 @@ private:
     Allocator* m_allocator = NewDeleteAllocator::instance();
 };
 
-#include "Array1D.inl"
+#include "libcgt/core/common/Array1D.inl"

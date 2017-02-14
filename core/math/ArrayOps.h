@@ -9,4 +9,4 @@ std::pair< T, T > minMax( Array2DReadView< T > src );
 
 } } } // math, core, libcgt
 
-#include "ArrayOps.inl"
+#include "libcgt/core/common/ArrayOps.inl"

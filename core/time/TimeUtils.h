@@ -27,4 +27,4 @@ int64_t usToNS( int64_t us );
 
 } } } // time, core, libcgt
 
-#include "TimeUtils.inl"
+#include "libcgt/core/time/TimeUtils.inl"

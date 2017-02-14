@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include "Vector2i.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 class Vector3f;
 
@@ -104,5 +104,5 @@ Vector3f operator / ( float f, const Vector3i& v );
 bool operator == ( const Vector3i& v0, const Vector3i& v1 );
 bool operator != ( const Vector3i& v0, const Vector3i& v1 );
 
-#include "Vector3f.h"
-#include "Vector3i.inl"
+#include "libcgt/core/vecmath/Vector3f.h"
+#include "libcgt/core/vecmath/Vector3i.inl"

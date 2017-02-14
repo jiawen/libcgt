@@ -1,6 +1,8 @@
-#include "PerspectiveCamera.h"
+#pragma once
 
 #include <vector>
+
+#include "libcgt/core/cameras/PerspectiveCamera.h"
 
 class PerspectiveCameraPath
 {

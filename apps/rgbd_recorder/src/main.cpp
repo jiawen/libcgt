@@ -42,12 +42,12 @@ const std::vector< StreamConfig > INFRARED_ONLY_CONFIG =
 const std::vector< StreamConfig > COLOR_DEPTH_CONFIG =
 {
     StreamConfig{ StreamType::COLOR, { 640, 480 }, PixelFormat::RGB_U888, 30, false },
-    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
+    StreamConfig{ StreamType::DEPTH, { 320, 240 }, PixelFormat::DEPTH_MM_U16, 30, false },
 };
 
 const std::vector< StreamConfig > DEPTH_INFRARED_CONFIG =
 {
-    StreamConfig{ StreamType::DEPTH, { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30, false },
+    StreamConfig{ StreamType::DEPTH, { 320, 240 }, PixelFormat::DEPTH_MM_U16, 30, false },
     StreamConfig{ StreamType::INFRARED, { 640, 480 }, PixelFormat::GRAY_U16, 30, false }
 };
 

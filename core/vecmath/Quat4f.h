@@ -1,9 +1,9 @@
 #pragma once
 
+#include "libcgt/core/vecmath/Matrix3f.h"
+
 class Vector3f;
 class Vector4f;
-
-#include "Matrix3f.h"
 
 // q = w + x * i + y * j + z * k
 // with i^2 = j^2 = k^2 = -1

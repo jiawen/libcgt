@@ -370,4 +370,4 @@ private:
     uint8_t* m_write_pointer = nullptr;
 };
 
-#include "ArrayView.inl"
+#include "libcgt/core/common/ArrayView.inl"

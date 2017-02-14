@@ -76,7 +76,7 @@ inline Vector2i::operator int* ( )
 inline std::string Vector2i::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ")";
+    sstream << "( " << x << ", " << y << " )";
     return sstream.str();
 }
 

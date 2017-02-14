@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Vector2i.h"
+#include "libcgt/core/vecmath/Vector2i.h"
 
 // A 1D range at integer coordinates, represented as an origin and a size.
 //

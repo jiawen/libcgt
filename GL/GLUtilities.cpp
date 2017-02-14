@@ -1,9 +1,5 @@
 #include <cstdio>
 
-#if defined _WIN32 || defined _WIN64
-#include <windows.h>
-#endif
-
 #include "libcgt/core/common/ArrayUtils.h"
 #include "libcgt/core/io/PNGIO.h"
 #include "libcgt/core/io/PortableFloatMapIO.h"

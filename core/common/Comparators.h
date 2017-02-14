@@ -42,4 +42,4 @@ bool lexigraphicLess( const Vector4i& a, const Vector4i& b );
 
 } } // core, libcgt
 
-#include "Comparators.inl"
+#include "libcgt/core/common/Comparators.inl"

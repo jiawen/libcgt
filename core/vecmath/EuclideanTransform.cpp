@@ -1,4 +1,9 @@
-#include "EuclideanTransform.h"
+#include "libcgt/core/vecmath/EuclideanTransform.h"
+
+#include "libcgt/core/math/MathUtils.h"
+#include "libcgt/core/vecmath/Quat4f.h"
+
+using libcgt::core::math::lerp;
 
 namespace libcgt { namespace core { namespace vecmath {
 
@@ -76,6 +81,19 @@ EuclideanTransform inverse( const EuclideanTransform& et )
     {
         ir,
         ir * ( -et.translation )
+    };
+}
+
+EuclideanTransform lerp( const EuclideanTransform& x,
+    const EuclideanTransform& y, float t )
+{
+    Quat4f qx = Quat4f::fromRotationMatrix( x.rotation );
+    Quat4f qy = Quat4f::fromRotationMatrix( y.rotation );
+
+    return
+    {
+        Matrix3f::fromQuat( Quat4f::slerp( qx, qy, t ) ),
+        ::lerp( x.translation, y.translation, t )
     };
 }
 

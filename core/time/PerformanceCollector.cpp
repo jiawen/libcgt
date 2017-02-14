@@ -2,7 +2,7 @@
 
 void PerformanceCollector::registerEvent( const std::string& name )
 {
-    m_eventStartTime[ name ] = Clock::now();
+    m_eventStartTime[ name ] = Clock::time_point();
     m_eventTotalElapsedTime[ name ] = Clock::duration::zero();
     m_eventCounts[ name ] = 0;
 }
@@ -12,6 +12,13 @@ void PerformanceCollector::unregisterEvent( const std::string& name )
     m_eventStartTime.erase( name );
     m_eventTotalElapsedTime.erase( name );
     m_eventCounts.erase( name );
+}
+
+void PerformanceCollector::resetEvent( const std::string& name )
+{
+    m_eventStartTime[ name ] = Clock::time_point();
+    m_eventTotalElapsedTime[ name ] = Clock::duration::zero();
+    m_eventCounts[ name ] = 0;
 }
 
 void PerformanceCollector::beginEvent( const std::string& name )

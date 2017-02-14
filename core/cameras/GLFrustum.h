@@ -59,21 +59,21 @@ public:
     static GLFrustum makeSymmetricPerspective( float fovYRadians,
         float aspectRatio,
         float zNear, float zFar);
-
-    // Linear interpolation between two GLFrustum instances.
-    // If either input has zFar = infinity, the result will have
-    // zFar = infinity.
-    static GLFrustum lerp( const GLFrustum& f0, const GLFrustum& f1, float t );
-
-    // Cubic interpolation between four GLFrustum instances.
-    // If any input zFar = infinity, the result will have zFar = infinity.
-    static GLFrustum cubicInterpolate(
-        const GLFrustum& f0, const GLFrustum& f1,
-        const GLFrustum& f2, const GLFrustum& f3,
-        float t );
 };
 
 bool operator == ( const GLFrustum& f0, const GLFrustum& f1 );
 bool operator != ( const GLFrustum& f0, const GLFrustum& f1 );
+
+// Linear interpolation between two GLFrustum instances.
+// If either input has zFar = infinity, the result will have
+// zFar = infinity.
+GLFrustum lerp( const GLFrustum& f0, const GLFrustum& f1, float t );
+
+// Cubic interpolation between four GLFrustum instances.
+// If any input zFar = infinity, the result will have zFar = infinity.
+GLFrustum cubicInterpolate(
+    const GLFrustum& f0, const GLFrustum& f1,
+    const GLFrustum& f2, const GLFrustum& f3,
+    float t );
 
 } } } // cameras, core, libcgt

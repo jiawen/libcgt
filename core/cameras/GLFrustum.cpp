@@ -86,8 +86,29 @@ GLFrustum GLFrustum::makeSymmetricPerspective(
     return frustum;
 }
 
-// static
-GLFrustum GLFrustum::lerp( const GLFrustum& f0, const GLFrustum& f1, float t )
+bool operator == ( const GLFrustum& f0, const GLFrustum& f1 )
+{
+    // If one of them is infinite but the other is not, they're not equal.
+    if( isinf( f0.zFar ) ^ isinf( f1.zFar ) )
+    {
+        return false;
+    }
+    else
+    {
+        return( f0.left == f1.left &&
+            f0.right == f1.right &&
+            f0.bottom == f1.bottom &&
+            f0.top == f1.top &&
+            f0.zNear == f1.zNear );
+    }
+}
+
+bool operator != ( const GLFrustum& f0, const GLFrustum& f1 )
+{
+    return !( f0 == f1 );
+}
+
+GLFrustum lerp( const GLFrustum& f0, const GLFrustum& f1, float t )
 {
     GLFrustum frustum;
 
@@ -110,16 +131,14 @@ GLFrustum GLFrustum::lerp( const GLFrustum& f0, const GLFrustum& f1, float t )
     return frustum;
 }
 
-// static
-GLFrustum GLFrustum::cubicInterpolate(
-    const GLFrustum& f0, const GLFrustum& f1, const GLFrustum& f2, const GLFrustum& f3,
-    float t )
+GLFrustum cubicInterpolate( const GLFrustum& f0, const GLFrustum& f1,
+    const GLFrustum& f2, const GLFrustum& f3, float t )
 {
     GLFrustum frustum;
 
     frustum.left = ::cubicInterpolate( f0.left, f1.left, f2.left, f3.left, t );
     frustum.right = ::cubicInterpolate( f0.right, f1.right, f2.right, f3.right, t );
-    frustum.bottom = ::cubicInterpolate( f0.bottom, f1.bottom, f2.bottom, f3.bottom, t);
+    frustum.bottom = ::cubicInterpolate( f0.bottom, f1.bottom, f2.bottom, f3.bottom, t );
     frustum.top = ::cubicInterpolate( f0.top, f1.top, f2.top, f3.top, t );
 
     frustum.zNear = ::cubicInterpolate( f0.zNear, f1.zNear, f2.zNear, f3.zNear, t );
@@ -134,28 +153,6 @@ GLFrustum GLFrustum::cubicInterpolate(
     }
 
     return frustum;
-}
-
-bool operator == ( const GLFrustum& f0, const GLFrustum& f1 )
-{
-    // If one of them is infinite but the other is not, they're not equal.
-    if( isinf( f0.zFar ) ^ isinf( f1.zFar ) )
-    {
-        return false;
-    }
-    else
-    {
-        return( f0.left == f1.left &&
-            f0.right == f1.right &&
-            f0.bottom == f1.bottom &&
-            f0.top == f1.top &&
-            f0.zNear == f1.zNear );
-    }
-}
-
-bool operator != ( const GLFrustum& f0, const GLFrustum& f1 )
-{
-    return !( f0 == f1 );
 }
 
 } } } // cameras, core, libcgt

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Semaphore.h"
+#include "libcgt/core/concurrency/Semaphore.h"
 
 namespace libcgt { namespace core { namespace concurrency {
 
@@ -106,4 +106,4 @@ private:
 
 } } } // concurrency, core, libcgt
 
-#include "BoundedConcurrentQueue.inl"
+#include "libcgt/core/concurrency/BoundedConcurrentQueue.inl"

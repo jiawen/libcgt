@@ -72,4 +72,4 @@ uint16x3 mortonUnpack3D_10bit( uint32_t index );
 
 } } } // math, core, libcgt
 
-#include "BitPacking.inl"
+#include "libcgt/core/math/BitPacking.inl"

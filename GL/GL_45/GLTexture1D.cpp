@@ -1,4 +1,4 @@
-#include "GLTexture1D.h"
+#include "libcgt/GL/GL_45/GLTexture1D.h"
 
 #include <algorithm>
 #include <cassert>
@@ -6,7 +6,6 @@
 #include <cstdio>
 
 #include "libcgt/core/math/Arithmetic.h"
-
 #include "libcgt/GL/GLUtilities.h"
 
 using libcgt::core::math::log2;

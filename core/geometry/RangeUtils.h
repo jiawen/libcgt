@@ -36,4 +36,4 @@ int rescale( int x, const Range1i& src, const Range1i& dst );
 
 } } } // geometry, core, libcgt
 
-#include "RangeUtils.inl"
+#include "libcgt/core/geometry/RangeUtils.inl"

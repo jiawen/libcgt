@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Drawable.h"
-
 #include "libcgt/core/vecmath/Rect2f.h"
 #include "libcgt/core/vecmath/Vector3f.h"
 #include "libcgt/core/vecmath/Vector4f.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
+#include "libcgt/GL/GL_45/drawables/Drawable.h"
 
 // The default textured rectangle has vertices from (-1, -1) to (1, 1) and
 // texture coordinates from (0, 0) to (1, 1). Which means you can draw a full

@@ -100,7 +100,7 @@ public:
             },
             {
                 StreamType::DEPTH,
-                { 640, 480 }, PixelFormat::DEPTH_MM_U16, 30,
+                { 320, 240 }, PixelFormat::DEPTH_MM_U16, 30,
                 false
             }
         },

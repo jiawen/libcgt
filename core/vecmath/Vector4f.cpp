@@ -1,8 +1,5 @@
 #include "libcgt/core/vecmath/Vector4f.h"
 
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <sstream>
 
 #include "libcgt/core/vecmath/Vector2f.h"
@@ -159,7 +156,7 @@ Vector4f Vector4f::homogenized() const
 std::string Vector4f::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ", " << z << ", " << w << ")";
+    sstream << "( " << x << ", " << y << ", " << z << ", " << w << " )";
     return sstream.str();
 }
 

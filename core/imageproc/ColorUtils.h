@@ -98,4 +98,4 @@ float expL( float ll );
 
 } } } // imageproc, core, libcgt
 
-#include "ColorUtils.inl"
+#include "libcgt/core/imageproc/ColorUtils.inl"

@@ -1,8 +1,5 @@
 #include "libcgt/core/vecmath/Vector4i.h"
 
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <sstream>
 
 #include "libcgt/core/vecmath/Vector2i.h"
@@ -268,7 +265,7 @@ Vector4i::operator int* ()
 std::string Vector4i::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ", " << z << ", " << w << ")";
+    sstream << "( " << x << ", " << y << ", " << z << ", " << w << " )";
     return sstream.str();
 }
 
@@ -291,6 +288,11 @@ Vector4i operator - ( const Vector4i& v0, const Vector4i& v1 )
 Vector4i operator * ( const Vector4i& v0, const Vector4i& v1 )
 {
     return{ v0.x * v1.x, v0.y * v1.y, v0.z * v1.z, v0.w * v1.w };
+}
+
+Vector4i operator / ( const Vector4i& v0, const Vector4i& v1 )
+{
+    return{ v0.x / v1.x, v0.y / v1.y, v0.z / v1.z, v0.w / v1.w };
 }
 
 Vector4i operator - ( const Vector4i& v )

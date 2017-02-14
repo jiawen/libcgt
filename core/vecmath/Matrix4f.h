@@ -1,13 +1,13 @@
 #pragma once
 
+#include <string>
+#include "libcgt/core/vecmath/Vector4f.h"
+
 class Matrix2f;
 class Matrix3f;
 class Quat4f;
 class Vector3f;
 class Rect2f;
-
-#include <string>
-#include "Vector4f.h"
 
 // 4x4 matrix, stored in column major order (FORTRAN / OpenGL style)
 class Matrix4f

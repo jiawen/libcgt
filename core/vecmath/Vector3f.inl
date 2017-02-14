@@ -191,7 +191,7 @@ inline Vector3f::operator float* ()
 inline std::string Vector3f::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ", " << z << ")";
+    sstream << "( " << x << ", " << y << ", " << z << " )";
     return sstream.str();
 }
 

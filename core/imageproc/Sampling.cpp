@@ -54,7 +54,7 @@ T bilinearSample( Array2DReadView< T > view, const Vector2f& xy )
 float bilinearSampleNormalized( Array2DReadView< float > view,
     const Vector2f& xy )
 {
-    return bilinearSample( view, xy * view.size() );
+    return bilinearSample( view, xy * Vector2f( view.size() ) );
 }
 
 // Explicit instantiation.

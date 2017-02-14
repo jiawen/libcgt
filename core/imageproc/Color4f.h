@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../vecmath/Vector4f.h"
+#include "libcgt/core/vecmath/Vector4f.h"
 
 class Color4f
 {

@@ -7,22 +7,18 @@ set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 find_package( libcgt REQUIRED )
 
 # gflags
-if( EXISTS "../../third_party/gflags/CMakeLists.txt" )
-    add_subdirectory( "../../third_party/gflags"
-        "${PROJECT_SOURCE_DIR}/third_party/gflags"
-    )
-else()
-    find_package( gflags REQUIRED )
-endif()
+add_subdirectory( "../../third_party/gflags"
+    "${PROJECT_SOURCE_DIR}/third_party/gflags"
+)
+
+# pystring
+set( HEADERS "../../third_party/pystring/pystring.h" )
+set( SOURCES "../../third_party/pystring/pystring.cpp" )
 
 # Qt 5
 set( CMAKE_AUTOMOC ON )
 find_package( Qt5Core REQUIRED )
 find_package( Qt5Widgets REQUIRED )
-
-# pystring
-set( HEADERS "../../third_party/pystring/pystring.h" )
-set( SOURCES "../../third_party/pystring/pystring.cpp" )
 
 # main
 list( APPEND HEADERS src/Viewfinder.h )

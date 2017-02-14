@@ -4,12 +4,12 @@
 #include <functional>
 #include <vector>
 
-#include "Array1D.h"
-#include "Array2D.h"
-#include "Array3D.h"
-#include "ArrayView.h"
-#include "BasicTypes.h" // TODO: uint8x4 --> Vector<4, uint8_t>
-
+#include "libcgt/core/common/Array1D.h"
+#include "libcgt/core/common/Array2D.h"
+#include "libcgt/core/common/Array3D.h"
+#include "libcgt/core/common/ArrayView.h"
+// TODO: uint8x4 --> Vector<4, uint8_t>
+#include "libcgt/core/common/BasicTypes.h"
 #include "libcgt/core/vecmath/Box3i.h"
 #include "libcgt/core/vecmath/Range1i.h"
 #include "libcgt/core/vecmath/Rect2i.h"
@@ -307,4 +307,4 @@ public:
     static bool saveTXT( Array3DReadView< Vector2f > view, const char* filename );
 };
 
-#include "ArrayUtils.inl"
+#include "libcgt/core/common/ArrayUtils.inl"

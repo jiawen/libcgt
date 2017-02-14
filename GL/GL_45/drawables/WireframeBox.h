@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Drawable.h"
-
 #include "libcgt/core/vecmath/Box3f.h"
 #include "libcgt/core/vecmath/Matrix4f.h"
 #include "libcgt/core/vecmath/Vector4f.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
+#include "libcgt/GL/GL_45/drawables/Drawable.h"
 
 class WireframeBox : public GLDrawable
 {

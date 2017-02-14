@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Vector2f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
 
 class Rect2i;
 

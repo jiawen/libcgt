@@ -1,13 +1,10 @@
 #pragma once
 
 #include <cassert>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <sstream>
 #include <string>
 
-#include "Vector2f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
 
 class Vector3d;
 class Vector3i;
@@ -127,6 +124,6 @@ Vector3f operator / ( float f, const Vector3f& v );
 bool operator == ( const Vector3f& v0, const Vector3f& v1 );
 bool operator != ( const Vector3f& v0, const Vector3f& v1 );
 
-#include "Vector3d.h"
-#include "Vector3i.h"
-#include "Vector3f.inl"
+#include "libcgt/core/vecmath/Vector3d.h"
+#include "libcgt/core/vecmath/Vector3i.h"
+#include "libcgt/core/vecmath/Vector3f.inl"

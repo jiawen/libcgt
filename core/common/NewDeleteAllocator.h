@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Allocator.h"
+#include "libcgt/core/common/Allocator.h"
 
 // An Allocator that uses C++'s new[] and delete[].
 class NewDeleteAllocator : public Allocator

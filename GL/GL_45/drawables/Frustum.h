@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Drawable.h"
-
 #include "libcgt/core/cameras/PerspectiveCamera.h"
 #include "libcgt/GL/PlanarVertexBufferCalculator.h"
+#include "libcgt/GL/GL_45/drawables/Drawable.h"
 
 class Frustum : public GLDrawable
 {

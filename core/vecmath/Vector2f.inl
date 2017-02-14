@@ -26,22 +26,6 @@ inline Vector2f::Vector2f( const Vector2i& v ) :
 
 }
 
-inline Vector2f& Vector2f::operator = ( const Vector2d& v )
-{
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-
-    return *this;
-}
-
-inline Vector2f& Vector2f::operator = ( const Vector2i& v )
-{
-    x = static_cast< float >( v.x );
-    y = static_cast< float >( v.y );
-
-    return *this;
-}
-
 inline const float& Vector2f::operator [] ( int i ) const
 {
     return ( &x )[ i ];
@@ -113,7 +97,7 @@ inline Vector2f::operator float* ()
 inline std::string Vector2f::toString() const
 {
     std::ostringstream sstream;
-    sstream << "( " << x << ", " << y << ")";
+    sstream << "( " << x << ", " << y << " )";
     return sstream.str();
 }
 

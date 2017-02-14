@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "OBJFace.h"
+#include "libcgt/core/io/OBJFace.h"
 
 // TODO(jiawen): constructor, isConsistent(), don't crash when writing.
 class OBJGroup

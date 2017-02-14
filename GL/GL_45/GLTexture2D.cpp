@@ -1,16 +1,13 @@
-#include "GLTexture2D.h"
+#include "libcgt/GL/GL_45/GLTexture2D.h"
 
 #include <cassert>
 #include <cstdio>
 #include <cstdint>
 #include <vector>
 
-#include <GL/glew.h>
-
 #include "libcgt/core/math/Arithmetic.h"
 #include "libcgt/core/math/MathUtils.h"
 #include "libcgt/core/vecmath/Vector3f.h"
-
 #include "libcgt/GL/GLSamplerObject.h"
 
 using libcgt::core::math::log2;
@@ -364,7 +361,7 @@ void GLTexture2D::drawNV( GLSamplerObject* sampler,
                          float z,
                          const Rect2f& texCoords )
 {
-    drawNV( Rect2f( size() ), sampler, z, texCoords );
+    drawNV( Rect2f( Vector2f( size() ) ), sampler, z, texCoords );
 }
 
 void GLTexture2D::drawNV( const Rect2f& windowCoords,

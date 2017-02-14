@@ -165,7 +165,7 @@ void FPSControls::handleMouseMoveEvent( QMouseEvent* event,
     PerspectiveCamera& camera )
 {
     Vector2i currentMouseXY( { event->x(), event->y() } );
-    Vector2f delta = currentMouseXY - m_previousMouseXY;
+    Vector2f delta = Vector2f( currentMouseXY - m_previousMouseXY );
 
     computeMouseRotation( event->buttons(), delta, camera );
     computeMouseTranslation( event->buttons(), delta, camera );

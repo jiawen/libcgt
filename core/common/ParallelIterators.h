@@ -3,9 +3,10 @@
 #ifdef WIN32
 
 #include <ppl.h>
+
+#include "libcgt/core/common/ProgressReporter.h"
 #include "libcgt/core/vecmath/Vector2i.h"
 #include "libcgt/core/vecmath/Vector3i.h"
-#include "ProgressReporter.h"
 
 class ParallelIterators
 {

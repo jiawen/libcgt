@@ -1,4 +1,4 @@
-#include "VecmathConversions.h"
+#include "libcgt/cuda/VecmathConversions.h"
 
 #include <cstring>
 

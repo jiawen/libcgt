@@ -6,8 +6,8 @@
 #include <cstring>
 #include <utility>
 
-#include "ArrayView.h"
-#include "NewDeleteAllocator.h"
+#include "libcgt/core/common/ArrayView.h"
+#include "libcgt/core/common/NewDeleteAllocator.h"
 #include "libcgt/core/math/Indexing.h"
 #include "libcgt/core/vecmath/Vector3i.h"
 
@@ -130,4 +130,4 @@ private:
     Allocator* m_allocator = NewDeleteAllocator::instance();
 };
 
-#include "Array3D.inl"
+#include "libcgt/core/common/Array3D.inl"

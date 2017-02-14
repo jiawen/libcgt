@@ -68,6 +68,8 @@ private:
     openni::VideoStream m_depthStream;
     openni::VideoStream m_infraredStream;
 
+    std::vector< openni::VideoStream* > m_enabledStreams;
+
     bool m_isValid = false;
     static bool s_isOpenNIInitialized;
 };

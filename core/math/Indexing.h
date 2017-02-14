@@ -51,4 +51,4 @@ int subscript3DToIndex( const Vector3i& xy, const Vector3i& size );
 
 } } // core, libcgt
 
-#include "Indexing.inl"
+#include "libcgt/core/math/Indexing.inl"

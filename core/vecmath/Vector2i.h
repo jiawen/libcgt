@@ -80,5 +80,5 @@ Vector2f operator / ( const Vector2i& v, float f );
 bool operator == ( const Vector2i& v0, const Vector2i& v1 );
 bool operator != ( const Vector2i& v0, const Vector2i& v1 );
 
-#include "Vector2f.h"
-#include "Vector2i.inl"
+#include "libcgt/core/vecmath/Vector2f.h"
+#include "libcgt/core/vecmath/Vector2i.inl"

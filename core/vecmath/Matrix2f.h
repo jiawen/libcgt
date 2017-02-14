@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Vector2f.h"
+#include "libcgt/core/vecmath/Vector2f.h"
 
 // 2x2 Matrix, stored in column major order (OpenGL style)
 class Matrix2f

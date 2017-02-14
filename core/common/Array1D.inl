@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <cassert>
-
 template< typename T >
 Array1D< T >::Array1D( std::initializer_list< T > values, Allocator* allocator ) :
     m_allocator( allocator )

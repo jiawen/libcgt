@@ -26,13 +26,9 @@ public:
     Vector2f( const Vector2f& v ) = default;
     Vector2f& operator = ( const Vector2f& v ) = default;
 
-    // cast
-    Vector2f( const Vector2d& rv );
-    Vector2f( const Vector2i& rv );
-
-    // assignment operators
-    Vector2f& operator = ( const Vector2d& v );
-    Vector2f& operator = ( const Vector2i& v );
+    // Cast.
+    explicit Vector2f( const Vector2d& rv );
+    explicit Vector2f( const Vector2i& rv );
 
     // returns the ith element
     const float& operator [] ( int i ) const;
@@ -97,6 +93,6 @@ Vector2f operator / ( float f, const Vector2f& v );
 bool operator == ( const Vector2f& v0, const Vector2f& v1 );
 bool operator != ( const Vector2f& v0, const Vector2f& v1 );
 
-#include "Vector2d.h"
-#include "Vector2i.h"
-#include "Vector2f.inl"
+#include "libcgt/core/vecmath/Vector2d.h"
+#include "libcgt/core/vecmath/Vector2i.h"
+#include "libcgt/core/vecmath/Vector2f.inl"

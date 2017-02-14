@@ -1,11 +1,9 @@
-#include "GLTextureCubeMap.h"
+#include "libcgt/GL/GL_45/GLTextureCubeMap.h"
 
 #include <cassert>
 #include <cstdio>
 #include <cstdint>
 #include <vector>
-
-#include <GL/glew.h>
 
 #include "libcgt/GL/GLSamplerObject.h"
 #include "libcgt/GL/GLUtilities.h"

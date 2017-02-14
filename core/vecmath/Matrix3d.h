@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include "Vector3d.h"
+#include "libcgt/core/vecmath/Vector3d.h"
 
 class Matrix2d;
 class Matrix3f;

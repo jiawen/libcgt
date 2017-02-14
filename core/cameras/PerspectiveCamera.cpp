@@ -11,17 +11,20 @@
 #include "libcgt/core/math/MathUtils.h"
 #include "libcgt/core/vecmath/Quat4f.h"
 
+using libcgt::core::cameras::cubicInterpolate;
 using libcgt::core::cameras::focalLengthPixelsToFoVRadians;
 using libcgt::core::cameras::fovRadiansToFocalLengthPixels;
 using libcgt::core::cameras::frustumToIntrinsics;
 using libcgt::core::cameras::intrinsicsToFrustum;
 using libcgt::core::cameras::GLFrustum;
 using libcgt::core::cameras::Intrinsics;
+using libcgt::core::cameras::lerp;
 using libcgt::core::math::cubicInterpolate;
 using libcgt::core::math::degreesToRadians;
 using libcgt::core::math::radiansToDegrees;
 using libcgt::core::math::HALF_PI;
 using libcgt::core::vecmath::EuclideanTransform;
+using libcgt::core::vecmath::lerp;
 
 // static
 const PerspectiveCamera PerspectiveCamera::CANONICAL(
@@ -232,28 +235,10 @@ PerspectiveCamera PerspectiveCamera::lerp( const PerspectiveCamera& c0,
     const PerspectiveCamera& c1, float t )
 {
     bool isDirectX = c0.isDirectX();
-
-    GLFrustum f = GLFrustum::lerp( c0.frustum(), c1.frustum(), t);
-
-    // TODO(jiawen): lerp between EuclideanTransforms?
-    Vector3f eye = libcgt::core::math::lerp( c0.eye(), c1.eye(), t );
-
-    Quat4f q0 = Quat4f::fromRotatedBasis(
-        c0.right(), c0.up(), -( c0.forward() ) );
-    Quat4f q1 = Quat4f::fromRotatedBasis(
-        c1.right(), c1.up(), -( c1.forward() ) );
-    Quat4f q = Quat4f::slerp( q0, q1, t );
-
-    Vector3f x = q.rotateVector( Vector3f::RIGHT );
-    Vector3f y = q.rotateVector( Vector3f::UP );
-    Vector3f z = q.rotateVector( -Vector3f::FORWARD );
-
-    Vector3f center = eye - z;
-
     return PerspectiveCamera
     (
-        eye, center, y,
-        f,
+        ::lerp( c0.cameraFromWorld(), c1.cameraFromWorld(), t ),
+        ::lerp( c0.frustum(), c1.frustum(), t ),
         c0.isDirectX()
     );
 }
@@ -266,31 +251,17 @@ PerspectiveCamera PerspectiveCamera::cubicInterpolate(
     const PerspectiveCamera& c3,
     float t )
 {
-    GLFrustum f = GLFrustum::lerp(c0.frustum(), c1.frustum(), t);
-
-    Vector3f eye = ::cubicInterpolate(
-        c0.eye(), c1.eye(), c2.eye(), c3.eye(), t );
-
-    Quat4f q0 = Quat4f::fromRotatedBasis(
-        c0.right(), c0.up(), -( c0.forward() ) );
-    Quat4f q1 = Quat4f::fromRotatedBasis(
-        c1.right(), c1.up(), -( c1.forward() ) );
-    Quat4f q2 = Quat4f::fromRotatedBasis(
-        c2.right(), c2.up(), -( c2.forward() ) );
-    Quat4f q3 = Quat4f::fromRotatedBasis(
-        c3.right(), c3.up(), -( c3.forward() ) );
-
-    Quat4f q = Quat4f::cubicInterpolate( q0, q1, q2, q3, t );
-
-    Vector3f x = q.rotateVector( Vector3f::RIGHT );
-    Vector3f y = q.rotateVector( Vector3f::UP );
-    Vector3f z = q.rotateVector( -Vector3f::FORWARD );
-
-    Vector3f center = eye - z;
-
+    GLFrustum f = ::cubicInterpolate(
+        c0.frustum(), c1.frustum(), c2.frustum(), c3.frustum(), t );
+    EuclideanTransform cfw = ::cubicInterpolate(
+        c0.cameraFromWorld(),
+        c1.cameraFromWorld(),
+        c2.cameraFromWorld(),
+        c3.cameraFromWorld(),
+        t );
     return PerspectiveCamera
     (
-        eye, center, y,
+        cfw,
         f,
         c0.isDirectX()
     );

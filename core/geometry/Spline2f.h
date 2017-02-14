@@ -4,8 +4,7 @@
 
 #include <vector>
 
-#include "OpenNaturalCubicSpline.h"
-
+#include "libcgt/core/geometry/OpenNaturalCubicSpline.h"
 #include "libcgt/core/vecmath/Vector2f.h"
 
 class Spline2f
