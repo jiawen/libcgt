@@ -28,10 +28,10 @@ public:
     // If maxVal < 256, then gray8 is populated and bitDepth = 8.
     // Else if maxVal < 65536, gray16 is populated and bitDepth = 16.
     // Otherwise, valid = false.
-    static PGMData read( const char* filename );
+    static PGMData read( const std::string& filename );
 
-    static bool writeBinary( const char* filename,
-        Array2DReadView< uint8_t > image );
-    static bool writeBinary( const char* filename,
-        Array2DReadView< uint16_t > image );
+    static bool writeBinary( Array2DReadView< uint8_t > image,
+        const std::string& filename );
+    static bool writeBinary( Array2DReadView< uint16_t > image,
+        const std::string& filename );
 };

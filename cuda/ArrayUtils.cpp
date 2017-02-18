@@ -11,9 +11,9 @@
 
 namespace libcgt { namespace cuda { namespace arrayutils {
 
-bool saveTXT( Array1DReadView< int3 > array, const char* filename )
+bool saveTXT( Array1DReadView< int3 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == nullptr )
     {
         return false;
@@ -34,9 +34,9 @@ bool saveTXT( Array1DReadView< int3 > array, const char* filename )
     return true;
 }
 
-bool saveTXT( Array2DReadView< float2 > array, const char* filename )
+bool saveTXT( Array2DReadView< float2 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -62,9 +62,9 @@ bool saveTXT( Array2DReadView< float2 > array, const char* filename )
     return true;
 }
 
-bool saveTXT( Array2DReadView< float4 > array, const char* filename )
+bool saveTXT( Array2DReadView< float4 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -90,9 +90,9 @@ bool saveTXT( Array2DReadView< float4 > array, const char* filename )
     return true;
 }
 
-bool saveTXT( Array2DReadView< uchar4 > array, const char* filename )
+bool saveTXT( Array2DReadView< uchar4 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -118,9 +118,9 @@ bool saveTXT( Array2DReadView< uchar4 > array, const char* filename )
     return true;
 }
 
-bool saveTXT( Array3DReadView< ushort2 > array, const char* filename )
+bool saveTXT( Array3DReadView< ushort2 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -161,9 +161,9 @@ bool saveTXT( Array3DReadView< ushort2 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DReadView< int2 > array, const char* filename )
+bool saveTXT( Array3DReadView< int2 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -204,9 +204,9 @@ bool saveTXT( Array3DReadView< int2 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DReadView< int3 > array, const char* filename )
+bool saveTXT( Array3DReadView< int3 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -247,9 +247,9 @@ bool saveTXT( Array3DReadView< int3 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( Array3DReadView< int4 > array, const char* filename )
+bool saveTXT( Array3DReadView< int4 > array, const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -292,56 +292,56 @@ bool saveTXT( Array3DReadView< int4 > array, const char* filename )
     return( retVal == 0 );
 }
 
-bool saveTXT( const DeviceArray1D< int3 >& array, const char* filename )
+bool saveTXT( const DeviceArray1D< int3 >& array, const std::string& filename )
 {
     Array1D< int3 > h_array( array.length() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< float >& array, const char* filename )
+bool saveTXT( const DeviceArray2D< float >& array, const std::string& filename )
 {
     Array2D< float > h_array( array.size() );
     copy( array, h_array.writeView() );
     return ArrayUtils::saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< float2 >& array, const char* filename )
+bool saveTXT( const DeviceArray2D< float2 >& array, const std::string& filename )
 {
     Array2D< float2 > h_array( array.size() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< float4 >& array, const char* filename )
+bool saveTXT( const DeviceArray2D< float4 >& array, const std::string& filename )
 {
     Array2D< float4 > h_array( array.size() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< uchar4 >& array, const char* filename )
+bool saveTXT( const DeviceArray2D< uchar4 >& array, const std::string& filename )
 {
     Array2D< uchar4 > h_array( array.size() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< ushort2 >& array, const char* filename )
+bool saveTXT( const DeviceArray3D< ushort2 >& array, const std::string& filename )
 {
     Array3D< ushort2 > h_array( array.size() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< int2 >& array, const char* filename )
+bool saveTXT( const DeviceArray3D< int2 >& array, const std::string& filename )
 {
     Array3D< int2 > h_array( array.size() );
     copy( array, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< int3 >& array, const char* filename )
+bool saveTXT( const DeviceArray3D< int3 >& array, const std::string& filename )
 {
     Array3D< int3 > h_array( array.size() );
     copy( array, h_array.writeView() );

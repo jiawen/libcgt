@@ -1,12 +1,13 @@
 #include "libcgt/core/io/PortableGrayMapIO.h"
 
 // static
-PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
+PortableGrayMapIO::PGMData PortableGrayMapIO::read(
+    const std::string& filename )
 {
     PortableGrayMapIO::PGMData output;
     output.valid = false;
 
-    FILE* pFile = fopen( filename, "rb" );
+    FILE* pFile = fopen( filename.c_str(), "rb" );
     if( pFile == nullptr )
     {
         return output;
@@ -95,15 +96,15 @@ PortableGrayMapIO::PGMData PortableGrayMapIO::read( const char* filename )
 
 
 // static
-bool PortableGrayMapIO::writeBinary( const char* filename,
-    Array2DReadView< uint8_t > image )
+bool PortableGrayMapIO::writeBinary( Array2DReadView< uint8_t > image,
+    const std::string& filename )
 {
     if( image.width() < 0 || image.height() < 0 )
     {
         return false;
     }
 
-    FILE* pf = fopen( filename, "wb" );
+    FILE* pf = fopen( filename.c_str(), "wb" );
 
     fprintf( pf, "P5\n%d %d\n255\n", image.width(), image.height() );
 
@@ -135,15 +136,15 @@ bool PortableGrayMapIO::writeBinary( const char* filename,
 }
 
 // static
-bool PortableGrayMapIO::writeBinary( const char* filename,
-    Array2DReadView< uint16_t > image )
+bool PortableGrayMapIO::writeBinary( Array2DReadView< uint16_t > image,
+    const std::string& filename )
 {
     if( image.width() < 0 || image.height() < 0 )
     {
         return false;
     }
 
-    FILE* pf = fopen( filename, "wb" );
+    FILE* pf = fopen( filename.c_str(), "wb" );
 
     fprintf( pf, "P5\n%d %d\n65535\n", image.width(), image.height() );
 

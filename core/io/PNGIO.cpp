@@ -124,8 +124,8 @@ PNGIO::PNGData PNGIO::read( const std::string& filename )
 }
 
 // static
-bool PNGIO::write( const std::string& filename,
-    Array2DReadView< uint8_t > image )
+bool PNGIO::write( Array2DReadView< uint8_t > image,
+    const std::string& filename )
 {
     Array2D< uint8_t > tmpImage;
     const uint8_t* srcPointer;
@@ -148,8 +148,8 @@ bool PNGIO::write( const std::string& filename,
 }
 
 // static
-bool PNGIO::write( const std::string& filename,
-    Array2DReadView< uint8x3 > image )
+bool PNGIO::write( Array2DReadView< uint8x3 > image,
+    const std::string& filename )
 {
     Array2D< uint8x3 > tmpImage;
     const uint8_t* srcPointer;
@@ -172,8 +172,8 @@ bool PNGIO::write( const std::string& filename,
 }
 
 // static
-bool PNGIO::write( const std::string& filename,
-    Array2DReadView< uint8x4 > image )
+bool PNGIO::write( Array2DReadView< uint8x4 > image,
+    const std::string& filename )
 {
     Array2D< uint8x4 > tmpImage;
     const uint8_t* srcPointer;
@@ -196,8 +196,8 @@ bool PNGIO::write( const std::string& filename,
 }
 
 // static
-bool PNGIO::write( const std::string& filename,
-    Array2DReadView< uint16_t > image )
+bool PNGIO::write( Array2DReadView< uint16_t > image,
+    const std::string& filename )
 {
     // TODO: use BitPacking::byteSwap16 on the buffer once it supports a
     // destination.

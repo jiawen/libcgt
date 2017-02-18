@@ -25,7 +25,7 @@ class RGBDInputStream
 {
 public:
 
-    RGBDInputStream( const char* filename );
+    RGBDInputStream( const std::string& filename );
 
     RGBDInputStream( const RGBDInputStream& copy ) = delete;
     RGBDInputStream& operator = ( const RGBDInputStream& copy ) = delete;
@@ -52,7 +52,7 @@ public:
 
     RGBDOutputStream() = default;
     RGBDOutputStream( const std::vector< StreamMetadata >& metadata,
-        const char* filename );
+        const std::string& filename );
     virtual ~RGBDOutputStream();
 
     RGBDOutputStream( const RGBDOutputStream& copy ) = delete;

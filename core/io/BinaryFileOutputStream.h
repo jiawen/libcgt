@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <string>
 
 #include "libcgt/core/common/ArrayView.h"
 
@@ -9,7 +10,7 @@ class BinaryFileOutputStream
 public:
 
     BinaryFileOutputStream() = default;
-    BinaryFileOutputStream( const char* filename, bool append = false );
+    BinaryFileOutputStream( const std::string& filename, bool append = false );
     virtual ~BinaryFileOutputStream();
 
     BinaryFileOutputStream( const BinaryFileOutputStream& copy ) = delete;
@@ -27,9 +28,11 @@ public:
     // Flush the last write operation.
     bool flush() const;
 
+    // Write a by-value object to the stream.
     template< typename T >
     bool write( const T& x ) const;
 
+    // Write an array of by-value objects to this stream.
     template< typename T >
     bool writeArray( Array1DReadView< T > data ) const;
 

@@ -41,9 +41,9 @@ libcgt::core::cameras::Intrinsics cameraMatrixToIntrinsics(
 // does *not* correspond to a setting of alpha = 0 or 1
 // for newCameraMatrix = getOptimalNewCameraMatrix( alpha ).
 //
-// NOTE: even though the distortion coefficients are independent of
+// NOTE: even though the distortion coefficients are *independent* of
 // resolution and which way y points on the image plane (because they're a
-// function of angles), the undistortion maps are.
+// function of angles), the undistortion maps *are not*.
 //
 // shiftHalfPixel: OpenCV have integer coordinates at pixel centers. Set to
 // true to shift them to use OpenGL conventions, with integer coordinates at

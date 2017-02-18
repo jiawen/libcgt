@@ -18,7 +18,7 @@
 class GLTexture2D;
 
 
-// TODO: refactor some of these into a GLPIpelineState object.
+// TODO: refactor some of these into a GLPipelineState object.
 
 class GLUtilities
 {
@@ -45,32 +45,22 @@ public:
     // Assumes that vp is a standard rectangle.
     static void setViewport( const Rect2i& vp );
 
-    // Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
+    // Specify mapping of depth values from NDC [-1,1] to
+    // window coordinates [zNear, zFar].
     // ARB_depth_buffer_float is still clamped.
     static void setDepthRange( GLfloat zNear, GLfloat zFar );
 
 #ifdef GL_PLATFORM_45
-    // Specify mapping of depth values from NDC [-1,1] to window coordinates [zNear, zFar]
+    // Specify mapping of depth values from NDC [-1,1] to
+    // window coordinates [zNear, zFar].
     // ARB_depth_buffer_float is still clamped.
     static void setDepthRange( GLdouble zNear, GLdouble zFar );
 
-    // NV_depth_buffer_float is unclamped and takes doubles
-    // (The default is still [0,1])
+    // Specify mapping of depth values from NDC [-1,1] to
+    // window coordinates [zNear, zFar].
+    // Uses NV_depth_buffer_float, which lets near and far be unclamped
+    // doubles.
     static void setDepthRangeNV( double zNear, double zFar );
-#endif
-
-#ifdef GL_PLATFORM_45
-    static float* readDepthBuffer( int x, int y, int width, int height );
-    static void dumpDepthBufferText( int x, int y, int width, int height, const char* szFilename );
-    static void dumpFrameBufferLuminanceText( int x, int y, int width, int height, const char* szFilename );
-    static void dumpFrameBufferLuminanceBinary( int x, int y, int width, int height, const char* szFilename );
-    static void dumpFrameBufferRGBABinary( int x, int y, int width, int height, const char* szFilename );
-    static void dumpFrameBufferRGBAText( int x, int y, int width, int height, const char* szFilename );
-
-    // Supported combinations of texture / image:
-    // RGBA8 --> PNG
-    // R32F --> PFM
-    static void saveTextureToFile( GLTexture2D* pTexture, const std::string& filename );
 #endif
 
     static void printGLRenderer();

@@ -6,7 +6,7 @@ namespace libcgt { namespace camera_wrappers {
 
 const uint32_t FORMAT_VERSION = 1;
 
-RGBDInputStream::RGBDInputStream( const char* filename ) :
+RGBDInputStream::RGBDInputStream( const std::string& filename ) :
     m_stream( filename )
 {
     bool ok;
@@ -91,7 +91,7 @@ Array1DReadView< uint8_t > RGBDInputStream::read( uint32_t& streamId,
 
 RGBDOutputStream::RGBDOutputStream(
     const std::vector< StreamMetadata >& metadata,
-    const char* filename ) :
+    const std::string& filename ) :
     m_metadata( metadata )
 {
     uint32_t nStreams = static_cast< uint32_t >( metadata.size() );

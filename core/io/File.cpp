@@ -4,9 +4,9 @@
 #include <fstream>
 
 // static
-bool File::exists( const char* filename )
+bool File::exists( const std::string& filename )
 {
-    FILE* filePointer = fopen( filename, "r" );
+    FILE* filePointer = fopen( filename.c_str(), "r" );
     if( filePointer != NULL )
     {
         fclose( filePointer );
@@ -16,9 +16,9 @@ bool File::exists( const char* filename )
 }
 
 // static
-size_t File::size( const char* filename )
+size_t File::size( const std::string& filename )
 {
-    FILE* filePointer = fopen( filename, "rb" );
+    FILE* filePointer = fopen( filename.c_str(), "rb" );
     if( filePointer == NULL )
     {
         return 0;
@@ -40,7 +40,7 @@ size_t File::size( const char* filename )
 }
 
 // static
-std::string File::readTextFile( const char* filename )
+std::string File::readTextFile( const std::string& filename )
 {
     std::string output;
 
@@ -48,7 +48,7 @@ std::string File::readTextFile( const char* filename )
     if( fileSize > 0 )
     {
         output.resize( fileSize );
-        FILE* filePointer = fopen( filename, "r" );
+        FILE* filePointer = fopen( filename.c_str(), "r" );
         size_t bytesRead = fread( &( output[0] ), sizeof( char ), fileSize, filePointer );
 
         if( ferror( filePointer ) != 0 )
@@ -62,7 +62,7 @@ std::string File::readTextFile( const char* filename )
 }
 
 // static
-std::vector< uint8_t > File::readBinaryFile( const char* filename )
+std::vector< uint8_t > File::readBinaryFile( const std::string& filename )
 {
     std::vector< uint8_t > output;
 
@@ -70,7 +70,7 @@ std::vector< uint8_t > File::readBinaryFile( const char* filename )
     if( fileSize > 0 )
     {
         output.resize( fileSize );
-        FILE* filePointer = fopen( filename, "rb" );
+        FILE* filePointer = fopen( filename.c_str(), "rb" );
         size_t bytesRead = fread( output.data(), 1, fileSize, filePointer );
         if( ( bytesRead != fileSize ) ||
             ( ferror( filePointer ) != 0 ) )
@@ -85,7 +85,7 @@ std::vector< uint8_t > File::readBinaryFile( const char* filename )
 }
 
 // static
-std::vector< std::string > File::readLines( const char* filename )
+std::vector< std::string > File::readLines( const std::string& filename )
 {
     std::vector< std::string > output;
     std::ifstream infile( filename );

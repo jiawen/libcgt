@@ -32,13 +32,13 @@ public:
 
     static PNGData read( const std::string& filename );
 
-    static bool write( const std::string& filename,
-        Array2DReadView< uint8_t > image );
-    static bool write( const std::string& filename,
-        Array2DReadView< uint8x3 > image );
-    static bool write( const std::string& filename,
-        Array2DReadView< uint8x4 > image );
+    static bool write( Array2DReadView< uint8_t > image,
+        const std::string& filename );
+    static bool write( Array2DReadView< uint8x3 > image,
+        const std::string& filename );
+    static bool write( Array2DReadView< uint8x4 > image,
+        const std::string& filename );
 
-    static bool write( const std::string& filename,
-        Array2DReadView< uint16_t > image );
+    static bool write( Array2DReadView< uint16_t > image,
+        const std::string& filename );
 };

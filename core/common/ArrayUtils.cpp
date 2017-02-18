@@ -46,9 +46,10 @@ Array1DReadView< uint8_t > readViewOf( const std::string& s )
 } } } // namespace arrayutils, core, libcgt
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< int16_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< int16_t > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -80,9 +81,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< int16_t > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< int32_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< int32_t > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -114,9 +116,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< int32_t > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< float >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< float >& view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -148,9 +151,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< float >& view, const char* filename )
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< Vector2f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector2f >& view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -182,9 +186,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< Vector2f >& view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< Vector3f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector3f >& view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -216,9 +221,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< Vector3f >& view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array1DReadView< Vector4f >& view, const char* filename )
+bool ArrayUtils::saveTXT( Array1DReadView< Vector4f >& view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -250,9 +256,10 @@ bool ArrayUtils::saveTXT( Array1DReadView< Vector4f >& view, const char* filenam
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DReadView< uint8_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< uint8_t > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -289,9 +296,10 @@ bool ArrayUtils::saveTXT( Array2DReadView< uint8_t > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DReadView< uint8x4 > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< uint8x4 > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -319,7 +327,8 @@ bool ArrayUtils::saveTXT( Array2DReadView< uint8x4 > view, const char* filename 
         {
             int index = y * w + x;
             uint8x4 v = view[ { x, y } ];
-            fprintf( fp, "[%d] (%d %d): %d %d %d %d\n", index, x, y, v.x, v.y, v.z, v.w );
+            fprintf( fp, "[%d] (%d %d): %d %d %d %d\n",
+                index, x, y, v.x, v.y, v.z, v.w );
         }
     }
 
@@ -328,9 +337,10 @@ bool ArrayUtils::saveTXT( Array2DReadView< uint8x4 > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DReadView< int16_t > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< int16_t > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -367,9 +377,10 @@ bool ArrayUtils::saveTXT( Array2DReadView< int16_t > view, const char* filename 
 }
 
 // static
-bool ArrayUtils::saveTXT( Array2DReadView< float > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< float > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -408,9 +419,10 @@ bool ArrayUtils::saveTXT( Array2DReadView< float > view, const char* filename )
 
 
 // static
-bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view, const char* filename )
+bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -439,7 +451,8 @@ bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view, const char* filename
         {
             int index = y * w + x;
             Vector4f v = view[ { x, y } ];
-            fprintf( fp, "[%d] (%d %d): %f %f %f %f\n", index, x, y, v.x, v.y, v.z, v.w );
+            fprintf( fp, "[%d] (%d %d): %f %f %f %f\n",
+                index, x, y, v.x, v.y, v.z, v.w );
         }
     }
 
@@ -448,9 +461,10 @@ bool ArrayUtils::saveTXT( Array2DReadView< Vector4f > view, const char* filename
 }
 
 // static
-bool ArrayUtils::saveTXT( Array3DReadView< float > view, const char* filename )
+bool ArrayUtils::saveTXT( Array3DReadView< float > view,
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;
@@ -458,7 +472,8 @@ bool ArrayUtils::saveTXT( Array3DReadView< float > view, const char* filename )
 
     int retVal;
 
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", view.width(), view.height(), view.depth() );
+    retVal = fprintf( fp, "Size: %d x %d x %d\n",
+        view.width(), view.height(), view.depth() );
     if( retVal < 0 )
     {
         return false;
@@ -493,9 +508,9 @@ bool ArrayUtils::saveTXT( Array3DReadView< float > view, const char* filename )
 
 // static
 bool ArrayUtils::saveTXT( Array3DReadView< Vector2f > view,
-    const char* filename )
+    const std::string& filename )
 {
-    FILE* fp = fopen( filename, "w" );
+    FILE* fp = fopen( filename.c_str(), "w" );
     if( fp == NULL )
     {
         return false;

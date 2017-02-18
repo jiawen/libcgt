@@ -34,7 +34,7 @@ std::string getInfoLog( GLuint id )
 
 // static
 GLSeparableProgram GLSeparableProgram::fromFile(
-    GLSeparableProgram::Type shaderType, const char* filename )
+    GLSeparableProgram::Type shaderType, const std::string& filename )
 {
     return GLSeparableProgram( shaderType,
         File::readTextFile( filename ).c_str() );

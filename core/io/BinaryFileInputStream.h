@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <string>
 
 #include "libcgt/core/common/ArrayView.h"
 
@@ -8,7 +9,7 @@ class BinaryFileInputStream
 {
 public:
 
-    BinaryFileInputStream( const char* filename );
+    BinaryFileInputStream( const std::string& filename );
     virtual ~BinaryFileInputStream();
 
     BinaryFileInputStream( const BinaryFileInputStream& copy ) = delete;
@@ -18,6 +19,7 @@ public:
     // Returns true if the file was properly opened.
     bool isOpen() const;
 
+    // Returns true if the stream was properly closed.
     bool close();
 
     // T must be a primitive type or a struct without pointer members.
@@ -38,8 +40,15 @@ private:
 template< typename T >
 bool BinaryFileInputStream::read( T& output )
 {
-    size_t itemsRead = fread( &output, sizeof( T ), 1, m_fp );
-    return( itemsRead == 1 );
+    if( isOpen() )
+    {
+        size_t itemsRead = fread( &output, sizeof( T ), 1, m_fp );
+        return( itemsRead == 1 );
+    }
+    else
+    {
+        return false;
+    }
 }
 
 template< typename T >
@@ -50,7 +59,14 @@ bool BinaryFileInputStream::readArray( Array1DWriteView< T > output )
         return false;
     }
 
-    size_t itemsRead = fread( output.pointer(), sizeof( T ), output.size(),
-        m_fp );
-    return( itemsRead == output.size() );
+    if( isOpen() )
+    {
+        size_t itemsRead = fread( output.pointer(), sizeof( T ), output.size(),
+            m_fp );
+        return( itemsRead == output.size() );
+    }
+    else
+    {
+        return false;
+    }
 }

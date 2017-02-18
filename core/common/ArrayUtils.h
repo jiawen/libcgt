@@ -287,24 +287,24 @@ class ArrayUtils
 public:
 
     // TODO: implement load / save of ImageStack TMP files.
-    static bool saveTXT( Array1DReadView< int16_t > view, const char* filename );
-    static bool saveTXT( Array1DReadView< int32_t > view, const char* filename );
+    static bool saveTXT( Array1DReadView< int16_t > view, const std::string& filename );
+    static bool saveTXT( Array1DReadView< int32_t > view, const std::string& filename );
 
-    static bool saveTXT( Array1DReadView< float >& view, const char* filename );
-    static bool saveTXT( Array1DReadView< Vector2f >& view, const char* filename );
-    static bool saveTXT( Array1DReadView< Vector3f >& view, const char* filename );
-    static bool saveTXT( Array1DReadView< Vector4f >& view, const char* filename );
+    static bool saveTXT( Array1DReadView< float >& view, const std::string& filename );
+    static bool saveTXT( Array1DReadView< Vector2f >& view, const std::string& filename );
+    static bool saveTXT( Array1DReadView< Vector3f >& view, const std::string& filename );
+    static bool saveTXT( Array1DReadView< Vector4f >& view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< uint8_t > view, const char* filename );
-    static bool saveTXT( Array2DReadView< uint8x4 > view, const char* filename );
+    static bool saveTXT( Array2DReadView< uint8_t > view, const std::string& filename );
+    static bool saveTXT( Array2DReadView< uint8x4 > view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< int16_t > view, const char* filename );
+    static bool saveTXT( Array2DReadView< int16_t > view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< float > view, const char* filename );
-    static bool saveTXT( Array2DReadView< Vector4f > view, const char* filename );
+    static bool saveTXT( Array2DReadView< float > view, const std::string& filename );
+    static bool saveTXT( Array2DReadView< Vector4f > view, const std::string& filename );
 
-    static bool saveTXT( Array3DReadView< float > view, const char* filename );
-    static bool saveTXT( Array3DReadView< Vector2f > view, const char* filename );
+    static bool saveTXT( Array3DReadView< float > view, const std::string& filename );
+    static bool saveTXT( Array3DReadView< Vector2f > view, const std::string& filename );
 };
 
 #include "libcgt/core/common/ArrayUtils.inl"

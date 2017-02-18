@@ -32,7 +32,7 @@ namespace libcgt { namespace camera_wrappers {
 
 const int32_t FORMAT_VERSION = 1;
 
-PoseInputStream::PoseInputStream( const char* filename ) :
+PoseInputStream::PoseInputStream( const std::string& filename ) :
     m_stream( filename )
 {
     bool ok = false;
@@ -126,7 +126,7 @@ bool PoseInputStream::read( int32_t& frameIndex, int64_t& timestamp,
 }
 
 PoseOutputStream::PoseOutputStream( PoseStreamMetadata metadata,
-    const char* filename ) :
+    const std::string& filename ) :
     m_metadata( metadata )
 {
     m_stream = BinaryFileOutputStream( filename );

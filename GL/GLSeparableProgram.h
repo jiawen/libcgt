@@ -38,7 +38,7 @@ public:
     };
 
     static GLSeparableProgram fromFile( Type shaderType,
-        const char* filename );
+        const std::string& filename );
 
     // The default invalid program (with id = 0).
     GLSeparableProgram() = default;

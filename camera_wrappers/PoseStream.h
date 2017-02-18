@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "libcgt/core/common/Array1D.h"
@@ -64,7 +65,7 @@ class PoseInputStream
 {
 public:
 
-    PoseInputStream( const char* filename );
+    PoseInputStream( const std::string& filename );
 
     PoseInputStream( const PoseInputStream& copy ) = delete;
     PoseInputStream& operator = ( const PoseInputStream& copy ) = delete;
@@ -95,7 +96,8 @@ class PoseOutputStream
 public:
 
     PoseOutputStream() = default;
-    PoseOutputStream( PoseStreamMetadata metadata, const char* filename );
+    PoseOutputStream( PoseStreamMetadata metadata,
+        const std::string& filename );
     virtual ~PoseOutputStream();
 
     PoseOutputStream( const PoseOutputStream& copy ) = delete;

@@ -51,7 +51,7 @@ inline T lerp( T x, T y, double t )
 }
 
 template<>
-inline uint8x3 lerp( uint8x3 x, uint8x3 y, float t )
+inline uint8x3 lerp( const uint8x3 x, const uint8x3 y, float t )
 {
     // TODO: assert t is in [0, 1].
     // TODO: use toUInt8()
@@ -115,7 +115,6 @@ inline float fraction( int x, const Range1i& range )
     assert( !range.isEmpty() );
     return static_cast< float >( x - range.origin ) / ( range.size );
 }
-
 
 inline float oo_0( float x )
 {

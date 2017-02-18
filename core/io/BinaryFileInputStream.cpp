@@ -1,8 +1,8 @@
 #include "libcgt/core/io/BinaryFileInputStream.h"
 
-BinaryFileInputStream::BinaryFileInputStream( const char* filename )
+BinaryFileInputStream::BinaryFileInputStream( const std::string& filename )
 {
-    m_fp = fopen( filename, "rb" );
+    m_fp = fopen( filename.c_str(), "rb" );
 }
 
 // virtual
