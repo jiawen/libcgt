@@ -28,21 +28,21 @@ public:
 
     // Writes a standard "PFM" format.
     // Header is "Pf" - grayscale.
-    static bool write( const std::string& filename,
-        Array2DReadView< float > image );
+    static bool write( Array2DReadView< float > image,
+        const std::string& filename );
 
     // Writes a *nonstandard* "PFM2" format.
     // The header is "PF2" and is red and green only.
-    static bool write( const std::string& filename,
-        Array2DReadView< Vector2f > image );
+    static bool write( Array2DReadView< Vector2f > image,
+        const std::string& filename );
 
     // Writes a standard "PFM" format.
     // Header is "PF" - rgb.
-    static bool write( const std::string& filename,
-        Array2DReadView< Vector3f > image );
+    static bool write( Array2DReadView< Vector3f > image,
+        const std::string& filename );
 
     // Writes a *nonstandard* "PFM4" format.
     // The header is "PF4", and includes an alpha channel.
-    static bool write( const std::string& filename,
-        Array2DReadView< Vector4f > image );
+    static bool write( Array2DReadView< Vector4f > image,
+        const std::string& filename );
 };

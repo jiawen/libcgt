@@ -650,7 +650,23 @@ bool mapIndexed( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst,
 }
 
 template< typename T >
-Array1DWriteView< T > reshape( Array2DWriteView< T > src )
+Array1DReadView< T > flatten( Array2DReadView< T > src )
+{
+    if( src.isNull() || !src.rowsArePacked() )
+    {
+        return Array1DReadView< T >();
+    }
+
+    return Array1DReadView< T >
+    (
+        src.pointer(),
+        src.numElements(),
+        src.elementStrideBytes()
+    );
+}
+
+template< typename T >
+Array1DWriteView< T > flatten( Array2DWriteView< T > src )
 {
     if( src.isNull() || !src.rowsArePacked() )
     {
@@ -666,7 +682,23 @@ Array1DWriteView< T > reshape( Array2DWriteView< T > src )
 }
 
 template< typename T >
-Array1DWriteView< T > reshape( Array3DWriteView< T > src )
+Array1DReadView< T > flatten( Array3DReadView< T > src )
+{
+    if( src.isNull() || !src.rowsArePacked() || !src.slicesArePacked() )
+    {
+        return Array1DWriteView< T >();
+    }
+
+    return Array1DReadView< T >
+    (
+        src.pointer(),
+        src.numElements(),
+        src.elementStrideBytes()
+    );
+}
+
+template< typename T >
+Array1DWriteView< T > flatten( Array3DWriteView< T > src )
 {
     if( src.isNull() || !src.rowsArePacked() || !src.slicesArePacked() )
     {

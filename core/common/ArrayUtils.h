@@ -18,6 +18,7 @@
 #include "libcgt/core/vecmath/Vector3f.h"
 #include "libcgt/core/vecmath/Vector3i.h"
 #include "libcgt/core/vecmath/Vector4f.h"
+#include "libcgt/core/vecmath/Vector4i.h"
 
 namespace libcgt { namespace core { namespace arrayutils {
 
@@ -261,11 +262,21 @@ template< typename TSrc, typename TDst, typename Func >
 bool mapIndexed( Array3DReadView< TSrc > src, Array3DWriteView< TDst > dst,
     Func f );
 
+// Interpret "src" as a 1D view. src's rows must be packed.
 template< typename T >
-Array1DWriteView< T > reshape( Array2DWriteView< T > src );
+Array1DReadView< T > flatten( Array2DReadView< T > src );
 
+// Interpret "src" as a 1D view. src's rows must be packed.
 template< typename T >
-Array1DWriteView< T > reshape( Array3DWriteView< T > src );
+Array1DWriteView< T > flatten( Array2DWriteView< T > src );
+
+// Interpret "src" as a 1D view. src's rows and slices must be packed.
+template< typename T >
+Array1DReadView< T > flatten( Array3DReadView< T > src );
+
+// Interpret "src" as a 1D view. src's rows and slices must be packed.
+template< typename T >
+Array1DWriteView< T > flatten( Array3DWriteView< T > src );
 
 // Get a readView of the contents of the vector v, starting at element
 // (not byte) offset "offset".
@@ -280,31 +291,39 @@ Array1DWriteView< T > writeViewOf( std::vector< T >& v, size_t offset = 0 );
 
 Array1DReadView< uint8_t > readViewOf( const std::string& s );
 
+
 } } } // arrayutils, core, libcgt
 
-class ArrayUtils
-{
-public:
+// TODO: implement load / save of ImageStack TMP files.
 
-    // TODO: implement load / save of ImageStack TMP files.
-    static bool saveTXT( Array1DReadView< int16_t > view, const std::string& filename );
-    static bool saveTXT( Array1DReadView< int32_t > view, const std::string& filename );
+// TODO: move this into its own file.
+bool saveTXT( Array1DReadView< int16_t > view, const std::string& filename );
+bool saveTXT( Array1DReadView< int32_t > view, const std::string& filename );
 
-    static bool saveTXT( Array1DReadView< float >& view, const std::string& filename );
-    static bool saveTXT( Array1DReadView< Vector2f >& view, const std::string& filename );
-    static bool saveTXT( Array1DReadView< Vector3f >& view, const std::string& filename );
-    static bool saveTXT( Array1DReadView< Vector4f >& view, const std::string& filename );
+bool saveTXT( Array1DReadView< Vector3i >& view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< uint8_t > view, const std::string& filename );
-    static bool saveTXT( Array2DReadView< uint8x4 > view, const std::string& filename );
+bool saveTXT( Array1DReadView< float >& view, const std::string& filename );
+bool saveTXT( Array1DReadView< Vector2f >& view, const std::string& filename );
+bool saveTXT( Array1DReadView< Vector3f >& view, const std::string& filename );
+bool saveTXT( Array1DReadView< Vector4f >& view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< int16_t > view, const std::string& filename );
+bool saveTXT( Array2DReadView< uint8_t > view, const std::string& filename );
+bool saveTXT( Array2DReadView< uint8x4 > view, const std::string& filename );
 
-    static bool saveTXT( Array2DReadView< float > view, const std::string& filename );
-    static bool saveTXT( Array2DReadView< Vector4f > view, const std::string& filename );
+bool saveTXT( Array2DReadView< int16_t > view, const std::string& filename );
 
-    static bool saveTXT( Array3DReadView< float > view, const std::string& filename );
-    static bool saveTXT( Array3DReadView< Vector2f > view, const std::string& filename );
-};
+bool saveTXT( Array2DReadView< float > view, const std::string& filename );
+bool saveTXT( Array2DReadView< Vector2f > view, const std::string& filename );
+bool saveTXT( Array2DReadView< Vector3f > view, const std::string& filename );
+bool saveTXT( Array2DReadView< Vector4f > view, const std::string& filename );
+
+bool saveTXT( Array3DReadView< uint16x2 > view, const std::string& filename );
+
+bool saveTXT( Array3DReadView< Vector2i > view, const std::string& filename );
+bool saveTXT( Array3DReadView< Vector3i > view, const std::string& filename );
+bool saveTXT( Array3DReadView< Vector4i > view, const std::string& filename );
+
+bool saveTXT( Array3DReadView< float > view, const std::string& filename );
+bool saveTXT( Array3DReadView< Vector2f > view, const std::string& filename );
 
 #include "libcgt/core/common/ArrayUtils.inl"

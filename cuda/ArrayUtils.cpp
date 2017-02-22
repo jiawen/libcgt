@@ -1,351 +1,111 @@
-#include "ArrayUtils.h"
+#include "libcgt/cuda/ArrayUtils.h"
 
 #include "libcgt/core/common/Array1D.h"
 #include "libcgt/core/common/Array2D.h"
 #include "libcgt/core/common/Array3D.h"
 #include "libcgt/core/common/ArrayUtils.h"
 
-// TODO: Array2DReadView<float2> --> Array2DReadView<Vector2f> (use cast())
-
 // TODO: Use templates, this is silly.
+// Make a template to convert cuda types into vecmath types.
 
-namespace libcgt { namespace cuda { namespace arrayutils {
+using libcgt::core::arrayutils::cast;
 
-bool saveTXT( Array1DReadView< int3 > array, const std::string& filename )
+namespace libcgt { namespace cuda {
+
+bool saveTXT( Array1DReadView< int3 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == nullptr )
-    {
-        return false;
-    }
-
-    fprintf( fp, "Size: %zu\n", array.size() );
-    fprintf( fp, "Format: int3\n" );
-
-    int length = static_cast< int >( array.size() );
-    for( int i = 0; i < length; ++i )
-    {
-        int3 v = array[i];
-        fprintf( fp, "[%d]: %d, %d, %d\n", i, v.x, v.y, v.z );
-    }
-
-    fclose( fp );
-
-    return true;
+    return saveTXT( cast< Vector3i >( view ), filename );
 }
 
-bool saveTXT( Array2DReadView< float2 > array, const std::string& filename )
+bool saveTXT( Array2DReadView< float2 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
-    fprintf( fp, "Format: float2\n" );
-
-    int w = array.width();
-    int h = array.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
-        {
-            int index = y * w + x;
-            float2 v = array[ { x, y } ];
-            fprintf( fp, "[%d] (%d %d): %f, %f\n", index, x, y, v.x, v.y );
-        }
-    }
-    fclose( fp );
-
-    return true;
+    return saveTXT( cast< Vector2f >( view ), filename );
 }
 
-bool saveTXT( Array2DReadView< float4 > array, const std::string& filename )
+bool saveTXT( Array2DReadView< float4 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
-    fprintf( fp, "Format: float4\n" );
-
-    int w = array.width();
-    int h = array.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
-        {
-            int index = y * array.width() + x;
-            float4 v = array[ { x, y } ];
-            fprintf( fp, "[%d] (%d %d): %f, %f, %f, %f\n", index, x, y, v.x, v.y, v.z, v.w );
-        }
-    }
-    fclose( fp );
-
-    return true;
+    return saveTXT( cast< Vector4f >( view ), filename );
 }
 
-bool saveTXT( Array2DReadView< uchar4 > array, const std::string& filename )
+bool saveTXT( Array2DReadView< uchar4 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    fprintf( fp, "Size: %d x %d\n", array.width(), array.height() );
-    fprintf( fp, "Format: ubyte4\n" );
-
-    int w = array.width();
-    int h = array.height();
-
-    for( int y = 0; y < h; ++y )
-    {
-        for( int x = 0; x < w; ++x )
-        {
-            int index = y * array.width() + x;
-            uchar4 v = array[ { x, y } ];
-            fprintf( fp, "[%d] (%d %d): %d, %d, %d, %d\n", index, x, y, v.x, v.y, v.z, v.w );
-        }
-    }
-    fclose( fp );
-
-    return true;
+    return saveTXT( cast< uint8x4 >( view ), filename );
 }
 
-bool saveTXT( Array3DReadView< ushort2 > array, const std::string& filename )
+bool saveTXT( Array3DReadView< ushort2 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    int retVal;
-
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    retVal = fprintf( fp, "Format: ushort2\n" );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    int w = array.width();
-    int h = array.height();
-    int d = array.depth();
-
-    for( int z = 0; z < d; ++z )
-    {
-        for( int y = 0; y < h; ++y )
-        {
-            for( int x = 0; x < w; ++x )
-            {
-                int index = z * w * h + y * w + x;
-                ushort2 v = array[ { x, y, z } ];
-                fprintf( fp, "[%d] (%d %d %d): %d %d\n", index, x, y, z, v.x, v.y );
-            }
-        }
-    }
-
-    retVal = fclose( fp );
-    return( retVal == 0 );
+    return saveTXT( cast< uint16x2 >( view ), filename );
 }
 
-bool saveTXT( Array3DReadView< int2 > array, const std::string& filename )
+bool saveTXT( Array3DReadView< int2 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    int retVal;
-
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    retVal = fprintf( fp, "Format: int2\n" );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    int w = array.width();
-    int h = array.height();
-    int d = array.depth();
-
-    for( int z = 0; z < d; ++z )
-    {
-        for( int y = 0; y < h; ++y )
-        {
-            for( int x = 0; x < w; ++x )
-            {
-                int index = z * w * h + y * w + x;
-                int2 v = array[ { x, y, z } ];
-                fprintf( fp, "[%d] (%d %d %d): %d %d\n", index, x, y, z, v.x, v.y );
-            }
-        }
-    }
-
-    retVal = fclose( fp );
-    return( retVal == 0 );
+    return saveTXT( cast< Vector2i >( view ), filename );
 }
 
-bool saveTXT( Array3DReadView< int3 > array, const std::string& filename )
+bool saveTXT( Array3DReadView< int3 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    int retVal;
-
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    retVal = fprintf( fp, "Format: int2\n" );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    int w = array.width();
-    int h = array.height();
-    int d = array.depth();
-
-    for( int z = 0; z < d; ++z )
-    {
-        for( int y = 0; y < h; ++y )
-        {
-            for( int x = 0; x < w; ++x )
-            {
-                int index = z * w * h + y * w + x;
-                int3 v = array[ { x, y, z } ];
-                fprintf( fp, "[%d] (%d %d %d): %d %d %d\n", index, x, y, z, v.x, v.y, v.z );
-            }
-        }
-    }
-
-    retVal = fclose( fp );
-    return( retVal == 0 );
+    return saveTXT( cast< Vector3i >( view ), filename );
 }
 
-bool saveTXT( Array3DReadView< int4 > array, const std::string& filename )
+bool saveTXT( Array3DReadView< int4 > view, const std::string& filename )
 {
-    FILE* fp = fopen( filename.c_str(), "w" );
-    if( fp == NULL )
-    {
-        return false;
-    }
-
-    int retVal;
-
-    retVal = fprintf( fp, "Size: %d x %d x %d\n", array.width(), array.height(), array.depth() );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    retVal = fprintf( fp, "Format: int4\n" );
-    if( retVal < 0 )
-    {
-        return false;
-    }
-
-    int w = array.width();
-    int h = array.height();
-    int d = array.depth();
-
-    for( int z = 0; z < d; ++z )
-    {
-        for( int y = 0; y < h; ++y )
-        {
-            for( int x = 0; x < w; ++x )
-            {
-                int index = z * w * h + y * w + x;
-                int4 v = array[ { x, y, z } ];
-                fprintf( fp, "[%d] (%d %d %d): %d %d %d %d\n",
-					index, x, y, z,
-					v.x, v.y, v.z, v.w );
-            }
-        }
-    }
-
-    retVal = fclose( fp );
-    return( retVal == 0 );
+    return saveTXT( cast< Vector4i >( view ), filename );
 }
 
-bool saveTXT( const DeviceArray1D< int3 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray1D< int3 >& view, const std::string& filename )
 {
-    Array1D< int3 > h_array( array.length() );
-    copy( array, h_array.writeView() );
+    Array1D< int3 > h_array( view.length() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< float >& array, const std::string& filename )
+bool saveTXT( const DeviceArray2D< float >& view, const std::string& filename )
 {
-    Array2D< float > h_array( array.size() );
-    copy( array, h_array.writeView() );
-    return ArrayUtils::saveTXT( h_array, filename );
-}
-
-bool saveTXT( const DeviceArray2D< float2 >& array, const std::string& filename )
-{
-    Array2D< float2 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array2D< float > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< float4 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray2D< float2 >& view, const std::string& filename )
 {
-    Array2D< float4 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array2D< float2 > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray2D< uchar4 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray2D< float4 >& view, const std::string& filename )
 {
-    Array2D< uchar4 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array2D< float4 > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< ushort2 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray2D< uchar4 >& view, const std::string& filename )
 {
-    Array3D< ushort2 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array2D< uchar4 > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< int2 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray3D< ushort2 >& view, const std::string& filename )
 {
-    Array3D< int2 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array3D< ushort2 > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-bool saveTXT( const DeviceArray3D< int3 >& array, const std::string& filename )
+bool saveTXT( const DeviceArray3D< int2 >& view, const std::string& filename )
 {
-    Array3D< int3 > h_array( array.size() );
-    copy( array, h_array.writeView() );
+    Array3D< int2 > h_array( view.size() );
+    copy( view, h_array.writeView() );
     return saveTXT( h_array, filename );
 }
 
-} } } // arrayutils, cuda, libcgt
+bool saveTXT( const DeviceArray3D< int3 >& view, const std::string& filename )
+{
+    Array3D< int3 > h_array( view.size() );
+    copy( view, h_array.writeView() );
+    return saveTXT( h_array, filename );
+}
+
+} } // cuda, libcgt

@@ -19,8 +19,7 @@ DEFINE_string( output_file, "", "Output POSE file." );
 
 // TODO: output pose format and direction
 // TODO: whether to rotate the poses to GL
-// TODO: timestamp map
-// TODO: get true pose somehow from fiducial tracking.
+// TODO: rgbdtool should output a timestamp map.
 
 using libcgt::camera_wrappers::PoseStreamMetadata;
 using libcgt::camera_wrappers::PoseOutputStream;

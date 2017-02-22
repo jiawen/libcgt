@@ -28,7 +28,7 @@ DEFINE_bool( list_streams, false,
 DEFINE_bool( dump_frames, false,
     "Set this flag to write undistorted frames to the given directory." );
 DEFINE_bool( dump_timestamps, false,
-    "Set this flag to dump \"frame_index, timestampns\" pairs (sans quotes). "
+    "Set this flag to dump \"frame_index, timestamp_ns\" pairs (sans quotes). "
     "If --output is not set, writes to stdout.\n" );
 
 // Options.
